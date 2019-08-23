@@ -1314,11 +1314,13 @@ class GdsDialectTranslator
 			[$userInput, $aliasMods] = this.constructor.removeAliasModifiers($userInput);
 			const throughParse = this.translateThroughSeparateFunctions($fromGds, $toGds, $userInput);
 			$output = throughParse.result;
-			$messages.push(...throughParse.messages);
 			if (php.empty($output)) {
 				$result = this.constructor.translateThroughPatterns($fromGds, $toGds, $userInput);
 				$output = $result['output'];
 				$messages = $result['messages'];
+				if (!$output) {
+					$messages.push(...throughParse.messages);
+				}
 			}
 			$output = this.constructor.returnAliasModifiers($output, $aliasMods);
 		}
