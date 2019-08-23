@@ -3005,8 +3005,8 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
 
 			// Price and store as booked private
 			['apollo', 'galileo', 'T:$B/:A', 'FQ:A'],
-			['sabre', 'galileo', 'WPRQ¥PV', 'FQ:A'],
-			['amadeus', 'galileo', 'FXP/R,U', 'FQ:A'],
+			['sabre', 'galileo', 'WPRQ¥PV', 'FQ:P'],
+			['amadeus', 'galileo', 'FXP/R,U', 'FQ:P'],
 			// Price and store as booked publsihed
 			['apollo', 'galileo', 'T:$B:N', 'FQ:N'],
 			['sabre', 'galileo', 'WPRQ¥PL', 'FQ:N'],

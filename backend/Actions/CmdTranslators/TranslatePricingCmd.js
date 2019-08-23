@@ -200,15 +200,6 @@ const processTravelportMod = (effectiveMods, mod, coma, thru) => {
 		const {units, value} = mod.parsed;
 		const apolloMod = 'Z' + (units === 'amount' ? '$' : '') + value;
 		effectiveMods.push(apolloMod);
-	} else if (mod.type === 'fareType') {
-		const letter = AtfqParser.encodeFareType(mod.parsed);
-		if (mod.parsed === 'private') {
-			effectiveMods.push(':A'); // usually agents need this one, not :P
-		} else if (letter) {
-			effectiveMods.push(':' + letter);
-		} else {
-			throw Rej.NotImplemented.makeExc('Unsupported fare type ' + mod.parsed.parsed + ' - ' + mod.raw);
-		}
 	} else if (mod.type === 'accompaniedChild') {
 		// could have been added by `translatePaxes()`
 		if (!effectiveMods.join('/').includes('/ACC')) {
@@ -269,6 +260,15 @@ const inApollo = (norm) => {
 			// following is Apollo-specific
 		} else if (mod.type === 'namePosition') {
 			pushPaxMod();
+		} else if (mod.type === 'fareType') {
+			const letter = AtfqParser.encodeFareType(mod.parsed);
+			if (mod.parsed === 'private') {
+				effectiveMods.push(':A'); // usually agents need this one, not :P
+			} else if (letter) {
+				effectiveMods.push(':' + letter);
+			} else {
+				throw Rej.NotImplemented.makeExc('Unsupported fare type ' + mod.parsed.parsed + ' - ' + mod.raw);
+			}
 		} else if (mod.type === 'ticketingDate') {
 			effectiveMods.push(':' + mod.parsed.raw);
 		} else if (mod.type === 'cabinClass') {
@@ -299,6 +299,13 @@ const inGalileo = (norm) => {
 	for (const mod of norm.pricingModifiers) {
 		if (processTravelportMod(effectiveMods, mod, '.', '-')) {
 			// following is Galileo-specific
+		} else if (mod.type === 'fareType') {
+			const letter = AtfqParser.encodeFareType(mod.parsed);
+			if (letter) {
+				effectiveMods.push(':' + letter);
+			} else {
+				throw Rej.NotImplemented.makeExc('Unsupported fare type ' + mod.parsed.parsed + ' - ' + mod.raw);
+			}
 		} else if (mod.type === 'namePosition') {
 			pushPaxMod();
 		} else if (mod.type === 'ticketingDate') {
