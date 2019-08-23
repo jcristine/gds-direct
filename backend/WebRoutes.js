@@ -237,6 +237,7 @@ app.post('/admin/updateHighlightRules', withDevAuth((reqBody, emcResult) => {
 
 app.post('/admin/terminal/highlight', toHandleHttp(HighlightRulesRepository.getFullDataForAdminPage));
 app.post('/admin/terminal/highlight/save', withDevAuth(HighlightRulesRepository.saveRule));
+app.post('/admin/terminal/highlight/saveSampleDump', withDevAuth(HighlightRulesRepository.saveSampleDump));
 app.post('/admin/terminal/themes/save', withAuth(rqBody => {
 	return Db.with(db => db.writeRows('terminalThemes', [{
 		id: rqBody.id || undefined,

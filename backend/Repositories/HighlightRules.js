@@ -3,6 +3,7 @@ const Db = require("../Utils/Db.js");
 const Redis = require('../LibWrappers/Redis.js');
 const MultiLevelMap = require('../Utils/MultiLevelMap.js');
 const Rej = require('klesun-node-tools/src/Lang.js');
+const _ = require('lodash');;
 
 const TABLE = 'highlightRules';
 const TABLE_CMD = 'highlightCmdPatterns';
@@ -39,18 +40,22 @@ const toCamelCase = ($value) => {
 };
 
 /** @return {IFullHighlightData} */
-const getFullDataForAdminPage = () => fetchFromDb().then(({
+const getFullDataForAdminPage = () => fetchFromDb().then(async ({
 	highlightRules,
 	highlightOutputPatterns,
 	highlightCmdPatterns,
 }) => {
+	const dumpRows = await Db.fetchAll({table: 'highlight_sample_dumps'});
+	const outIdToDumps = _.groupBy(dumpRows, row => row.outputPatternId);
+
 	const ruleToGdsToCmdRow = MultiLevelMap();
 	for (const cmdRow of highlightCmdPatterns) {
 		ruleToGdsToCmdRow.set([cmdRow.ruleId, cmdRow.dialect], cmdRow);
 	}
 	const ruleToGdsToOutRow = MultiLevelMap();
-	for (const cmdRow of highlightOutputPatterns) {
-		ruleToGdsToOutRow.set([cmdRow.ruleId, cmdRow.gds], cmdRow);
+	for (const outRow of highlightOutputPatterns) {
+		outRow.dumpRecs = outIdToDumps[outRow.id] || [];
+		ruleToGdsToOutRow.set([outRow.ruleId, outRow.gds], outRow);
 	}
 	const aaData = highlightRules.map(rule => {
 		rule.decoration = JSON.parse(rule.decoration);
@@ -173,8 +178,20 @@ const saveRule = (rqBody, emcResult) => Db.with(db => {
 	});
 });
 
+const saveSampleDump = ({
+	outputPatternId, dump,
+	id = null, comment = '',
+}) => Db.with(db => db.writeRows('highlight_sample_dumps', [{
+	outputPatternId, dump,
+	...(id ? {id} : {}),
+	comment: comment,
+}])).then(sqlResult => ({
+	id: id || sqlResult.insertId,
+}));
+
 exports.getFullDataForAdminPage = getFullDataForAdminPage;
 exports.saveRule = saveRule;
+exports.saveSampleDump = saveSampleDump;
 
 const getFullDataForServiceMulti = async () => {
 	if (await didCacheExpire(lastUpdateMs)) {

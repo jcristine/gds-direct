@@ -1,17 +1,28 @@
 
-let GrectApi = ({
+const GrectApi = ({
 	whenEmcSessionId = Promise.reject('EMC ID not supplied'),
 }) => {
-	let fetchJson = ({url, urlParams = {}}) =>
-		whenEmcSessionId.then(emcSessionId => {
+	const fetchJson = ({url, urlParams = null, postParams = null}) => {
+		if (urlParams) {
 			urlParams.emcSessionId = emcSessionId;
-			let esc = encodeURIComponent;
-			let query = Object.entries(urlParams)
+			const esc = encodeURIComponent;
+			const query = Object.entries(urlParams)
 				.map(([k, v]) => esc(k) + '=' + esc(v))
 				.join('&');
-
-			return fetch(url + (!query ? '' : '?' + query));
+			url += (!query ? '' : '?' + query);
+		}
+		return whenEmcSessionId.then(emcSessionId => {
+			return fetch(url, {
+				...(!postParams ? {} : {
+					method: 'POST',
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({
+						...postParams, emcSessionId,
+					}),
+				})
+			});
 		}).then(rs => rs.json());
+	};
 
 	let getCmdRqList = ({sessionId}) => fetchJson({
 		url: '/terminal/getCmdRqList',
@@ -23,9 +34,15 @@ let GrectApi = ({
 		urlParams: {sessionId},
 	});
 
+	const saveHighlightSampleDump = (params) => fetchJson({
+		url: '/admin/terminal/highlight/saveSampleDump',
+		postParams: params,
+	});
+
 	return {
 		getCmdRqList: getCmdRqList,
 		getCmdList: getCmdList,
+		saveHighlightSampleDump: saveHighlightSampleDump,
 	};
 };
 
