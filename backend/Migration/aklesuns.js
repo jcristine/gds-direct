@@ -120,6 +120,18 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		name: 'GRECT/2019.08.23002-create-highlight-rule-sample-dumps-table',
+		perform: db => db.query([
+			'CREATE TABLE highlight_sample_dumps (',
+			'    id INT PRIMARY KEY AUTO_INCREMENT,',
+			'    outputPatternId INT NOT NULL,',
+			'    comment TEXT DEFAULT "",',
+			'    dump TEXT NOT NULL,',
+			'    KEY outputPatternId (outputPatternId)',
+			') ENGINE=InnoDB DEFAULT CHARSET=utf8',
+		].join('\n')),
+	},
+	{
 		name: '00.00.08-create-themes-table',
 		perform: (db) => db.query([
 			"CREATE TABLE `terminalThemes` (",
