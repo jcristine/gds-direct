@@ -20,6 +20,17 @@ const parseRebookSegmentsStr = segListStr => {
 	});
 };
 
+const popRebookLine = lines => {
+	const footerInfoLine = lines.pop();
+	const match = footerInfoLine.match(/^CHANGE BOOKING CLASS -\s*(.*?)\s*$/);
+	if (match) {
+		return parseRebookSegmentsStr(match[1]);
+	} else {
+		lines.push(footerInfoLine);
+		return [];
+	}
+};
+
 class SabrePricingParser {
 	static detectErrorResponse($dump) {
 		let $nameByPattern, $pattern, $errorName;
@@ -27,15 +38,15 @@ class SabrePricingParser {
 		$nameByPattern = {
 			'NO COMBINABLE FARES FOR CLASS USED.*': 'noData',
 			'NO FARE FOR CLASS USED.*': 'noData',
-			'NO PUBLIC FARES VALID FOR PASSENGER TYPE\\\/CLASS OF SERVICE\\s*\\.\\s*': 'noData',
-			'.*CHK DATE\\\/TIME CONTINUITY OF FLTS.*': 'checkTimeContinuityOfFlights',
+			'NO PUBLIC FARES VALID FOR PASSENGER TYPE\\/CLASS OF SERVICE\\s*\\.\\s*': 'noData',
+			'.*CHK DATE\\/TIME CONTINUITY OF FLTS.*': 'checkTimeContinuityOfFlights',
 			'UNABLE PAST DATE SEGMENT USE SEGMENT SELECT': 'segmentDateIsInPast',
 			'.*SEG STATUS NOT ALLOWED.*': 'badSegmentStatus',
 			'FORMAT, CHECK SEGMENT NUMBER.*': 'badSegmentNumber',
 		};
 
 		for ([$pattern, $errorName] of Object.entries($nameByPattern)) {
-			if (php.preg_match('/^' + $pattern + '$\/s', php.trim($dump))) {
+			if (php.preg_match('/^' + $pattern + '$/s', php.trim($dump))) {
 				return $errorName;
 			}
 		}
@@ -121,17 +132,8 @@ class SabrePricingParser {
 				fareConstructionInfoLines.push(line);
 			} else {
 				php.array_unshift(lines, line);
+				rebookSegments = popRebookLine(lines);
 				baggageInfoDumpLines = lines;
-				let footerInfoLine;
-				while (footerInfoLine = baggageInfoDumpLines.pop()) {
-					const match = footerInfoLine.match(/^CHANGE BOOKING CLASS -\s*(.*?)\s*$/);
-					if (match) {
-						rebookSegments = parseRebookSegmentsStr(match[1]);
-					} else {
-						baggageInfoDumpLines.push(footerInfoLine);
-						break;
-					}
-				}
 				baggageInfo = BagAllowanceParser.parse(lines);
 				break;
 			}
@@ -182,7 +184,7 @@ class SabrePricingParser {
 		const regex =
 			'/^' +
 			'(?<departureDate>\\d{2}[A-Z]{3})\\sDEPARTURE\\sDATE-+' +
-			'LAST\\sDAY\\sTO\\sPURCHASE\\s(?<lastDateToPurchase>\\d{1,2}[A-Z]{3})\/' +
+			'LAST\\sDAY\\sTO\\sPURCHASE\\s(?<lastDateToPurchase>\\d{1,2}[A-Z]{3})/' +
 			'(?<lastTimeToPurchase>\\d{1,4})' +
 			'$/';
 
@@ -268,7 +270,10 @@ class SabrePricingParser {
 		do {
 			firstSection = php.array_merge(firstSection, continuation);
 			mainSection = this.parseMainSection(firstSection);
-		} while (php.isset(mainSection['error']) && !php.empty(continuation = php.array_shift(sections)));
+		} while (
+			php.isset(mainSection['error']) &&
+			!php.empty(continuation = php.array_shift(sections))
+		);
 
 		if (error = mainSection.error) {
 			return {error};
@@ -277,6 +282,10 @@ class SabrePricingParser {
 			mainSection.dataExistsInfo = dataExistsInfo;
 			mainSection.wasPqRetained = wasPqRetained;
 			mainSection.displayType = 'regularPricing';
+
+			const lastRebookSegments = sections.flatMap(popRebookLine);
+			mainSection.pqList.slice(-1).forEach(lastPq => lastPq
+				.rebookSegments.push(...lastRebookSegments));
 
 			return mainSection;
 		}
