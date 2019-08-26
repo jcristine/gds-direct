@@ -119,8 +119,12 @@ const TravelportClient = ({
 				'Note, reloading page does not reduce waiting time on hanging availability (60 s.).';
 			return Conflict(error, {isOk: true});
 		} else if ((exc + '').indexOf('XTS Translation of Data Failed when converting the SingleXML request into a Host Format')) {
-			const msg = 'Format of XML request did not match Travelport expectations';
-			return Rej.InternalServerError(msg);
+			let msg = 'Format of XML request did not match Travelport expectations';
+			const match = body.match(/Invalid date\s*<\/(?:\w+:|)(\w+)/);
+			if (match) {
+				msg += ' (Invalid date passed to moment js around ' + match[1] + ')';
+			}
+			return Rej.InternalServerError(msg, {rqBody: body});
 		} else {
 			const obj = typeof exc === 'string' ? new Error(exc) : exc;
 			// for debug, be careful not to include credentials here
