@@ -28,7 +28,8 @@ AR25JUN                                  |   returnAvailabilityWithOriginalModif
 XI                                       |   cancelAllSegments                         |    |    |    | X  |           |
 JUM/O-SFO1S2195                          |   fakePccEmulation                          |    |    |    | X  |           |
 JMB                                      |   fakeAreaChange                            |    |    |    | X  |           |
------------------------------------------+---------------------------------------------+----+----+----+----+-----------+--------------------                         
+$DBWASV                                  |   fareSearchValidatedChangeCity             | X  |    |    |    | GDSD-66   | unlike built-in $DBWAS, this one shows _validated_ fares without the need to explicitly specify dates
+-----------------------------------------+---------------------------------------------+----+----+----+----+-----------+--------------------
 HHMCO                                    |   displayMcoMask                            | X  |    |    |    |           |                                                 
 HB:FEX                                   |   displayExchangeMask                       | X  |    |    |    |           |                                                  
 HBT                                      |   displayFcMask                             | X  |    |    |    |           |                                               
