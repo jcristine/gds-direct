@@ -10,7 +10,7 @@ const {
 	preg_match, rtrim, str_split,
 	explode, in_array,
 	trim,
-} = require("../../../../phpDeprecated.js");
+} = require('klesun-node-tools/src/Transpiled/php.js');
 
 const CommonParserHelpers = require('./../CommonParserHelpers.js');
 

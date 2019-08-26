@@ -8,7 +8,7 @@ const {
 	strtotime,
 	strval,
 	substr,
-} = require("../../../phpDeprecated.js");
+} = require('klesun-node-tools/src/Transpiled/php.js');
 
 class CommonParserHelpers
 {

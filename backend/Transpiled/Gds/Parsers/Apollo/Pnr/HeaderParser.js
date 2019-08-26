@@ -3,7 +3,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const ItineraryParser = require("./ItineraryParser");
-const php = require("../../../../phpDeprecated");
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const GdsPassengerBlockParser = require("../../Common/GdsPassengerBlockParser");
 
 class HeaderParser

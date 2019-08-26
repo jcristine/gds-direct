@@ -10,7 +10,7 @@ const GdsPassengerBlockParser = require("../../Common/GdsPassengerBlockParser");
 const FopParser = require("./FopParser");
 const TktgParser = require("./TktgParser");
 const SsrBlockParser = require("./SsrBlockParser");
-const php = require("../../../../phpDeprecated");
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const TicketHistoryParser = require("../TicketHistoryParser");
 
 class PnrParser {

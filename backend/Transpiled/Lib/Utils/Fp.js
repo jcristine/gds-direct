@@ -1,6 +1,6 @@
 
 // I guess it really should be replaced by Func library and custom functions
-const php = require("../../phpDeprecated");
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class Fp {
 	static map($function, $arr) {
