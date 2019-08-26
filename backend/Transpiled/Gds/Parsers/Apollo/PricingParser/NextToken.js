@@ -3,7 +3,7 @@
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const LinearFareParser = require('../../../../Gds/Parsers/Apollo/LinearFareParser/LinearFareParser.js');
-const php = require('../../../../phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class NextToken
 {
@@ -84,6 +84,14 @@ class NextToken
 		}
 	}
 
+	static _parseRebookSegmentsStr(segListStr) {
+		return segListStr.split('/').map(token => {
+			const segmentNumber = token.slice(0, -1);
+			const bookingClass = token.slice(-1);
+			return {segmentNumber, bookingClass};
+		});
+	}
+
 	// '  PIC CNN             1P/2O',
 	static _parsePtcRebookEntry(line) {
 		const match = line.match(/^\s*PIC ([A-Z0-9]{2,3})\s*((?:\/?\d+[A-Z])+)\s*$/);
@@ -91,11 +99,7 @@ class NextToken
 			const [_, ptc, segListStr] = match;
 			return {
 				ptc: ptc,
-				segments: segListStr.split('/').map(token => {
-					const segmentNumber = token.slice(0, -1);
-					const bookingClass = token.slice(-1);
-					return {segmentNumber, bookingClass};
-				}),
+				segments: this._parseRebookSegmentsStr(segListStr),
 			};
 		} else {
 			return null;
@@ -130,22 +134,29 @@ class NextToken
 		}
 	}
 
-	static matchRebookStatement($text)  {
-		let $matches, parsed, $textLeft;
-		$matches = [];
-		if (php.preg_match(/^NO REBOOK REQUIRED\s*?\n/, $text, $matches = [])) {
-			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
-		} else if (php.preg_match(/^REBOOK SUCCESSFULLY COMPLETED\s*?\n/, $text, $matches = [])) {
-			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
-		} else if (php.preg_match(/^REBOOK PNR SEGMENTS?.*?\n\s*>(\$BBQ.*?)\s*\n/, $text, $matches = [])) {
-			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
-		} else if (php.preg_match(/^(RE)?BOOK PNR SEGMENTS?.*?\n/, $text, $matches = [])) {
-			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
-		} else if (parsed = this._parsePtcRebookStatement($text)) {
+	static matchRebookStatement(text)  {
+		let matches, parsed;
+		if (php.preg_match(/^NO REBOOK REQUIRED\s*?\n/, text, matches = [])) {
+			const textLeft = php.mb_substr(text, php.mb_strlen(matches[0]));
+			return {textLeft};
+		} else if (php.preg_match(/^REBOOK SUCCESSFULLY COMPLETED\s*?\n/, text, matches = [])) {
+			const textLeft = php.mb_substr(text, php.mb_strlen(matches[0]));
+			return {textLeft};
+		} else if (php.preg_match(/^REBOOK PNR SEGMENTS?[^\S\r\n]*(.*?)\s*\n\s*>(\$BBQ.*?)\s*\n/, text, matches = [])) {
+			const segStr = matches[1];
+			const textLeft = php.mb_substr(text, php.mb_strlen(matches[0]));
+			return {textLeft, ptcRecords: !segStr ? [] : [{
+				ptc: null,
+				segments: this._parseRebookSegmentsStr(segStr),
+			}]};
+		} else if (php.preg_match(/^(?:RE)?BOOK PNR SEGMENTS?[^\S\r\n]*(.*?)\s*\n/, text, matches = [])) {
+			const segStr = matches[1];
+			const textLeft = php.mb_substr(text, php.mb_strlen(matches[0]));
+			return {textLeft, ptcRecords: !segStr ? [] : [{
+				ptc: null,
+				segments: this._parseRebookSegmentsStr(segStr),
+			}]};
+		} else if (parsed = this._parsePtcRebookStatement(text)) {
 			return parsed;
 		} else {
 			return false;

@@ -1539,6 +1539,12 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
 				'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
 			]),
 			{
+				wholePricingMarkers: {
+					rebookSegments: [
+						{segmentNumber: '1', bookingClass: 'Z'},
+						{segmentNumber: '2', bookingClass: 'C'},
+					],
+				},
 				//                'pricingCommandCopy' => '>$BB-*1O3K>$BBQ01;', // wrong
 				'pricingCommandCopy': '>$BB-*1O3K',
 				'parsedPricingCommand': {
@@ -3089,12 +3095,12 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
 								{"airline":"AV","flags":[{"raw":"X","parsed":"noStopover"}],"destination":"BOG","departure":"MZL"},
 								{"airline":"AV","flags":[],"destination":"ADZ","fuelSurcharge":"38.00","fuelSurchargeParts":["38.00"],"fare":"66.00","fareBasis":"ZEO00RI4","ticketDesignator":null,"departure":"BOG"},
 								{"airline":"AV","flags":[{"raw":"X","parsed":"noStopover"}],"destination":"BOG","departure":"ADZ"},
-								{"airline":"AV","flags":[],"destination":"MZL","fuelSurcharge":"38.00","fuelSurchargeParts":["38.00"],"fare":"66.00","fareBasis":"ZEO00RI4","ticketDesignator":null,"departure":"BOG"}
+								{"airline":"AV","flags":[],"destination":"MZL","fuelSurcharge":"38.00","fuelSurchargeParts":["38.00"],"fare":"66.00","fareBasis":"ZEO00RI4","ticketDesignator":null,"departure":"BOG"},
 							],
 							"currency": "USD",
 							"fare": "208.00",
 							"fareAndMarkup": {"currency":"USD","amount":"208.00"},
-							"amountCharged": {"currency":"USD","amount":"222.80"}
+							"amountCharged": {"currency":"USD","amount":"222.80"},
 						},
 					},
 					{
@@ -3103,15 +3109,15 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
 								{"airline":"AV","flags":[{"raw":"X","parsed":"noStopover"}],"destination":"BOG","departure":"MZL"},
 								{"airline":"AV","flags":[],"destination":"ADZ","fuelSurcharge":"25.00","fuelSurchargeParts":["25.00"],"fare":"44.00","fareBasis":"ZEO00RI4","ticketDesignator":"CH33","departure":"BOG"},
 								{"airline":"AV","flags":[{"raw":"X","parsed":"noStopover"}],"destination":"BOG","departure":"ADZ"},
-								{"airline":"AV","flags":[],"destination":"MZL","fuelSurcharge":"25.00","fuelSurchargeParts":["25.00"],"fare":"44.00","fareBasis":"ZEO00RI4","ticketDesignator":"CH33","departure":"BOG"}
+								{"airline":"AV","flags":[],"destination":"MZL","fuelSurcharge":"25.00","fuelSurchargeParts":["25.00"],"fare":"44.00","fareBasis":"ZEO00RI4","ticketDesignator":"CH33","departure":"BOG"},
 							],
 							"currency": "USD",
 							"fare": "139.00",
 							"fareAndMarkup": {"currency":"USD","amount":"139.00"},
 							"taxes": [{"pseudoCountryCode":"CO","amount":"14.80"}],
-							"amountCharged": {"currency":"USD","amount":"153.80"}
+							"amountCharged": {"currency":"USD","amount":"153.80"},
 						},
-					}
+					},
 				],
 			},
 		]);
