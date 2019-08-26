@@ -112,7 +112,7 @@ const PricePccMixList = ({
 	};
 
 	const populateRow = (pccResult, trCmp) => {
-		const {gds, pcc, pricingCmd, pricingBlockList = [], calledCommands = []} = pccResult;
+		const {gds, pcc, pricingCmd, pricingBlockList = [], calledCommands = [], rebookItinerary = []} = pccResult;
 
 		const ageGroupToBlock = {};
 		for (const ptcBlock of pricingBlockList) {
@@ -136,7 +136,7 @@ const PricePccMixList = ({
 				pricingGds: gds,
 				pricingPcc: pcc,
 				pricingCmd: pricingCmd,
-				itinerary: itinerary,
+				itinerary: rebookItinerary.length ? rebookItinerary : itinerary,
 			})).then((cmdResult) => {
 				const gdsUnit = CHANGE_GDS(gds);
 				gdsUnit.getActiveTerminal()
@@ -187,8 +187,11 @@ const PricePccMixList = ({
 		const trCmp = Cmp({context: tr});
 
 		if (error) {
+			const text = error.slice(0, 300).replace('\n', ' - ');
 			trCmp.attach([
-				Cmp('td.error', {colSpan: 5, textContent: error.slice(0, 300).replace('\n', ' - ')}),
+				Cmp('td.error', {colSpan: 5}).attach([
+					Cmp('div', {textContent: text}),
+				]),
 			]);
 		} else {
 			populateRow(pccResult, trCmp);
@@ -200,15 +203,11 @@ const PricePccMixList = ({
 		}
 	};
 
-	const main = () => {
-		return {
-			dom: rootCmp.context,
-			addRow: addRow,
-			finalize: finalize,
-		};
+	return {
+		dom: rootCmp.context,
+		addRow: addRow,
+		finalize: finalize,
 	};
-
-	return main();
 };
 
 const cmdRqToList = {};
