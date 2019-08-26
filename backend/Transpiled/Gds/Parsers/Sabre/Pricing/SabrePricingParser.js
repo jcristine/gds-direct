@@ -8,7 +8,7 @@ const PhToNormalPricing = require('../../../../../GdsClients/Transformers/PhToNo
 /**
  * parses >WP
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const PricingCommonHelper = require("./PricingCommonHelper");
 const PhilippinePricingParser = require("../../../../../Parsers/Sabre/PhPricingParser");
 

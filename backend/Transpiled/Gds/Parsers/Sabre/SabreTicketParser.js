@@ -9,7 +9,7 @@ const ItineraryParser = require('../../../Gds/Parsers/Sabre/Pnr/ItineraryParser.
 /**
  * parses output of >WETR*2 (where 2 is an index of ticket in >*T output)
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class SabreTicketParser
 {
 	static removeIndexKeys($dict)  {

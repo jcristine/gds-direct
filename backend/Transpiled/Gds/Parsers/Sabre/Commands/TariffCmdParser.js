@@ -8,7 +8,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * >FQ07JUN18MEMLAS10AUG18¥PADT-AA¥PL¥BG;
  * cmd type 'fareSearch'
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class TariffCmdParser {
 	static getCabinClasses() {

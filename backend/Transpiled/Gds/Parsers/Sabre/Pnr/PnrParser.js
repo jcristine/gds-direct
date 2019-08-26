@@ -6,7 +6,7 @@ const FrequentFlyerParser = require('../../../../Gds/Parsers/Sabre/FrequentFlyer
 const SabreTicketListParser = require('../../../../Gds/Parsers/Sabre/SabreTicketListParser.js');
 const SeatsParser = require('../../../../Gds/Parsers/Sabre/SeatsParser.js');
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const GdsPassengerBlockParser = require("../../Common/GdsPassengerBlockParser");
 const ItineraryParser = require("./ItineraryParser");
 const FactsBlockParser = require("./FactsBlockParser");

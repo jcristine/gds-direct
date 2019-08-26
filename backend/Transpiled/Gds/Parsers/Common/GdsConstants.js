@@ -4,7 +4,7 @@
  * this class provides constants that are common for all GDS-es:
  * meal types/ssr codes/segment types/history codes/etc/etc...
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class GdsConstants
 {
 }

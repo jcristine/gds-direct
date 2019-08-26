@@ -6,7 +6,7 @@ const AtfqParser = require('../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const ApolloPricingModifierHelper = require("./ApolloPricingModifierHelper");
 const ApolloBaggageAdapter = require("./ApolloBaggageAdapter");
 
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * transforms output of PricingParser::parse() to a common format

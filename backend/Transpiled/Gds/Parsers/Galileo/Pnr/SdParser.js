@@ -12,7 +12,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * ' 2+ ET 0921 M  22MAR ADDACC',
  * '     1+ VELIKOV/IGOR      HK  25A            NW            AIR',
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class SdParser
 {
 	static parseSegmentLine($line)  {

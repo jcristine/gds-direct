@@ -7,7 +7,7 @@ const FareConstructionParser = require('../../../../Gds/Parsers/Common/FareConst
  * parses output of >$FC{ptcNumber}/{storeNumber}
  * it is a fare construction of a manual pricing
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class FcScreenParser {
 	//'STL KL X/MSP KL X/AMS KL ATH M151.00KL. ',

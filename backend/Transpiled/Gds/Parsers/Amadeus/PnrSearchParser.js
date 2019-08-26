@@ -6,7 +6,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 /**
  * parse output of RT{parameters} that results in PNR list
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class PnrSearchParser
 {
 	static parseSequence($linesLeft, $parse)  {

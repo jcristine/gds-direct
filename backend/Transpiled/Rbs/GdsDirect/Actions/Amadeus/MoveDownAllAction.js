@@ -6,7 +6,7 @@ const AmadeusUtils = require('../../../../../GdsHelpers/AmadeusUtils.js');
  * determine scrolling format run all remaining MD-s if
  * possible, return full output including all MD-s called before
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const SessionStateHelper = require("../../SessionStateProcessor/SessionStateHelper");
 
 class MoveDownAllAction extends AbstractGdsAction {

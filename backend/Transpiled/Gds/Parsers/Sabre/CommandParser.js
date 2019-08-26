@@ -8,7 +8,7 @@ const TariffCmdParser = require('../../../Gds/Parsers/Sabre/Commands/TariffCmdPa
  * takes terminal command typed by a user and returns it's type
  * when we need, it also could return data to, for example, convert it to Apollo command
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const PricingCmdParser = require("./Commands/PricingCmdParser");
 
 class CommandParser {

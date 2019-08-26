@@ -8,7 +8,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * >FQDMCOSCL/15JUL18/R,06JUL18,P/ALA/IR/CL;
  * cmd type 'fareSearch'
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class TariffCmdParser
 {
 	static parseDate($raw)  {

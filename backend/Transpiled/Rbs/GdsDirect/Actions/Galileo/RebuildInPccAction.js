@@ -11,7 +11,7 @@ const {findSegmentNumberInPnr} = require('../Common/ItinerarySegments');
  * emulate into specified PCC in specified area and rebuild the itinerary
  * fallbacks to passive (AK) segments if there is no availability
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class RebuildInPccAction extends AbstractGdsAction {
 	constructor({

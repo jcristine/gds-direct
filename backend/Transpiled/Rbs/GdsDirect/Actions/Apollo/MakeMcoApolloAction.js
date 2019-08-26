@@ -10,7 +10,7 @@ const McoListParser = require('../../../../Gds/Parsers/Apollo/Mco/McoListParser.
 const McoMaskParser = require('../../../../Gds/Parsers/Apollo/Mco/McoMaskParser.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * get current PNR data, ApolloMakeMcoAction and format output

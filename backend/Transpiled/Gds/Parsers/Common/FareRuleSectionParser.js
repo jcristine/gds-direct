@@ -6,7 +6,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
  * takes Fare Rules section number and content and
  * parses it using appropriate section parser
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class FareRuleSectionParser
 {
 	static doesRuleApply($ruleText)  {

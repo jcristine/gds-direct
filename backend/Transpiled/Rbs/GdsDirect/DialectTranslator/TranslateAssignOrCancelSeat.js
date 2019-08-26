@@ -1,6 +1,6 @@
 
 const Fp = require('../../../Lib/Utils/Fp.js');
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class TranslateAssignOrCancelSeat {
 	static flattenPaxNums($paxRanges) {

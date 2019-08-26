@@ -3,7 +3,7 @@
 const AbstractMaskParser = require('../../../../Gds/Parsers/Apollo/AbstractMaskParser.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * parses output of >*MCO{lineNumber};

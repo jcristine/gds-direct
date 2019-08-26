@@ -19,7 +19,7 @@ const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHel
  * '5BA/AA 5723 J7 C7 D7 R7    SFO  430P  620P 757 0 DCA /E'
  * '            I6 Y7 B7 H7 K7 M7 L7 V7 N0 S0 O0 Q0.'
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class AirAvailabilityParser
 {
 	/** @param $line = ' 18JUL  WED   MAD/Z¥2     SFO/PDT-9'

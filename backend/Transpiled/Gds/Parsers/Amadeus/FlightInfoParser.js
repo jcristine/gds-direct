@@ -9,7 +9,7 @@ const GdsConstants = require('../../../Gds/Parsers/Common/GdsConstants.js');
  * parses output of DO{fromSegNum}-{toSegNum}
  * hidden stops/meals/flight duration/etc...
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class FlightInfoParser {
 	static parseSequence($linesLeft, $parse) {

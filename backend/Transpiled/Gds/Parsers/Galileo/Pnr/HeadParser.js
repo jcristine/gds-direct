@@ -7,7 +7,7 @@ const ItineraryParser = require('./ItineraryParser.js');
  * parse text before first explicit section in *R
  * includes PS- remark, passengers, record locator line, itinerary
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class HeadParser
 {
 	static parsePnrHeaderLine($line)  {

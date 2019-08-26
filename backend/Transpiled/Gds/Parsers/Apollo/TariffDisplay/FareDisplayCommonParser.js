@@ -1,6 +1,6 @@
 
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 

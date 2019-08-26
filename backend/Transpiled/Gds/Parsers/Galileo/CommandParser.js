@@ -8,7 +8,7 @@ const Lexer = require('../../../Lib/Lexer/Lexer.js');
 const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const FqCmdParser = require('../../../Gds/Parsers/Galileo/Commands/FqCmdParser.js');
 
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const TariffCmdParser = require("./Commands/TariffCmdParser");
 class CommandParser
 {

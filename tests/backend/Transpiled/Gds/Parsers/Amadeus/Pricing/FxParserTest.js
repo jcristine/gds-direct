@@ -1474,7 +1474,7 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
 					},
 					'privateFareHeader': '',
 				},
-			}
+			},
 		]);
 
 		// new Philippines PCC, no dot in amount, also 2 letter PTC
@@ -1503,7 +1503,7 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
 						{'lineNumber': '03', 'ptc': 'IN'},
 					],
 				},
-			}
+			},
 		]);
 
 		// new Philippines PCC, with "T" column in segment list
@@ -1531,7 +1531,7 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
 				"BG CXR: BR",
 				"PRICED VC BR - OTHER VC AVAILABLE HR",
 				"2598 PHP PENALTY APPLIES",
-				"ENDOS BG:BR"
+				"ENDOS BG:BR",
 			]),
 			{
 				"commandCopy": "FXX",
@@ -1556,7 +1556,7 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
 							"ticketDesignator": null,
 							"notValidBefore": {"raw":"10DEC","parsed":"12-10"},
 							"notValidAfter": {"raw":"10DEC","parsed":"12-10"},
-							"freeBaggageAmount": {"units":"pieces","amount":"2","unitsCode":"P","raw":"2P"}
+							"freeBaggageAmount": {"units":"pieces","amount":"2","unitsCode":"P","raw":"2P"},
 						},
 						{
 							"type": "flight",
@@ -1572,8 +1572,8 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
 							"ticketDesignator": null,
 							"notValidBefore": {"raw":"11DEC","parsed":"12-11"},
 							"notValidAfter": {"raw":"11DEC","parsed":"12-11"},
-							"freeBaggageAmount": {"units":"pieces","amount":"2","unitsCode":"P","raw":"2P"}
-						}
+							"freeBaggageAmount": {"units":"pieces","amount":"2","unitsCode":"P","raw":"2P"},
+						},
 					],
 					"baseFare": {"currency":"USD","amount":"7539.00","taxCode":null},
 					"fareEquivalent": {"currency":"PHP","amount":"391727","taxCode":null},
@@ -1581,7 +1581,7 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
 						"parsed": {
 							"segments": [
 								{"airline": "BR", "destination": "TPE"},
-								{"airline": "BR", "destination": "MNL", "fare": "7539.00"}
+								{"airline": "BR", "destination": "MNL", "fare": "7539.00"},
 							],
 							"fare": "7539.00",
 						},
@@ -1589,15 +1589,15 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
 					"mainTaxes": [
 						{"currency":"PHP","amount":"2911","taxCode":"YQ"},
 						{"currency":"PHP","amount":"967","taxCode":"US"},
-						{"currency":"PHP","amount":"525","taxCode":"XT"}
+						{"currency":"PHP","amount":"525","taxCode":"XT"},
 					],
 					"xtTaxes": [
 						{"currency":"PHP","amount":"291","taxCode":"AY"},
-						{"currency":"PHP","amount":"234","taxCode":"XF"}
+						{"currency":"PHP","amount":"234","taxCode":"XF"},
 					],
 					"facilityCharges": [{"airport":"JFK","amount":"4.50"}],
 					"netPrice": {"currency":"PHP","amount":"396130","taxCode":null},
-				}
+				},
 			},
 		]);
 
@@ -1637,7 +1637,7 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
 					"departureCity": "NYC",
 					"segments": [
 						{"destinationCity": "FOC"},
-						{"destinationCity": "NYC"}
+						{"destinationCity": "NYC"},
 					],
 					"baseFare": {"currency":"USD","amount":"492.00","taxCode":null},
 					"fareConstruction": {
@@ -1648,12 +1648,12 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
 							],
 							fare: '492.20',
 						},
-						raw: "18JUL19NYC MU(PA)FOC234.60SKX0Z6RN/MUPB MU (PA)NYC257.60SKW0Z6RN/MUPB NUC492.20END ROE1.000000"
+						raw: "18JUL19NYC MU(PA)FOC234.60SKX0Z6RN/MUPB MU (PA)NYC257.60SKW0Z6RN/MUPB NUC492.20END ROE1.000000",
 					},
 					"mainTaxes": [
 						{"currency":"USD","amount":"200.00","taxCode":"YQ"},
 						{"currency":"USD","amount":"8.00","taxCode":"YQ"},
-						{"currency":"USD","amount":"77.04","taxCode":"XT"}
+						{"currency":"USD","amount":"77.04","taxCode":"XT"},
 					],
 					"xtTaxes": [
 						{"currency":"USD","amount":"3.96","taxCode":"XA"},
@@ -1663,12 +1663,12 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
 						{"currency":"USD","amount":"18.60","taxCode":"US"},
 						{"currency":"USD","amount":"5.60","taxCode":"AY"},
 						{"currency":"USD","amount":"13.01","taxCode":"CN"},
-						{"currency":"USD","amount":"4.50","taxCode":"XF"}
+						{"currency":"USD","amount":"4.50","taxCode":"XF"},
 					],
 					"facilityCharges": [{"airport":"JFK","amount":"4.50"}],
 					"netPrice": {"currency":"USD","amount":"777.04","taxCode":null},
-					"privateFareHeader": " NEGO "
-				}
+					"privateFareHeader": " NEGO ",
+				},
 			},
 		]);
 
@@ -1679,11 +1679,9 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
      * @test
      * @dataProvider provideDumps
      */
-	testParser($dump, $expected)  {
-		let $actual;
-
-		$actual = FxParser.parse($dump);
-		this.assertArrayElementsSubset($expected, $actual);
+	testParser(dump, expected)  {
+		const actual = FxParser.parse(dump);
+		this.assertArrayElementsSubset(expected, actual);
 	}
 
 	getTestMapping() {

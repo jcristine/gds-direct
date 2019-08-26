@@ -1,7 +1,7 @@
 
 const ArrayUtil = require('../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../Lib/Utils/Fp.js');
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * adds full dates to legs, joins service info

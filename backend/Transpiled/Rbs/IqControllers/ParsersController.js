@@ -5,7 +5,7 @@ const GalPnrParser = require("../../Gds/Parsers/Galileo/Pnr/PnrParser");
 const AmaPnrParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const FormatAdapter = require("./FormatAdapter");
 
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const GalileoPnrCommonFormatAdapter = require("../FormatAdapters/GalileoPnrCommonFormatAdapter");
 const AmadeusPnrCommonFormatAdapter = require("../FormatAdapters/AmadeusPnrCommonFormatAdapter");
 

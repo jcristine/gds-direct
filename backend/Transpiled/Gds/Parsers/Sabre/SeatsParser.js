@@ -6,7 +6,7 @@ const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHel
 /**
  * parses >*B
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class SeatsParser
 {
 	static removeIndexKeys($dict)  {

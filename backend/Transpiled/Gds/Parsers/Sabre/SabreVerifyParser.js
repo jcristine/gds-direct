@@ -4,7 +4,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const GdsConstants = require('../../../Gds/Parsers/Common/GdsConstants.js');
 const SabreVerifyParsedStructureWriter = require('./SabreVerifyParsedStructureWriter.js');
 
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class SabreVerifyParser
 {
 	static isValidHeader($firstLine)  {

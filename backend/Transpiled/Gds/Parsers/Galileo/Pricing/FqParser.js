@@ -40,7 +40,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * 'BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/',
  * 'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class FqParser {
 	// '                   *** BEST BUY QUOTATION ***'

@@ -7,7 +7,7 @@ const PnrParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const SessionStateDs = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateDs.js');
 const CmsAmadeusTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
 
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const SessionStateHelper = require("./SessionStateHelper");
 class UpdateAmadeusState
 {

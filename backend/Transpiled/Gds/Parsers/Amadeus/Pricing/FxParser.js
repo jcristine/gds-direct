@@ -4,7 +4,7 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const FareConstructionParser = require('../../../../Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
 const BagAllowanceParser = require('../../../../Gds/Parsers/Sabre/BagAllowanceParser.js');
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * parses output of FX{modifiers} command which contains pricing with fare

@@ -2,7 +2,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const ApolloVitParserDataStructureWriter = require("./ApolloVitParserDataStructureWriter");
 
 class ApolloVitParser {

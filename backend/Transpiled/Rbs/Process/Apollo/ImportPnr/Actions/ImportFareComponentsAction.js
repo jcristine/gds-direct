@@ -12,7 +12,7 @@ const TravelportClient = require("../../../../../../GdsClients/TravelportClient"
  *
  * expects session be in a Pricing context
  */
-const php = require('../../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class ImportFareComponentsAction extends AbstractGdsAction {
 	constructor() {

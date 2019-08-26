@@ -1,6 +1,6 @@
 
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class ApolloVitParserDataStructureWriter
 {
 	static make()  {

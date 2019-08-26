@@ -1,7 +1,7 @@
 
 
 const Fp = require('../../Lib/Utils/Fp.js');
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * extracts baggage data from PricingParser::parse() and transforms it to a common format

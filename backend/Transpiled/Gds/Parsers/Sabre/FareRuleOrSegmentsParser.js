@@ -9,7 +9,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
  *
  * TODO: take into account "MULT PSGR TYPES - MUST ADD P FOLLOWED BY PTC AFTER WPRD*"
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const FareRuleParser = require("./FareRuleParser");
 class FareRuleOrSegmentsParser
 {

@@ -6,7 +6,7 @@ const ItineraryParser = require('../../../../Gds/Parsers/Sabre/Pnr/PnrParser.js'
 const ImportPnrAction = require('../../../../Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
 const ImportPnrCommonFormatAdapter = require('../../../../Rbs/Process/Common/ImportPnr/ImportPnrCommonFormatAdapter.js');
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const FareRuleOrSegmentsParser = require('../../../../Gds/Parsers/Sabre/FareRuleOrSegmentsParser.js');
 
 /**

@@ -7,7 +7,7 @@ const FareRuleSectionParser = require('../../../Gds/Parsers/Common/FareRuleSecti
 /**
  * parses WPRD*1,2,3 etc
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class FareRuleParser {
 	static removeIndexKeys($dict) {

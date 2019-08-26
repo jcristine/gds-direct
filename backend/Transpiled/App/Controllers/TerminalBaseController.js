@@ -1,5 +1,5 @@
 
-const {boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('../../phpDeprecated.js');
+const {boolval, empty, intval, isset, strtoupper, trim, PHP_EOL, json_encode} = require('klesun-node-tools/src/Transpiled/php.js');
 const TerminalSettings = require('../../App/Models/Terminal/TerminalSettings.js');
 
 class TerminalBaseController {

@@ -23,7 +23,7 @@ const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHel
  * 'TRC  TEXT',
  * 'A    ABVPHC NO BOARDING THIS CITY                               ><',
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class TtParser {
 	static parseHeaderLine($line) {

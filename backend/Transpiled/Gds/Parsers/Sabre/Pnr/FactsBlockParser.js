@@ -8,7 +8,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * this class transforms text of the "AA FACTS"
  * section of the PNR to an associative array data
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class FactsBlockParser
 {
 	static parse($dump)  {

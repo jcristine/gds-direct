@@ -4,7 +4,7 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 /**
  * parses >FQN (fare component list)
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class FqnParser
 {
 	static parse($dump)  {

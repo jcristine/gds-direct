@@ -1,7 +1,7 @@
 
 const Fp = require('../../../Lib/Utils/Fp.js');
 const CommandParser = require('../../../Gds/Parsers/Amadeus/CommandParser.js');
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const PnrParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const PagingHelper = require('../../../../GdsHelpers/AmadeusUtils.js');

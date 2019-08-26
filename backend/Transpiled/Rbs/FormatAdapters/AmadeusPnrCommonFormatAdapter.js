@@ -8,7 +8,7 @@ const ImportPnrCommonFormatAdapter = require('../../Rbs/Process/Common/ImportPnr
  * transforms PNR to format compatible with any GDS
  * removes Amadeus-specific fields
  */
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class AmadeusPnrCommonFormatAdapter
 {
 	/** @param string|null $baseDate = '2017-05-12 23:13:14'  */

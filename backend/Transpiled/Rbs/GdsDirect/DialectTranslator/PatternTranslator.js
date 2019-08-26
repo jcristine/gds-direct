@@ -10,7 +10,7 @@ const Variables = require('../../../Rbs/GdsDirect/DialectTranslator/VariableTran
  *        'translated' => true,
  *     ];
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class PatternTranslator {
 	static makeRegexFromPattern($pattern, $dialect) {

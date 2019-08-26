@@ -10,7 +10,7 @@ const PagingHelper = require('../../../../../GdsHelpers/AmadeusUtils.js');
  * MP FXP-es, etc..+ Amadeus allows us to continue scrolling pricing even if you called other
  * commands afterwards, that allows us to save at least one command when pricing is incomplete
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class GetCurrentPricingDumpAction extends AbstractGdsAction
 {
 	/**

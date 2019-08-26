@@ -23,7 +23,7 @@ const StoredPricingListParser = require('../../../../Gds/Parsers/Galileo/Pricing
  * 'FONE-SFOR:8775591134'
  * 'TKTG-TAU/SA10MAR'
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const HeadParser = require("./HeadParser");
 const VlParser = require("./VlParser");
 const DvParser = require("./DvParser");

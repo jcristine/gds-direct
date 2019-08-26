@@ -5,7 +5,7 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
  * parses output of >$TA{ptcNumber}/{storeNumber}
  * it is tax breakdown of a manual pricing
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class TaScreenParser {
 	// 'T1 ;   11.20;AY T2 ;   36.00;US T3 ;    3.96;XA T4 ;   13.50;XF',

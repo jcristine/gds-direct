@@ -6,7 +6,7 @@ const PnrParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 /**
  * >HELP MARRIED SEGMENTS;
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class MarriageItineraryParser
 {
 	static parsePartialDate($token)  {

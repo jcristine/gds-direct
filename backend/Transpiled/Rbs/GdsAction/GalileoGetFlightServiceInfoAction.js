@@ -8,7 +8,7 @@ const {fetchAll} = require('../../../GdsHelpers/TravelportUtils.js');
  * get data from >*SVC; and if there are any hidden
  * stops, do >*TT...; for each of them to get the times
  */
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class GalileoGetFlightServiceInfoAction extends AbstractGdsAction {
 	constructor() {

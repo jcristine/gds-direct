@@ -5,7 +5,7 @@ const ImportSabrePnrFormatAdapter = require('../../Rbs/Process/Sabre/ImportPnr/I
 const PricingCmdParser = require('../../Gds/Parsers/Sabre/Commands/PricingCmdParser.js');
 
 /** transforms parsed >WP; into importPnr format */
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class SabrePricingAdapter {
 

@@ -7,7 +7,7 @@ const PtcUtil = require('../../Rbs/Process/Common/PtcUtil.js');
  * transforms PNR to format compatible with any GDS
  * removes Amadeus-specific fields
  */
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const AmadeusBaggageAdapter = require("./AmadeusBaggageAdapter");
 
 class AmadeusPricingCommonFormatAdapter {

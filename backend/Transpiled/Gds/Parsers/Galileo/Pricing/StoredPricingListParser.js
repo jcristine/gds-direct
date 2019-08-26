@@ -38,7 +38,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * '>FQP1*ITX.2*C03.3*INS                                          '
 ... and so on ...
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const FqCmdParser = require("../Commands/FqCmdParser");
 const StoredPtcPricingBlockParser = require("./StoredPtcPricingBlockParser");
 class StoredPricingListParser

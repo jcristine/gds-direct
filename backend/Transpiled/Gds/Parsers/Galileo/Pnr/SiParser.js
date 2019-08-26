@@ -29,7 +29,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * '  2. SSRCHLDDL HK  1 /-1SMITH/JOHN',
  * '  3. SSRCHLDDL NO  1 /-1SMITH/JOHN.INVLD FORMAT',
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class SiParser
 {
 	static parseSegmentLine($line)  {

@@ -1,7 +1,7 @@
 
 const Fp = require('../../Lib/Utils/Fp.js');
 
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * provides info like city/country/timezone/etc for the specified airport

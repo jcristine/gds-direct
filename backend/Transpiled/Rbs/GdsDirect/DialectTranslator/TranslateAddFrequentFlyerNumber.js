@@ -7,7 +7,7 @@ const Fp = require('../../../Lib/Utils/Fp.js');
  * Amadeus: FFNUA-123456778910,UA,LH/P1
  * Galileo: M+P1/UA12345876490/BD/LH/AC
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class TranslateAddFrequentFlyerNumber
 {
 	static normalizeData($parsedData, $gds)  {

@@ -5,7 +5,7 @@ const CommandParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js'
 const FxParser = require('../../../../Gds/Parsers/Amadeus/Pricing/FxParser.js');
 const PagingHelper = require('../../../../../GdsHelpers/AmadeusUtils.js');
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const AmadeusUtil = require("../../../../../GdsHelpers/AmadeusUtils");
 
 /**
