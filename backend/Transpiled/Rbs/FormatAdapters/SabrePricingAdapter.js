@@ -103,7 +103,7 @@ class SabrePricingAdapter {
 			|| $ptcAgeGroup === 'infant' && $ageGroup === 'infant';
 	}
 
-	/** @param $parsedData = SabrePricingParser::parse() */
+	/** @param $parsedData = require('SabrePricingParser.js').parse() */
 	transform($parsedData) {
 		$parsedData = JSON.parse(JSON.stringify($parsedData));
 		let $pricingBlockList, $passengers, $reservationDate, $withPassengers, $passengersLeft, $pqCnt, $i, $fareInfo,
@@ -168,6 +168,7 @@ class SabrePricingAdapter {
 					'raw': $pqInfo['baggageInfoDump'],
 					'parsed': ImportSabrePnrFormatAdapter.transformBaggageInfo($pqInfo['baggageInfo'], $pqInfo['fareBasisInfo']['ptc']),
 				};
+				$pricingBlock.rebookSegments = $pqInfo.rebookSegments;
 
 				$pricingBlockList.push($pricingBlock);
 			} else {

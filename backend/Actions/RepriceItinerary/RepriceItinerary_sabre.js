@@ -5,6 +5,7 @@ const BookingClasses = require('../../Repositories/BookingClasses.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const PricingCmdParser = require('../../Transpiled/Gds/Parsers/Sabre/Commands/PricingCmdParser.js');
 const SabrePricingAdapter = require('../../Transpiled/Rbs/FormatAdapters/SabrePricingAdapter.js');
+const _ = require('lodash');
 
 const getItinCabinClass = async (itinerary) => {
 	const cabinClasses = new Set();
@@ -81,16 +82,23 @@ const RepriceItinerary_sabre = ({
 		if (error) {
 			error = '>' + pricingCmd + '; - ' + error;
 		}
-
+		const ptcBlocks = error ? [] :
+			new SabrePricingAdapter()
+				.setPricingCommand(pricingCmd)
+				.setReservationDate(startDt)
+				.transform(parsed).pricingBlockList;
+		// considering that all PTCs have same classes. This is not always the case, but usually is
+		const rebookSegments = error ? [] : ptcBlocks[0].rebookSegments;
+		const segNumToRebooks = _.groupBy(rebookSegments, rs => rs.segmentNumber);
 		return {
+			pricingCmd, error,
 			calledCommands: [cmdRec],
-			pricingCmd: pricingCmd,
-			error: error,
-			pricingBlockList: error ? [] :
-				new SabrePricingAdapter()
-					.setPricingCommand(pricingCmd)
-					.setReservationDate(startDt)
-					.transform(parsed).pricingBlockList,
+			pricingBlockList: ptcBlocks,
+			rebookItinerary: built.itinerary.map(seg => {
+				const path = [seg.segmentNumber, 0, 'bookingClass'];
+				const cls = _.get(segNumToRebooks, path, seg.bookingClass);
+				return {...seg, bookingClass: cls};
+			}),
 		};
 	};
 
