@@ -97,6 +97,7 @@ const GoToPricing = ({
 		});
 		return RepriceItinerary({
 			gds: pricingGds,
+			pcc: pricingPcc,
 			session: targetSession,
 			startDt: stateful.getStartDt(),
 			itinerary, pricingCmd, gdsClients,

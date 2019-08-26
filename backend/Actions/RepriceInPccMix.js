@@ -48,6 +48,9 @@ const makePricingCmd = async (aliasData, pccRec) => {
 	if (pccRec.fareType && !normalized.pricingModifiers.some(m => m.type === 'fareType')) {
 		normalized.pricingModifiers.push({type: 'fareType', parsed: pccRec.fareType});
 	}
+	if (pccRec.pricingPcc) {
+		normalized.pricingModifiers.push({type: 'ticketingAgencyPcc', parsed: pccRec.pricingPcc});
+	}
 	// it's important that it was in the end apparently
 	if (!normalized.pricingModifiers.some(mod => mod.type === 'cabinClass')) {
 		normalized.pricingModifiers.push({type: 'cabinClass', parsed: {parsed: 'sameAsBooked'}});
@@ -88,13 +91,26 @@ const RepriceInPccMix = async ({
 	const getPccRecs = async (itinerary) => {
 		const rbsRs = await RbsClient.getMultiPccTariffRules();
 		const rbsRules = rbsRs.result.result.records;
-		return RepricePccRules.getMatchingPccs({
+		const pccRecs = await RepricePccRules.getMatchingPccs({
 			departureAirport: itinerary[0].departureAirport,
 			destinationAirport: getFirstDestination(itinerary),
 			gds: stateful.gds,
 			pcc: stateful.getSessionData().pcc,
 			repricePccRules: rbsRules,
 			geoProvider: stateful.getGeoProvider(),
+		});
+		return pccRecs.flatMap(pccRec => {
+			const linkedPccRecs = [pccRec];
+			if (pccRec.gds === 'galileo') {
+				// temporary solution, will need to hear Jayden's opinion
+				if (['K9P', 'G8T'].includes(pccRec.pcc) && pccRec.accountCode === 'TPACK') {
+					linkedPccRecs.push({...pccRec, pricingPcc: '0GF'});
+				} else if (pccRec.pcc === '3ZV4' && pccRec.accountCode === 'BSAG') {
+					linkedPccRecs.push({...pccRec, pricingPcc: 'C2Y'});
+					linkedPccRecs.push({...pccRec, pricingPcc: '3NH'});
+				}
+			}
+			return linkedPccRecs;
 		});
 	};
 
@@ -130,12 +146,9 @@ const RepriceInPccMix = async ({
 		const processes = [];
 		for (const pccRec of pccRecs) {
 			const pricingCmd = await makePricingCmd(aliasData, pccRec);
-
-
-			const {gds, pcc} = pccRec;
-			let whenPccResult = processPcc({gds, pcc, pricingCmd, itinerary});
+			let whenPccResult = processPcc({...pccRec, pricingCmd, itinerary});
 			whenPccResult = timeout(121, whenPccResult);
-			processes.push({gds, pcc, pricingCmd, cmdRqId});
+			processes.push({...pccRec, pricingCmd, cmdRqId});
 		}
 		return {
 			messages: messages,

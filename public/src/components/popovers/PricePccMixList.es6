@@ -52,10 +52,10 @@ const PricePccMixList = ({
 	]);
 	const tbodyCmp = Cmp('tbody').attach(processes
 		.sort(comparePccRecs)
-		.map(({gds, pcc, pricingCmd}) => {
+		.map(({gds, pricingPcc, pcc, pricingCmd}) => {
 			const trCmp = Cmp('tr').attach([
 				Cmp('td.gds', {textContent: gds}),
-				Cmp('td.pcc', {textContent: pcc, title: pricingCmd}),
+				Cmp('td.pcc', {textContent: (!pricingPcc ? '' : pricingPcc + '.') + pcc, title: pricingCmd}),
 			]);
 			trCmp.context.setAttribute('data-gds', gds);
 			trCmp.context.setAttribute('data-pcc', pcc);
