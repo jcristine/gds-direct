@@ -116,8 +116,8 @@ exports.getAll = async () => {
 		orderBy: 'id ASC',
 	}));
 	return rows.map(r => {
-        /** @var typed = normalizeRow() */
-        const typed = r;
+		/** @var typed = normalizeRow() */
+		const typed = r;
 		return typed;
 	});
 };

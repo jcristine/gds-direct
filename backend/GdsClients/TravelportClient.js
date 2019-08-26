@@ -19,7 +19,7 @@ const endpoint = 'https://americas.webservices.travelport.com/B2BGateway/service
 //let endpoint = 'https://apac.webservices.travelport.com/B2BGateway/service/XMLSelect';
 
 const buildSoapBody = (gdsData, requestType, reqXml) => (
-		`<?xml version="1.0" encoding="UTF-8"?>
+	`<?xml version="1.0" encoding="UTF-8"?>
 		<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">
 			<SOAP-ENV:Body>
 				<ns1:SubmitXmlOnSession>
