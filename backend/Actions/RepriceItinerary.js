@@ -141,10 +141,7 @@ const RepriceItinerary = ({
 	const inApollo = async () => {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
 		const built = await ApolloBuildItinerary({
-			travelport,
-			baseDate: startDt,
-			session, itinerary,
-			isParserFormat: true,
+			travelport, session, itinerary, baseDate: startDt,
 		});
 		if (built.errorType) {
 			return Rej.UnprocessableEntity('Could not rebuild PNR in Apollo - '

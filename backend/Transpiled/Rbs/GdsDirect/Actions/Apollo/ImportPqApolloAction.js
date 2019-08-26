@@ -120,12 +120,13 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			throw Rej.NotImplemented.makeExc(msg);
 		}
 		if (!$parsed) return {'error': 'Gds returned error - ' + php.trim($dump)};
-		const pricingAdapter = (new ApolloPricingAdapter())
-			.setPricingCommand($cmd)
-			.setNameRecords($nameRecords);
-		$common = pricingAdapter.transform($parsed);
+		$common = ApolloPricingAdapter({
+			parsed: $parsed,
+			pricingCommand: $cmd,
+			nameRecords: $nameRecords,
+		});
 		$ptcBagRecords = (new ApolloBaggageAdapter())
-			.transform($parsed, pricingAdapter);
+			.transform($parsed, $common.modsHelper);
 		return {
 			'store': $common,
 			'bagPtcPricingBlocks': $ptcBagRecords,

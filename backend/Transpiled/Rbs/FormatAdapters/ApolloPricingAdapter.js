@@ -1,6 +1,4 @@
 
-
-const Fp = require('../../Lib/Utils/Fp.js');
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
 const AtfqParser = require('../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const ApolloPricingModifierHelper = require("./ApolloPricingModifierHelper");
@@ -9,127 +7,108 @@ const ApolloBaggageAdapter = require("./ApolloBaggageAdapter");
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
- * transforms output of PricingParser::parse() to a common format
+ * @param parsed = require('PricingParser.js').parse()
  */
-class ApolloPricingAdapter
-{
-	constructor() {
-		this.$pricingCommand = null;
-		this.$nameRecords = null;
-		this.$includeBaggageInfo = false;
-	}
-
-	includeBaggageInfo($flag)  {
-		this.$includeBaggageInfo = $flag;
-		return this;
-	}
-
-	setPricingCommand($cmd)  {
-		this.$pricingCommand = $cmd;
-		return this;
-	}
-
-	setNameRecords($nameRecords)  {
-		this.$nameRecords = $nameRecords;
-		return this;
-	}
-
-	/** @param $fc = FareConstructionParser::parse() */
-	static transformFareInfo($fc)  {
-		let $result;
-		$result = {};
-		$result['baseFare'] = {
-			'currency': $fc['fareAndMarkup']['currency'],
-			'amount': $fc['fareAndMarkup']['amount'],
-		};
-		delete($fc['fareAndMarkup']);
-		$result['fareEquivalent'] = php.isset($fc['fareEquivalent']) ? {
-			'currency': $fc['fareEquivalent']['currency'],
-			'amount': $fc['fareEquivalent']['amount'],
-		} : null;
-		delete($fc['fareEquivalent']);
-		$result['totalFare'] = {
-			'currency': $fc['amountCharged']['currency'],
-			'amount': $fc['amountCharged']['amount'],
-		};
-		delete($fc['amountCharged']);
-		$result['taxList'] = Fp.map(($taxRecord) => {
-			return {
-				'taxCode': $taxRecord['pseudoCountryCode'],
-				'amount': $taxRecord['amount'],
-			};
-		}, $fc['taxes']);
-		delete($fc['taxes']);
-		$result['fareConstruction'] = $fc;
-		return $result;
-	}
-
-	/** @param $pricingBlockData = PricingParser::parse()['pricingBlockList'][0] */
-	transformPtcBlock($pricingBlockData, $modsHelper)  {
-		let $ptcInfo, $nameNumbers, $bagsParsed;
-		const bagPtc = (((($pricingBlockData
-			['baggageInfo'] || {})
-			['parsed'] || {})
-			['baggageAllowanceBlocks'] || [])
-			[0] || {})
-			['paxTypeCode'];
-		$ptcInfo = $modsHelper.makeBlockPtcInfo($pricingBlockData['passengerNumbers'], bagPtc);
-		$nameNumbers = $ptcInfo['nameNumbers'];
-		delete($ptcInfo['nameNumbers']);
-		$bagsParsed = $pricingBlockData['baggageInfo']['parsed'];
-		return {
-			'passengerNameNumbers': $nameNumbers,
-			'ptcInfo': $ptcInfo,
-			'lastDateToPurchase': php.isset($pricingBlockData['lastDateToPurchaseTicket']) ? {
-				'raw': $pricingBlockData['lastDateToPurchaseTicket']['raw'],
-				'parsed': $pricingBlockData['lastDateToPurchaseTicket']['parsed'],
-				'full': $pricingBlockData['lastDateToPurchaseTicket']['parsed'],
-			} : null,
-			'lastTimeToPurchase': null,
-			'validatingCarrier': $pricingBlockData['defaultPlatingCarrier']
-                || $modsHelper.getMod('validatingCarrier')
-                || $modsHelper.getMod('overrideCarrier'),
-			'hasPrivateFaresSelectedMessage': $pricingBlockData['privateFaresSelected'] || false,
-			'endorsementBoxLines': $pricingBlockData['endorsementBoxLine'] || null,
-			'fareInfo': this.constructor.transformFareInfo($pricingBlockData['fareConstruction']),
-			'baggageInfo': !this.$includeBaggageInfo || !$bagsParsed ? null : {
-				'raw': $pricingBlockData['baggageInfo']['raw'],
-				'parsed': ApolloBaggageAdapter.transformBaggageInfo($bagsParsed),
-			},
-			'bankSellingRate': $pricingBlockData['bankSellingRate'] || null,
-			'bsrCurrencyFrom': $pricingBlockData['bsrCurrencyFrom'] || null,
-			'bsrCurrencyTo': $pricingBlockData['bsrCurrencyTo'] || null,
-		};
-	}
-
-	makeHelper($pricing)  {
-		let $mods;
-		$mods = $pricing['parsedPricingCommand']['pricingModifiers'];
-		if (this.$pricingCommand) {
-			if (StringUtil.startsWith(this.$pricingCommand, '$BB0')) {
-				// when you price with $BB0, command copy _does not_ include modifiers, but
-				// when you rebook with $BBQ01 modifiers are available _only_ from command copy
-				$mods = AtfqParser.parsePricingCommand(this.$pricingCommand)['pricingModifiers'];
+const ApolloPricingAdapter = ({
+	parsed,
+	pricingCommand = null,
+	nameRecords = null,
+	includeBaggageInfo = false,
+}) => {
+	const makeHelper = (pricing) => {
+		let mods;
+		mods = pricing['parsedPricingCommand']['pricingModifiers'];
+		if (pricingCommand) {
+			if (StringUtil.startsWith(pricingCommand, 'BB0')) {
+				// when you price with BB0, command copy _does not_ include modifiers, but
+				// when you rebook with BBQ01 modifiers are available _only_ from command copy
+				mods = AtfqParser.parsePricingCommand(pricingCommand)['pricingModifiers'];
 			}
 		}
-		return new ApolloPricingModifierHelper($mods, this.$nameRecords || []);
-	}
+		return new ApolloPricingModifierHelper(mods, nameRecords || []);
+	};
 
-	/**
-     * @param $pricing = PricingParser::parse()
-     */
-	transform($pricing)  {
-		let $modsHelper, $pccs;
-		$modsHelper = this.makeHelper($pricing);
-		$pccs = php.array_unique(php.array_column($pricing['pricingBlockList'], 'ticketingAgencyPcc'));
-		return {
-			'quoteNumber': null,
-			'pricingPcc': php.count($pccs) === 1 ? $pccs[0] : $modsHelper.getPricingPcc(),
-			'pricingModifiers': $modsHelper.getMods(),
-			'pricingBlockList': Fp.map(($block) => {
-				return this.transformPtcBlock($block, $modsHelper);
-			}, $pricing['pricingBlockList']),
+	const modsHelper = makeHelper(parsed);
+
+	/** @param fc = require('FareConstructionParser.js').parse() */
+	const transformFareInfo = (fc) => {
+		fc = JSON.parse(JSON.stringify(fc));
+
+		const result = {};
+		result.baseFare = {
+			currency: fc.fareAndMarkup.currency,
+			amount: fc.fareAndMarkup.amount,
 		};
-	}
-}
+		delete(fc.fareAndMarkup);
+		result.fareEquivalent = php.isset(fc.fareEquivalent) ? {
+			currency: fc.fareEquivalent.currency,
+			amount: fc.fareEquivalent.amount,
+		} : null;
+		delete(fc.fareEquivalent);
+		result.totalFare = {
+			currency: fc.amountCharged.currency,
+			amount: fc.amountCharged.amount,
+		};
+		delete(fc.amountCharged);
+		result.taxList = fc.taxes.map((taxRecord) => ({
+			taxCode: taxRecord.pseudoCountryCode,
+			amount: taxRecord.amount,
+		}));
+		delete(fc.taxes);
+		result.fareConstruction = fc;
+
+		return result;
+	};
+
+	const transformPtcBlock = (ptcBlock) => {
+		const bagPtc = ((((ptcBlock
+			.baggageInfo || {})
+			.parsed || {})
+			.baggageAllowanceBlocks || [])
+			[0] || {})
+			.paxTypeCode;
+		const ptcInfo = modsHelper.makeBlockPtcInfo(ptcBlock.passengerNumbers, bagPtc);
+		const nameNumbers = ptcInfo.nameNumbers;
+		delete(ptcInfo.nameNumbers);
+		const bagsParsed = ptcBlock.baggageInfo.parsed;
+		return {
+			passengerNameNumbers: nameNumbers,
+			ptcInfo: ptcInfo,
+			lastDateToPurchase: php.isset(ptcBlock.lastDateToPurchaseTicket) ? {
+				raw: ptcBlock.lastDateToPurchaseTicket.raw,
+				parsed: ptcBlock.lastDateToPurchaseTicket.parsed,
+				full: ptcBlock.lastDateToPurchaseTicket.parsed,
+			} : null,
+			lastTimeToPurchase: null,
+			validatingCarrier: ptcBlock.defaultPlatingCarrier
+                || modsHelper.getMod('validatingCarrier')
+                || modsHelper.getMod('overrideCarrier'),
+			hasPrivateFaresSelectedMessage: ptcBlock.privateFaresSelected || false,
+			endorsementBoxLines: ptcBlock.endorsementBoxLine || null,
+			fareInfo: transformFareInfo(ptcBlock.fareConstruction),
+			baggageInfo: !includeBaggageInfo || !bagsParsed ? null : {
+				raw: ptcBlock.baggageInfo.raw,
+				parsed: ApolloBaggageAdapter.transformBaggageInfo(bagsParsed),
+			},
+			bankSellingRate: ptcBlock.bankSellingRate || null,
+			bsrCurrencyFrom: ptcBlock.bsrCurrencyFrom || null,
+			bsrCurrencyTo: ptcBlock.bsrCurrencyTo || null,
+		};
+	};
+
+	const main = () => {
+		const pccs = php.array_unique(php.array_column(parsed.pricingBlockList, 'ticketingAgencyPcc'));
+		return {
+			quoteNumber: null,
+			pricingPcc: php.count(pccs) === 1 ? pccs[0] : modsHelper.getPricingPcc(),
+			pricingModifiers: modsHelper.getMods(),
+			pricingBlockList: parsed.pricingBlockList
+				.map(ptcBlock => transformPtcBlock(ptcBlock)),
+			modsHelper: modsHelper,
+		};
+	};
+
+	return main();
+};
+
 module.exports = ApolloPricingAdapter;

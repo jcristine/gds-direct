@@ -67,16 +67,14 @@ class ApolloBaggageAdapter
 	/**
      * @param $storePricing = PricingParser::parse()
      */
-	transform($storePricing, pricingAdapter)  {
-		let $records, $j, $pricingBlock, $baggageInfo, $modsHelper, $ptcInfo, $nameNumbers;
+	transform($storePricing, $modsHelper)  {
+		let $records, $j, $pricingBlock, $baggageInfo, $ptcInfo, $nameNumbers;
 		$records = [];
 		for ([$j, $pricingBlock] of Object.entries($storePricing['pricingBlockList'] || [])) {
 			if ($baggageInfo = $pricingBlock['baggageInfo'] || null) {
-				$modsHelper = pricingAdapter.makeHelper($storePricing);
 				const parsed = $pricingBlock['baggageInfo']['parsed'];
 				const ptc = !parsed ? null : parsed['baggageAllowanceBlocks'][0]['paxTypeCode'];
-				$ptcInfo = $modsHelper.makeBlockPtcInfo($pricingBlock['passengerNumbers'],
-					ptc);
+				$ptcInfo = $modsHelper.makeBlockPtcInfo($pricingBlock['passengerNumbers'], ptc);
 				$nameNumbers = $ptcInfo['nameNumbers'];
 				delete($ptcInfo['nameNumbers']);
 				$records.push({
