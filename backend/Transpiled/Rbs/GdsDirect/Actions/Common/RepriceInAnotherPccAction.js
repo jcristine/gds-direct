@@ -1,4 +1,4 @@
-const RepriceItinerary = require('../../../../../Actions/RepriceItinerary.js');
+const RepriceItinerary = require('../../../../../Actions/RepriceItinerary/RepriceItinerary.js');
 const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
 
 const GdsDialectTranslator = require('../../../../Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');

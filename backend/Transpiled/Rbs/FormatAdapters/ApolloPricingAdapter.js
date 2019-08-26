@@ -93,6 +93,8 @@ const ApolloPricingAdapter = ({
 			bankSellingRate: ptcBlock.bankSellingRate || null,
 			bsrCurrencyFrom: ptcBlock.bsrCurrencyFrom || null,
 			bsrCurrencyTo: ptcBlock.bsrCurrencyTo || null,
+			rebookSegments: (parsed.wholePricingMarkers.rebookSegments || [])
+				.filter(s => !s.ptc || s.ptc === bagPtc),
 		};
 	};
 

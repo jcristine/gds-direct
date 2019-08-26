@@ -1,7 +1,7 @@
 const FakeAreaUtil = require('../GdsHelpers/Amadeus/FakeAreaUtil.js');
 const StatefulSession = require('../GdsHelpers/StatefulSession.js');
 const GdsSessionManager = require('../GdsHelpers/GdsSessionManager.js');
-const RepriceItinerary = require('./RepriceItinerary.js');
+const RepriceItinerary = require('./RepriceItinerary/RepriceItinerary.js');
 
 const ignorePnr = async (stateful, force = false) => {
 	if (!stateful.getSessionData().hasPnr && !force) {
