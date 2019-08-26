@@ -460,7 +460,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 					'baseFare': '1340.00',
 					'inDefaultCurrency': '1738.00',
 					'tax': '363.40',
-					'total': '2101.40'
+					'total': '2101.40',
 				},
 				'pqList': [
 					{
@@ -532,8 +532,8 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 				'fares': [{
 					'totals': {
 						'quantity': '2',
-						'total': {'currency': 'USD', 'amount': '634.76', 'ptc': 'ADT'}
-					}
+						'total': {'currency': 'USD', 'amount': '634.76', 'ptc': 'ADT'},
+					},
 				}],
 				'pqList': [
 					{
@@ -547,7 +547,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 								'currency': 'NUC',
 								'fareAndMarkupInNuc': '188.18',
 								'rateOfExchange': '0.765204',
-							}
+							},
 						},
 						'fareConstructionInfo': {
 							'validatingCarrier': 'TP',
@@ -701,7 +701,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 						},
 					},
 				],
-			}
+			},
 		]);
 
 		// >WPPINF; infant ptc block has no taxes - parser should not fail on that
@@ -965,7 +965,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 										'destination': 'YTO', 'fare': '89.00', 'stopoverFees': [
 											{'stopoverNumber': '1', 'amount': '19.13'},
 											{'stopoverNumber': '1', 'amount': '100.00'},
-										]
+										],
 									},
 								],
 							},
@@ -1248,7 +1248,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 						},
 					},
 				],
-			}
+			},
 		]);
 
 		// PH PCC C5VD has unique pricing format
@@ -1309,7 +1309,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                "baseFare": {"currency":"USD","amount":"1378.00"},
 			                "inDefaultCurrency": {"currency":"PHP","amount":"72166"},
 			                "tax": null,
-			                "total": {"currency":"PHP","amount":"77389","ptc":"ADT"}
+			                "total": {"currency":"PHP","amount":"77389","ptc":"ADT"},
 			            },
 			            "taxList": [
 			                {"taxCode":"US","currency":"PHP","amount":"974"},
@@ -1320,16 +1320,16 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                    "taxCode": "XF",
 			                    "currency": "PHP",
 			                    "amount": "236",
-			                    "facilityCharges": [{"airport":"JFK","amount":"4.5"}]
-			                }
-			            ]
+			                    "facilityCharges": [{"airport":"JFK","amount":"4.5"}],
+			                },
+			            ],
 			        },
 			        {
 			            "totals": {
 			                "baseFare": {"currency":"USD","amount":"1034.00"},
 			                "inDefaultCurrency": {"currency":"PHP","amount":"54151"},
 			                "tax": null,
-			                "total": {"currency":"PHP","amount":"59374","ptc":"C05"}
+			                "total": {"currency":"PHP","amount":"59374","ptc":"C05"},
 			            },
 			            "taxList": [
 			                {"taxCode":"US","currency":"PHP","amount":"974"},
@@ -1340,23 +1340,23 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                    "taxCode": "XF",
 			                    "currency": "PHP",
 			                    "amount": "236",
-			                    "facilityCharges": [{"airport":"JFK","amount":"4.5"}]
-			                }
-			            ]
-			        }
+			                    "facilityCharges": [{"airport":"JFK","amount":"4.5"}],
+			                },
+			            ],
+			        },
 			    ],
 			    "faresSum": {
 			        "baseFare": "2412.00",
 			        "inDefaultCurrency": "126317",
 			        "tax": "10446",
-			        "total": "136763"
+			        "total": "136763",
 			    },
 			    "pqList": [
 			        {
 			            "fareBasisInfo": {
 			                "ptc": "ADT",
 			                "quantity": "01",
-			                "records": [{"fareBasis":"NKOXFNY"}]
+			                "records": [{"fareBasis":"NKOXFNY"}],
 			            },
 			            "fareConstruction": {
 			                "data": {
@@ -1366,8 +1366,8 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                            "flags": [],
 			                            "destination": "MNL",
 			                            "fare": "1378.00",
-			                            "departure": "NYC"
-			                        }
+			                            "departure": "NYC",
+			                        },
 			                    ],
 			                    "markup": null,
 			                    "currency": "NUC",
@@ -1377,15 +1377,15 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                    "infoMessage": null,
 			                    "rateOfExchange": "1.00",
 			                    "facilityCharges": [],
-			                    "hasHiddenFares": false
+			                    "hasHiddenFares": false,
 			                },
 			                "textLeft": "",
-			                "line": "NYC PR MNL1378.00NUC1378.00END ROE1.00"
+			                "line": "NYC PR MNL1378.00NUC1378.00END ROE1.00",
 			            },
 			            "fareConstructionInfo": {
 			                "unparsedLines": ["RATE USED 1USD-52.37PHP"],
 			                "endorsementBoxLines": ["ENDOS*SEG1*PREMIUM ECONOMY/FARE RULES APPLY"],
-			                "validatingCarrier": "PR"
+			                "validatingCarrier": "PR",
 			            },
 			            "baggageInfo": {
 			                "baggageAllowanceBlock": {
@@ -1398,12 +1398,12 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                                "airline": "PR",
 			                                "sizeInfoRaw": "EACH PIECE UP TO 55 POUNDS/25 KILOGRAMS",
 			                                "sizeInfo": {"weightInLb":"55","weightInKg":"25"},
-			                                "remarks": []
+			                                "remarks": [],
 			                            },
-			                            "fees": []
-			                        }
+			                            "fees": [],
+			                        },
 			                    ],
-			                    "generalRemarks": []
+			                    "generalRemarks": [],
 			                },
 			                "carryOnAllowanceBlock": [
 			                    {
@@ -1412,10 +1412,10 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                            "amount": {"units":"pieces","amount":"01","unitsCode":"P","raw":"01P"},
 			                            "airline": "PR",
 			                            "error": null,
-			                            "isAvailable": true
+			                            "isAvailable": true,
 			                        },
-			                        "pieces": []
-			                    }
+			                        "pieces": [],
+			                    },
 			                ],
 			                "carryOnChargesBlock": [
 			                    {
@@ -1424,12 +1424,12 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                            "amount": null,
 			                            "airline": "PR",
 			                            "error": "CARRY ON FEES UNKNOWN-CONTACT CARRIER",
-			                            "isAvailable": false
-			                        }
-			                    }
+			                            "isAvailable": false,
+			                        },
+			                    },
 			                ],
 			                "disclaimer": ["ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY"],
-			                "additionalInfo": null
+			                "additionalInfo": null,
 			            },
 			            "baggageInfoDump": [
 			                "BAG ALLOWANCE     -JFKMNL-02P/PR/EACH PIECE UP TO 55 POUND",
@@ -1438,14 +1438,14 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                "JFKMNL-01P/07KG/PR",
 			                "CARRY ON CHARGES",
 			                "JFKMNL-PR-CARRY ON FEES UNKNOWN-CONTACT CARRIER",
-			                "ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY"
-			            ].join("\n")
+			                "ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY",
+			            ].join("\n"),
 			        },
 			        {
 			            "fareBasisInfo": {
 			                "ptc": "C05",
 			                "quantity": "01",
-			                "records": [{"fareBasis":"NKOXFNY","ticketDesignator":"CH25"}]
+			                "records": [{"fareBasis":"NKOXFNY","ticketDesignator":"CH25"}],
 			            },
 			            "fareConstruction": {
 			                "data": {
@@ -1455,8 +1455,8 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                            "flags": [],
 			                            "destination": "MNL",
 			                            "fare": "1033.50",
-			                            "departure": "NYC"
-			                        }
+			                            "departure": "NYC",
+			                        },
 			                    ],
 			                    "markup": null,
 			                    "currency": "NUC",
@@ -1466,15 +1466,15 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                    "infoMessage": null,
 			                    "rateOfExchange": "1.00",
 			                    "facilityCharges": [],
-			                    "hasHiddenFares": false
+			                    "hasHiddenFares": false,
 			                },
 			                "textLeft": "",
-			                "line": "NYC PR MNL1033.50NUC1033.50END ROE1.00"
+			                "line": "NYC PR MNL1033.50NUC1033.50END ROE1.00",
 			            },
 			            "fareConstructionInfo": {
 			                "unparsedLines": ["RATE USED 1USD-52.37PHP"],
 			                "endorsementBoxLines": ["ENDOS*SEG1*PREMIUM ECONOMY/FARE RULES APPLY"],
-			                "validatingCarrier": "PR"
+			                "validatingCarrier": "PR",
 			            },
 			            "baggageInfo": {
 			                "baggageAllowanceBlock": {
@@ -1487,12 +1487,12 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                                "airline": "PR",
 			                                "sizeInfoRaw": "EACH PIECE UP TO 55 POUNDS/25 KILOGRAMS",
 			                                "sizeInfo": {"weightInLb":"55","weightInKg":"25"},
-			                                "remarks": []
+			                                "remarks": [],
 			                            },
-			                            "fees": []
-			                        }
+			                            "fees": [],
+			                        },
 			                    ],
-			                    "generalRemarks": []
+			                    "generalRemarks": [],
 			                },
 			                "carryOnAllowanceBlock": [
 			                    {
@@ -1501,10 +1501,10 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                            "amount": {"units":"pieces","amount":"01","unitsCode":"P","raw":"01P"},
 			                            "airline": "PR",
 			                            "error": null,
-			                            "isAvailable": true
+			                            "isAvailable": true,
 			                        },
-			                        "pieces": []
-			                    }
+			                        "pieces": [],
+			                    },
 			                ],
 			                "carryOnChargesBlock": [
 			                    {
@@ -1513,12 +1513,12 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                            "amount": null,
 			                            "airline": "PR",
 			                            "error": "CARRY ON FEES UNKNOWN-CONTACT CARRIER",
-			                            "isAvailable": false
-			                        }
-			                    }
+			                            "isAvailable": false,
+			                        },
+			                    },
 			                ],
 			                "disclaimer": ["ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY"],
-			                "additionalInfo": null
+			                "additionalInfo": null,
 			            },
 			            "baggageInfoDump": [
 			                "BAG ALLOWANCE     -JFKMNL-02P/PR/EACH PIECE UP TO 55 POUND",
@@ -1527,13 +1527,13 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			                "JFKMNL-01P/07KG/PR",
 			                "CARRY ON CHARGES",
 			                "JFKMNL-PR-CARRY ON FEES UNKNOWN-CONTACT CARRIER",
-			                "ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY"
-			            ].join("\n")
-			        }
+			                "ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY",
+			            ].join("\n"),
+			        },
 			    ],
 				"dataExistsInfo": [{"name":"AIR EXTRAS","command":"WP*AE"}],
 			    "additionalInfo": null,
-			    "wasPqRetained": false
+			    "wasPqRetained": false,
 			},
 		]);
 
