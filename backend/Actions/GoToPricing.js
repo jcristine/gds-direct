@@ -1,3 +1,4 @@
+const GdsSession = require('../GdsHelpers/GdsSession.js');
 const FakeAreaUtil = require('../GdsHelpers/Amadeus/FakeAreaUtil.js');
 const StatefulSession = require('../GdsHelpers/StatefulSession.js');
 const GdsSessionManager = require('../GdsHelpers/GdsSessionManager.js');
@@ -76,6 +77,7 @@ const getTargetSession = async ({
  */
 const GoToPricing = ({
 	stateful, controllerData, rqBody,
+	gdsClients = GdsSession.makeGdsClients(),
 }) => {
 	const {
 		pricingGds, itinerary,
@@ -97,7 +99,7 @@ const GoToPricing = ({
 			gds: pricingGds,
 			session: targetSession,
 			startDt: stateful.getStartDt(),
-			itinerary, pricingCmd,
+			itinerary, pricingCmd, gdsClients,
 		});
 	};
 
