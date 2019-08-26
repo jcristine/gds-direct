@@ -98,18 +98,6 @@ class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
 						' 4 AY1072Y 28MAY Q RIXHEL SS1  1015A 1125A /DCAY /E',
 						'NAME CHG NOT ALLOWED FOR AY-Y FARECLASS',
 					].join('\n'),
-				}, {
-					cmd: '*R',
-					output: [
-						'NO NAMES',
-						' 1 PR 127C 20MAY W JFKMNL SS1   145A  615A  21MAY Q /DCPR /E',
-						' 2 TK  85C 24MAY S MNLIST SS1   930P  505A  25MAY M /DCTK /E',
-						' 3 TK1757C 25MAY M ISTRIX GK1   820A 1120A /E',
-						' 4 AY1072Y 28MAY Q RIXHEL SS1  1015A 1125A /DCAY /E',
-						'OPERATED BY NORDIC REGIONAL AIRLINES',
-						'OPERATED BY NORDIC REGIONAL AIRLINES',
-						'6IIF.L3II*AWS 0327/15AUG19',
-					].join('\n'),
 				}],
 			},
 			httpRequests: [{

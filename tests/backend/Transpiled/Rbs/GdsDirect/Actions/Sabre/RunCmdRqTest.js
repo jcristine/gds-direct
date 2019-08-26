@@ -106,17 +106,6 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							'NAME CHG NOT ALLOWED FOR PS-D FARECLASS',
 						]),
 					},
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'NO NAMES',
-							' 1 PS 898D 10MAY F KIVKBP*SS1   720A  825A /DCPS /E',
-							'FULL PASSPORT DATA IS MANDATORY',
-							' 2 PS 185D 10MAY F KBPRIX*SS1   920A 1055A /DCPS /E',
-							'FULL PASSPORT DATA IS MANDATORY',
-							'6IIF.L3II*AWS 1119/26JUN18',
-						]),
-					},
 				],
 			},
 		});

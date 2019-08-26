@@ -607,9 +607,7 @@ const execute = ({
 	};
 
 	const bookItinerary = async  ($desiredSegments, $fallbackToGk) => {
-		let $newSegments, result, $error, $cmd, $sortResult;
-
-		$newSegments = $desiredSegments.map($seg => {
+		const newSegments = $desiredSegments.map($seg => {
 			const $newStatus = $seg['segmentStatus'];
 			// Sabre needs NN status in cmd to sell SS
 			// American airline doesn't allow direct sell with GK statuses
@@ -620,10 +618,10 @@ const execute = ({
 		});
 
 		stateful.flushCalledCommands();
-		result = await (new SabreBuildItineraryAction({sabre}))
+		const result = await (new SabreBuildItineraryAction({sabre}))
 			.setSession(stateful)
 			.useXml(useXml)
-			.execute($newSegments, true);
+			.execute(newSegments, true);
 
 		if (useXml && result.airSegmentCount > 0) {
 			stateful.updateAreaState({
@@ -632,17 +630,18 @@ const execute = ({
 			});
 		}
 
-		if ($error = transformBuildError(result)) {
+		const error = transformBuildError(result);
+		if (error) {
 			return {
 				'calledCommands': stateful.flushCalledCommands(),
-				'errors': [$error],
+				'errors': [error],
 			};
 		}
 
 		let cmdRec = result.pnrCmdRec;
 		if ($fallbackToGk) {
 			// order is important, so can't store in a {} as it sorts integers
-			const byMarriage = Fp.groupMap(s => s.marriage, $newSegments);
+			const byMarriage = Fp.groupMap(s => s.marriage, newSegments);
 			for (const [marriage, segments] of byMarriage) {
 				const segmentTokens = segments.map(
 					seg => findSegmentNumberInPnr(seg, result.itinerary) + seg.bookingClass);
@@ -651,18 +650,14 @@ const execute = ({
 				cmdRec = await runCmd(cmd);
 			}
 		}
-		$sortResult = await processSortItinerary()
+		const sortResult = await processSortItinerary((cmdRec || {}).output)
 			.catch(coverExc(Rej.list, exc => ({errors: ['Did not SORT' + exc]})));
 
-		if (!php.empty($sortResult['errors'])) {
-			cmdRec = cmdRec || {
-				cmd: '*R',
-				output: (await getCurrentPnr()).getDump(),
-			};
-			return {'calledCommands': cmdRec ? [cmdRec] : []};
-		} else {
-			return {'calledCommands': $sortResult['calledCommands']};
-		}
+		cmdRec = cmdRec || {
+			cmd: '*R',
+			output: (await getCurrentPnr()).getDump(),
+		};
+		return {'calledCommands': [cmdRec]};
 	};
 
 	const rebookAsSs = async  () => {
@@ -757,20 +752,18 @@ const execute = ({
 		return {'calledCommands': [$cmdRecord]};
 	};
 
-	const processSortItinerary = async  () => {
-		let $pnr, $pnrDump,
-			$calledCommands, $cmd;
-
-		$pnr = await getCurrentPnr();
+	const processSortItinerary = async (pnrDump) => {
+		const pnr = pnrDump ? SabrePnr.makeFromDump(pnrDump) : await getCurrentPnr();
 		const {itinerary} = await CommonDataHelper.sortSegmentsByUtc(
-			$pnr, stateful.getGeoProvider(), stateful.getStartDt()
+			pnr, stateful.getGeoProvider(), stateful.getStartDt()
 		);
 
-		$calledCommands = [];
-		$cmd = /0/ + itinerary.map(s => s.segmentNumber).join(',');
-		const output = await runCommand($cmd);
-		$calledCommands.push({cmd: $cmd, output});
-		return {'calledCommands': $calledCommands};
+		const calledCommands = [];
+		const cmd = /0/ + itinerary.map(s => s.segmentNumber).join(',');
+		const output = await runCommand(cmd);
+		calledCommands.push({cmd, output});
+
+		return {calledCommands};
 	};
 
 	const needsPl = async  ($cmd, $pricingDump, $pnr) => {
