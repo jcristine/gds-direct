@@ -81,25 +81,36 @@ const transformTimeFromSoap = time => {
 	};
 };
 
-const transformAirSegmentFromSoap = element => ({
-	segmentNumber: getValueOrNullFromDomElement(element, 'SegNum'),
-	segmentStatus: getValueOrNullFromDomElement(element, 'Status'),
-	departureDate: transformDateFromSoap(getValueOrNullFromDomElement(element, 'Dt')),
-	dayOffset: getValueOrNullFromDomElement(element, 'DayChg'),
-	airline: getValueOrNullFromDomElement(element, 'AirV'),
-	seatCount: getValueOrNullFromDomElement(element, 'NumPsgrs'),
-	departureAirport: getValueOrNullFromDomElement(element, 'StartAirp'),
-	destinationAirport: getValueOrNullFromDomElement(element, 'EndAirp'),
-	departureTime: transformTimeFromSoap(getValueOrNullFromDomElement(element, 'StartTm')),
-	destinationTime: transformTimeFromSoap(getValueOrNullFromDomElement(element, 'EndTm')),
-	bookingClass: getValueOrNullFromDomElement(element, 'BIC'),
-	flightNumber: getValueOrNullFromDomElement(element, 'FltNum'),
-	marriage: getValueOrNullFromDomElement(element, 'MarriageNum'),
-	statusOld: getValueOrNullFromDomElement(element, 'PrevStatusCode'),
-	confirmedByAirlineIndicator: getValueOrNullFromDomElement(element, 'VndLocInd'),
-	isFlown: getValueOrNullFromDomElement(element, 'FltFlownInd') === 'Y',
-	scheduleValidationIndicator: getValueOrNullFromDomElement(element, 'ScheduleValidationInd'),
-});
+const transformAirSegmentFromSoap = element => {
+	const departureDate = transformDateFromSoap(getValueOrNullFromDomElement(element, 'Dt'));
+	const departureTime = transformTimeFromSoap(getValueOrNullFromDomElement(element, 'StartTm'));
+	const departureDtStr = departureDate.parsed + ' ' + departureTime.parsed;
+	return {
+		segmentNumber: getValueOrNullFromDomElement(element, 'SegNum'),
+		segmentStatus: getValueOrNullFromDomElement(element, 'Status'),
+		airline: getValueOrNullFromDomElement(element, 'AirV'),
+		seatCount: getValueOrNullFromDomElement(element, 'NumPsgrs'),
+		departureAirport: getValueOrNullFromDomElement(element, 'StartAirp'),
+		destinationAirport: getValueOrNullFromDomElement(element, 'EndAirp'),
+		bookingClass: getValueOrNullFromDomElement(element, 'BIC'),
+		flightNumber: getValueOrNullFromDomElement(element, 'FltNum'),
+		marriage: getValueOrNullFromDomElement(element, 'MarriageNum'),
+		departureDt: {full: departureDtStr},
+		// XML-specific fields follow
+		statusOld: getValueOrNullFromDomElement(element, 'PrevStatusCode'),
+		// is it confirmedByAirline from ItineraryParser.js per chance?
+		confirmedByAirlineIndicator: getValueOrNullFromDomElement(element, 'VndLocInd'),
+		isFlown: getValueOrNullFromDomElement(element, 'FltFlownInd') === 'Y',
+		scheduleValidationIndicator: getValueOrNullFromDomElement(element, 'ScheduleValidationInd'),
+		// separate departure/destination date/time fields should probably be removed, as they
+		// would make sense only in parser-specific processes, and XML actions should be as
+		// close to the ImportApolloPnrFormatAdapter.js::transformReservation() as possible
+		departureDate: departureDate,
+		departureTime: departureTime,
+		dayOffset: getValueOrNullFromDomElement(element, 'DayChg'),
+		destinationTime: transformTimeFromSoap(getValueOrNullFromDomElement(element, 'EndTm')),
+	};
+};
 
 const transformAirSellFromSoap = element => ({
 	success: getValueOrNullFromDomElement(element, 'SuccessInd') === 'Y',
