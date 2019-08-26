@@ -84,7 +84,10 @@ const transformTimeFromSoap = time => {
 const transformAirSegmentFromSoap = element => {
 	const departureDate = transformDateFromSoap(getValueOrNullFromDomElement(element, 'Dt'));
 	const departureTime = transformTimeFromSoap(getValueOrNullFromDomElement(element, 'StartTm'));
-	const departureDtStr = departureDate.parsed + ' ' + departureTime.parsed;
+	let departureDtStr = departureDate.parsed;
+	if (departureDtStr && departureTime) {
+		departureDtStr += ' ' + departureTime.parsed;
+	}
 	return {
 		segmentNumber: getValueOrNullFromDomElement(element, 'SegNum'),
 		segmentStatus: getValueOrNullFromDomElement(element, 'Status'),
@@ -95,7 +98,7 @@ const transformAirSegmentFromSoap = element => {
 		bookingClass: getValueOrNullFromDomElement(element, 'BIC'),
 		flightNumber: getValueOrNullFromDomElement(element, 'FltNum'),
 		marriage: getValueOrNullFromDomElement(element, 'MarriageNum'),
-		departureDt: {full: departureDtStr},
+		departureDt: !departureDtStr ? null : {full: departureDtStr},
 		// XML-specific fields follow
 		statusOld: getValueOrNullFromDomElement(element, 'PrevStatusCode'),
 		// is it confirmedByAirline from ItineraryParser.js per chance?

@@ -118,7 +118,7 @@ const TravelportClient = ({
 				'To restart session use _⚙ (Gear) -> Default PCC_.\n' +
 				'Note, reloading page does not reduce waiting time on hanging availability (60 s.).';
 			return Conflict(error, {isOk: true});
-		} else if ((exc + '').indexOf('XTS Translation of Data Failed when converting the SingleXML request into a Host Format')) {
+		} else if ((exc + '').indexOf('XTS Translation of Data Failed when converting the SingleXML request into a Host Format') > -1) {
 			let msg = 'Format of XML request did not match Travelport expectations';
 			const match = body.match(/Invalid date\s*<\/(?:\w+:|)(\w+)/);
 			if (match) {
