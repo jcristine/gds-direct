@@ -12,6 +12,14 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 const PricingCommonHelper = require("./PricingCommonHelper");
 const PhilippinePricingParser = require("../../../../../Parsers/Sabre/PhPricingParser");
 
+const parseRebookSegmentsStr = segListStr => {
+	return segListStr.split(' ').map(token => {
+		const segmentNumber = token.slice(0, -1);
+		const bookingClass = token.slice(-1);
+		return {segmentNumber, bookingClass};
+	});
+};
+
 class SabrePricingParser {
 	static detectErrorResponse($dump) {
 		let $nameByPattern, $pattern, $errorName;
@@ -81,52 +89,63 @@ class SabrePricingParser {
 		return [parsed, $lines];
 	}
 
-	static parsePriceQuote(lines) {
+	static parsePtcBlock(lines) {
 		let baggageInfo = null;
-		let $result = null;
+		let fbLine = php.array_shift(lines);
+		if (!fbLine) {
+			return null;
+		}
+		const nextLine = php.count(lines) > 0 ? ArrayUtil.getFirst(lines) : '';
+
+		// For cases when fare basis summary "line" spans multiple lines due to wrapping
+		// ADT-01  TLXZ90M7F/DIF4 SQW8C1B4 SQX8C1B4 TLXZ90M7F/DIF4
+		//        OLWZ90B7
+		if (StringUtil.startsWith(nextLine, '      ')) {
+			fbLine += ' ' + nextLine;
+			php.array_shift(lines);
+		}
+		const fareBasisInfo = PricingCommonHelper.parseFareBasisSummary(fbLine);
+		if (!fareBasisInfo) {
+			php.array_unshift(lines, line);
+			return null;
+		}
+
+		let fareConstruction;
+		[fareConstruction, lines] = this.parseFareConstruction(lines);
+		const fareConstructionInfoLines = [];
+		let rebookSegments = [];
 		let baggageInfoDumpLines = [];
 		let line;
-		if (line = php.array_shift(lines)) {
-			const nextLine = php.count(lines) > 0 ? ArrayUtil.getFirst(lines) : '';
-
-			// For cases when fare basis summary "line" spans multiple lines due to wrapping
-			// ADT-01  TLXZ90M7F/DIF4 SQW8C1B4 SQX8C1B4 TLXZ90M7F/DIF4
-			//        OLWZ90B7
-			if (StringUtil.startsWith(nextLine, '      ')) {
-				line += ' ' + nextLine;
-				php.array_shift(lines);
-			}
-
-			const fareBasisInfo = PricingCommonHelper.parseFareBasisSummary(line);
-			if (fareBasisInfo) {
-				let fareConstruction;
-				[fareConstruction, lines] = this.parseFareConstruction(lines);
-				const fareConstructionInfoLines = [];
-				while (line = php.array_shift(lines)) {
-					if (!StringUtil.startsWith(line, 'BAG ALLOWANCE')) {
-						fareConstructionInfoLines.push(line);
+		while (line = php.array_shift(lines)) {
+			if (!StringUtil.startsWith(line, 'BAG ALLOWANCE')) {
+				fareConstructionInfoLines.push(line);
+			} else {
+				php.array_unshift(lines, line);
+				baggageInfoDumpLines = lines;
+				let footerInfoLine;
+				while (footerInfoLine = baggageInfoDumpLines.pop()) {
+					const match = footerInfoLine.match(/^CHANGE BOOKING CLASS -\s*(.*?)\s*$/);
+					if (match) {
+						rebookSegments = parseRebookSegmentsStr(match[1]);
 					} else {
-						php.array_unshift(lines, line);
-						baggageInfoDumpLines = lines;
-						baggageInfo = BagAllowanceParser.parse(lines);
+						baggageInfoDumpLines.push(footerInfoLine);
 						break;
 					}
 				}
-
-				$result = {
-					fareBasisInfo: fareBasisInfo,
-					fareConstruction: fareConstruction,
-					fareConstructionInfo: PricingCommonHelper.parseFareConstructionInfo(fareConstructionInfoLines, true),
-					baggageInfo: baggageInfo,
-					baggageInfoDump: !baggageInfoDumpLines ? null :
-						php.implode(php.PHP_EOL, baggageInfoDumpLines),
-				};
-			} else {
-				php.array_unshift(lines, line);
+				baggageInfo = BagAllowanceParser.parse(lines);
+				break;
 			}
 		}
 
-		return $result;
+		return {
+			fareBasisInfo: fareBasisInfo,
+			fareConstruction: fareConstruction,
+			fareConstructionInfo: PricingCommonHelper.parseFareConstructionInfo(fareConstructionInfoLines, true),
+			baggageInfo: baggageInfo,
+			baggageInfoDump: !baggageInfoDumpLines ? null :
+				php.implode(php.PHP_EOL, baggageInfoDumpLines),
+			rebookSegments: rebookSegments,
+		};
 	}
 
 	/**
@@ -214,7 +233,7 @@ class SabrePricingParser {
 		}
 		const faresSum = this.parseTotalFareLine(totalsLine, headersLine);
 		const pqBlocks = this.splitLinesByPattern(lines, '^([A-Z0-9]{3})-(\\d{2})  (.*)$', true);
-		const pqList = pqBlocks.map(b => this.parsePriceQuote(b));
+		const pqList = pqBlocks.map(b => this.parsePtcBlock(b));
 
 		return {dates, fares, faresSum, pqList};
 	}

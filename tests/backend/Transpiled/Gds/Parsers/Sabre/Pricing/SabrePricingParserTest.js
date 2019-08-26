@@ -4,12 +4,10 @@ const SabrePricingParser = require("../../../../../../../backend/Transpiled/Gds/
 
 class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 	provideDumps() {
-		let $list;
-
-		$list = [];
+		const list = [];
 
 		// #0 - with "EMBARGOES-APPLY TO EACH PASSENGER"
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'       BASE FARE                 TAXES/FEES/CHARGES    TOTAL',
 				' 1-   USD1533.02                    129.08XT      USD1662.10ADT',
@@ -137,7 +135,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 		]);
 
 		// #1 - two PQ fares merged together
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'19OCT DEPARTURE DATE-----LAST DAY TO PURCHASE 30SEP/2359',
 				'       BASE FARE                 TAXES/FEES/CHARGES    TOTAL',
@@ -394,7 +392,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 		]);
 
 		// #2 - without BAG ALLOWANCE
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'08NOV DEPARTURE DATE-----LAST DAY TO PURCHASE 27SEP/2359',
 				'       BASE FARE      EQUIV AMT  TAXES/FEES/CHARGES    TOTAL',
@@ -438,7 +436,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 		]);
 
 		// #3 - without "AIR EXTRAS AVAILABLE" and line break separating it
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'       BASE FARE      EQUIV AMT  TAXES/FEES/CHARGES    TOTAL',
 				' 2-    GBP670.00      USD869.00     181.70XT      USD1050.70ADT',
@@ -492,7 +490,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 		]);
 
 		// #4 - with "FORM OF PAYMENT FEES PER TICKET MAY APPLY"
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'       BASE FARE      EQUIV AMT  TAXES/FEES/CHARGES    TOTAL',
 				' 2-    GBP144.00      USD187.00     447.76XT       USD634.76ADT',
@@ -570,7 +568,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 		]);
 
 		// #5 - with alternate validating carriers
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'       BASE FARE                 TAXES/FEES/CHARGES    TOTAL',
 				' 1-    USD489.00                    369.28XT       USD858.28ADT',
@@ -606,7 +604,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 		]);
 
 		// with text after validating carrier
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'08NOV DEPARTURE DATE-----LAST DAY TO PURCHASE 18OCT/2359',
 				'       BASE FARE                 TAXES/FEES/CHARGES    TOTAL',
@@ -636,7 +634,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 		]);
 
 		// #7 >*QJTCAA; - implying fare construction should be joined by space, not empty string
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'11MAY DEPARTURE DATE-----LAST DAY TO PURCHASE 31JAN/1723',
 				'       BASE FARE                 TAXES/FEES/CHARGES    TOTAL',
@@ -705,7 +703,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 		]);
 
 		// >WPPINF; infant ptc block has no taxes - parser should not fail on that
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'10JUN DEPARTURE DATE-----LAST DAY TO PURCHASE 03JUN/2359',
 				'       BASE FARE      EQUIV AMT  TAXES/FEES/CHARGES    TOTAL',
@@ -742,7 +740,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 		]);
 
 		// ptc with numbers
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'15AUG DEPARTURE DATE-----LAST DAY TO PURCHASE 04JUN/1431',
 				'       BASE FARE                 TAXES/FEES/CHARGES    TOTAL',
@@ -819,7 +817,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 		]);
 
 		// FC parser failed - oceanic flight is marked with "*AT*" instead of "(AT)"
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'30SEP DEPARTURE DATE-----LAST DAY TO PURCHASE 12SEP/2359',
 				'       BASE FARE                 TAXES/FEES/CHARGES    TOTAL',
@@ -880,7 +878,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 
 		// starting with PRICE QUOTE RECORD RETAINED caused by RQ modifier
 		// session 1992164, command >WPRQ¥PJCB¥MCAD;
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'PRICE QUOTE RECORD RETAINED',
 				'  ',
@@ -975,7 +973,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			},
 		]);
 
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'SOME UNRELATED DUMP TEXT',
 				'ACCIDENTALLY GOT PASSED TO PARSER',
@@ -988,7 +986,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 
 		// session #2629394, >WC¥1;
 		// empty line between ADT price and TTL price
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'       BASE FARE                     TAXES             TOTAL',
 				' 1-    GBP114.31                     75.00XT       GBP189.31ADT',
@@ -1052,7 +1050,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			},
 		]);
 
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'25JAN DEPARTURE DATE-----LAST DAY TO PURCHASE 20DEC/2359',
 				'       BASE FARE                 TAXES/FEES/CHARGES    TOTAL',
@@ -1252,7 +1250,7 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 		]);
 
 		// PH PCC C5VD has unique pricing format
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'PSGR TYPE  ADT - 01',
 				'     CXR RES DATE  FARE BASIS      NVB   NVA    BG',
@@ -1537,7 +1535,68 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			},
 		]);
 
-		return $list;
+		// rebook line example
+		list.push([
+			php.implode(php.PHP_EOL, [
+				'20MAY DEPARTURE DATE-----LAST DAY TO PURCHASE 31AUG/2359',
+				'       BASE FARE                 TAXES/FEES/CHARGES    TOTAL',
+				' 1-   USD4420.00                    245.53XT      USD4665.53ADT',
+				'    XT    170.00YQ       1.00YR      37.20US       5.77YC ',
+				'            7.00XY       3.96XA       5.60AY      10.50LI ',
+				'            4.50XF ',
+				' 1-   USD3315.00                    245.53XT      USD3560.53C05',
+				'    XT    170.00YQ       1.00YR      37.20US       5.77YC ',
+				'            7.00XY       3.96XA       5.60AY      10.50LI ',
+				'            4.50XF ',
+				'         7735.00                    491.06           8226.06TTL',
+				'ADT-01  IXFNY',
+				' NYC PR MNL2210.00PR NYC2210.00NUC4420.00END ROE1.00 XFJFK4.5',
+				'FARE RULES APPLY/BUSINESS VALUE',
+				'VALIDATING CARRIER - PR',
+				'BAG ALLOWANCE     -JFKMNL-02P/PR/EACH PIECE UP TO 70 POUNDS/32 ',
+				'KILOGRAMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS',
+				'BAG ALLOWANCE     -MNLJFK-02P/PR/EACH PIECE UP TO 70 POUNDS/32 ',
+				'KILOGRAMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS',
+				'CARRY ON ALLOWANCE',
+				'JFKMNL MNLJFK-01P/07KG/PR',
+				'CARRY ON CHARGES',
+				'JFKMNL MNLJFK-PR-CARRY ON FEES UNKNOWN-CONTACT CARRIER',
+				'ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY',
+				'CHANGE BOOKING CLASS -   1I 2I',
+				'C05-01  IXFNY/CH25',
+				' NYC PR MNL1657.50PR NYC1657.50NUC3315.00END ROE1.00 XFJFK4.5',
+				'FARE RULES APPLY/BUSINESS VALUE',
+				'VALIDATING CARRIER - PR',
+				'BAG ALLOWANCE     -JFKMNL-02P/PR/EACH PIECE UP TO 70 POUNDS/32 ',
+				'KILOGRAMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS',
+				'BAG ALLOWANCE     -MNLJFK-02P/PR/EACH PIECE UP TO 70 POUNDS/32 ',
+				'KILOGRAMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS',
+				'CARRY ON ALLOWANCE',
+				'JFKMNL MNLJFK-01P/07KG/PR',
+				'CARRY ON CHARGES',
+				'JFKMNL MNLJFK-PR-CARRY ON FEES UNKNOWN-CONTACT CARRIER',
+				'ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY',
+				'CHANGE BOOKING CLASS -   1I 2I',
+				'.',
+			]),
+			{
+				pqList: [{
+					fareBasisInfo: {ptc: 'ADT'},
+					rebookSegments: [
+						{segmentNumber: '1', bookingClass: 'I'},
+						{segmentNumber: '2', bookingClass: 'I'},
+					],
+				}, {
+					fareBasisInfo: {ptc: 'C05'},
+					rebookSegments: [
+						{segmentNumber: '1', bookingClass: 'I'},
+						{segmentNumber: '2', bookingClass: 'I'},
+					],
+				}],
+			},
+		]);
+
+		return list;
 	}
 
 	/**
