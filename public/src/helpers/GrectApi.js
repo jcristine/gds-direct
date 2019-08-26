@@ -3,15 +3,15 @@ const GrectApi = ({
 	whenEmcSessionId = Promise.reject('EMC ID not supplied'),
 }) => {
 	const fetchJson = ({url, urlParams = null, postParams = null}) => {
-		if (urlParams) {
-			urlParams.emcSessionId = emcSessionId;
-			const esc = encodeURIComponent;
-			const query = Object.entries(urlParams)
-				.map(([k, v]) => esc(k) + '=' + esc(v))
-				.join('&');
-			url += (!query ? '' : '?' + query);
-		}
 		return whenEmcSessionId.then(emcSessionId => {
+			if (urlParams) {
+				urlParams.emcSessionId = emcSessionId;
+				const esc = encodeURIComponent;
+				const query = Object.entries(urlParams)
+					.map(([k, v]) => esc(k) + '=' + esc(v))
+					.join('&');
+				url += (!query ? '' : '?' + query);
+			}
 			return fetch(url, {
 				...(!postParams ? {} : {
 					method: 'POST',
@@ -19,9 +19,11 @@ const GrectApi = ({
 					body: JSON.stringify({
 						...postParams, emcSessionId,
 					}),
-				})
+				}),
 			});
-		}).then(rs => rs.json());
+		}).then(rs => rs.status !== 204 ? rs :
+			Promise.reject('_No Content_ header returned')
+		).then(rs => rs.json());
 	};
 
 	let getCmdRqList = ({sessionId}) => fetchJson({
