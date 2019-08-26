@@ -127,6 +127,7 @@ const GalileoPricingAdapter = ({
 			fareInfo: transformFareInfo(ptcBlock),
 
 			baggageInfo: transformBaggageInfo(baggageBlock),
+			rebookSegments: ptcList.rebookSegments,
 		};
 	};
 
