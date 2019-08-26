@@ -51,11 +51,11 @@ class GalileoPricingAdapter {
 
 	static transformFareInfo($ptcBlock) {
 		return {
-			'baseFare': $ptcBlock['baseFare'],
-			'fareEquivalent': $ptcBlock['fareEquivalent'],
-			'totalFare': $ptcBlock['netPrice'],
-			'taxList': $ptcBlock['taxes'],
-			'fareConstruction': $ptcBlock['fareConstruction'],
+			baseFare: $ptcBlock['baseFare'],
+			fareEquivalent: $ptcBlock['fareEquivalent'],
+			totalFare: $ptcBlock['netPrice'],
+			taxList: $ptcBlock['taxes'],
+			fareConstruction: $ptcBlock['fareConstruction'],
 		};
 	}
 
@@ -74,14 +74,14 @@ class GalileoPricingAdapter {
 			return null;
 		}
 		return {
-			'raw': $baggage['raw'],
-			'parsed': php.empty($baggage['parsed']) ? null : {
-				'baggageAllowanceBlocks': Fp.map(($block) => ({
-					'paxTypeCode': $block['paxTypeCode'],
-					'segments': php.array_map((...args) => this.transformSegment(...args), $block['segments']),
+			raw: $baggage['raw'],
+			parsed: php.empty($baggage['parsed']) ? null : {
+				baggageAllowanceBlocks: Fp.map(($block) => ({
+					paxTypeCode: $block['paxTypeCode'],
+					segments: php.array_map((...args) => this.transformSegment(...args), $block['segments']),
 				}), ($baggage['parsed'] || {})['baggageAllowanceBlocks'] || []),
-				'carryOnAllowanceBlock': {
-					'segments': php.array_map((...args) => this.transformSegment(...args),
+				carryOnAllowanceBlock: {
+					segments: php.array_map((...args) => this.transformSegment(...args),
 						(($baggage['parsed'] || {})['carryOnAllowanceBlock'] || {})['segments'] || []),
 				},
 			},
@@ -103,32 +103,32 @@ class GalileoPricingAdapter {
 		$modPtcData = this.getModPtcData($paxNumber);
 		$cmdPtc = ($modPtcData || {})['ptc'] || $ptcBlock['ptc'];
 		return {
-			'ptcInfo': {
-				'ptc': $ptcBlock['ptc'],
-				'ageGroup': PtcUtil.parsePtc($ptcBlock['ptc'])['ageGroup'],
-				'ptcRequested': $cmdPtc,
-				'ageGroupRequested': PtcUtil.parsePtc($cmdPtc)['ageGroup'],
-				'quantity': php.count($ptcBlock['passengerNumbers']),
+			ptcInfo: {
+				ptc: $ptcBlock['ptc'],
+				ageGroup: PtcUtil.parsePtc($ptcBlock['ptc'])['ageGroup'],
+				ptcRequested: $cmdPtc,
+				ageGroupRequested: PtcUtil.parsePtc($cmdPtc)['ageGroup'],
+				quantity: php.count($ptcBlock['passengerNumbers']),
 			},
 			// I can't believe there actually is a GDS that
 			// uses only absolute passenger numbers...
-			'passengerNameNumbers': Fp.map(($abs) => ({
-				'absolute': $abs,
-				'fieldNumber': $abs,
-				'firstNameNumber': 1,
+			passengerNameNumbers: Fp.map(($abs) => ({
+				absolute: $abs,
+				fieldNumber: $abs,
+				firstNameNumber: 1,
 			}), $ptcBlock['passengerNumbers']),
-			'validatingCarrier': $typeToMsgData['defaultPlatingCarrier'] || $modTypeToData['validatingCarrier'] || $modTypeToData['overrideCarrier'],
-			'hasPrivateFaresSelectedMessage': $typeToMsgData['hasPrivateFaresSelectedMessage'] || false,
-			'lastDateToPurchase': !php.isset($typeToMsgData['lastDateToPurchase']) ? null : {
-				'full': $typeToMsgData['lastDateToPurchase']['parsed'],
+			validatingCarrier: $typeToMsgData['defaultPlatingCarrier'] || $modTypeToData['validatingCarrier'] || $modTypeToData['overrideCarrier'],
+			hasPrivateFaresSelectedMessage: $typeToMsgData['hasPrivateFaresSelectedMessage'] || false,
+			lastDateToPurchase: !php.isset($typeToMsgData['lastDateToPurchase']) ? null : {
+				full: $typeToMsgData['lastDateToPurchase']['parsed'],
 			},
 			// requires separate command - >FQL{ptcNumber}; for each PTC group
-			'endorsementBoxLines': [],
-			'privateFareType': null,
-			'tourCode': null,
-			'fareInfo': this.constructor.transformFareInfo($ptcBlock),
+			endorsementBoxLines: [],
+			privateFareType: null,
+			tourCode: null,
+			fareInfo: this.constructor.transformFareInfo($ptcBlock),
 
-			'baggageInfo': this.constructor.transformBaggageInfo($baggageBlock),
+			baggageInfo: this.constructor.transformBaggageInfo($baggageBlock),
 		};
 	}
 
@@ -161,10 +161,10 @@ class GalileoPricingAdapter {
 			$pricingBlockList.push(this.transformPtcBlock($ptcBlock, $msgs, $baggageBlock, $paxNumber));
 		}
 		return {
-			'quoteNumber': null,
-			'pricingPcc': php.count($taPccs) === 1 ? $taPccs[0] : null,
-			'pricingModifiers': this.getMods(),
-			'pricingBlockList': $pricingBlockList,
+			quoteNumber: null,
+			pricingPcc: php.count($taPccs) === 1 ? $taPccs[0] : null,
+			pricingModifiers: this.getMods(),
+			pricingBlockList: $pricingBlockList,
 		};
 	}
 }
