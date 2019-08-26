@@ -59,40 +59,38 @@ class FxParser {
 	}
 
 	static parseFlightSegment($line) {
-		let $pattern, $split, $date, $time, $nvbDate, $nvaDate, $isEmptyString, $fareBasis, $ticketDesignator, $result;
+		//              '     AL FLGT  BK   DATE  TIME  FARE BASIS      NVB  NVA   BG',
+		//              'XDTT DL   462 B *  23OCT 0910  BNE0WRMD                   2P',
+		//              ' ADD ET   501 H *  20NOV 1030  HLOWUS                     2P',
+		//              ' RIX SU  2682 Y    10DEC 0925  YVO             10DEC10DEC 1P',
+		//              "XTPE BR    31 C  C 10DEC 0020  COU             10DEC10DEC 2P",
+		const pattern = 'XAAA CC  FFFF L *_ WWWWW TTTT  IIIIIIIIIIIIIIIIOOOOOEEEEEBBBBB';
+		const split = this.splitByPositionLetters($line, pattern);
 
-		//         '     AL FLGT  BK   DATE  TIME  FARE BASIS      NVB  NVA   BG',
-		//         'XDTT DL   462 B *  23OCT 0910  BNE0WRMD                   2P',
-		//         ' ADD ET   501 H *  20NOV 1030  HLOWUS                     2P',
-		//         ' RIX SU  2682 Y    10DEC 0925  YVO             10DEC10DEC 1P',
-		//         "XTPE BR    31 C  C 10DEC 0020  COU             10DEC10DEC 2P",
-		$pattern = 'XAAA CC  FFFF L *_ WWWWW TTTT  IIIIIIIIIIIIIIIIOOOOOEEEEEBBB';
-		$split = this.splitByPositionLetters($line, $pattern);
+		const date = CommonParserHelpers.parsePartialDate(split['W']);
+		const time = CommonParserHelpers.decodeApolloTime(split['T']);
+		const nvbDate = CommonParserHelpers.parsePartialDate(split['O']);
+		const nvaDate = CommonParserHelpers.parsePartialDate(split['E']);
 
-		$date = CommonParserHelpers.parsePartialDate($split['W']);
-		$time = CommonParserHelpers.decodeApolloTime($split['T']);
-		$nvbDate = CommonParserHelpers.parsePartialDate($split['O']);
-		$nvaDate = CommonParserHelpers.parsePartialDate($split['E']);
-
-		$isEmptyString = ($val) => $val === '';
-		[$fareBasis, $ticketDesignator] = php.array_pad(php.explode('/', $split['I']), 2, null);
-		$result = {
-			'type': 'flight',
-			'isStopover': $split['X'] !== 'X',
-			'destinationCity': $split['A'],
-			'airline': $split['C'],
-			'flightNumber': $split['F'],
-			'bookingClass': $split['L'],
-			'rebookRequired': $split['*'] === '*',
-			'destinationDate': {'raw': $split['W'], 'parsed': $date},
-			'destinationTime': {'raw': $split['T'], 'parsed': $time},
-			'fareBasis': $fareBasis,
-			'ticketDesignator': $ticketDesignator,
-			'notValidBefore': $nvbDate ? {'raw': $split['O'], 'parsed': $nvbDate} : null,
-			'notValidAfter': $nvaDate ? {'raw': $split['E'], 'parsed': $nvaDate} : null,
-			'freeBaggageAmount': BagAllowanceParser.parseAmountCode($split['B']),
+		const $isEmptyString = ($val) => $val === '';
+		const [fareBasis, ticketDesignator] = php.array_pad(php.explode('/', split['I']), 2, null);
+		const $result = {
+			type: 'flight',
+			isStopover: split['X'] !== 'X',
+			destinationCity: split['A'],
+			airline: split['C'],
+			flightNumber: split['F'],
+			bookingClass: split['L'],
+			rebookRequired: split['*'] === '*',
+			departureDate: {raw: split['W'], parsed: date},
+			departureTime: {raw: split['T'], parsed: time},
+			fareBasis: fareBasis,
+			ticketDesignator: ticketDesignator,
+			notValidBefore: nvbDate ? {raw: split['O'], parsed: nvbDate} : null,
+			notValidAfter: nvaDate ? {raw: split['E'], parsed: nvaDate} : null,
+			freeBaggageAmount: BagAllowanceParser.parseAmountCode(split['B']),
 		};
-		if ($date && $time && php.trim($split[' ']) === '' &&
+		if (date && time && php.trim(split[' ']) === '' &&
 			$result['bookingClass'] && !Fp.any($isEmptyString, $result)
 		) {
 			return $result;
@@ -102,33 +100,31 @@ class FxParser {
 	}
 
 	static splitValueAndFcLine($line) {
-		let $pattern, $symbols, $names, $split, $fcLine, $value;
-
-		//         'USD   633.00      20NOV17WAS ET ADD424.00HLOWUS ET NBO209.00',
-		//         '                  UOWET NUC633.00END ROE1.000000',
-		//         'USD     8.62YQ    XT USD 18.00US USD 5.60AY USD 4.50XF IAD',
-		//         'USD   262.00YR    4.50',
-		//         'USD   120.29-YQ   XT USD 10.61-MD USD 7.31-WW USD 6.72-RI',
-		//         'USD    28.10XT',
-		//         'USD   931.72',
-		$pattern = 'CCCAAAAAAAAATTT   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF';
-		$symbols = php.str_split($pattern, 1);
-		$names = php.array_combine($symbols, $symbols);
-		$split = StringUtil.splitByPosition($line, $pattern, $names, false);
-		if (php.trim($split[' ']) === '') {
-			$fcLine = $split['F'];
-			if (php.trim($split['C'] + $split['A'] + $split['T']) === '') {
-				return [null, $fcLine];
+		//              'USD   633.00      20NOV17WAS ET ADD424.00HLOWUS ET NBO209.00',
+		//              '                  UOWET NUC633.00END ROE1.000000',
+		//              'USD     8.62YQ    XT USD 18.00US USD 5.60AY USD 4.50XF IAD',
+		//              'USD   262.00YR    4.50',
+		//              'USD   120.29-YQ   XT USD 10.61-MD USD 7.31-WW USD 6.72-RI',
+		//              'USD    28.10XT',
+		//              'USD   931.72',
+		const pattern = 'CCCAAAAAAAAATTT   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF';
+		const symbols = php.str_split(pattern, 1);
+		const names = php.array_combine(symbols, symbols);
+		const split = StringUtil.splitByPosition($line, pattern, names, false);
+		if (php.trim(split[' ']) === '') {
+			const fcLine = split['F'];
+			if (php.trim(split['C'] + split['A'] + split['T']) === '') {
+				return [null, fcLine];
 			} else {
-				$value = {
-					'currency': $split['C'],
-					'amount': php.trim($split['A']),
-					'taxCode': php.trim($split['T'], ' -') || null,
+				const value = {
+					currency: split['C'],
+					amount: php.trim(split['A']),
+					taxCode: php.trim(split['T'], ' -') || null,
 				};
-				if (php.preg_match(/^[A-Z]{3}$/, $value['currency']) &&
-					php.preg_match(/^\d*\.?\d+$/, $value['amount'])
+				if (php.preg_match(/^[A-Z]{3}$/, value['currency']) &&
+					php.preg_match(/^\d*\.?\d+$/, value['amount'])
 				) {
-					return [$value, $fcLine];
+					return [value, fcLine];
 				}
 			}
 		}
