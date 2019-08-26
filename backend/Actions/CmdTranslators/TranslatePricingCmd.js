@@ -196,6 +196,8 @@ const processTravelportMod = (effectiveMods, mod, coma, thru) => {
 		effectiveMods.push('C' + mod.parsed);
 	} else if (mod.type === 'overrideCarrier') {
 		effectiveMods.push('OC' + mod.parsed);
+	} else if (mod.type === 'ticketingAgencyPcc') {
+		effectiveMods.push('TA' + mod.parsed);
 	} else if (mod.type === 'commission') {
 		const {units, value} = mod.parsed;
 		const apolloMod = 'Z' + (units === 'amount' ? '$' : '') + value;
