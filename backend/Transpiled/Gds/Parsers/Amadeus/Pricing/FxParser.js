@@ -361,49 +361,58 @@ class FxParser {
 	}
 
 	static parsePassengerLine($line) {
-		let $pattern, $split, $lname, $fname, $cmdPaxNumsRaw, $infMark, $result, $cmdPaxNums;
+		//              '   PASSENGER         PTC    NP  FARE USD  TAX/FEE   PER PSGR',
+		//              '02 SMITH/JANNI*      ADT     1     980.00  623.50    1603.50',
+		//              '04 LIBERMANE/ZIMICH  CNN     1     361.00   67.11     428.11',
+		//              '02 LIBERMANE/LONGL*  CNN     1     359.00   66.77     425.77',
+		//              '02 LONGLONGL*/LONGL* CNN     1     359.00   66.77     425.77',
+		//              '01 1,3-4             ADT     3     742.00   82.73     824.73',
+		//              '03 3 INF             INF     1      15.00    0.00      15.00',
+		//              "03 WALTERS/PATRI*    IN      1       3086    8974      12060",
+		//              '04 SOUFFRONT/SEBAS*  CH33*   1     509.00  118.03     627.03',
+		//              '                   TOTALS    5    2239.00  268.44    2507.44','
+		const pattern = 'NN FFFFFFFFFFFFFFFFF.PPPPPP QQ BBBBBBBBBB TTTTTTT CCCCCCCCCC';
+		const split = this.splitByPositionLetters($line, pattern);
 
-		//         '   PASSENGER         PTC    NP  FARE USD  TAX/FEE   PER PSGR',
-		//         '02 SMITH/JANNI*      ADT     1     980.00  623.50    1603.50',
-		//         '04 LIBERMANE/ZIMICH  CNN     1     361.00   67.11     428.11',
-		//         '02 LIBERMANE/LONGL*  CNN     1     359.00   66.77     425.77',
-		//         '02 LONGLONGL*/LONGL* CNN     1     359.00   66.77     425.77',
-		//         '01 1,3-4             ADT     3     742.00   82.73     824.73',
-		//         '03 3 INF             INF     1      15.00    0.00      15.00',
-		//         "03 WALTERS/PATRI*    IN      1       3086    8974      12060",
-		//         '                   TOTALS    5    2239.00  268.44    2507.44','
-		$pattern = 'NN FFFFFFFFFFFFFFFFF.PPP.   QQ BBBBBBBBBB TTTTTTT CCCCCCCCCC';
-		$split = this.splitByPositionLetters($line, $pattern);
-
-		$lname = php.explode('/', $split['F'])[0];
-		$fname = (php.explode('/', $split['F']) || {})[1];
-		$cmdPaxNumsRaw = php.explode(' ', $split['F'])[0];
-		$infMark = (php.explode(' ', $split['F']) || {})[1];
-		$result = {
-			'lineNumber': $split['N'],
-			'ptc': $split['P'],
-			'quantity': $split['Q'],
-			'baseFare': $split['B'],
-			'taxAmount': $split['T'] || null,
-			'netPrice': $split['C'],
-		};
-		if (!php.empty($cmdPaxNums = this.parseCmdPaxNums($cmdPaxNumsRaw))) {
-			$result['hasName'] = false;
-			$result['cmdPaxNums'] = $cmdPaxNums;
-			$result['isInfantCapture'] = $infMark === 'INF';
-		} else {
-			$result['hasName'] = true;
-			$result['lastName'] = php.rtrim($lname, '*');
-			$result['lastNameTruncated'] = php.rtrim($lname, '*') !== $lname;
-			$result['firstName'] = php.rtrim($fname, '*');
-			$result['firstNameTruncated'] = php.rtrim($fname, '*') !== $fname;
+		const lname = php.explode('/', split['F'])[0];
+		const fname = (php.explode('/', split['F']) || {})[1];
+		const cmdPaxNumsRaw = php.explode(' ', split['F'])[0];
+		const infMark = (php.explode(' ', split['F']) || {})[1];
+		const ptcStr = split['P'];
+		const ptcMatch =
+			ptcStr.match(/^([A-Z]{2})(.{2,})$/) ||
+			ptcStr.match(/^([A-Z0-9]{2,3})(.*)$/);
+		if (!ptcMatch) {
+			return null;
 		}
-		if (php.trim($split[' ']) === '' &&
-			php.preg_match(/^[A-Z0-9]{2,3}$/, $result['ptc']) &&
-			php.preg_match(/^\d*\.?\d+$/, $result['baseFare']) &&
-			php.preg_match(/^\d*\.?\d+$/, $result['netPrice'])
+		const [, ptc, ptcDescription] = ptcMatch;
+		const result = {
+			lineNumber: split['N'],
+			ptc: ptc,
+			ptcDescription: ptcDescription,
+			quantity: split['Q'],
+			baseFare: split['B'],
+			taxAmount: split['T'] || null,
+			netPrice: split['C'],
+		};
+		const cmdPaxNums = this.parseCmdPaxNums(cmdPaxNumsRaw);
+		if (!php.empty(cmdPaxNums)) {
+			result.hasName = false;
+			result.cmdPaxNums = cmdPaxNums;
+			result.isInfantCapture = infMark === 'INF';
+		} else {
+			result.hasName = true;
+			result.lastName = php.rtrim(lname, '*');
+			result.lastNameTruncated = php.rtrim(lname, '*') !== lname;
+			result.firstName = php.rtrim(fname, '*');
+			result.firstNameTruncated = php.rtrim(fname, '*') !== fname;
+		}
+		if (php.trim(split[' ']) === '' &&
+			php.preg_match(/^[A-Z0-9]{2,3}$/, result['ptc']) &&
+			php.preg_match(/^\d*\.?\d+$/, result['baseFare']) &&
+			php.preg_match(/^\d*\.?\d+$/, result['netPrice'])
 		) {
-			return $result;
+			return result;
 		} else {
 			return null;
 		}
@@ -411,24 +420,24 @@ class FxParser {
 
 	// first line like:
 	// '01 LIBERMANE/LEPIN   CNN     1     361.00   67.11     428.11'
-	static parsePtcList($lines) {
-		let $passengers, $emptyLines, $totals;
+	static parsePtcList(lines) {
+		let passengers, emptyLines;
 
-		[$passengers, $lines] = this.parseSequence($lines, (...args) => this.parsePassengerLine(...args));
-		[$emptyLines, $lines] = this.parseSequence($lines, (...args) => this.isEmptyLine(...args));
-		$totals = this.parsePassengerLine(php.array_shift($lines));
-		if (!$totals) {
-			throw new Error('Failed to parse FXX TOTALS line - ' + $lines[0]);
+		[passengers, lines] = this.parseSequence(lines, (...args) => this.parsePassengerLine(...args));
+		[emptyLines, lines] = this.parseSequence(lines, (...args) => this.isEmptyLine(...args));
+		const totals = this.parsePassengerLine(php.array_shift(lines));
+		if (!totals) {
+			throw new Error('Failed to parse FXX TOTALS line - ' + lines[0]);
 		}
-		[$emptyLines, $lines] = this.parseSequence($lines, (...args) => this.isEmptyLine(...args));
+		[emptyLines, lines] = this.parseSequence(lines, (...args) => this.isEmptyLine(...args));
 		return {
-			'passengers': $passengers,
-			'totalPassengers': $totals['quantity'],
-			'totalBaseFare': $totals['baseFare'],
-			'totalTaxAmount': $totals['taxAmount'],
-			'totalNetPrice': $totals['netPrice'],
-			'additionalInfo': {
-				'unparsed': $lines,
+			passengers: passengers,
+			totalPassengers: totals.quantity,
+			totalBaseFare: totals.baseFare,
+			totalTaxAmount: totals.taxAmount,
+			totalNetPrice: totals.netPrice,
+			additionalInfo: {
+				unparsed: lines,
 			},
 		};
 	}

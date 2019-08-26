@@ -1672,6 +1672,38 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
 			},
 		]);
 
+		// CH33* PTC. 33* does not seem to be neither age, nor discount percent...
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				'FXX/R,P,24AUG19',
+				'',
+				'',
+				'   PASSENGER         PTC    NP  FARE USD  TAX/FEE   PER PSGR',
+				'01 SOUFFRONT/JUANL*  ADT     1     536.00  118.03     654.03',
+				'02 SOUFFRONT/LAURA*  ADT     1     536.00  118.03     654.03',
+				'03 SOUFFRONT/SARAH*  CH33*   1     509.00  118.03     627.03',
+				'04 SOUFFRONT/SEBAS*  CH33*   1     509.00  118.03     627.03',
+				'',
+				'                   TOTALS    4    2090.00  472.12    2562.12',
+				'',
+				'FXU/TS TO UPSELL SE-SF FOR 234.00USD',
+				'1-4 FARE FAMILIES:SL-SF',
+				'1-4 LAST TKT DTE 25AUG19/23:59 LT in POS - SEE ADV PURCHASE',
+				'1-4 TICKETS ARE NON-REFUNDABLE',
+			]),
+			{
+				commandCopy: 'FXX/R,P,24AUG19',
+				data: {
+					passengers: [
+						{lineNumber: '01', ptc: 'ADT'},
+						{lineNumber: '02', ptc: 'ADT'},
+						{lineNumber: '03', ptc: 'CH', 'ptcDescription': '33*'},
+						{lineNumber: '04', ptc: 'CH', 'ptcDescription': '33*'},
+					],
+				},
+			},
+		]);
+
 		return $list;
 	}
 
