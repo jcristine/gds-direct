@@ -31,10 +31,12 @@ const parseWaitlist = output => {
 class SabreBuildItineraryAction extends AbstractGdsAction {
 	constructor({
 		sabre = SabreClient.makeCustom(),
+		session,
 	} = {}) {
 		super();
 		this.$useXml = true;
 		this.sabre = sabre;
+		this.session = session;
 	}
 
 	useXml($flag) {

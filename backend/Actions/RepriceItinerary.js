@@ -136,9 +136,12 @@ const RepriceItinerary = ({
 	pricingCmd, session, startDt,
 	gdsClients = GdsSession.makeGdsClients(),
 }) => {
+	const {travelport, sabre, amadeus} = gdsClients;
+
 	const inApollo = async () => {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
 		const built = await ApolloBuildItinerary({
+			travelport,
 			baseDate: startDt,
 			session, itinerary,
 			isParserFormat: true,
@@ -162,7 +165,6 @@ const RepriceItinerary = ({
 	};
 
 	const inGalileo = async () => {
-		const travelport = gdsClients.travelport;
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'AK'}));
 		const built = await GalileoBuildItineraryAction({
 			travelport, session, itinerary, isParserFormat: true,
@@ -204,7 +206,7 @@ const RepriceItinerary = ({
 				? {...seg, segmentStatus: 'LL'}
 				: {...seg, segmentStatus: 'GK'};
 		});
-		const build = await new SabreBuildItineraryAction().setSession(session);
+		const build = await new SabreBuildItineraryAction({session, sabre});
 		let built = await build.execute(itinerary, true);
 		let yFallback = false;
 		if (built.errorType === ERROR_NO_AVAIL) {
