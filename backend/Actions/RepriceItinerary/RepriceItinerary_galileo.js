@@ -56,10 +56,9 @@ const RepriceItinerary_galileo = ({
 			})),
 			error: error,
 			pricingCmd: pricingCmd,
-			pricingBlockList: error ? [] :
-				new GalileoPricingAdapter()
-					.setPricingCommand(pricingCmd)
-					.transform(ptcList, linearFare).pricingBlockList,
+			pricingBlockList: error ? [] : GalileoPricingAdapter({
+				ptcList, linearFare, pricingCommand: pricingCmd,
+			}).pricingBlockList,
 		};
 	};
 

@@ -95,36 +95,34 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 	}
 
 	processPricingOutput(cmdRec) {
-		let $ptcList, $error, $linearFareDump, $linearFare, $common, $bagPtcPricingBlocks, $i, $ptcBlock, $wrapped,
-			$currentPricing;
-		$ptcList = FqParser.parse(cmdRec.output);
-		if ($error = $ptcList['error']) {
-			return {'error': 'Failed to parse pricing PTC list - ' + $error};
+		let error;
+		const ptcList = FqParser.parse(cmdRec.output);
+		if (error = ptcList.error) {
+			return {error: 'Failed to parse pricing PTC list - ' + error};
 		}
-		$linearFare = LinearFareParser.parse(cmdRec.linearOutput);
-		if ($error = $linearFare['error']) {
-			return {'error': 'Failed to parse pricing Linear Fare - ' + $error};
+		const linearFare = LinearFareParser.parse(cmdRec.linearOutput);
+		if (error = linearFare.error) {
+			return {error: 'Failed to parse pricing Linear Fare - ' + error};
 		}
-		$common = (new GalileoPricingAdapter())
-			.setPricingCommand(cmdRec.cmd)
-			.transform($ptcList, $linearFare);
+		const store = GalileoPricingAdapter({
+			ptcList, linearFare, pricingCommand: cmdRec.cmd,
+		});
 
 		// separate baggage blocks from pricing, since
 		// they take very much space on the screen
-		$bagPtcPricingBlocks = [];
-		for ([$i, $ptcBlock] of Object.entries($common['pricingBlockList'] || [])) {
-			$bagPtcPricingBlocks.push(this.constructor.transformBagPtcBlock($ptcBlock, $i));
-			delete ($ptcBlock['baggageInfo']);
-			$common['pricingBlockList'][$i] = $ptcBlock;
+		const bagPtcPricingBlocks = [];
+		for (const [i, ptcBlock] of Object.entries(store.pricingBlockList || [])) {
+			bagPtcPricingBlocks.push(this.constructor.transformBagPtcBlock(ptcBlock, i));
+			delete ptcBlock.baggageInfo;
+			store.pricingBlockList[i] = ptcBlock;
 		}
 
-		$wrapped = {'pricingList': [$common]};
-		$currentPricing = {'raw': cmdRec.output, 'parsed': $wrapped, 'cmd': cmdRec.cmd};
-		$linearFare = {'raw': $linearFareDump, 'parsed': $linearFare, 'cmd': 'F*Q'};
+		const wrapped = {pricingList: [store]};
+		const currentPricing = {raw: cmdRec.output, parsed: wrapped, cmd: cmdRec.cmd};
 		return {
-			'currentPricing': $currentPricing,
-			'bagPtcPricingBlocks': $bagPtcPricingBlocks,
-			'linearFare': $linearFare,
+			currentPricing: currentPricing,
+			bagPtcPricingBlocks: bagPtcPricingBlocks,
+			linearFare: {raw: cmdRec.linearOutput, parsed: linearFare, cmd: 'F*Q'},
 		};
 	}
 

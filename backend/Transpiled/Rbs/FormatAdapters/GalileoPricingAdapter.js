@@ -9,34 +9,72 @@ const PtcUtil = require('../../Rbs/Process/Common/PtcUtil.js');
  */
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
-class GalileoPricingAdapter {
-	constructor() {
-		this.$pricingCommand = null;
-	}
-
-	setPricingCommand($cmd) {
-		this.$pricingCommand = $cmd;
-		return this;
-	}
-
-	getMods() {
-		return !this.$pricingCommand ? [] :
-			((CommandParser.parse(this.$pricingCommand) || {}).data || {}).pricingModifiers || [];
-	}
-
-	static getFirst(predicate, iterable, fallback) {
-		for (const element of Object.values(iterable)) {
-			if (predicate(element)) {
-				return element;
-			}
+const getFirst = (predicate, iterable, fallback) => {
+	for (const element of Object.values(iterable)) {
+		if (predicate(element)) {
+			return element;
 		}
-		return fallback;
+	}
+	return fallback;
+};
+
+const transformFareInfo = (ptcBlock) => ({
+	baseFare: ptcBlock.baseFare,
+	fareEquivalent: ptcBlock.fareEquivalent,
+	totalFare: ptcBlock.netPrice,
+	taxList: ptcBlock.taxes,
+	fareConstruction: ptcBlock.fareConstruction,
+});
+
+const transformSegment = (segment) => {
+	const segmentDetails = segment.segmentDetails;
+	segment.segmentDetails.bagWithoutFeeNumber = (segmentDetails.freeBaggageAmount || {}).raw;
+	segment.segmentDetails.bagWithoutFeeNumberParsed = (segmentDetails.freeBaggageAmount || {}).parsed;
+	delete segment.segmentDetails.freeBaggageAmount;
+	return segment;
+};
+
+const transformBaggageInfo = (baggage) => {
+	if (php.empty(baggage)) {
+		return null;
+	}
+	return {
+		raw: baggage.raw,
+		parsed: php.empty(baggage.parsed) ? null : {
+			baggageAllowanceBlocks: Fp.map(($block) => ({
+				paxTypeCode: $block.paxTypeCode,
+				segments: php.array_map((...args) => transformSegment(...args), $block.segments),
+			}), (baggage.parsed || {}).baggageAllowanceBlocks || []),
+			carryOnAllowanceBlock: {
+				segments: php.array_map((...args) => transformSegment(...args),
+					((baggage.parsed || {}).carryOnAllowanceBlock || {}).segments || []),
+			},
+		},
+	};
+};
+
+/**
+ * @param ptcList = require('FqParser.js').parse()
+ * @param linearFare = require('LinearFareParser.js').parse()
+ */
+const GalileoPricingAdapter = ({
+	ptcList, linearFare,
+	pricingCommand = null,
+}) => {
+	if (!pricingCommand) {
+		pricingCommand = ptcList.cmdCopy;
 	}
 
-	getModPtcData($passengerNumber) {
+	const getMods = () =>!pricingCommand ? [] :
+		((CommandParser
+			.parse(pricingCommand) || {})
+			.data || {})
+			.pricingModifiers || [];
+
+	const getModPtcData = ($passengerNumber) => {
 		const hasPassengerNumber = ($group) => php.in_array($passengerNumber, $group.passengerNumbers);
 
-		const mods = this.getMods();
+		const mods = getMods();
 		const modTypeToData = php.array_combine(
 			php.array_column(mods, 'type'),
 			php.array_column(mods, 'parsed')
@@ -44,57 +82,20 @@ class GalileoPricingAdapter {
 		const pMod = modTypeToData.passengers;
 		return pMod && pMod.appliesToAll
 			? pMod.ptcGroups[0]
-			: this.constructor.getFirst(hasPassengerNumber, (pMod || {}).ptcGroups || [], null);
-	}
+			: getFirst(hasPassengerNumber, (pMod || {}).ptcGroups || [], null);
+	};
 
-	static transformFareInfo($ptcBlock) {
-		return {
-			baseFare: $ptcBlock['baseFare'],
-			fareEquivalent: $ptcBlock['fareEquivalent'],
-			totalFare: $ptcBlock['netPrice'],
-			taxList: $ptcBlock['taxes'],
-			fareConstruction: $ptcBlock['fareConstruction'],
-		};
-	}
-
-	static transformSegment(segment) {
-		const segmentDetails = segment.segmentDetails;
-		segment.segmentDetails.bagWithoutFeeNumber = (segmentDetails.freeBaggageAmount || {}).raw;
-		segment.segmentDetails.bagWithoutFeeNumberParsed = (segmentDetails.freeBaggageAmount || {}).parsed;
-		delete segment.segmentDetails.freeBaggageAmount;
-		return segment;
-	}
-
-	static transformBaggageInfo(baggage) {
-		if (php.empty(baggage)) {
-			return null;
-		}
-		return {
-			raw: baggage.raw,
-			parsed: php.empty(baggage.parsed) ? null : {
-				baggageAllowanceBlocks: Fp.map(($block) => ({
-					paxTypeCode: $block.paxTypeCode,
-					segments: php.array_map((...args) => this.transformSegment(...args), $block['segments']),
-				}), (baggage.parsed || {}).baggageAllowanceBlocks || []),
-				carryOnAllowanceBlock: {
-					segments: php.array_map((...args) => this.transformSegment(...args),
-						((baggage['parsed'] || {})['carryOnAllowanceBlock'] || {})['segments'] || []),
-				},
-			},
-		};
-	}
-
-	transformPtcBlock(ptcBlock, ptcMessages, baggageBlock, paxNumber) {
+	const transformPtcBlock = (ptcBlock, ptcMessages, baggageBlock, paxNumber) => {
 		const typeToMsgData = php.array_combine(
 			php.array_column(ptcMessages, 'type'),
 			php.array_column(ptcMessages, 'parsed')
 		);
-		const mods = this.getMods();
+		const mods = getMods();
 		const modTypeToData = php.array_combine(
 			php.array_column(mods, 'type'),
 			php.array_column(mods, 'parsed')
 		);
-		const modPtcData = this.getModPtcData(paxNumber);
+		const modPtcData = getModPtcData(paxNumber);
 		const cmdPtc = (modPtcData || {}).ptc || ptcBlock.ptc;
 		return {
 			ptcInfo: {
@@ -123,21 +124,13 @@ class GalileoPricingAdapter {
 			endorsementBoxLines: [],
 			privateFareType: null,
 			tourCode: null,
-			fareInfo: this.constructor.transformFareInfo(ptcBlock),
+			fareInfo: transformFareInfo(ptcBlock),
 
-			baggageInfo: this.constructor.transformBaggageInfo(baggageBlock),
+			baggageInfo: transformBaggageInfo(baggageBlock),
 		};
-	}
+	};
 
-	/**
-	 * @param ptcList = require('FqParser.js').parse()
-	 * @param linearFare = Galileo\Pricing\LinearFareParser::parse()
-	 */
-	transform(ptcList, linearFare) {
-		if (!this.$pricingCommand) {
-			this.setPricingCommand(ptcList.cmdCopy);
-		}
-
+	const main = () => {
 		const getType = msgRec => msgRec.type;
 		const typeToPtcMsgs = Fp.groupBy(getType, ptcList.ptcMessages || []);
 		const taPccs = php.array_unique(php.array_column(typeToPtcMsgs.ticketingAgencyPcc || [], 'parsed'));
@@ -147,20 +140,25 @@ class GalileoPricingAdapter {
 
 		const pricingBlockList = [];
 		for (const [i, ptcBlock] of Object.entries(linearFare.ptcBlocks)) {
-			const paxNumber = ArrayUtil.getFirst(ptcBlock['passengerNumbers']);
-			const modPtcData = this.getModPtcData(paxNumber);
+			const paxNumber = ArrayUtil.getFirst(ptcBlock.passengerNumbers);
+			const modPtcData = getModPtcData(paxNumber);
 			const fullPtc = modPtcData && modPtcData.ptc ? modPtcData.ptc + modPtcData.ptcDescription : 'ADT';
 			const msgs = fullPtcToMsgs[fullPtc] || [];
 			const baggageBlock = (ptcList.bagPtcPricingBlocks || {})[i];
-			pricingBlockList.push(this.transformPtcBlock(ptcBlock, msgs, baggageBlock, paxNumber));
+			const commonBlock = transformPtcBlock(
+				ptcBlock, msgs, baggageBlock, paxNumber,
+			);
+			pricingBlockList.push(commonBlock);
 		}
 		return {
 			quoteNumber: null,
 			pricingPcc: php.count(taPccs) === 1 ? taPccs[0] : null,
-			pricingModifiers: this.getMods(),
+			pricingModifiers: getMods(),
 			pricingBlockList: pricingBlockList,
 		};
-	}
-}
+	};
+
+	return main();
+};
 
 module.exports = GalileoPricingAdapter;
