@@ -29,7 +29,7 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const PricingStructureWriter = require('../../../../Gds/Parsers/Apollo/PricingParser/DataStructureWriters/PricingStructureWriter.js');
 const NextToken = require("./NextToken");
 const ParserState = require("./ParserState");
-const php = require('../../../../phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class PricingParser
 {

@@ -3,7 +3,7 @@
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const CommandParser = require('../../../Gds/Parsers/Apollo/CommandParser.js');
-const php = require('../../../phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class CmsApolloTerminal
 {

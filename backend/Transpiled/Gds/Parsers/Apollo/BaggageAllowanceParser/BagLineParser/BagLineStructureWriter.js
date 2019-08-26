@@ -1,6 +1,6 @@
 
 
-const php = require('../../../../../phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class BagLineStructureWriter
 {

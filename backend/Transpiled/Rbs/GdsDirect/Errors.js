@@ -1,7 +1,7 @@
 
 
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
-const php = require('../../phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * lists error messages common for all GDS-es

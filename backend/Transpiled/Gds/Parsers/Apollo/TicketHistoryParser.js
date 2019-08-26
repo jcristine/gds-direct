@@ -2,7 +2,7 @@
 const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require("./CommonParserHelpers");
-const php = require('../../../phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * parses output of *HT

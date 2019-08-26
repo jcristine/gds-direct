@@ -1,7 +1,7 @@
 
 
 const AirAvailabilityParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Apollo/AirAvailabilityParser.js');
-const php = require('../../../../../../backend/Transpiled/phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class AirAvailabilityParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js')
 {

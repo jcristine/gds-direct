@@ -2,7 +2,7 @@ const ImportApolloPnrFormatAdapter = require('../Process/Apollo/ImportPnr/Import
 
 const Fp = require('../../Lib/Utils/Fp.js');
 const PnrParser = require('../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
-const php = require('../../phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /** @implements {IPnr} */
 class ApolloPnr {

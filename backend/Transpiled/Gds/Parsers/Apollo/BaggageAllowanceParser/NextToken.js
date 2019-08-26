@@ -3,7 +3,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const BagLineParser = require('../../../../Gds/Parsers/Apollo/BaggageAllowanceParser/BagLineParser/BagLineParser.js');
 const BagLineStructureWriter = require('../../../../Gds/Parsers/Apollo/BaggageAllowanceParser/BagLineParser/BagLineStructureWriter.js');
-const php = require('../../../../phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class NextToken
 {

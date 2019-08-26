@@ -1,7 +1,7 @@
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const FareConstructionTokenizer = require("./FareConstructionTokenizer");
-const php = require('../../../../phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * parse Linear Fare Construction, aka Fare Calculation line
