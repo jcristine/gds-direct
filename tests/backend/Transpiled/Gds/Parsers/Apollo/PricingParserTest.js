@@ -1539,7 +1539,7 @@ class PricingParserTest extends require('../../../../../../backend/Transpiled/Li
 				'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
 			]),
 			{
-//                'pricingCommandCopy' => '>$BB-*1O3K>$BBQ01;', // wrong
+				//                'pricingCommandCopy' => '>$BB-*1O3K>$BBQ01;', // wrong
 				'pricingCommandCopy': '>$BB-*1O3K',
 				'parsedPricingCommand': {
 					'isManualPricingRecord': false,

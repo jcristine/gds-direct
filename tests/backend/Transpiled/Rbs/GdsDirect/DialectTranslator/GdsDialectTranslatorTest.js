@@ -1236,8 +1236,8 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
 			['amadeus', 'apollo', 'FXR/RC05', '$BB0*C05/ACC'],
 			['amadeus', 'apollo', 'FXL/RC05', '$BBA*C05/ACC'],
 			['amadeus', 'apollo', 'FXX/L-Q1LEP4', '$B@Q1LEP4'],
-//['amadeus', 'apollo', 'FXX/L-Q1LEP4/RJCB', '$B*JCB/@Q1LEP4'],
-//['amadeus', 'apollo', 'FXX/L-Q1LEP4/RITX', '$B*ITX/@Q1LEP4'],
+			//['amadeus', 'apollo', 'FXX/L-Q1LEP4/RJCB', '$B*JCB/@Q1LEP4'],
+			//['amadeus', 'apollo', 'FXX/L-Q1LEP4/RITX', '$B*ITX/@Q1LEP4'],
 			['amadeus', 'apollo', 'FXX/R,FC-CAD', '$B:CAD'],
 			['amadeus', 'apollo', 'FXA/R,FC-CAD', '$BB:CAD'],
 			['amadeus', 'apollo', 'FXL/R,FC-CAD', '$BBA:CAD'],
@@ -1604,77 +1604,77 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
 			// don't know why we have "no need to translate" them, they are likely to be used a lot
 			// I guess initial author meant "no need to translate _for now_"
 			// TODO: uncomment and make sure they all are translated correctly
-//            ['apollo', 'amadeus', '$BBN1*JCB|2*J05/:EUR', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBAN1*ITX|2*X05/:EUR', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BB0N1|2*C05|3*INF/:EUR', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBN1*ITX|2*I05', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBN1*ITX|2*I06|3*ITF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BB0N1*ITX|2*I05', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BB0N1*ITX|2*I06|3*ITF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBAN1*ITX|2*I05', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBAN1*ITX|2*I06|3*ITF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BB0N1*JCB|2*J05', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBN1*JCB|2*J05', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBAN1|2|3*C05|4*INF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBAN1|2*C05|3*INF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBAN1|2*C05', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BB0N1|2|3*C05|4*INF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BB0N1|2*C05|3*INF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BB0N1|2*C05', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBN1|2|3*C05|4*INF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBN1|2*C05|3*INF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBN1|2*C05', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBS1|2|5|6/N1|2*C05', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBS1|2|5|6/N1|2*C05|3*INF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBS1|2|5|6/N1|2|3*C05|4*INF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BB0S1|2|5|6/N1|2*C05', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BB0S1|2|5|6/N1|2*C05|3*INF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BB0S1|2|5|6/N1|2|3*C05|4*INF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBAS1|2|5|6/N1|2*C05', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBAS1|2|5|6/N1|2*C05|3*INF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBAS1|2|5|6/N1|2|3*C05|4*INF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBS1|2|5|6/N1*JCB|2*JCB|3*JNN|4*JNF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', '$BBS1|2|5|6/N1*ITX|2*ITX|3*INN|4*ITF', ''], 	//no need to translate
-//            ['apollo', 'amadeus', 'A20SEPKIVMIA12AIST960|TK.9U', ''], 	//no need to translate
-//            ['apollo', 'amadeus', 'A1MARSFOACC12ANYC960|/*S', ''],
-//            ['sabre', 'amadeus', 'WPP1JCB/1J05¥NC¥MEUR', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ITX/1I06¥NCS¥MEUR', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF¥NCB¥MEUR', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPPITX', 'FXX/RIIT'],
-//            ['sabre', 'amadeus', 'WPNC¥PITX', 'FXA/RIIT'],
-//            ['sabre', 'amadeus', 'WPP1ITX/1I06¥NC', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ITX/1I06/1ITF¥NC', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ITX/1I06¥NCB', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ITX/1I06/1ITF¥NCB', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ITX/1I06¥NCS', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ITX/1I06/1ITF¥NCS', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1JCB/1J05¥NCB', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1JCB/1J05¥NC', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1JCB/1J05', 'FXX/RJCB*J05'],
-//            ['sabre', 'amadeus', 'WPP2ADT/1C05/1INF¥NCS', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF¥NCS', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ADT/1C05¥NCS', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP2ADT/1C05/1INF¥NCB', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF¥NCB', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ADT/1C05¥NCB', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP2ADT/1C05/1INF¥NC', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF¥NC', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ADT/1C05¥NC', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP2ADT/1C05/1INF', 'FXX/RADT*C05*INF'], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP2ADT/1C05/1INF¥S1/2/5/6', 'FXX/S1,2,5,6/RADT*C05*INF'],
-//            ['sabre', 'amadeus', 'WPP1ADT/1C05¥NC¥S1/2/5/6', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF¥NC¥S1/2/5/6', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP2ADT/1C05/1INF¥NC¥S1/2/5/6', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ADT/1C05¥NCB¥S1/2/5/6', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF¥NCB¥S1/2/5/6', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP2ADT/1C05/1INF¥NCB¥S1/2/5/6', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ADT/1C05¥NCS¥S1/2/5/6', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF¥NCS¥S1/2/5/6', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP2ADT/1C05/1INF¥NCS¥S1/2/5/6', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP2JCB/1JNN/1JNF¥NC¥S1/2/5/6', ''], 	//no need to translate
-//            ['sabre', 'amadeus', 'WPP2ITX/1INN/1ITF¥NC¥S1/2/5/6', ''], 	//no need to translate
-//            ['sabre', 'amadeus', '120SEPKIVMIA12AIST-960¥TK9U', ''], 	//no need to translate
-//            ['sabre', 'amadeus', '120SEPSFOACC12ANYC-960¥/*S', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBN1*JCB|2*J05/:EUR', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBAN1*ITX|2*X05/:EUR', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BB0N1|2*C05|3*INF/:EUR', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBN1*ITX|2*I05', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBN1*ITX|2*I06|3*ITF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BB0N1*ITX|2*I05', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BB0N1*ITX|2*I06|3*ITF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBAN1*ITX|2*I05', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBAN1*ITX|2*I06|3*ITF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BB0N1*JCB|2*J05', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBN1*JCB|2*J05', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBAN1|2|3*C05|4*INF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBAN1|2*C05|3*INF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBAN1|2*C05', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BB0N1|2|3*C05|4*INF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BB0N1|2*C05|3*INF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BB0N1|2*C05', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBN1|2|3*C05|4*INF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBN1|2*C05|3*INF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBN1|2*C05', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBS1|2|5|6/N1|2*C05', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBS1|2|5|6/N1|2*C05|3*INF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBS1|2|5|6/N1|2|3*C05|4*INF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BB0S1|2|5|6/N1|2*C05', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BB0S1|2|5|6/N1|2*C05|3*INF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BB0S1|2|5|6/N1|2|3*C05|4*INF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBAS1|2|5|6/N1|2*C05', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBAS1|2|5|6/N1|2*C05|3*INF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBAS1|2|5|6/N1|2|3*C05|4*INF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBS1|2|5|6/N1*JCB|2*JCB|3*JNN|4*JNF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', '$BBS1|2|5|6/N1*ITX|2*ITX|3*INN|4*ITF', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', 'A20SEPKIVMIA12AIST960|TK.9U', ''], 	//no need to translate
+			//            ['apollo', 'amadeus', 'A1MARSFOACC12ANYC960|/*S', ''],
+			//            ['sabre', 'amadeus', 'WPP1JCB/1J05¥NC¥MEUR', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ITX/1I06¥NCS¥MEUR', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF¥NCB¥MEUR', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPPITX', 'FXX/RIIT'],
+			//            ['sabre', 'amadeus', 'WPNC¥PITX', 'FXA/RIIT'],
+			//            ['sabre', 'amadeus', 'WPP1ITX/1I06¥NC', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ITX/1I06/1ITF¥NC', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ITX/1I06¥NCB', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ITX/1I06/1ITF¥NCB', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ITX/1I06¥NCS', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ITX/1I06/1ITF¥NCS', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1JCB/1J05¥NCB', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1JCB/1J05¥NC', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1JCB/1J05', 'FXX/RJCB*J05'],
+			//            ['sabre', 'amadeus', 'WPP2ADT/1C05/1INF¥NCS', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF¥NCS', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ADT/1C05¥NCS', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP2ADT/1C05/1INF¥NCB', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF¥NCB', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ADT/1C05¥NCB', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP2ADT/1C05/1INF¥NC', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF¥NC', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ADT/1C05¥NC', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP2ADT/1C05/1INF', 'FXX/RADT*C05*INF'], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP2ADT/1C05/1INF¥S1/2/5/6', 'FXX/S1,2,5,6/RADT*C05*INF'],
+			//            ['sabre', 'amadeus', 'WPP1ADT/1C05¥NC¥S1/2/5/6', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF¥NC¥S1/2/5/6', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP2ADT/1C05/1INF¥NC¥S1/2/5/6', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ADT/1C05¥NCB¥S1/2/5/6', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF¥NCB¥S1/2/5/6', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP2ADT/1C05/1INF¥NCB¥S1/2/5/6', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ADT/1C05¥NCS¥S1/2/5/6', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP1ADT/1C05/1INF¥NCS¥S1/2/5/6', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP2ADT/1C05/1INF¥NCS¥S1/2/5/6', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP2JCB/1JNN/1JNF¥NC¥S1/2/5/6', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', 'WPP2ITX/1INN/1ITF¥NC¥S1/2/5/6', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', '120SEPKIVMIA12AIST-960¥TK9U', ''], 	//no need to translate
+			//            ['sabre', 'amadeus', '120SEPSFOACC12ANYC-960¥/*S', ''], 	//no need to translate
 			['apollo', 'amadeus', 'XX100.20|50', 'DF100.20;50'],
 			['apollo', 'amadeus', 'XX100|50', 'DF100;50'],
 			['apollo', 'amadeus', 'XX100-50', 'DF100-50'],
