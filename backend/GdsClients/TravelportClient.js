@@ -1,6 +1,7 @@
 const {LoginTimeOut, BadGateway} = require("klesun-node-tools/src/Rej");
 const {escapeXml, parseXml} = require("../GdsHelpers/CommonUtils.js");
-const Conflict = require("klesun-node-tools/src/Rej").Conflict;
+const Rej = require('klesun-node-tools/src/Rej.js');
+const {Conflict} = Rej;
 const TravelportPnrRequestTransformer = require('./Transformers/TravelportPnrRequest');
 const TravelportFareRuleTransformer = require('./Transformers/TravelportFareRules');
 
@@ -117,6 +118,9 @@ const TravelportClient = ({
 				'To restart session use _⚙ (Gear) -> Default PCC_.\n' +
 				'Note, reloading page does not reduce waiting time on hanging availability (60 s.).';
 			return Conflict(error, {isOk: true});
+		} else if ((exc + '').indexOf('XTS Translation of Data Failed when converting the SingleXML request into a Host Format')) {
+			const msg = 'Format of XML request did not match Travelport expectations';
+			return Rej.InternalServerError(msg);
 		} else {
 			const obj = typeof exc === 'string' ? new Error(exc) : exc;
 			// for debug, be careful not to include credentials here
