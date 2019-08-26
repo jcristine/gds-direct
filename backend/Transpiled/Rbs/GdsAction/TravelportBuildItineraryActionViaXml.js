@@ -4,7 +4,7 @@ const moment = require('moment');
 const TravelportClient = require('../../../GdsClients/TravelportClient');
 const {REBUILD_MULTISEGMENT} = require('../GdsDirect/Errors');
 
-// Used by both Galileo and Apollo itinary build actions
+// Used by both Galileo and Apollo itinerary build actions
 // They use same underlying API, the only difference is slight
 // changes in format data is returned
 const TravelportBuildItineraryViaXml = async ({
@@ -18,14 +18,15 @@ const TravelportBuildItineraryViaXml = async ({
 	let reservation = null;
 
 	// Travelport returns SYSTEM ERROR if you book GK and SS segments at same time
-	for(const segment of Object.values(byStatus)) {
+	for(const segments of Object.values(byStatus)) {
 		// Travelport returns SYSTEM ERROR if you book more than 8 segments at same time
-		for(const chunk of _.chunk(segment, 8)) {
+		for(const chunk of _.chunk(segments, 8)) {
 			const airSegments = chunk.map(segment => ({
 				airline: segment.airline,
 				flightNumber: segment.flightNumber,
 				bookingClass: segment.bookingClass,
-				departureDt: DateTime.addYear(segment.departureDate.parsed, startDate),
+				departureDt: _.get(segment, ['departureDt', 'full']) ||
+					DateTime.addYear(segment.departureDate.parsed, startDate),
 				destinationDt: null,
 				departureAirport: segment.departureAirport,
 				destinationAirport: segment.destinationAirport,
