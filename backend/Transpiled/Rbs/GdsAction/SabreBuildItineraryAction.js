@@ -120,7 +120,7 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 			return {
 				success: false,
 				airSegmentCount: result.newAirSegments.length,
-				errorType: this.constructor.ERROR_MULTISEGMENT, 'errorData': result.error,
+				errorType: this.constructor.ERROR_MULTISEGMENT, 'errorData': {response: result.error},
 			};
 		}
 
