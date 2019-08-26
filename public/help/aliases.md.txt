@@ -1,7 +1,7 @@
 
 alias                                    |   name                                      | AP | SA | GA | AM | issue     | comment
 -----------------------------------------+---------------------------------------------+----+----+----+----+-----------+--------------------
-MDA{limit}                               |   moveDownAll                               | X  |    | X  | X  |           |                         
+MDA{limit}                               |   moveDownAll                               | X  | X  | X  | X  |           |
 {anyCommand}/MDA{limit}                  |   moveDownAll                               | X  |    | X  | X  |           |                         
 PNR                                      |   savePnr                                   | X  | X  | X  | X  |           |                         
 SORT                                     |   sortItinerary                             | X  | X  | X  | X  |           |                         
