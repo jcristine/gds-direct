@@ -25,7 +25,7 @@ const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEn
 const SabreTicketParser = require('../../../../Gds/Parsers/Sabre/SabreTicketParser.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {findSegmentNumberInPnr} = require('../Common/ItinerarySegments');
-const _ = require('lodash');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 const doesStorePnr = ($cmd) => {
 	let $parsedCmd, $flatCmds, $cmdTypes;
@@ -652,7 +652,7 @@ const execute = ({
 			}
 		}
 		$sortResult = await processSortItinerary()
-			.catch(exc => ({errors: ['Did not SORT' + exc]}));
+			.catch(coverExc(Rej.list, exc => ({errors: ['Did not SORT' + exc]})));
 
 		if (!php.empty($sortResult['errors'])) {
 			cmdRec = cmdRec || {

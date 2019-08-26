@@ -356,7 +356,7 @@ const RunCmdRq = ({
 			}
 			stateful.flushCalledCommands();
 			$sortResult = await processSortItinerary()
-				.catch(coverExc([Rej.NoContent], exc => ({errors: ['Did not SORT - ' + exc]})));
+				.catch(coverExc(Rej.list, exc => ({errors: ['Did not SORT - ' + exc]})));
 			if (php.empty($sortResult['errors'])) {
 				const calledCommands = stateful.flushCalledCommands().slice(-1);
 				return {calledCommands, errors};
