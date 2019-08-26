@@ -2,7 +2,7 @@
 
 const PnrHistoryParser = require("../../../../../../backend/Transpiled/Gds/Parsers/Apollo/PnrHistoryParser");
 
-let php = require('../../../../../../backend/Transpiled/phpDeprecated.js');
+let php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class PnrHistoryParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js') {
 	provideDumps() {

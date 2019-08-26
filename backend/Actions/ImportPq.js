@@ -1,7 +1,7 @@
 const AmadeusClient = require('../GdsClients/AmadeusClient.js');
 const TravelportClient = require('../GdsClients/TravelportClient.js');
 
-const php = require('../Transpiled/phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const ImportPqApolloAction = require("../Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloAction");
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {UnprocessableEntity} = require("klesun-node-tools/src/Rej");

@@ -2,7 +2,7 @@
 
 const fetchAll = require("../../GdsHelpers/TravelportUtils").fetchAll;
 
-const php = require('../../Transpiled/phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * this is a helper class for tests

@@ -1,6 +1,6 @@
 
 const PnrParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
-const php = require('../../../../../../../backend/Transpiled/phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class PnrParserTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js') {
 	provideTreeTestCases() {

@@ -1,7 +1,7 @@
 
 const ItineraryParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Sabre/Pnr/ItineraryParser");
 
-let php = require('../../../../../../../backend/Transpiled/phpDeprecated.js');
+let php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class ItineraryParserTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js')
 {

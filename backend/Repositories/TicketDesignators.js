@@ -2,7 +2,7 @@ const iqJson = require("../Utils/TmpLib").iqJson;
 const {getConfig} = require('../Config.js');
 
 const Db = require('../Utils/Db.js');
-const php = require('../Transpiled/phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const NotFound = require("klesun-node-tools/src/Rej").NotFound;
 
 const TABLE = 'ticket_designators';

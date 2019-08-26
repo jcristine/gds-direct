@@ -11,7 +11,7 @@ const ProcessTerminalInput = require('../Actions/ProcessTerminalInput.js');
 const MakeMcoApolloAction = require('../Transpiled/Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
 const CmdResultAdapter = require('../Transpiled/App/Services/CmdResultAdapter.js');
 
-const php = require('../Transpiled/phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CmsClient = require("../IqClients/CmsClient");
 const ImportPq = require('../Actions/ImportPq.js');
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");

@@ -5,7 +5,7 @@
 const Fp = require('../../../../../../../backend/Transpiled/Lib/Utils/Fp.js');
 const MakeMultiPccTariffDumpAction = require("../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Common/MakeMultiPccTariffDumpAction");
 
-let php = require('../../../../../../../backend/Transpiled/phpDeprecated.js');
+let php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class MakeMultiPccTariffDumpActionTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js')
 {

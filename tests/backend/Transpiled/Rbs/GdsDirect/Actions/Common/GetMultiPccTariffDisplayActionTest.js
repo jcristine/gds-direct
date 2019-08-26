@@ -5,7 +5,7 @@ const Fp = require('../../../../../../../backend/Transpiled/Lib/Utils/Fp.js');
 const StubLocationGeographyProvider = require('../../../../../../../backend/Transpiled/Rbs/DataProviders/StubLocationGeographyProvider.js');
 const GetMultiPccTariffDisplayAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayAction.js');
 
-let php = require('../../../../../../../backend/Transpiled/phpDeprecated.js');
+let php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class GetMultiPccTariffDisplayActionTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js')
 {

@@ -1,6 +1,6 @@
 
 const Db = require('./../Utils/Db.js');
-const php = require('../Transpiled/phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const Emc = require("../LibWrappers/Emc");
 const {getClient, keys} = require('../LibWrappers/Redis.js');
 
