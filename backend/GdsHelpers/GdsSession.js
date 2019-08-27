@@ -25,8 +25,6 @@ const makeHttpRqBriefing = (rqBody, gds) => {
 		return '<BeginSession/>';
 	} else if (match = rqBody.match(/:EndSession>/)) {
 		return '<EndSession/>';
-	} else if (match = rqBody.match(/:Request>\s*(.+?)\s*<\//)) {
-		return '>' + match[1] + ';';
 	}
 	//} else if (gds === 'amadeus') {
 	if (match = rqBody.match(/:textStringDetails>\s*(.+?)\s*<\//)) {
@@ -45,6 +43,9 @@ const makeHttpRqBriefing = (rqBody, gds) => {
 		return '<SessionCreateRQ/>';
 	} else if (match = rqBody.match(/:SessionCloseRQ>/)) {
 		return '<SessionCloseRQ/>';
+	}
+	if (match = rqBody.match(/:Request>\s*(.+?)\s*<\//)) {
+		return '>' + match[1] + ';';
 	}
 	if (match = rqBody.match(/:Body><\w+:(\w+)/)) {
 		return '<' + match[1] + '/>';

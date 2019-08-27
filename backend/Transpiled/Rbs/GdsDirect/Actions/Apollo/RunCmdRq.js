@@ -336,6 +336,7 @@ const RunCmdRq = ({
 	/** @param {Boolean} fallbackToGk - defines whether all segments should be booked together or with a separate command
 	 *                       each. When you book them all at once, marriages are added, if separately - not */
 	const bookItinerary = async (itinerary, fallbackToGk) => {
+		// TODO: reuse BookViaGk.js instead
 		stateful.flushCalledCommands();
 		const isGkRebookPossible = (seg) => {
 			return fallbackToGk

@@ -84,6 +84,7 @@ class RebuildInPccAction extends AbstractGdsAction {
 	}
 
 	async bookItinerary($itinerary) {
+		// TODO: reuse BookViaGk.js instead
 		let $errors, $isAkRebookPossible, $akItinerary, $result, $error, $gkRebook, $failedSegNums;
 		$itinerary = $itinerary.map((s,i) => ({
 			segmentNumber: i + 1,

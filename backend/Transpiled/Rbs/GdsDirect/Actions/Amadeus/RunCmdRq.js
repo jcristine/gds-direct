@@ -394,6 +394,7 @@ const execute = ({
 
 	/** @param $itinerary = MarriageItineraryParser::parse() */
 	const bookItinerary = async ($itinerary, isNewPnr) => {
+		// TODO: reuse BookViaGk.js instead
 		let $errors, $i, $segment, $bookItinerary, $result, $error,
 			$segmentNumbers;
 

@@ -610,6 +610,7 @@ const execute = ({
 	};
 
 	const bookItinerary = async  ($desiredSegments, $fallbackToGk) => {
+		// TODO: reuse BookViaGk.js instead
 		const newSegments = $desiredSegments.map($seg => {
 			const $newStatus = $seg['segmentStatus'];
 			// Sabre needs NN status in cmd to sell SS
