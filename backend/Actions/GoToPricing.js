@@ -96,12 +96,17 @@ const GoToPricing = ({
 			state: {hasPnr: true, canCreatePq: false},
 		});
 		return RepriceItinerary({
-			bookRealSegments: true,
 			gds: pricingGds,
 			pcc: pricingPcc,
 			session: targetSession,
 			startDt: stateful.getStartDt(),
-			itinerary, pricingCmd, gdsClients,
+			bookRealSegments: true,
+			itinerary: itinerary.map(seg => ({
+				// even if source itinerary was GK,
+				// should book real segments here
+				...seg, segmentStatus: 'SS',
+			})),
+			pricingCmd, gdsClients,
 		});
 	};
 

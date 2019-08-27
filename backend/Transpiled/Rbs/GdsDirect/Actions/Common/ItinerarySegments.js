@@ -22,7 +22,17 @@ const doSegmentsMatch = (seg, pnrSeg) => {
 		&& normDate(seg) === normDate(pnrSeg);
 };
 
+const findSegmentInPnr = (seg, pnrItinerary) => {
+	const pnrSegment = pnrItinerary.find(pnrSeg => doSegmentsMatch(seg, pnrSeg));
+	if (!pnrSegment) {
+		const msg = `Failed to match GK segment #${seg.segmentNumber} to resulting PNR`;
+		throw Rej.InternalServerError.makeExc(msg, {seg, itin: pnrItinerary});
+	}
+	return pnrSegment;
+};
+
 module.exports.doSegmentsMatch = doSegmentsMatch;
+module.exports.findSegmentInPnr = findSegmentInPnr;
 
 // Segment's segmentNumber might not be correct one, it represents
 // its index in supplied itinerary not PNR(segment might have ended
@@ -32,12 +42,5 @@ module.exports.findSegmentNumberInPnr = (seg, itinerary) => {
 		return seg.segmentNumber;
 	}
 
-	const pnrSegment = itinerary.find(pnrSeg => doSegmentsMatch(seg, pnrSeg));
-
-	if (!pnrSegment) {
-		const msg = `Failed to match GK segment #${seg.segmentNumber} to resulting PNR`;
-		throw Rej.InternalServerError.makeExc(msg, {seg, itin: itinerary});
-	}
-
-	return pnrSegment.segmentNumber;
+	return findSegmentInPnr(seg, itinerary).segmentNumber;
 };

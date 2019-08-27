@@ -37,6 +37,7 @@ const RepriceItinerary_apollo = ({pricingCmd, session, baseDate, ...bookParams})
 			})),
 			pricingCmd,
 			error: pricing.error || null,
+			messages: built.messages || [],
 			pricingBlockList: (pricing.store || {}).pricingBlockList || [],
 			rebookItinerary: built.reservation.itinerary.map(seg => {
 				const path = [seg.segmentNumber, 0, 'bookingClass'];
