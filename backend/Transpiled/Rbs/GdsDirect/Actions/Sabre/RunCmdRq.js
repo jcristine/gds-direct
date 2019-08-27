@@ -180,16 +180,9 @@ const parseMultiPriceItineraryAlias = ($cmd) => {
 	return null;
 };
 
-const transformBuildError = ($result) => {
-	let $cmsMessageType;
-
-	if (!$result['success']) {
-		$cmsMessageType = ({
-			[SabreBuildItineraryAction.ERROR_GDS_ERROR]: Errors.REBUILD_GDS_ERROR,
-			[SabreBuildItineraryAction.ERROR_NO_AVAIL]: Errors.REBUILD_NO_AVAIL,
-			[SabreBuildItineraryAction.ERROR_MULTISEGMENT]: Errors.REBUILD_MULTISEGMENT,
-		} || {})[$result['errorType']] || $result['errorType'];
-		return Errors.getMessage($cmsMessageType, $result['errorData']);
+const transformBuildError = (result) => {
+	if (!result.success) {
+		return Errors.getMessage(result.errorType, result.errorData);
 	} else {
 		return null;
 	}

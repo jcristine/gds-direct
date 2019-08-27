@@ -8,7 +8,7 @@ const {findSegmentInPnr} = require('../../Transpiled/Rbs/GdsDirect/Actions/Commo
 const bookTp = async (params) => {
 	const built = await TravelportBuildItineraryActionViaXml(params);
 	if (built.errorType) {
-		return Rej.UnprocessableEntity('Could not rebuild PNR in Apollo - '
+		return Rej.UnprocessableEntity('Could not rebuild PNR in Galileo - '
 			+ built.errorType + ' ' + JSON.stringify(built.errorData));
 	} else {
 		return Promise.resolve(built);

@@ -1,3 +1,4 @@
+const Errors = require('../GdsDirect/Errors.js');
 
 const DateTime = require('../../Lib/Utils/DateTime.js');
 const Fp = require('../../Lib/Utils/Fp.js');
@@ -65,11 +66,11 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 			}
 			if (!this.constructor.isOutputValid($output)) {
 				if (this.constructor.isAvailabilityOutput($output)) {
-					$errorType = this.constructor.ERROR_NO_AVAIL;
+					$errorType = Errors.REBUILD_NO_AVAIL;
 				} else if (waitlist = parseWaitlist($output)) {
-					$errorType = this.constructor.ERROR_NO_AVAIL;
+					$errorType = Errors.REBUILD_NO_AVAIL;
 				} else {
-					$errorType = this.constructor.ERROR_GDS_ERROR;
+					$errorType = Errors.REBUILD_GDS_ERROR;
 				}
 				$tplData = {
 					'segmentNumber': $i + 1,
@@ -122,7 +123,7 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 			return {
 				success: false,
 				airSegmentCount: result.newAirSegments.length,
-				errorType: this.constructor.ERROR_MULTISEGMENT, 'errorData': {response: result.error},
+				errorType: Errors.REBUILD_MULTISEGMENT, 'errorData': {response: result.error},
 			};
 		}
 
@@ -177,7 +178,4 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 	}
 }
 
-SabreBuildItineraryAction.ERROR_GDS_ERROR = 'ERROR_GDS_ERROR';
-SabreBuildItineraryAction.ERROR_MULTISEGMENT = 'ERROR_MULTISEGMENT';
-SabreBuildItineraryAction.ERROR_NO_AVAIL = 'ERROR_NO_AVAIL';
 module.exports = SabreBuildItineraryAction;
