@@ -39,7 +39,10 @@ const toHandleHttp = (httpAction) => (req, res) => {
 				stack: exc.stack,
 			});
 			if (isSystemError(exc)) {
-				const msg = (exc || {}).message || (exc + '');
+				let msg = (exc || {}).message || (exc + '');
+				if (typeof msg !== 'string') {
+					msg = '(non-string message: ' + JSON.stringify(msg) + ')';
+				}
 				if (msg.match(/42\|Transport\|Temporary network error:unable to reach targeted application/)) {
 					LocalDiag({
 						type: LocalDiag.types.AMA_TMP_NETWORK_ERROR_UNABLE_TO_REACH,
