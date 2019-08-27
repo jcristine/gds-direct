@@ -48,10 +48,11 @@ const inGalileo = async (stateful) => {
 };
 
 const inAmadeus = async (stateful) => {
+	const cmd = 'RTN,AM,C,H,T,X,Z,M,P';
 	let pnrDump = await (new CmsAmadeusTerminal())
-		.getFullPnrDump(stateful.getLog());
+		.getFullPnrDump(stateful.getLog(), cmd);
 	if (!pnrDump) {
-		pnrDump = (await AmadeusUtils.fetchAllRt('RT', stateful)).output;
+		pnrDump = (await AmadeusUtils.fetchAllRt(cmd, stateful)).output;
 	}
 	return AmadeusPnr.makeFromDump(pnrDump);
 };

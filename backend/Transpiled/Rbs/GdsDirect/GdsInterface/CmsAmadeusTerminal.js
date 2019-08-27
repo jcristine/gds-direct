@@ -54,9 +54,9 @@ class CmsAmadeusTerminal {
 		return this.joinRtMdrs($mdrs);
 	}
 
-	async getFullPnrDump($cmdLog) {
+	async getFullPnrDump($cmdLog, cmd = 'RT') {
 
-		return this.getFullRtFormatDump($cmdLog, 'RT');
+		return this.getFullRtFormatDump($cmdLog, cmd);
 	}
 
 	parseSavePnr($dump, $keptInSession) {
