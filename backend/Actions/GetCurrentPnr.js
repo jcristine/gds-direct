@@ -48,7 +48,9 @@ const inGalileo = async (stateful) => {
 };
 
 const inAmadeus = async (stateful) => {
-	const cmd = 'RTN,AM,C,H,T,X,Z,M,P';
+	// includes marriages, but does not include GK segments sadly
+	//const cmd = 'RTN,AM,C,H,T,X,Z,M,P';
+	const cmd = 'RT';
 	let pnrDump = await (new CmsAmadeusTerminal())
 		.getFullPnrDump(stateful.getLog(), cmd);
 	if (!pnrDump) {

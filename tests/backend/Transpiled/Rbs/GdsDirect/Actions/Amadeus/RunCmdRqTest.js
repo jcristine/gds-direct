@@ -572,7 +572,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
 				'initialCommands': [
 					{
-						'cmd': 'RTN,AM,C,H,T,X,Z,M,P',
+						'cmd': 'RT',
 						'output': php.implode(php.PHP_EOL, [
 							'/$--- MSC ---',
 							'RP/SFO1S2195/',
@@ -673,7 +673,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				'initialCommands': [],
 				'performedCommands': [
 					{
-						'cmd': 'RTN,AM,C,H,T,X,Z,M,P',
+						'cmd': 'RT',
 						'output': php.implode(php.PHP_EOL, [
 							'/$--- MSC ---',
 							'RP/SFO1S2195/',
@@ -775,7 +775,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				'initialCommands': [],
 				'performedCommands': [
 					{
-						'cmd': 'RTN,AM,C,H,T,X,Z,M,P',
+						'cmd': 'RT',
 						'output': php.implode(php.PHP_EOL, [
 							'/$--- MSC ---',
 							'RP/SFO1S2195/',
@@ -863,7 +863,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				'initialCommands': [],
 				'performedCommands': [
 					{
-						'cmd': 'RTN,AM,C,H,T,X,Z,M,P',
+						'cmd': 'RT',
 						'output': php.implode(php.PHP_EOL, [
 							'/$                        ***  NHP  ***',
 							'RP/SFO1S2195/',
@@ -899,7 +899,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				'initialCommands': [],
 				'performedCommands': [
 					{
-						'cmd': 'RTN,AM,C,H,T,X,Z,M,P',
+						'cmd': 'RT',
 						'output': php.implode(php.PHP_EOL, [
 							'/$--- MSC ---',
 							'RP/SFO1S2195/',
@@ -1396,7 +1396,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				'initialCommands': [],
 				'performedCommands': [
 					{
-						'cmd': 'RTN,AM,C,H,T,X,Z,M,P',
+						'cmd': 'RT',
 						'output': php.implode(php.PHP_EOL, [
 							'/$--- TST RLR MSC SFP ---',
 							'RP/SFO1S2195/SFO1S2195            AA/GS   6APR18/0216Z   U98C8V',
@@ -1468,7 +1468,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				}),
 				'initialCommands': [
 					{
-						'cmd': 'RTN,AM,C,H,T,X,Z,M,P',
+						'cmd': 'RT',
 						'output': php.implode(php.PHP_EOL, [
 							'/$--- TST RLR SFP ---',
 							'RP/SFO1S2195/SFO1S2195            AA/GS  29NOV17/1739Z   MKQ7IZ',
@@ -1532,7 +1532,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				}),
 				'initialCommands': [
 					{
-						'cmd': 'RTN,AM,C,H,T,X,Z,M,P',
+						'cmd': 'RT',
 						'output': php.implode(php.PHP_EOL, [
 							'/$--- RLR ---',
 							'RP/SFO1S2195/SFO1S2195            WS/RC  29MAY18/1602Z   QHDUG7',
@@ -1585,7 +1585,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				'initialCommands': [],
 				'performedCommands': [
 					{
-						'cmd': 'RTN,AM,C,H,T,X,Z,M,P',
+						'cmd': 'RT',
 						'output': php.implode(php.PHP_EOL, [
 							'/$--- SFP ---',
 							'RP/SFO1S2195/',
@@ -1700,7 +1700,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				}),
 				'initialCommands': [
 					{
-						'cmd': 'RTN,AM,C,H,T,X,Z,M,P',
+						'cmd': 'RT',
 						'output': php.implode(php.PHP_EOL, [
 							'/$TICKET REVALIDATION/REISSUE IS RECOMMENDED',
 							'--- TST RLR MSC SFP ---',
@@ -1850,7 +1850,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				}),
 				'initialCommands': [
 					{
-						'cmd': 'RTN,AM,C,H,T,X,Z,M,P',
+						'cmd': 'RT',
 						'output': php.implode(php.PHP_EOL, [
 							'/$TICKET REVALIDATION/REISSUE IS RECOMMENDED',
 							'--- TST RLR MSC SFP ---',
@@ -2046,7 +2046,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				],
 				'performedCommands': [
 					{
-					    "cmd": 'RTN,AM,C,H,T,X,Z,M,P',
+					    "cmd": 'RT',
 					    "output": [
 					        "/$--- TST RLR SFP ---",
 					        "RP/LAXGO3106/LAXGO3106            WS/SU   7MAY19/1814Z   WVCGJW",
@@ -2074,8 +2074,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					    ].join("\n"),
 					    "duration": "0.509869062",
 					    "type": "redisplayPnr",
-					    "scrolledCmd": 'RTN,AM,C,H,T,X,Z,M,P',
-					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"redisplayPnr","gdsData":null,"scrolledCmd":'RTN,AM,C,H,T,X,Z,M,P',"cmdCnt":8},
+					    "scrolledCmd": 'RT',
+					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"redisplayPnr","gdsData":null,"scrolledCmd":'RT',"cmdCnt":8},
 					},
 					{
 					    "cmd": "MDR",
@@ -2106,8 +2106,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					    ].join("\n"),
 					    "duration": "0.127277902",
 					    "type": "moveRest",
-					    "scrolledCmd": 'RTN,AM,C,H,T,X,Z,M,P',
-					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"moveRest","gdsData":null,"scrolledCmd":'RTN,AM,C,H,T,X,Z,M,P',"cmdCnt":9},
+					    "scrolledCmd": 'RT',
+					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"moveRest","gdsData":null,"scrolledCmd":'RT',"cmdCnt":9},
 					},
 					{
 					    "cmd": "MDR",
@@ -2125,8 +2125,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					    ].join("\n"),
 					    "duration": "0.130019081",
 					    "type": "moveRest",
-					    "scrolledCmd": 'RTN,AM,C,H,T,X,Z,M,P',
-					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"moveRest","gdsData":null,"scrolledCmd":'RTN,AM,C,H,T,X,Z,M,P',"cmdCnt":10},
+					    "scrolledCmd": 'RT',
+					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"moveRest","gdsData":null,"scrolledCmd":'RT',"cmdCnt":10},
 					},
 					{
 					    "cmd": "TWD/L34",
@@ -2289,7 +2289,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			sessionInfo: {
 				initialState: GdsDirectDefaults.makeDefaultAmadeusState(),
 				initialCommands: [{
-					cmd: 'RTN,AM,C,H,T,X,Z,M,P',
+					cmd: 'RT',
 					output: [
 						'RP/SFO1S2195/',
 						'  1  PR 127 C 20MAY 3 JFKMNL DK1   145A 615A 21MAY  E  0 350 D',
