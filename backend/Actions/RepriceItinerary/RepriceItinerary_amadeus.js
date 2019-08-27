@@ -1,4 +1,4 @@
-const BookViaGk = require('../BookViaGk/BookViaGk.js');
+const BookViaGk_amadeus = require('../BookViaGk/BookViaGk_amadeus.js');
 const CommonUtils = require('../../GdsHelpers/CommonUtils.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const PricingCmdParser = require('../../Transpiled/Gds/Parsers/Sabre/Commands/PricingCmdParser.js');
@@ -34,12 +34,9 @@ const extendAmadeusCmd = (cmd) => {
 	}
 };
 
-const RepriceItinerary_amadeus = ({
-	itinerary, pricingCmd, session, baseDate,
-	amadeus = require('../../GdsClients/AmadeusClient.js').makeCustom(),
-}) => {
+const RepriceItinerary_amadeus = ({pricingCmd, session, baseDate, ...bookParams}) => {
 	const main = async () => {
-		const built = await BookViaGk.inAmadeus({itinerary, session, amadeus, baseDate});
+		const built = await BookViaGk_amadeus({...bookParams, session, baseDate});
 		pricingCmd = extendAmadeusCmd(pricingCmd);
 		const capturing = CommonUtils.withCapture(session);
 		const cmdRec = await AmadeusUtils.fetchAllFx(pricingCmd, capturing);
@@ -58,6 +55,7 @@ const RepriceItinerary_amadeus = ({
 		const rebookSegments = error ? [] : ptcBlocks[0].rebookSegments;
 		return {
 			error, pricingCmd,
+			messages: built.messages || [],
 			calledCommands: cmdRecs,
 			pricingBlockList: ptcBlocks,
 			rebookItinerary: ((built.reservation || {}).itinerary || []).map((pnrSeg, i) => {

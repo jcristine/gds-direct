@@ -74,6 +74,7 @@ const RepriceItinerary_sabre = ({pricingCmd, session, baseDate, ...bookParams}) 
 		const segNumToRebooks = _.groupBy(rebookSegments, rs => rs.segmentNumber);
 		return {
 			pricingCmd, error,
+			messages: built.messages || [],
 			calledCommands: [cmdRec],
 			pricingBlockList: ptcBlocks,
 			rebookItinerary: built.reservation.itinerary.map(seg => {

@@ -46,6 +46,7 @@ const RepriceItinerary_galileo = ({pricingCmd, session, baseDate, ...bookParams}
 		const segNumToRebooks = _.groupBy(rebookSegments, rs => rs.segmentNumber);
 		return {
 			error, pricingCmd,
+			messages: built.messages || [],
 			calledCommands: [fqCmdRec, lfCmdRec].map(cmdRec => ({...cmdRec,
 				output: TravelportUtils.wrap(cmdRec.output, 'galileo'),
 			})),
