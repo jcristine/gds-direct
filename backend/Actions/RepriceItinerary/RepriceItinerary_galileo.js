@@ -1,4 +1,4 @@
-const BookViaGk = require('../BookViaGk.js');
+const BookViaAk_galileo = require('../BookViaGk/BookViaAk_galileo.js');
 const GalileoPricingAdapter = require('../../Transpiled/Rbs/FormatAdapters/GalileoPricingAdapter.js');
 const LinearFareParser = require('../../Transpiled/Gds/Parsers/Galileo/Pricing/LinearFareParser.js');
 const FqParser = require('../../Transpiled/Gds/Parsers/Galileo/Pricing/FqParser.js');
@@ -24,7 +24,7 @@ const extendGalileoCmd = (cmd) => {
 
 const RepriceItinerary_galileo = ({pricingCmd, session, baseDate, ...bookParams}) => {
 	const main = async () => {
-		const built = await BookViaGk.inGalileo({...bookParams, baseDate, session});
+		const built = await BookViaAk_galileo({...bookParams, baseDate, session});
 		pricingCmd = extendGalileoCmd(pricingCmd);
 		const pricingModifiers = (FqCmdParser.parse(pricingCmd) || {}).pricingModifiers || [];
 		const fqCmdRec = await GalileoUtils.withFakeNames({
