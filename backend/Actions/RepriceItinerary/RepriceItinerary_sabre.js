@@ -1,4 +1,4 @@
-const BookViaGk = require('../BookViaGk.js');
+const BookViaGk = require('../BookViaGk/BookViaGk.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const SabrePricingParser = require('../../Transpiled/Gds/Parsers/Sabre/Pricing/SabrePricingParser.js');
 const SabreBuildItineraryAction = require('../../Transpiled/Rbs/GdsAction/SabreBuildItineraryAction.js');

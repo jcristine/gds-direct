@@ -1,4 +1,4 @@
-const BookViaGk = require('../BookViaGk.js');
+const BookViaGk = require('../BookViaGk/BookViaGk.js');
 const CommonUtils = require('../../GdsHelpers/CommonUtils.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const PricingCmdParser = require('../../Transpiled/Gds/Parsers/Sabre/Commands/PricingCmdParser.js');

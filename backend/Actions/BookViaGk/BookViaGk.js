@@ -1,10 +1,10 @@
-const BookViaAk_galileo = require('./BookViaGk/BookViaAk_galileo.js');
-const BookViaGk_apollo = require('./BookViaGk/BookViaGk_apollo.js');
-const AmadeusBuildItineraryAction = require('../Transpiled/Rbs/GdsAction/AmadeusBuildItineraryAction.js');
-const SabreClient = require('../GdsClients/SabreClient.js');
-const SabreBuildItineraryAction = require('../Transpiled/Rbs/GdsAction/SabreBuildItineraryAction.js');
+const BookViaAk_galileo = require('./BookViaAk_galileo.js');
+const BookViaGk_apollo = require('./BookViaGk_apollo.js');
+const AmadeusBuildItineraryAction = require('../../Transpiled/Rbs/GdsAction/AmadeusBuildItineraryAction.js');
+const SabreClient = require('../../GdsClients/SabreClient.js');
+const SabreBuildItineraryAction = require('../../Transpiled/Rbs/GdsAction/SabreBuildItineraryAction.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
-const GdsSession = require('../GdsHelpers/GdsSession.js');
+const GdsSession = require('../../GdsHelpers/GdsSession.js');
 
 const inAmadeus = async ({
 	bookRealSegments = false,
