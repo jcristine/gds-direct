@@ -34,9 +34,9 @@ const extendAmadeusCmd = (cmd) => {
 	}
 };
 
-const RepriceItinerary_amadeus = ({pricingCmd, session, baseDate, ...bookParams}) => {
+const RepriceItinerary_amadeus = ({pricingCmd, session, baseDate, itinerary, ...bookParams}) => {
 	const main = async () => {
-		const built = await BookViaGk_amadeus({...bookParams, session, baseDate});
+		const built = await BookViaGk_amadeus({...bookParams, session, baseDate, itinerary});
 		pricingCmd = extendAmadeusCmd(pricingCmd);
 		const capturing = CommonUtils.withCapture(session);
 		const cmdRec = await AmadeusUtils.fetchAllFx(pricingCmd, capturing);
@@ -58,7 +58,7 @@ const RepriceItinerary_amadeus = ({pricingCmd, session, baseDate, ...bookParams}
 			messages: built.messages || [],
 			calledCommands: cmdRecs,
 			pricingBlockList: ptcBlocks,
-			rebookItinerary: ((built.reservation || {}).itinerary || []).map((pnrSeg, i) => {
+			rebookItinerary: itinerary.map((pnrSeg, i) => {
 				const rbkSeg = rebookSegments.filter((rbkSeg) => rbkSeg.order === i + 1)[0];
 				const cls = rbkSeg ? rbkSeg.bookingClass : pnrSeg.bookingClass;
 				return {...pnrSeg, bookingClass: cls};

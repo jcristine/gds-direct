@@ -80,6 +80,7 @@ class AmadeusBuildItineraryAction extends AbstractGdsAction {
 
 		return {
 			success: true,
+			/** does not include marriages! */
 			reservation,
 			/** @deprecated - should only return `reservation` same as in Apollo */
 			itinerary: (reservation || {}).itinerary || [],

@@ -56,7 +56,7 @@ const BookViaGk_amadeus = ({
 			const records = group.map(seg => {
 				const pnrItinerary = reservation && reservation.itinerary;
 				const pnrSeg = findSegmentInPnr(seg, pnrItinerary);
-				return {...pnrSeg, bookingClass: seg.bookingClass};
+				return {...pnrSeg, bookingClass: seg.desiredBookingClass, marriage: seg.marriage};
 			});
 			if (marriage > 0) {
 				await rebookChunk(records);
