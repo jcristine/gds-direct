@@ -1,3 +1,7 @@
+const MarriageItineraryParser = require('../Transpiled/Gds/Parsers/Amadeus/MarriageItineraryParser.js');
+const AmadeusUtils = require('../GdsHelpers/AmadeusUtils.js');
+const SabrePnr = require('../Transpiled/Rbs/TravelDs/SabrePnr.js');
+const GalileoUtils = require('../GdsHelpers/GalileoUtils.js');
 const PtcUtil = require('../Transpiled/Rbs/Process/Common/PtcUtil.js');
 const TranslatePricingCmd = require('./CmdTranslators/TranslatePricingCmd.js');
 const NormalizePricingCmd = require('./CmdTranslators/NormalizePricingCmd.js');
@@ -68,6 +72,7 @@ const RepriceInPccMix = async ({
 	stateful, aliasData, gdsClients,
 	RbsClient = require('../IqClients/RbsClient.js'),
 }) => {
+	const gds = stateful.gds;
 	const baseDate = stateful.getStartDt();
 	const cmdRqId = await stateful.getLog().getCmdRqId();
 
@@ -134,10 +139,31 @@ const RepriceInPccMix = async ({
 		});
 	};
 
-	const main = async () => {
-		const pnr = await GetCurrentPnr(stateful);
+	const getFullItinerary = async () => {
+		let pnr;
+		if (gds === 'sabre') {
+			const cmdRec = await stateful.runCmd('*IMSL');
+			pnr = SabrePnr.makeFromDump(cmdRec.output);
+		} else {
+			pnr = await GetCurrentPnr(stateful);
+		}
 		const reservation = pnr.getReservation(baseDate);
-		const itinerary = reservation.itinerary;
+		if (gds === 'amadeus') {
+			const cmdRec = await AmadeusUtils.fetchAllRt('RTAM', stateful);
+			const fullSegments = MarriageItineraryParser.parse(cmdRec.output);
+			reservation.itinerary.forEach(seg => {
+				const full = fullSegments.filter(s => s.lineNumber == seg.segmentNumber)[0];
+				if (full) {
+					seg.marriage = full.marriage;
+				}
+				return seg;
+			});
+		}
+		return reservation.itinerary;
+	};
+
+	const main = async () => {
+		const itinerary = await getFullItinerary();
 		if (itinerary.length === 0) {
 			return Rej.BadRequest('Itinerary is empty');
 		}
