@@ -473,7 +473,7 @@ class FxParser {
 				'error': $data.error || undefined,
 			};
 		} else {
-			return {'error': 'Failed to parse PTC list/pricing'};
+			return {'error': 'Failed to parse PTC list/pricing - ' + $dump.trim().slice(0, 100)};
 		}
 	}
 }

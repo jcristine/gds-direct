@@ -5,7 +5,7 @@ const AmadeusUtils = require('../../GdsHelpers/AmadeusUtils.js');
 const AmadeusGetPricingPtcBlocksAction = require('../../Transpiled/Rbs/GdsDirect/Actions/Amadeus/AmadeusGetPricingPtcBlocksAction.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const AmadeusBuildItineraryAction = require('../../Transpiled/Rbs/GdsAction/AmadeusBuildItineraryAction.js');
-
+const {doSegmentsMatch} = require('../../Transpiled/Rbs/GdsDirect/Actions/Common/ItinerarySegments.js');
 
 const extendAmadeusCmd = (cmd) => {
 	const data = PricingCmdParser.parse(cmd);
@@ -42,8 +42,7 @@ const RepriceItinerary_amadeus = ({
 }) => {
 	const main = async () => {
 		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
-		const built = await new AmadeusBuildItineraryAction()
-			.setSession(session).execute(itinerary);
+		const built = await new AmadeusBuildItineraryAction({session}).execute(itinerary);
 		if (built.errorType) {
 			return Rej.UnprocessableEntity('Could not rebuild PNR in Amadeus - '
 				+ built.errorType + ' ' + JSON.stringify(built.errorData));
@@ -55,18 +54,24 @@ const RepriceItinerary_amadeus = ({
 			session: capturing,
 		}).execute(pricingCmd, cmdRec.output);
 		let error = pricing.error || null;
-		if (error) {
-			error = pricingCmd + ' - ' + error;
+		if (error && cmdRec.output.trim().length < 100) {
+			error = cmdRec.output.trim();
 		}
 		let cmdRecs = capturing.getCalledCommands();
 		cmdRecs = AmadeusUtils.collectFullCmdRecs(cmdRecs);
-
+		const ptcBlocks = (pricing.pricingList || [])
+			.flatMap(store => store.pricingBlockList);
+		// considering that all PTCs have same classes. This is not always the case, but usually is
+		const rebookSegments = error ? [] : ptcBlocks[0].rebookSegments;
 		return {
+			error, pricingCmd,
 			calledCommands: cmdRecs,
-			error: error,
-			pricingCmd: pricingCmd,
-			pricingBlockList: (pricing.pricingList || [])
-				.flatMap(store => store.pricingBlockList),
+			pricingBlockList: ptcBlocks,
+			rebookItinerary: ((built.reservation || {}).itinerary || []).map((pnrSeg, i) => {
+				const rbkSeg = rebookSegments.filter((rbkSeg) => rbkSeg.order === i + 1)[0];
+				const cls = rbkSeg ? rbkSeg.bookingClass : pnrSeg.bookingClass;
+				return {...pnrSeg, bookingClass: cls};
+			}),
 		};
 	};
 
