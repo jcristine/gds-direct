@@ -69,7 +69,7 @@ const RepriceItinerary_sabre = ({pricingCmd, session, baseDate, ...bookParams}) 
 		const ptcBlocks = error ? [] :
 			new SabrePricingAdapter()
 				.setPricingCommand(pricingCmd)
-				.setReservationDate(startDt)
+				.setReservationDate(baseDate)
 				.transform(parsed).pricingBlockList;
 		// considering that all PTCs have same classes. This is not always the case, but usually is
 		const rebookSegments = error ? [] : ptcBlocks[0].rebookSegments;
@@ -78,7 +78,7 @@ const RepriceItinerary_sabre = ({pricingCmd, session, baseDate, ...bookParams}) 
 			pricingCmd, error,
 			calledCommands: [cmdRec],
 			pricingBlockList: ptcBlocks,
-			rebookItinerary: built.itinerary.map(seg => {
+			rebookItinerary: built.reservation.itinerary.map(seg => {
 				const path = [seg.segmentNumber, 0, 'bookingClass'];
 				const cls = _.get(segNumToRebooks, path, seg.bookingClass);
 				return {...seg, bookingClass: cls};
