@@ -39,6 +39,7 @@ const BookViaAk_galileo = ({
 }) => {
 	/** replace GK segments with $segments */
 	const rebookGkSegments = async (segments, reservation) => {
+		// order is important, so can't store in a {} as it sorts integers
 		const marriageToSegs = Fp.groupMap(seg => seg.marriage, segments);
 		const failedSegments = [];
 		const errors = [];
@@ -92,7 +93,7 @@ const BookViaAk_galileo = ({
 			...bookParams, session,
 			itinerary: [...noRebook, ...forRebook],
 		});
-		const {failedSegments, messages} = await rebookGkSegments(itinerary, reservation);
+		const {failedSegments, messages} = await rebookGkSegments(forRebook, reservation);
 		if (failedSegments.length > 0) {
 			await session.runCmd('X' + failedSegments.map(s => s.segmentNumber).join('|'));
 			const built = await bookPassive(failedSegments);

@@ -28,6 +28,7 @@ const BookViaGk_apollo = async ({
 
 	/** replace GK segments with $segments */
 	const rebookGkSegments = async (segments, reservation = null) => {
+		// order is important, so can't store in a {} as it sorts integers
 		const marriageToSegs = Fp.groupMap(seg => seg.marriage, segments);
 		const failedSegments = [];
 		const errors = [];
@@ -75,7 +76,7 @@ const BookViaGk_apollo = async ({
 			...bookParams, session,
 			itinerary: [...noRebook, ...forRebook],
 		});
-		const {failedSegments, messages} = await rebookGkSegments(itinerary, reservation);
+		const {failedSegments, messages} = await rebookGkSegments(forRebook, reservation);
 		await session.runCmd('*R'); // mandatory between calls if segment numbers changed apparently...
 		if (failedSegments.length > 0) {
 			await session.runCmd('X' + failedSegments.map(s => s.segmentNumber).join('|'));

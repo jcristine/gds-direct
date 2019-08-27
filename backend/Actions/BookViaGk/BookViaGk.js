@@ -1,8 +1,7 @@
+const BookViaGk_sabre = require('./BookViaGk_sabre.js');
 const BookViaAk_galileo = require('./BookViaAk_galileo.js');
 const BookViaGk_apollo = require('./BookViaGk_apollo.js');
 const AmadeusBuildItineraryAction = require('../../Transpiled/Rbs/GdsAction/AmadeusBuildItineraryAction.js');
-const SabreClient = require('../../GdsClients/SabreClient.js');
-const SabreBuildItineraryAction = require('../../Transpiled/Rbs/GdsAction/SabreBuildItineraryAction.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const GdsSession = require('../../GdsHelpers/GdsSession.js');
 
@@ -17,34 +16,6 @@ const inAmadeus = async ({
 			+ built.errorType + ' ' + JSON.stringify(built.errorData));
 	} else {
 		return Promise.resolve({reservation: built.reservation});
-	}
-};
-
-const inSabre = async ({
-	bookRealSegments = false,
-	itinerary, session, baseDate,
-	sabre = SabreClient.makeCustom(),
-}) => {
-	itinerary = itinerary.map(seg => {
-		// AA does not allow GK status on AA segments
-		return seg.airline === 'AA'
-			? {...seg, segmentStatus: 'LL'}
-			: {...seg, segmentStatus: 'GK'};
-	});
-	const build = new SabreBuildItineraryAction({session, sabre, baseDate});
-	let built = await build.execute(itinerary, true);
-	let yFallback = false;
-	if (built.errorType === SabreBuildItineraryAction.ERROR_NO_AVAIL) {
-		yFallback = true;
-		await session.runCmd('XI');
-		const yItin = itinerary.map(seg => ({...seg, bookingClass: 'Y'}));
-		built = await build.execute(yItin, true);
-	}
-	if (built.errorType) {
-		return Rej.UnprocessableEntity('Could not rebuild PNR in Sabre - '
-			+ built.errorType + ' ' + JSON.stringify(built.errorData));
-	} else {
-		return Promise.resolve({yFallback, reservation: built.reservation});
 	}
 };
 
@@ -65,11 +36,10 @@ const BookViaGk = ({
 		apollo: () => BookViaGk_apollo({...params, travelport}),
 		galileo: () => BookViaAk_galileo({...params, travelport}),
 		amadeus: () => inAmadeus({...params, amadeus}),
-		sabre: () => inSabre({...params, sabre}),
+		sabre: () => BookViaGk_sabre({...params, sabre}),
 	}[gds]();
 };
 
 BookViaGk.inAmadeus = inAmadeus;
-BookViaGk.inSabre = inSabre;
 
 module.exports = BookViaGk;
