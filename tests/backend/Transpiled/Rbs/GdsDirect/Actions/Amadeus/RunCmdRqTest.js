@@ -3143,7 +3143,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		const stateful = GdsDirectDefaults.makeStatefulSession('amadeus', input, sessionInfo);
 
 		let actualOutput = await RunCmdRq({
-			stateful, cmdRq: input.cmdRequested, amadeus,
+			stateful, cmdRq: input.cmdRequested, gdsClients: {amadeus},
 		}).catch(exc => ({error: exc + '', stack: (exc || {}).stack}));
 
 		this.assertArrayElementsSubset(output, actualOutput);

@@ -128,7 +128,7 @@ class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
 				...input,
 				stateful,
 				useXml: true,
-				sabre: gdsClients.sabre,
+				gdsClients,
 			});
 
 			actual.sessionData = stateful.getSessionData();

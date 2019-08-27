@@ -388,7 +388,7 @@ class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
 		let getActual = async ({stateful, input, gdsClients}) => {
 			let actual = await RunCmdRq({
 				stateful, ...input, useXml: true,
-				travelport: gdsClients.travelport,
+				gdsClients,
 			}).catch(coverExc(Rej.list, exc => ({error: exc + ''})));
 			return actual;
 		};

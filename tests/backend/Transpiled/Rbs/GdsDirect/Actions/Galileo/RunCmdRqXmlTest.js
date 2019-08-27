@@ -222,7 +222,7 @@ class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
 			};
 			let actual = await RunCmdRq({
 				stateful, ...input, useXml: true,
-				travelport: gdsClients.travelport,
+				gdsClients,
 			});
 			actual.sessionData = stateful.getSessionData();
 			return actual;
