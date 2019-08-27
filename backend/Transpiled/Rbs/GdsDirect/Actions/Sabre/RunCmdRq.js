@@ -1,3 +1,4 @@
+const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
 const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
 
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
@@ -223,6 +224,7 @@ const execute = ({
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
 	useXml = true,
 	sabre = require('../../../../../GdsClients/SabreClient'),
+	gdsClients = GdsSession.makeGdsClients(),
 }) => {
 	const getRestrictedPccs =  () => {
 		return ['52ZG'];
@@ -926,7 +928,7 @@ const execute = ({
 
 	const priceInAnotherPcc = async  ($cmd, $target, $dialect) => {
 		const $pnr = await getCurrentPnr();
-		return (new RepriceInAnotherPccAction())
+		return (new RepriceInAnotherPccAction({gdsClients}))
 			.execute($pnr, $cmd, $dialect, $target, stateful);
 	};
 

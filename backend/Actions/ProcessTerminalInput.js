@@ -201,14 +201,14 @@ const ProcessTerminalInput = async ({
 	}),
 }) => {
 	const runByGds = async (cmdRqData) => {
-		cmdRqData = {...cmdRqData, stateful, AreaSettings};
+		cmdRqData = {...cmdRqData, stateful, AreaSettings, gdsClients};
 		let gdsResult;
 		const gds = cmdRqData.stateful.gds;
 		const {travelport, sabre, amadeus} = gdsClients;
 		if (gds === 'apollo') {
 			gdsResult = await ApoRunCmdRq({...cmdRqData, travelport});
 		} else if (gds === 'sabre') {
-			gdsResult = await SabRunCmdRq({...cmdRqData, sabre});
+			gdsResult = await SabRunCmdRq({...cmdRqData});
 		} else if (gds === 'amadeus') {
 			gdsResult = await AmaRunCmdRq({...cmdRqData, amadeus});
 		} else if (gds === 'galileo') {
