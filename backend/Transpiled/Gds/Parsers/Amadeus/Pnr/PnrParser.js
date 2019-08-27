@@ -397,11 +397,49 @@ class PnrParser
 		}
 	}
 
-	static parseDayOffsetSegmentLineByPattern($line, $pattern) {
-		let $split, $result, $ending;
+	static decodeMarriageLetter(letter)  {
+		return ({
+			'M': 'AMADEUS_RULES',
+			'T': 'TRAFFIC_RESTRICTION',
+			'A': 'AIRLINE_TYPE_A',
+			'B': 'AIRLINE_TYPE_B',
+			'R': 'AIRLINE_SPACE_CONTROL',
+			'N': 'NEGOTIATED_SPACE',
+		} || {})[letter];
+	}
 
-		$split = StringUtil.splitByPosition($line, $pattern, null, true);
-		$result = {
+	static parseMarriageToken(token) {
+		//      1  SU2119 Y 10DEC 7 RIXSVO HK1            225A 500A   *1A/E*
+		//                                                          A01
+		//      2  SU2580 Y 10DEC 7 SVOLHR HK1        D   815A 930A   *1A/E*
+		//                                                          A01
+		const regex =
+            '/^'+
+            '\\s*'+
+            '(?<marriageType>[A-Z])'+
+            '(?<marriage>\\d{2})'+
+            '/';
+
+		let tokens;
+		if (php.preg_match(regex, token, tokens = [])) {
+			return {
+				marriageType: {
+					raw: tokens.marriageType,
+					parsed: this.decodeMarriageLetter(tokens.marriageType),
+				},
+				marriage: tokens.marriage,
+			};
+		} else {
+			return null;
+		}
+	}
+
+	// '  6  TK 079 M 29AUG 4 ISTSFO HK1            105P 430P   *1A/E*',
+	// '                                                      A01',
+	static parseDayOffsetSegmentLineByPattern($line, $pattern) {
+		const $split = StringUtil.splitByPosition($line, $pattern, null, true);
+		const textLeft = $split['M'] + $line.slice($pattern.length).trim();
+		const $result = {
 			'lineNumber': $split['#'],
 			'segmentType': this.ITINERARY_SEGMENT,
 			'displayFormat': this.FORMAT_DAY_OFFSET,
@@ -424,7 +462,7 @@ class PnrParser
 			'eticket': null,
 			'confirmationAirline': null,
 			'confirmationNumber': null,
-			'textLeft': $split['M'],
+			'textLeft': textLeft,
 			'raw': $line,
 		};
 		if (php.trim($split[' ']) === '' &&
@@ -432,8 +470,13 @@ class PnrParser
             (($result['departureTime'] || {})['parsed']) &&
             (($result['destinationTime'] || {})['parsed'])
 		) {
-			$ending = this.parseDayOffsetSegmentEnding($result['textLeft']);
-			return php.array_merge($result, $ending);
+			const $ending = this.parseDayOffsetSegmentEnding($result['textLeft']);
+			Object.assign($result, $ending);
+			const marriageData = !textLeft ? null : this.parseMarriageToken($result.textLeft);
+			if (marriageData) {
+				Object.assign($result, marriageData, {textLeft: ''});
+			}
+			return $result;
 		} else {
 			return null;
 		}
