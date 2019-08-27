@@ -54,6 +54,9 @@ const inAmadeus = async (stateful) => {
 	if (!pnrDump) {
 		pnrDump = (await AmadeusUtils.fetchAllRt(cmd, stateful)).output;
 	}
+	pnrDump = pnrDump.split('\n')
+		.filter(l => l.trim() !== 'NO ELEMENT FOUND')
+		.join('\n');
 	return AmadeusPnr.makeFromDump(pnrDump);
 };
 
