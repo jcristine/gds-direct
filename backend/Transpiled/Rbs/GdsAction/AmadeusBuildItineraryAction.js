@@ -1,6 +1,5 @@
 const AmadeusPnr = require('../TravelDs/AmadeusPnr.js');
 
-const PnrParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const AbstractGdsAction = require('./AbstractGdsAction.js');
 const AmadeusUtils = require('../../../GdsHelpers/AmadeusUtils.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
@@ -8,9 +7,10 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 
 class AmadeusBuildItineraryAction extends AbstractGdsAction {
 
-	constructor({session} = {}) {
+	constructor({session, baseDate} = {}) {
 		super();
 		this.session = session;
+		this.baseDate = baseDate;
 	}
 
 	static isAvailabilityOutput($output) {
@@ -24,8 +24,7 @@ class AmadeusBuildItineraryAction extends AbstractGdsAction {
 	/** @param $itinerary = [AmadeusReservationParser::parseSegmentLine(), ...] */
 	async execute($itinerary) {
 		let $i, $segment, $date, $segmentStatus, $segmentStatusParam, $cmd, $output, $errorType, $tplData;
-		// TODO: pass base date from outside
-		const baseDate = new Date().toISOString();
+		const baseDate = this.baseDate || new Date().toISOString();
 		let reservation = null;
 		if (php.empty($itinerary)) {
 			// maybe it would make sense to return success, but way too often
