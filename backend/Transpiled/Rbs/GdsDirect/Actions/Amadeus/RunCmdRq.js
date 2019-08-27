@@ -1,3 +1,4 @@
+const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
 const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
@@ -142,10 +143,10 @@ const translateApolloPricingModifiers = ($apolloMods) => {
 const execute = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
-	amadeus = AmadeusClient,
+	gdsClients = GdsSession.makeGdsClients(),
 }) => {
 	const fakeAreaUtil = FakeAreaUtil({
-		stateful, amadeus,
+		stateful, amadeus: gdsClients.amadeus,
 	});
 
 	const makeCreatedForCmdIfNeeded = async () => {
@@ -940,7 +941,7 @@ const execute = ({
 		let $pnr;
 
 		$pnr = await getCurrentPnr();
-		return (new RepriceInAnotherPccAction())
+		return (new RepriceInAnotherPccAction({gdsClients}))
 			.execute($pnr, $cmd, $dialect, $target, stateful);
 	};
 

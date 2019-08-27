@@ -223,9 +223,10 @@ const execute = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
 	useXml = true,
-	sabre = require('../../../../../GdsClients/SabreClient'),
 	gdsClients = GdsSession.makeGdsClients(),
 }) => {
+	const sabre = gdsClients.sabre;
+
 	const getRestrictedPccs =  () => {
 		return ['52ZG'];
 	};

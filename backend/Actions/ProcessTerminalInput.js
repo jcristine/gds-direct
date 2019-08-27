@@ -204,15 +204,14 @@ const ProcessTerminalInput = async ({
 		cmdRqData = {...cmdRqData, stateful, AreaSettings, gdsClients};
 		let gdsResult;
 		const gds = cmdRqData.stateful.gds;
-		const {travelport, sabre, amadeus} = gdsClients;
 		if (gds === 'apollo') {
-			gdsResult = await ApoRunCmdRq({...cmdRqData, travelport});
+			gdsResult = await ApoRunCmdRq(cmdRqData);
 		} else if (gds === 'sabre') {
-			gdsResult = await SabRunCmdRq({...cmdRqData});
+			gdsResult = await SabRunCmdRq(cmdRqData);
 		} else if (gds === 'amadeus') {
-			gdsResult = await AmaRunCmdRq({...cmdRqData, amadeus});
+			gdsResult = await AmaRunCmdRq(cmdRqData);
 		} else if (gds === 'galileo') {
-			gdsResult = await GalRunCmdRq({...cmdRqData, travelport});
+			gdsResult = await GalRunCmdRq(cmdRqData);
 		} else {
 			return NotImplemented('Unsupported GDS for runCmdRq() - ' + gds);
 		}

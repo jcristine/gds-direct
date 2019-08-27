@@ -1,3 +1,4 @@
+const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
 const TravelportBuildItineraryActionViaXml = require('../../../GdsAction/TravelportBuildItineraryActionViaXml.js');
 const RunCmdHelper = require('./RunCmdRq/RunCmdHelper.js');
 const ModifyCmdOutput = require('./RunCmdRq/ModifyCmdOutput.js');
@@ -120,9 +121,11 @@ const RunCmdRq = ({
 	CmdRqLog = require('../../../../../Repositories/CmdRqLog.js'),
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
 	Pccs = require("../../../../../Repositories/Pccs.js"),
-	travelport = require('../../../../../GdsClients/TravelportClient.js')(),
+	gdsClients = GdsSession.makeGdsClients(),
 	useXml = true,
 }) => {
+	const travelport = gdsClients.travelport;
+
 	const {
 		flattenCmds,
 		prepareToSavePnr,
@@ -522,7 +525,7 @@ const RunCmdRq = ({
 	const priceInAnotherPcc = async ($cmd, $target, $dialect) => {
 		let $pnr;
 		$pnr = await getCurrentPnr();
-		return (new RepriceInAnotherPccAction())
+		return (new RepriceInAnotherPccAction({gdsClients}))
 			.execute($pnr, $cmd, $dialect, $target, stateful);
 	};
 

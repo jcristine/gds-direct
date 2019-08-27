@@ -39,7 +39,7 @@ const RepriceItinerary_amadeus = ({
 	amadeus = require('../../GdsClients/AmadeusClient.js').makeCustom(),
 }) => {
 	const main = async () => {
-		const built = await BookViaGk.inAmadeus({itinerary, amadeus, baseDate});
+		const built = await BookViaGk.inAmadeus({itinerary, session, amadeus, baseDate});
 		pricingCmd = extendAmadeusCmd(pricingCmd);
 		const capturing = CommonUtils.withCapture(session);
 		const cmdRec = await AmadeusUtils.fetchAllFx(pricingCmd, capturing);

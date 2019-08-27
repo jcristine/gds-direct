@@ -1,3 +1,4 @@
+const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
 const FqCmdParser = require('../../../../Gds/Parsers/Galileo/Commands/FqCmdParser.js');
 const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
 
@@ -140,8 +141,10 @@ const RunCmdRq = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
 	useXml = true,
-	travelport = require('../../../../../GdsClients/TravelportClient')(),
+	gdsClients = GdsSession.makeGdsClients(),
 }) => {
+	const travelport = gdsClients.travelport;
+
 	/** @param $data = Galileo\CommandParser::parseChangePnrRemarks()['data'] */
 	const checkChangeRemarks = async ($data) => {
 		let $errors, $remark, $lineNum;
@@ -927,7 +930,7 @@ const RunCmdRq = ({
 
 	const priceInAnotherPcc = async ($cmd, $target, $dialect) => {
 		const $pnr = await getCurrentPnr();
-		return (new RepriceInAnotherPccAction())
+		return (new RepriceInAnotherPccAction({gdsClients}))
 			.execute($pnr, $cmd, $dialect, $target, stateful);
 	};
 
