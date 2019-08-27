@@ -2,7 +2,6 @@ const AmadeusBuildItineraryAction = require('../Transpiled/Rbs/GdsAction/Amadeus
 const TravelportBuildItineraryActionViaXml = require('../Transpiled/Rbs/GdsAction/TravelportBuildItineraryActionViaXml.js');
 const SabreClient = require('../GdsClients/SabreClient.js');
 const SabreBuildItineraryAction = require('../Transpiled/Rbs/GdsAction/SabreBuildItineraryAction.js');
-const ApolloBuildItinerary = require('../Transpiled/Rbs/GdsAction/ApolloBuildItinerary.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
 

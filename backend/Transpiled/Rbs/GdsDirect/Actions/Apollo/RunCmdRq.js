@@ -1,3 +1,4 @@
+const TravelportBuildItineraryActionViaXml = require('../../../GdsAction/TravelportBuildItineraryActionViaXml.js');
 const RunCmdHelper = require('./RunCmdRq/RunCmdHelper.js');
 const ModifyCmdOutput = require('./RunCmdRq/ModifyCmdOutput.js');
 const RunRealCmd = require('./RunCmdRq/RunRealCmd.js');
@@ -306,14 +307,21 @@ const RunCmdRq = ({
 	};
 
 	const buildItinerary = async ({itinerary}) => {
-		const built = await ApolloBuildItineraryAction({
-			travelport: travelport,
-			itinerary: itinerary,
+		const params = {
+			travelport, itinerary,
 			baseDate: stateful.getStartDt(),
-			useXml: useXml,
 			session: stateful,
-		});
-		if (built.segmentsSold > 0) {
+		};
+		let built, segmentsSold;
+		if (useXml) {
+			built = await TravelportBuildItineraryActionViaXml(params);
+			segmentsSold = built.segments.filter(seg => seg.success).length;
+		} else {
+			// only in tests, should probably drop eventually...
+			built = await ApolloBuildItineraryAction({...params, useXml: false});
+			segmentsSold = built.segmentsSold;
+		}
+		if (segmentsSold > 0) {
 			stateful.updateAreaState({
 				type: '!xml:PNRBFManagement',
 				state: {hasPnr: true, canCreatePq: false},
@@ -322,42 +330,42 @@ const RunCmdRq = ({
 		return built;
 	};
 
-	/** @param {Boolean} $fallbackToGk - defines whether all segments should be booked together or with a separate command
+	/** @param {Boolean} fallbackToGk - defines whether all segments should be booked together or with a separate command
 	 *                       each. When you book them all at once, marriages are added, if separately - not */
-	const bookItinerary = async ($itinerary, $fallbackToGk) => {
-		let $isGkRebookPossible, $newItinerary, $gkSegments, $result, $error,
-			$failedSegNums, $sortResult;
+	const bookItinerary = async (itinerary, fallbackToGk) => {
 		stateful.flushCalledCommands();
-		$isGkRebookPossible = ($seg) => {
-			return $fallbackToGk
-				&& $seg['segmentStatus'] !== 'GK';
+		const isGkRebookPossible = (seg) => {
+			return fallbackToGk
+				&& seg['segmentStatus'] !== 'GK';
 		};
-		$newItinerary = Fp.map(($seg) => {
-			$seg = {...$seg};
-			if ($isGkRebookPossible($seg)) {
+		const newItinerary = Fp.map((seg) => {
+			seg = {...seg};
+			if (isGkRebookPossible(seg)) {
 				// any different booking class will do, since it's GK
-				$seg['bookingClass'] = $seg['bookingClass'] !== 'Y' ? 'Y' : 'Z';
-				$seg['segmentStatus'] = 'GK';
+				seg.bookingClass = seg.bookingClass !== 'Y' ? 'Y' : 'Z';
+				seg.segmentStatus = 'GK';
 			}
-			return $seg;
-		}, $itinerary);
-		$gkSegments = Fp.filter($isGkRebookPossible, $itinerary);
-		$result = await buildItinerary({itinerary: $newItinerary});
-		if ($error = transformBuildError($result)) {
+			return seg;
+		}, itinerary);
+		const gkSegments = Fp.filter(isGkRebookPossible, itinerary);
+		const result = await buildItinerary({itinerary: newItinerary});
+		const error = transformBuildError(result);
+		if (error) {
 			return {
 				'calledCommands': stateful.flushCalledCommands(),
-				'errors': [$error],
+				'errors': [error],
 			};
 		} else {
-			const $gkRebook = await rebookGkSegments($gkSegments, $result.reservation);
+			const gkRebook = await rebookGkSegments(gkSegments, result.reservation);
 			const errors = [];
-			if (!php.empty($failedSegNums = $gkRebook['failedSegmentNumbers'])) {
-				errors.push(Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, {'segNums': php.implode(',', $failedSegNums)}));
+			const failedSegNums = gkRebook['failedSegmentNumbers'];
+			if (!php.empty(failedSegNums)) {
+				errors.push(Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, {'segNums': php.implode(',', failedSegNums)}));
 			}
 			stateful.flushCalledCommands();
-			$sortResult = await processSortItinerary()
+			const sortResult = await processSortItinerary()
 				.catch(coverExc(Rej.list, exc => ({errors: ['Did not SORT - ' + exc]})));
-			if (php.empty($sortResult['errors'])) {
+			if (php.empty(sortResult['errors'])) {
 				const calledCommands = stateful.flushCalledCommands().slice(-1);
 				return {calledCommands, errors};
 			} else {
