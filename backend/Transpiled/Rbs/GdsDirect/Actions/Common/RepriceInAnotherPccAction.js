@@ -105,7 +105,7 @@ class RepriceInAnotherPccAction {
 		}
 
 		const translatorResult = (new GdsDialectTranslator())
-			.setBaseDate(startDt)
+			.setBaseDate(baseDate)
 			.translate(dialect, target.gds, cmdRq);
 		const pricingCmd = translatorResult.output || cmdRq;
 		const result = await this.repriceInNewSession({
