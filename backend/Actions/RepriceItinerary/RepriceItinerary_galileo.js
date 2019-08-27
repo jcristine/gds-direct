@@ -1,10 +1,9 @@
+const BookViaGk = require('../BookViaGk.js');
 const GalileoPricingAdapter = require('../../Transpiled/Rbs/FormatAdapters/GalileoPricingAdapter.js');
 const LinearFareParser = require('../../Transpiled/Gds/Parsers/Galileo/Pricing/LinearFareParser.js');
 const FqParser = require('../../Transpiled/Gds/Parsers/Galileo/Pricing/FqParser.js');
 const TravelportUtils = require('../../GdsHelpers/TravelportUtils.js');
 const GalileoUtils = require('../../GdsHelpers/GalileoUtils.js');
-const Rej = require('../../../node_modules/klesun-node-tools/src/Rej.js');
-const GalileoBuildItineraryAction = require('../../Transpiled/Rbs/GdsAction/GalileoBuildItineraryAction.js');
 const FqCmdParser = require('../../Transpiled/Gds/Parsers/Galileo/Commands/FqCmdParser.js');
 const _ = require('lodash');
 
@@ -23,19 +22,9 @@ const extendGalileoCmd = (cmd) => {
 	}
 };
 
-const RepriceItinerary_galileo = ({
-	itinerary, pricingCmd, session, startDt,
-	travelport = require('../../GdsClients/TravelportClient.js')(),
-}) => {
+const RepriceItinerary_galileo = ({pricingCmd, session, baseDate, ...bookParams}) => {
 	const main = async () => {
-		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'AK'}));
-		const built = await GalileoBuildItineraryAction({
-			travelport, session, itinerary, isParserFormat: true,
-		});
-		if (built.errorType) {
-			return Rej.UnprocessableEntity('Could not rebuild PNR in Galileo - '
-				+ built.errorType + ' ' + JSON.stringify(built.errorData));
-		}
+		const built = await BookViaGk.inGalileo({...bookParams, baseDate, session});
 		pricingCmd = extendGalileoCmd(pricingCmd);
 		const pricingModifiers = (FqCmdParser.parse(pricingCmd) || {}).pricingModifiers || [];
 		const fqCmdRec = await GalileoUtils.withFakeNames({

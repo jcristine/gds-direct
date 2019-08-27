@@ -7,7 +7,7 @@ const {REBUILD_MULTISEGMENT} = require('../GdsDirect/Errors');
 // Used by both Galileo and Apollo itinerary build actions
 // They use same underlying API, the only difference is slight
 // changes in format data is returned
-const TravelportBuildItineraryViaXml = async ({
+const TravelportBuildItineraryActionViaXml = async ({
 	session, itinerary,
 	baseDate = moment().format('YYYY-MM-DD'),
 	travelport = TravelportClient(),
@@ -58,4 +58,4 @@ const TravelportBuildItineraryViaXml = async ({
 	return {success: true, segments, reservation};
 };
 
-module.exports = TravelportBuildItineraryViaXml;
+module.exports = TravelportBuildItineraryActionViaXml;

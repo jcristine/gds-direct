@@ -37,7 +37,7 @@ const parseItinerary = output => {
 	return parsed['parsedData'] || [];
 };
 
-
+/** @deprecated I guess, should use TravelportBuildItineraryActionViaXml.js (and rename it maybe to be a lit less verbose) */
 const GalileoBuildItineraryAction = ({
 	session,
 	itinerary,

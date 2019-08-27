@@ -1,11 +1,9 @@
+const BookViaGk = require('../BookViaGk.js');
 const CommonUtils = require('../../GdsHelpers/CommonUtils.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const PricingCmdParser = require('../../Transpiled/Gds/Parsers/Sabre/Commands/PricingCmdParser.js');
 const AmadeusUtils = require('../../GdsHelpers/AmadeusUtils.js');
 const AmadeusGetPricingPtcBlocksAction = require('../../Transpiled/Rbs/GdsDirect/Actions/Amadeus/AmadeusGetPricingPtcBlocksAction.js');
-const Rej = require('klesun-node-tools/src/Rej.js');
-const AmadeusBuildItineraryAction = require('../../Transpiled/Rbs/GdsAction/AmadeusBuildItineraryAction.js');
-const {doSegmentsMatch} = require('../../Transpiled/Rbs/GdsDirect/Actions/Common/ItinerarySegments.js');
 
 const extendAmadeusCmd = (cmd) => {
 	const data = PricingCmdParser.parse(cmd);
@@ -37,16 +35,11 @@ const extendAmadeusCmd = (cmd) => {
 };
 
 const RepriceItinerary_amadeus = ({
-	itinerary, pricingCmd, session, startDt,
+	itinerary, pricingCmd, session, baseDate,
 	amadeus = require('../../GdsClients/AmadeusClient.js').makeCustom(),
 }) => {
 	const main = async () => {
-		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
-		const built = await new AmadeusBuildItineraryAction({session}).execute(itinerary);
-		if (built.errorType) {
-			return Rej.UnprocessableEntity('Could not rebuild PNR in Amadeus - '
-				+ built.errorType + ' ' + JSON.stringify(built.errorData));
-		}
+		const built = await BookViaGk.inAmadeus({itinerary, amadeus, baseDate});
 		pricingCmd = extendAmadeusCmd(pricingCmd);
 		const capturing = CommonUtils.withCapture(session);
 		const cmdRec = await AmadeusUtils.fetchAllFx(pricingCmd, capturing);

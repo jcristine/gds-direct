@@ -1,9 +1,8 @@
-const Rej = require('klesun-node-tools/src/Rej.js');
 const ImportPqApolloAction = require('../../Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloAction.js');
 const TravelportUtils = require('../../GdsHelpers/TravelportUtils.js');
-const ApolloBuildItinerary = require('../../Transpiled/Rbs/GdsAction/ApolloBuildItinerary.js');
 const AtfqParser = require('../../Transpiled/Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const _ = require('lodash');
+const BookViaGk = require('../BookViaGk.js');
 
 const extendApolloCmd = (cmd) => {
 	const data = AtfqParser.parsePricingCommand(cmd);
@@ -22,19 +21,9 @@ const extendApolloCmd = (cmd) => {
 	}
 };
 
-const RepriceItinerary_apollo = ({
-	itinerary, pricingCmd, session, startDt,
-	travelport = require('../../GdsClients/TravelportClient.js')(),
-}) => {
+const RepriceItinerary_apollo = ({pricingCmd, session, baseDate, ...bookParams}) => {
 	const main = async () => {
-		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
-		const built = await ApolloBuildItinerary({
-			travelport, session, itinerary, baseDate: startDt,
-		});
-		if (built.errorType) {
-			return Rej.UnprocessableEntity('Could not rebuild PNR in Apollo - '
-				+ built.errorType + ' ' + JSON.stringify(built.errorData));
-		}
+		const built = await BookViaGk.inApollo({...bookParams, baseDate, session});
 		pricingCmd = extendApolloCmd(pricingCmd);
 		const cmdRec = await TravelportUtils.fetchAll(pricingCmd, session);
 		const pricing = ImportPqApolloAction.parsePricing(cmdRec.output, [], pricingCmd);
@@ -46,7 +35,7 @@ const RepriceItinerary_apollo = ({
 			calledCommands: [cmdRec].map(cmdRec => ({...cmdRec,
 				output: TravelportUtils.wrap(cmdRec.output, 'apollo'),
 			})),
-			pricingCmd: pricingCmd,
+			pricingCmd,
 			error: pricing.error || null,
 			pricingBlockList: (pricing.store || {}).pricingBlockList || [],
 			rebookItinerary: built.reservation.itinerary.map(seg => {

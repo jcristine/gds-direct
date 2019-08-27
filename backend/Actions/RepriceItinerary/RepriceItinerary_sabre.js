@@ -1,3 +1,4 @@
+const BookViaGk = require('../BookViaGk.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const SabrePricingParser = require('../../Transpiled/Gds/Parsers/Sabre/Pricing/SabrePricingParser.js');
 const SabreBuildItineraryAction = require('../../Transpiled/Rbs/GdsAction/SabreBuildItineraryAction.js');
@@ -48,31 +49,14 @@ const extendSabreCmd = async ({cmd, yFallback, srcItin}) => {
 	}
 };
 
-const RepriceItinerary_sabre = ({
-	itinerary, pricingCmd, session, startDt,
-	sabre = require('../../GdsClients/SabreClient.js').makeCustom(),
-}) => {
+const RepriceItinerary_sabre = ({pricingCmd, session, baseDate, ...bookParams}) => {
 	const main = async () => {
-		itinerary = itinerary.map(seg => {
-			// AA does not allow GK status on AA segments
-			return seg.airline === 'AA'
-				? {...seg, segmentStatus: 'LL'}
-				: {...seg, segmentStatus: 'GK'};
+		const built = await BookViaGk.inSabre({...bookParams, session, baseDate});
+		pricingCmd = await extendSabreCmd({
+			cmd: pricingCmd,
+			yFallback: built.yFallback,
+			srcItin: built.reservation.itinerary,
 		});
-		const build = await new SabreBuildItineraryAction({session, sabre});
-		let built = await build.execute(itinerary, true);
-		let yFallback = false;
-		if (built.errorType === SabreBuildItineraryAction.ERROR_NO_AVAIL) {
-			yFallback = true;
-			await session.runCmd('XI');
-			const yItin = itinerary.map(seg => ({...seg, bookingClass: 'Y'}));
-			built = await build.execute(yItin, true);
-		}
-		if (built.errorType) {
-			return Rej.UnprocessableEntity('Could not rebuild PNR in Sabre - '
-				+ built.errorType + ' ' + JSON.stringify(built.errorData));
-		}
-		pricingCmd = await extendSabreCmd({cmd: pricingCmd, yFallback, srcItin: itinerary});
 		const cmdRec = await session.runCmd(pricingCmd);
 		const parsed = SabrePricingParser.parse(cmdRec.output);
 		let error = parsed.error || null;

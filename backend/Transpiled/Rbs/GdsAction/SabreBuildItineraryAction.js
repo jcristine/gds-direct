@@ -31,12 +31,13 @@ const parseWaitlist = output => {
 class SabreBuildItineraryAction extends AbstractGdsAction {
 	constructor({
 		sabre = SabreClient.makeCustom(),
-		session,
+		session, baseDate = null,
 	} = {}) {
 		super();
 		this.$useXml = true;
 		this.sabre = sabre;
 		this.session = session;
+		this.baseDate = baseDate;
 	}
 
 	useXml($flag) {
@@ -92,12 +93,13 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 	}
 
 	async executeViaXml(itinerary, isParserFormat) {
-		const startDt = php.is_callable(this.session.getStartDt) ? this.session.getStartDt() : php.date('Y-m-d');
+		const fallbackDt = php.is_callable(this.session.getStartDt) ? this.session.getStartDt() : php.date('Y-m-d');
+		const baseDate = this.baseDate || fallbackDt;
 
 		const params = {
 			addAirSegments: itinerary.map(seg => {
 				const departureDt = !isParserFormat ? seg.departureDate :
-					DateTime.decodeRelativeDateInFuture(seg.departureDate.parsed, startDt);
+					DateTime.decodeRelativeDateInFuture(seg.departureDate.parsed, baseDate);
 
 				return {
 					airline: seg.airline,
@@ -127,6 +129,10 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 		return {
 			success: true,
 			airSegmentCount: result.newAirSegments.length,
+			reservation: {
+				itinerary: result.reservations,
+			},
+			/** @deprecated - use reservation, to match Apollo and importPnr format */
 			itinerary: result.reservations,
 		};
 	}

@@ -68,7 +68,7 @@ const RepriceInPccMix = async ({
 	stateful, aliasData, gdsClients,
 	RbsClient = require('../IqClients/RbsClient.js'),
 }) => {
-	const startDt = stateful.getStartDt();
+	const baseDate = stateful.getStartDt();
 	const cmdRqId = await stateful.getLog().getCmdRqId();
 
 	const dtDiff = (next, curr) => {
@@ -117,7 +117,7 @@ const RepriceInPccMix = async ({
 	/** @return Promise */
 	const processPcc = async ({itinerary, pricingCmd, gds, pcc}) => {
 		return new RepriceInAnotherPccAction({gdsClients}).repriceInNewSession({
-			gds, pcc, itinerary, pricingCmd, startDt, baseDate: startDt,
+			gds, pcc, itinerary, pricingCmd, baseDate,
 		}).then(async pccResult => {
 			for (const ptcBlock of pccResult.pricingBlockList || []) {
 				ptcBlock.fareType = await RbsUtils.getFareTypeV2(gds, pcc, ptcBlock);
@@ -136,7 +136,7 @@ const RepriceInPccMix = async ({
 
 	const main = async () => {
 		const pnr = await GetCurrentPnr(stateful);
-		const reservation = pnr.getReservation(startDt);
+		const reservation = pnr.getReservation(baseDate);
 		const itinerary = reservation.itinerary;
 		if (itinerary.length === 0) {
 			return Rej.BadRequest('Itinerary is empty');

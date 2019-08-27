@@ -73,10 +73,10 @@ class RepriceInAnotherPccAction {
 		return RepriceItinerary({...params, gdsClients});
 	}
 
-	async repriceInNewSession({gds, pcc, itinerary, pricingCmd, startDt}) {
+	async repriceInNewSession({gds, pcc, itinerary, pricingCmd, baseDate}) {
 		const gdsClients = this.gdsClients;
 		const action = (session) => this.repriceIn({
-			gds, itinerary, pricingCmd, session, startDt,
+			gds, itinerary, pricingCmd, session, baseDate,
 		});
 		return GdsSession.withSession({gds, pcc, gdsClients, action});
 	}
@@ -91,7 +91,7 @@ class RepriceInAnotherPccAction {
 			type: '!priceInAnotherPcc',
 			state: {canCreatePq: false},
 		});
-		const startDt = currentSession.getStartDt();
+		const baseDate = currentSession.getStartDt();
 
 		const target = await this.constructor.getTargetGdsAndPcc(targetStr)
 			.catch(coverExc([NotFound], exc => null));
@@ -109,7 +109,7 @@ class RepriceInAnotherPccAction {
 			.translate(dialect, target.gds, cmdRq);
 		const pricingCmd = translatorResult.output || cmdRq;
 		const result = await this.repriceInNewSession({
-			gds, pcc, itinerary, pricingCmd, startDt,
+			gds, pcc, itinerary, pricingCmd, baseDate,
 		});
 
 		return {'calledCommands': result.calledCommands};

@@ -96,6 +96,7 @@ const GoToPricing = ({
 			state: {hasPnr: true, canCreatePq: false},
 		});
 		return RepriceItinerary({
+			bookRealSegments: true,
 			gds: pricingGds,
 			pcc: pricingPcc,
 			session: targetSession,

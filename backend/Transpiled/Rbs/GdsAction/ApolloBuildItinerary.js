@@ -40,6 +40,7 @@ const makeDirectSellCmd = ($segment) => {
 	});
 };
 
+/** @deprecated I guess, should use TravelportBuildItineraryActionViaXml.js (and rename it maybe to be a lit less verbose) */
 const ApolloBuildItinerary = ({
 	session, itinerary,
 	baseDate = moment().format("YYYY-MM-DD"),
