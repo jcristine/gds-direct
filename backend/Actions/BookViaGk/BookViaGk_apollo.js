@@ -36,7 +36,7 @@ const BookViaGk_apollo = async ({
 			const records = segs.map(gkSeg => {
 				const pnrItinerary = reservation && reservation.itinerary;
 				const pnrSeg = findSegmentInPnr(gkSeg, pnrItinerary);
-				return {...pnrSeg, bookingClass: gkSeg.bookingClass};
+				return {...pnrSeg, bookingClass: gkSeg.desiredBookingClass};
 			});
 			const chgClsCmd =
 				'X' + php.implode('+', records.map(r => r.segmentNumber)) + '/' +
@@ -69,6 +69,7 @@ const BookViaGk_apollo = async ({
 					segmentStatus: 'GK',
 					// any different booking class will do, since it's GK
 					bookingClass: seg.bookingClass !== 'Y' ? 'Y' : 'Z',
+					desiredBookingClass: seg.bookingClass,
 				});
 			}
 		}

@@ -49,7 +49,7 @@ const BookViaAk_galileo = ({
 				const records = clsSegs.map(seg => {
 					const pnrItinerary = reservation && reservation.itinerary;
 					const pnrSeg = findSegmentInPnr(seg, pnrItinerary);
-					return {...pnrSeg, bookingClass: seg.bookingClass};
+					return {...pnrSeg, bookingClass: seg.desiredBookingClass};
 				});
 				const segmentNumbers = records.map(seg => seg.segmentNumber);
 				const cmd = '@' + segmentNumbers.join('.') + '/' + cls;
@@ -86,6 +86,7 @@ const BookViaAk_galileo = ({
 					segmentStatus: 'AK',
 					// any different booking class will do, since it's GK
 					bookingClass: seg.bookingClass !== 'Y' ? 'Y' : 'Z',
+					desiredBookingClass: seg.bookingClass,
 				});
 			}
 		}
