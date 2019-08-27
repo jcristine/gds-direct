@@ -72,11 +72,12 @@ class FxParser {
 		const nvbDate = CommonParserHelpers.parsePartialDate(split['O']);
 		const nvaDate = CommonParserHelpers.parsePartialDate(split['E']);
 
-		const $isEmptyString = ($val) => $val === '';
+		const isEmptyString = ($val) => $val === '';
 		const [fareBasis, ticketDesignator] = php.array_pad(php.explode('/', split['I']), 2, null);
 		const $result = {
 			type: 'flight',
 			isStopover: split['X'] !== 'X',
+			/** it can be both a city (WAS), and an airport (JFK) */
 			destinationCity: split['A'],
 			airline: split['C'],
 			flightNumber: split['F'],
@@ -91,7 +92,7 @@ class FxParser {
 			freeBaggageAmount: BagAllowanceParser.parseAmountCode(split['B']),
 		};
 		if (date && time && php.trim(split[' ']) === '' &&
-			$result['bookingClass'] && !Fp.any($isEmptyString, $result)
+			$result.bookingClass && !Fp.any(isEmptyString, $result)
 		) {
 			return $result;
 		} else {
@@ -297,45 +298,43 @@ class FxParser {
 	// first lines like:
 	// ' NYC',
 	// ' TAS HY   102 K *  06JUL 1500  KHE6M           06JUL06JUL 2P',
-	static parsePtcPricing($lines) {
-		let $departureCity, $segments, $emptyLines, $fcSplit, $fcSplit2, $values, $fcLines, $baseFare, $fareEquivalent,
-			$netPrice, $mainTaxes, $fcLine, $taxBreakdown;
+	static parsePtcPricing(lines) {
+		let emptyLines;
 
-		$departureCity = php.trim(php.array_shift($lines));
-		[$segments, $lines] = this.parseSequence($lines, (...args) => this.parseSegmentLine(...args));
-		if ($segments.length === 0) {
-			return {error: 'Failed to parse FX segment line - ' + $lines[0]};
+		const departureCity = php.trim(php.array_shift(lines));
+		let segments;
+		[segments, lines] = this.parseSequence(lines, (...args) => this.parseSegmentLine(...args));
+		if (segments.length === 0) {
+			return {error: 'Failed to parse FX segment line - ' + lines[0]};
 		}
-		[$emptyLines, $lines] = this.parseSequence($lines, (...args) => this.isEmptyLine(...args));
+		[emptyLines, lines] = this.parseSequence(lines, (...args) => this.isEmptyLine(...args));
 
-		[$fcSplit, $lines] = this.parseSequence($lines, (...args) => this.splitValueAndFcLine(...args));
-		[$emptyLines, $lines] = this.parseSequence($lines, (...args) => this.isEmptyLine(...args)); // infant
-		[$fcSplit2, $lines] = this.parseSequence($lines, (...args) => this.splitValueAndFcLine(...args));
-		$fcSplit = php.array_merge($fcSplit, $fcSplit2);
+		let fcSplit;
+		[fcSplit, lines] = this.parseSequence(lines, (...args) => this.splitValueAndFcLine(...args));
+		[emptyLines, lines] = this.parseSequence(lines, (...args) => this.isEmptyLine(...args)); // infant
+		let fcSplit2;
+		[fcSplit2, lines] = this.parseSequence(lines, (...args) => this.splitValueAndFcLine(...args));
+		fcSplit = php.array_merge(fcSplit, fcSplit2);
 
-		$values = php.array_column($fcSplit, 0);
-		$fcLines = php.array_column($fcSplit, 1);
+		let values = php.array_column(fcSplit, 0);
+		const fcLines = php.array_column(fcSplit, 1);
 
-		$baseFare = php.array_shift($values);
-		$fareEquivalent = php.array_shift($values);
-		$values = php.array_values(php.array_filter($values));
-		$netPrice = php.array_pop($values);
-		$mainTaxes = $values;
+		const baseFare = php.array_shift(values);
+		const fareEquivalent = php.array_shift(values);
+		values = php.array_values(php.array_filter(values));
+		const netPrice = php.array_pop(values);
+		const mainTaxes = values;
 
-		$fcLine = this.unwrapFcLine($fcLines, $segments);
-		[$fcLine, $taxBreakdown] = this.parseTaxBreakdown($fcLine);
+		let fcLine = this.unwrapFcLine(fcLines, segments);
+		let taxBreakdown;
+		[fcLine, taxBreakdown] = this.parseTaxBreakdown(fcLine);
+		const {xtTaxes, facilityCharges} = taxBreakdown;
 
 		return {
-			'departureCity': $departureCity,
-			'segments': $segments,
-			'baseFare': $baseFare,
-			'fareEquivalent': $fareEquivalent,
-			'fareConstruction': this.parseFareConstruction($fcLine),
-			'mainTaxes': $mainTaxes,
-			'xtTaxes': $taxBreakdown['xtTaxes'],
-			'facilityCharges': $taxBreakdown['facilityCharges'],
-			'netPrice': $netPrice,
-			'additionalInfo': this.parsePtcPricingMessages($lines),
+			departureCity, segments, baseFare, fareEquivalent,
+			fareConstruction: this.parseFareConstruction(fcLine),
+			mainTaxes, xtTaxes, facilityCharges, netPrice,
+			additionalInfo: this.parsePtcPricingMessages(lines),
 		};
 	}
 
