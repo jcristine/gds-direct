@@ -37,7 +37,6 @@ const parseItinerary = output => {
 	return parsed['parsedData'] || [];
 };
 
-/** @deprecated I guess, should use TravelportBuildItineraryActionViaXml.js (and rename it maybe to be a lit less verbose) */
 const GalileoBuildItineraryAction = ({
 	session,
 	itinerary,
@@ -108,5 +107,7 @@ const GalileoBuildItineraryAction = ({
 
 GalileoBuildItineraryAction.ERROR_GDS_ERROR = 'ERROR_GDS_ERROR';
 GalileoBuildItineraryAction.ERROR_NO_AVAIL = 'ERROR_NO_AVAIL';
+
+/** @deprecated I guess, should use TravelportBuildItineraryActionViaXml.js (and rename it maybe to be a lit less verbose) */
 module.exports = GalileoBuildItineraryAction;
 module.exports.parseItinerary = parseItinerary;
