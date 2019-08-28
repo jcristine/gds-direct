@@ -201,7 +201,7 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
 				'                                               \/DCAF*5JV97Q \/E',
 				' 4 AF1668L 07JUN W CDGMAN*  4\/2 HK2   720A  750A \/DCAF*5JV97Q',
 			]),
-			{'0': {'marriageNumber': '3'},'2': {'marriageNumber': '4'}},
+			{'0': {'marriage': '3'},'2': {'marriage': '4'}},
 		]);
 		$list.push([
 			php.implode(php.PHP_EOL, [

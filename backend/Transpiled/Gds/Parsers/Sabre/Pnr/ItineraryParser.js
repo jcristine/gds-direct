@@ -120,7 +120,7 @@ class ItineraryParser {
 			'(?<destinationAirport>[A-Z]{3})' +
 			'(?<marriageAfterDestination>\\*)?' +
 			'\\s*' +
-			'(?:(?<marriageNumber>\\d{1,})\\\/(?<marriageOrder>\\d{1,})|)' +
+			'(?:(?<marriage>\\d{1,})\\\/(?<marriageOrder>\\d{1,})|)' +
 			// Row added to use itinerary parser to parse IMSL dump segments, these keys will be empty for usual dump
 			'\\s*' +
 			'(?<segmentStatus>[A-Z]{2})' +
@@ -150,7 +150,7 @@ class ItineraryParser {
 				'destinationAirport': $tokens['destinationAirport'],
 				'marriageBeforeDeparture': php.trim($tokens['marriageBeforeDeparture']) === '*',
 				'marriageAfterDestination': php.trim($tokens['marriageAfterDestination']) === '*',
-				'marriageNumber': $tokens['marriageNumber'] || null,
+				'marriage': $tokens['marriage'] || null,
 				'marriageOrder': $tokens['marriageOrder'] || null,
 				'segmentStatus': $tokens['segmentStatus'],
 				'seatCount': $tokens['seatCount'],

@@ -90,6 +90,7 @@ class FormatAdapter
 			'daysOfWeek': $daysOfWeek,
 			'departureAirport': $segment['departureAirport'],
 			'destinationAirport': $segment['destinationAirport'],
+			'marriage': $segment['marriage'] || null,
 			'segmentStatus': $segment['segmentStatus'],
 			'seatCount': $segment['seatCount'],
 			'eticket': $segment['eticket'] ? true : false,
