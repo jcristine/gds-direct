@@ -86,7 +86,7 @@ const RepriceInPccMix = async ({
 		for (let i = 0; i < itin.length; ++i) {
 			const curr = itin[i];
 			const next = itin[i + 1] || null;
-			if (!next || dtDiff(next, curr) > 24 * 60 * 60) {
+			if (!next || dtDiff(next, curr) > 24 * 60 * 60 * 1000) {
 				return curr.destinationAirport;
 			}
 		}
