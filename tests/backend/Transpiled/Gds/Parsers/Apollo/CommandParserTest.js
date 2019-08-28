@@ -1010,6 +1010,26 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 			},
 		}]);
 
+		// most modifiers seem to be ok with an extra preceding slash...
+		$list.push(['$BB//*JCB', {
+			type: 'priceItinerary',
+			data: {
+				pricingModifiers: [
+					{type: 'passengers', raw: '/*JCB'},
+				],
+			},
+		}]);
+
+		$list.push(['$BB*JCB//S1', {
+			type: 'priceItinerary',
+			data: {
+				pricingModifiers: [
+					{type: 'passengers', raw: '*JCB'},
+					{type: 'segments', raw: '/S1'},
+				],
+			},
+		}]);
+
 		$list.push(['A*|1', {type: 'moreAirAvailability'}]);
 		$list.push(['A*C2', {type: 'moreAirAvailability'}]);
 		$list.push(['A*28JUN', {type: 'moreAirAvailability'}]);

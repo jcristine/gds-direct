@@ -160,7 +160,13 @@ class AtfqParser {
 		php.array_shift($tokens);
 		$pricingModifiers = [];
 		for ($token of $tokens) {
-			$pricingModifiers.push(this.parsePricingModifier($token));
+			let item = this.parsePricingModifier($token);
+			if (!item.type && $token.startsWith('/')) {
+				// //*JCB/ seems to be a valid format
+				item = this.parsePricingModifier($token.slice(1));
+				item.raw = '/' + item.raw;
+			}
+			$pricingModifiers.push(item);
 		}
 		return $pricingModifiers;
 	}
