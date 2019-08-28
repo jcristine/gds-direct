@@ -40,7 +40,7 @@ const updateFromService = async () => {
 	}
 	const stored = await CustomData.set(DATA_NAME, rows);
 	return {
-		message: 'written ' + rows.length + ' rows to db',
+		message: 'written ' + rows.length + ' records to custom data storage',
 		sqlResult: stored,
 	};
 };
