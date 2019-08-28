@@ -112,6 +112,13 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 					destinationAirport: seg.destinationAirport,
 					segmentStatus: seg.segmentStatus,
 					seatCount: seg.seatCount,
+					marriage: seg.marriage,
+					/**
+					 * possibly it is "is married to next", dunno how we should
+					 * process marriages between a marriage then though, so
+					 * booking each marriage with a separate request for now
+					 */
+					isMarried: seg.marriage > 0 && seg.segmentStatus !== 'GK' ? true : undefined,
 				};
 			}),
 			redisplay: true,
