@@ -79,7 +79,7 @@ const BookViaGk_sabre = ({
 				noRebook.push({...seg, segmentStatus});
 			} else if (seg.airline === 'AA') {
 				// American Airlines doesn't allow direct sell with GK statuses
-				forRebook.push({...seg, segmentStatus: 'NN'});
+				noRebook.push({...seg, segmentStatus: 'NN'});
 			} else {
 				forRebook.push({...seg, segmentStatus: 'GK'});
 			}
@@ -88,18 +88,19 @@ const BookViaGk_sabre = ({
 		if (forRebook.length > 0) {
 			reservation = (await bookSa({sabre, session, baseDate, itinerary: forRebook})).reservation;
 		}
-		const marriageGroups = Fp.groupMap(s => s.marriage, noRebook);
+		const marriageGroups = Fp.groupMap(s => s.segmentStatus === 'GK' ? null : s.marriage, noRebook);
 		for (const [marriage, group] of marriageGroups) {
 			reservation = (await bookSa({sabre, session, baseDate, itinerary: group})).reservation;
 		}
-		const {failedSegments, messages} = await rebookPassiveSegments(forRebook, reservation);
+		let {failedSegments, messages, cmdRec} = await rebookPassiveSegments(forRebook, reservation);
 		if (failedSegments.length > 0) {
 			await session.runCmd('X' + failedSegments.map(s => s.segmentNumber).join('/'));
 			const built = await bookPassive(failedSegments);
 			reservation = built.reservation;
+			cmdRec = null;
 		}
 		// TODO: SORT
-		return {reservation, messages};
+		return {reservation, messages, pnrCmdRec: cmdRec};
 	};
 
 	if (bookRealSegments) {

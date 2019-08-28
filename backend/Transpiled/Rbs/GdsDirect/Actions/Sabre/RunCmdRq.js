@@ -1,3 +1,4 @@
+const BookViaGk_sabre = require('../../../../../Actions/BookViaGk/BookViaGk_sabre.js');
 const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
 const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
 
@@ -212,6 +213,7 @@ const makeCalledCommandsPccOutputCorrect = ($calledCommands, $area) => {
 	}, $calledCommands);
 };
 
+/** @param stateful = require('StatefulSession.js')() */
 const execute = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
@@ -603,50 +605,20 @@ const execute = ({
 	};
 
 	const bookItinerary = async  ($desiredSegments, $fallbackToGk) => {
-		// TODO: reuse BookViaGk.js instead
-		const newSegments = $desiredSegments.map($seg => {
-			const $newStatus = $seg['segmentStatus'];
-			// Sabre needs NN status in cmd to sell SS
-			// American airline doesn't allow direct sell with GK statuses
-			$seg['segmentStatus'] = php.in_array($newStatus, ['GK', 'SS'])
-				? $seg['airline'] != 'AA' ? 'GK' : 'NN'
-				: $newStatus;
-			return $seg;
+		const built = await BookViaGk_sabre({
+			bookRealSegments: true,
+			withoutRebook: !$fallbackToGk,
+			itinerary: $desiredSegments,
+			session: stateful,
+			baseDate: stateful.getStartDt(),
+			sabre: gdsClients.sabre,
+		});
+		stateful.updateAreaState({
+			type: '!xml:EnhancedAirBookRQ',
+			state: {hasPnr: true, canCreatePq: false},
 		});
 
-		stateful.flushCalledCommands();
-		const result = await (new SabreBuildItineraryAction({sabre}))
-			.setSession(stateful)
-			.useXml(useXml)
-			.execute(newSegments, true);
-
-		if (useXml && result.airSegmentCount > 0) {
-			stateful.updateAreaState({
-				type: '!xml:EnhancedAirBookRQ',
-				state: {hasPnr: true, canCreatePq: false},
-			});
-		}
-
-		const error = transformBuildError(result);
-		if (error) {
-			return {
-				'calledCommands': stateful.flushCalledCommands(),
-				'errors': [error],
-			};
-		}
-
-		let cmdRec = result.pnrCmdRec;
-		if ($fallbackToGk) {
-			// order is important, so can't store in a {} as it sorts integers
-			const byMarriage = Fp.groupMap(s => s.marriage, newSegments);
-			for (const [marriage, segments] of byMarriage) {
-				const segmentTokens = segments.map(
-					seg => findSegmentNumberInPnr(seg, result.itinerary) + seg.bookingClass);
-
-				const cmd = 'WC' + segmentTokens.join('/');
-				cmdRec = await runCmd(cmd);
-			}
-		}
+		let cmdRec = built.pnrCmdRec;
 		const sortResult = await processSortItinerary((cmdRec || {}).output)
 			.catch(coverExc(Rej.list, exc => ({errors: ['Did not SORT' + exc]})));
 
@@ -654,7 +626,15 @@ const execute = ({
 			cmd: '*R',
 			output: (await getCurrentPnr()).getDump(),
 		};
-		return {'calledCommands': [cmdRec]};
+		return {
+			calledCommands: [cmdRec],
+			userMessages: built.messages
+				.filter(r => r.type === 'info')
+				.map(r => r.text),
+			errors: built.messages
+				.filter(r => r.type === 'error')
+				.map(r => r.text),
+		};
 	};
 
 	const rebookAsSs = async  () => {
