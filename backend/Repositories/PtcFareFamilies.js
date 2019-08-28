@@ -28,7 +28,7 @@ const updateFromService = async () => {
 			passwd: act.password,
 		},
 		functionName: 'getFareTypeMapping',
-		serviceName: 'rbs',
+		serviceName: act.serviceName,
 	});
 
 	const rows = Object

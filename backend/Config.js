@@ -37,7 +37,8 @@ const getExternalServices = () => ({
 		//password: isProd ? 'zWpmFZbwkxPftCfZ7NRt' : 'BQK8FDCkKbk26sukZZ3H',
 		// finally we have own credentials
 		login: 'gdsd_json_service',
-		password: 'zrZZDO0qlrXB3Bo9Inqy',
+		password: isProd ? 'zrZZDO0qlrXB3Bo9Inqy' : 'zuQYTCEZN0L3O2njRwS6',
+		serviceName: 'gdsd',
 	},
 	cms: {
 		// CMS uses your EMC login/password for authentication, but since GDSD is a

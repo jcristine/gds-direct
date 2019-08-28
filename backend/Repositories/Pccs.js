@@ -38,7 +38,7 @@ exports.updateFromService = async () => {
 			passwd: config.external_service.act.password,
 		},
 		functionName: 'getPCCsAll',
-		serviceName: 'rbs',
+		serviceName: config.external_service.act.serviceName,
 	});
 
 	const rows = Object

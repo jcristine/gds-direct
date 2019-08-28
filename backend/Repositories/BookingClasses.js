@@ -24,7 +24,7 @@ exports.updateFromService = async () => {
 			passwd: config.external_service.act.password,
 		},
 		functionName: 'getAirlineBookingClasses',
-		serviceName: 'rbs',
+		serviceName: config.external_service.act.serviceName,
 	});
 
 	const rows = [];

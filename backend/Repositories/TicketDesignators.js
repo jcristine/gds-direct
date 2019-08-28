@@ -35,7 +35,7 @@ const fetchChunk = async (minUpdateDt) => {
 			passwd: config.external_service.act.password,
 		},
 		functionName: 'getTicketDesignatorsV2ByCriteria',
-		serviceName: 'rbs',
+		serviceName: config.external_service.act.serviceName,
 		params: {updateDt: minUpdateDt},
 	});
 };
