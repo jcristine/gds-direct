@@ -84,10 +84,14 @@ const BookViaGk_sabre = ({
 				forRebook.push({...seg, segmentStatus: 'GK'});
 			}
 		}
-		let {reservation} = await bookSa({
-			sabre, session, baseDate,
-			itinerary: [...noRebook, ...forRebook],
-		});
+		let reservation;
+		if (forRebook.length > 0) {
+			reservation = (await bookSa({sabre, session, baseDate, itinerary: forRebook})).reservation;
+		}
+		const marriageGroups = Fp.groupMap(s => s.marriage, noRebook);
+		for (const [marriage, group] of marriageGroups) {
+			reservation = (await bookSa({sabre, session, baseDate, itinerary: group})).reservation;
+		}
 		const {failedSegments, messages} = await rebookPassiveSegments(forRebook, reservation);
 		if (failedSegments.length > 0) {
 			await session.runCmd('X' + failedSegments.map(s => s.segmentNumber).join('/'));
