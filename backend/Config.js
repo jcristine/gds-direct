@@ -33,8 +33,11 @@ const getExternalServices = () => ({
 		// CMS, does not have access to getTicketDesignatorsV2ByCriteria
 		//login: 'cms_json_service',
 		//password: isProd ? '4plj42hy2EvhoZgKYthc' : 'SK8BmH2XrAlwgr3U6Hem',
-		login: 'rbs_json_service',
-		password: isProd ? 'zWpmFZbwkxPftCfZ7NRt' : 'BQK8FDCkKbk26sukZZ3H',
+		//login: 'rbs_json_service',
+		//password: isProd ? 'zWpmFZbwkxPftCfZ7NRt' : 'BQK8FDCkKbk26sukZZ3H',
+		// finally we have own credentials
+		login: 'gdsd_json_service',
+		passwd: 'zrZZDO0qlrXB3Bo9Inqy',
 	},
 	cms: {
 		// CMS uses your EMC login/password for authentication, but since GDSD is a
