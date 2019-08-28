@@ -94,7 +94,7 @@ const buildFlightSegment = seg => ({
 			},
 		}),
 	}, {
-		'ns1:MarriageGrp': seg.isMarried === undefined ? null : seg.isMarried ? 'O' : 'I',
+		'ns1:MarriageGrp': seg.isMarried === undefined ? null : seg.isMarried ? 'I' : 'O',
 	}, {
 		'ns1:OperatingAirline': cleanUpAttrs({_attr: {Code: seg.operatedByCode || seg.airline}}),
 	}, {
@@ -127,7 +127,7 @@ const transformDate = val => {
 
 const cleanUpAttrs = attributes => {
 	const r = Object.entries(attributes._attr || {}).reduce((acc, keyValuePair) => {
-		// xml lib will add atributes regardless if they are set or not
+		// xml lib will add attributes regardless if they are set or not
 		// so if something is null or undefined it will be added in attributes
 		// with string value "null" or "undefined" respectively
 		if (keyValuePair[1] !== undefined && keyValuePair[1] !== null) {
