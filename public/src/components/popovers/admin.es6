@@ -19,6 +19,7 @@ export default class Admin extends ButtonPopOver
 			this.pages.push(['Themes'     , '/public/admin/terminalThemes.html']);
 			this.pages.push(['Highlight'  , '/public/admin/highlightRules.html']);
 			this.pages.push(['Shortcut Actions'  , '/public/admin/shortcutActions.html']);
+			this.pages.push(['$D/MIX settings'  , '/public/admin/multiPccTariffRules.html']);
 		}
 		let attributes = {};
 		if (this.pages.length === 0) {
