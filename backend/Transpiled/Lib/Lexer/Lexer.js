@@ -1,35 +1,17 @@
 
-const Fp = require('../../Lib/Utils/Fp.js');
-
 class Lexer {
 
 	/** @param Lexeme[] $lexemes */
-	constructor($lexemes) {
-		this.$context = undefined;
-		this.$lexemes = undefined;
-		this.$logger = undefined;
-		this.$lexemes = $lexemes;
-	}
-
-	setLog($log) {
-		this.$logger = $log;
-		return this;
-	}
-
-	log($msg, $data) {
-		let $log;
-		$log = this.$logger;
-		if ($log) {
-			$log($msg, $data);
-		}
+	constructor(lexemes) {
+		this.context = undefined;
+		this.lexemes = lexemes;
 	}
 
 	matchLexeme($text) {
-		let $lexeme, $r;
-		for ($lexeme of this.$lexemes) {
-			$r = $lexeme.match($text, this.$context);
-			if ($r) {
-				return $r;
+		for (const lexeme of this.lexemes) {
+			const result = lexeme.match($text, this.context);
+			if (result) {
+				return result;
 			}
 		}
 		return null;
@@ -43,29 +25,23 @@ class Lexer {
 	 *         raw: string,
 	 *     }[],
 	 * }} */
-	lex($text) {
-		let $lexeme, $removeTextLeft;
-		this.$context = {
-			'text': $text,
-			'lexemes': [],
-		};
+	lex(text) {
+		this.context = {text, lexemes: []};
 		while (true) {
-			$lexeme = this.matchLexeme(this.$context['text']);
-			if ($lexeme) {
-				this.log('Lexeme: ' + $lexeme['lexeme'], $lexeme);
-				this.$context['text'] = $lexeme['textLeft'];
-				this.$context['lexemes'].push($lexeme);
+			const lexeme = this.matchLexeme(this.context.text);
+			if (lexeme) {
+				this.context.text = lexeme.textLeft;
+				this.context.lexemes.push(lexeme);
 			} else {
-				this.log('ERROR: ' + this.$context['text']);
 				break;
 			}
 		}
-		$removeTextLeft = ($data) => {
-			delete ($data['textLeft']);
-			return $data;
+		const removeTextLeft = (data) => {
+			delete data.textLeft;
+			return data;
 		};
-		this.$context['lexemes'] = Fp.map($removeTextLeft, this.$context['lexemes']);
-		return this.$context;
+		this.context.lexemes = this.context.lexemes.map(removeTextLeft);
+		return this.context;
 	}
 }
 
