@@ -1,3 +1,4 @@
+const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
 const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
 const FqCmdParser = require('../../../../Gds/Parsers/Galileo/Commands/FqCmdParser.js');
 const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
@@ -814,6 +815,22 @@ const RunCmdRq = ({
 		return result;
 	};
 
+	/** @param cmdData = require('FqCmdParser.js').parse() */
+	const processPriceItinerary = async (cmd, cmdData) => {
+		const srcMods = cmdData.pricingModifiers;
+		// /MIX is our fake modifier that triggers reprice in multiple PCCs
+		const cleanMods = srcMods.filter(m => m.raw !== 'MIX');
+		if (srcMods.length > cleanMods.length) {
+			return RepriceInPccMix({stateful, gdsClients, aliasData: {
+				dialect: 'galileo',
+				baseCmd: cmdData.baseCmd,
+				pricingModifiers: cleanMods,
+			}});
+		} else {
+			return priceItinerary(cmd, cmdData);
+		}
+	};
+
 	const needsColonN = async ($fqDump, $pnr) => {
 		let $linearDump;
 
@@ -965,7 +982,7 @@ const RunCmdRq = ({
 		} else if (result = RepriceInAnotherPccAction.parseAlias(cmd)) {
 			return priceInAnotherPcc(result.cmd, result.target, result.dialect);
 		} else if (parsed.type === 'priceItinerary') {
-			return priceItinerary(cmd, parsed.data);
+			return processPriceItinerary(cmd, parsed.data);
 		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr(cmd, stateful))) {
 			return bookPnr(reservation);
 		} else {
