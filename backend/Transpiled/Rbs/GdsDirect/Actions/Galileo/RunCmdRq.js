@@ -934,65 +934,61 @@ const RunCmdRq = ({
 			.execute($pnr, $cmd, $dialect, $target, stateful);
 	};
 
-	const processRequestedCommand = async ($cmd) => {
-		let $parsed, $mdaData, $limit, $cmdReal, $matches,
-			$reData, $aliasData, $result, $itinerary, reservation;
+	const processRequestedCommand = async (cmd) => {
+		let mdaData, cmdReal, matches,
+			reData, aliasData, result, reservation;
 
-		$parsed = CommandParser.parse($cmd);
-		if ($mdaData = AliasParser.parseMda($cmd)) {
-			$limit = $mdaData['limit'] || null;
-			if ($cmdReal = $mdaData['realCmd']) {
-				return runAndMoveDownAll($cmdReal, $limit || null);
+		const parsed = CommandParser.parse(cmd);
+		if (mdaData = AliasParser.parseMda(cmd)) {
+			const $limit = mdaData.limit || null;
+			if (cmdReal = mdaData.realCmd) {
+				return runAndMoveDownAll(cmdReal, $limit || null);
 			} else {
 				return moveDownAll($limit);
 			}
-		} else if (php.preg_match(/^PNR$/, $cmd, $matches = [])) {
+		} else if (php.preg_match(/^PNR$/, cmd, matches = [])) {
 			return processSavePnr();
-		} else if (php.preg_match(/^SORT$/, $cmd, $matches = [])) {
+		} else if (php.preg_match(/^SORT$/, cmd, matches = [])) {
 			return processSortItinerary();
-		} else if ($reData = AliasParser.parseRe($cmd)) {
-			return processCloneItinerary($reData);
-		} else if ($aliasData = parseMultiPriceItineraryAlias($cmd)) {
-			return multiPriceItinerary($aliasData);
-		} else if ($aliasData = AliasParser.parseStore($cmd)) {
-			return storePricing($aliasData);
-		} else if ($aliasData = await AliasParser.parsePrice($cmd, stateful)) {
-			return priceAll($aliasData);
-		} else if ($cmd === '/SS') {
+		} else if (reData = AliasParser.parseRe(cmd)) {
+			return processCloneItinerary(reData);
+		} else if (aliasData = parseMultiPriceItineraryAlias(cmd)) {
+			return multiPriceItinerary(aliasData);
+		} else if (aliasData = AliasParser.parseStore(cmd)) {
+			return storePricing(aliasData);
+		} else if (aliasData = await AliasParser.parsePrice(cmd, stateful)) {
+			return priceAll(aliasData);
+		} else if (cmd === '/SS') {
 			return rebookAsSs();
-		} else if (php.preg_match(/^(FD.*)\/MIX$/, $cmd, $matches = [])) {
-			return getMultiPccTariffDisplay($matches[1]);
-		} else if ($result = RepriceInAnotherPccAction.parseAlias($cmd)) {
-			return priceInAnotherPcc($result['cmd'], $result['target'], $result['dialect']);
-		} else if ($parsed['type'] === 'priceItinerary') {
-			return priceItinerary($cmd, $parsed['data']);
-		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr($cmd, stateful))) {
+		} else if (php.preg_match(/^(FD.*)\/MIX$/, cmd, matches = [])) {
+			return getMultiPccTariffDisplay(matches[1]);
+		} else if (result = RepriceInAnotherPccAction.parseAlias(cmd)) {
+			return priceInAnotherPcc(result.cmd, result.target, result.dialect);
+		} else if (parsed.type === 'priceItinerary') {
+			return priceItinerary(cmd, parsed.data);
+		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr(cmd, stateful))) {
 			return bookPnr(reservation);
 		} else {
-			return processRealCommand($cmd);
+			return processRealCommand(cmd);
 		}
 	};
 
 	const execute = async ($cmdRequested) => {
-		let $callResult, $errors, $status, $calledCommands, $userMessages;
-
-		$callResult = await processRequestedCommand($cmdRequested);
-
-		if (!php.empty($errors = $callResult['errors'])) {
-			$status = GdsDirect.STATUS_FORBIDDEN;
-			$calledCommands = $callResult['calledCommands'] || [];
-			$userMessages = $errors;
+		const callResult = await processRequestedCommand($cmdRequested);
+		const errors = callResult.errors || null;
+		const messages = callResult.messages || [];
+		const actions = callResult.actions || [];
+		let status, calledCommands, userMessages;
+		if (!php.empty(errors)) {
+			status = GdsDirect.STATUS_FORBIDDEN;
+			calledCommands = callResult.calledCommands || [];
+			userMessages = errors;
 		} else {
-			$status = GdsDirect.STATUS_EXECUTED;
-			$calledCommands = $callResult['calledCommands'].map(a => a);
-			$userMessages = $callResult['userMessages'] || [];
+			status = GdsDirect.STATUS_EXECUTED;
+			calledCommands = callResult.calledCommands || [];
+			userMessages = callResult.userMessages || [];
 		}
-
-		return {
-			'status': $status,
-			'calledCommands': $calledCommands,
-			'userMessages': $userMessages,
-		};
+		return {status, actions, messages, calledCommands, userMessages};
 	};
 
 	return execute(cmdRq);
