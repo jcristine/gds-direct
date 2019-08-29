@@ -889,38 +889,36 @@ $(function () {
 		html += '<span class="' + item.gds + '" title="' +
 			item.consolidator + ' (' + item.gds + ')">' + item.pcc +  '</span>';
 
-		if (item.ptc || item.account_code || item.fare_type || item.ta_pcc) {
-			html += '<span>';
-			if (item.ptc) {
-				html += ' ' + item.ptc;
-			}
-			if (item.fare_type) {
-				switch (item.gds) {
-				case 'apollo':
-				case 'galileo':
-					fareTypeTitle = _.find(fareTypes, ['value', item.fare_type]).name;
-					fareTypeText = ' ' + fareTypesViewMap.common[item.fare_type];
-					break;
-				case 'amadeus':
-					fareTypeTitle = _.find(fareTypesAmadeus, ['value', item.fare_type]).name;
-					fareTypeText = ' ' + fareTypesViewMap[item.gds][item.fare_type];
-					break;
-				case 'sabre':
-					fareTypeTitle = _.find(fareTypesSabre, ['value', item.fare_type]).name;
-					fareTypeText = ' ' + fareTypesViewMap[item.gds][item.fare_type];
-					break;
-				}
-				html += '<span title="' + fareTypeTitle + '">' + fareTypeText + '</span>';
-			}
-			if (item.account_code) {
-				html += ' ' + item.account_code;
-			}
-			if (item.ta_pcc) {
-				html += ' /TA' + item.ta_pcc;
-			}
-
-			html += '</span>';
+		html += '<span>';
+		if (item.ptc) {
+			html += ' ' + item.ptc;
 		}
+		if (item.fare_type) {
+			switch (item.gds) {
+			case 'apollo':
+			case 'galileo':
+				fareTypeTitle = _.find(fareTypes, ['value', item.fare_type]).name;
+				fareTypeText = ' ' + fareTypesViewMap.common[item.fare_type];
+				break;
+			case 'amadeus':
+				fareTypeTitle = _.find(fareTypesAmadeus, ['value', item.fare_type]).name;
+				fareTypeText = ' ' + fareTypesViewMap[item.gds][item.fare_type];
+				break;
+			case 'sabre':
+				fareTypeTitle = _.find(fareTypesSabre, ['value', item.fare_type]).name;
+				fareTypeText = ' ' + fareTypesViewMap[item.gds][item.fare_type];
+				break;
+			}
+			html += '<span title="' + fareTypeTitle + '">' + fareTypeText + '</span>';
+		}
+		if (item.account_code) {
+			html += ' ' + item.account_code;
+		}
+		if (item.ta_pcc) {
+			html += ' /TA' + item.ta_pcc;
+		}
+
+		html += '</span>';
 		html += ((isComma) ? ', ' : ' ');
 
 		return html;
