@@ -14,27 +14,25 @@ const normalizeRule = (rule, forClient) => {
 		: (dict) => dict;
 
 	return normDict({
-		departure_items: (rule.departure_items || []).map((item) => {
-			return normDict({
+		departure_items: (rule.departure_items || [])
+			.map((item) => normDict({
 				type: php.strval(item.type),
 				value: php.strval(item.value),
-			});
-		}),
-		destination_items: (rule.destination_items || []).map((item) => {
-			return normDict({
+			})),
+		destination_items: (rule.destination_items || [])
+			.map((item) => normDict({
 				type: php.strval(item.type),
 				value: php.strval(item.value),
-			});
-		}),
-		reprice_pcc_records: (rule.reprice_pcc_records || []).map((item) => {
-			return normDict({
+			})),
+		reprice_pcc_records: (rule.reprice_pcc_records || [])
+			.map((item) => normDict({
 				gds: php.strval(item.gds),
 				pcc: php.strval(item.pcc),
 				ptc: php.strval(item.ptc || ''),
 				account_code: php.strval(item.account_code || ''),
 				fare_type: php.strval(item.fare_type || ''),
-			});
-		}),
+				ta_pcc: php.strval(item.ta_pcc || ''),
+			})),
 	});
 };
 

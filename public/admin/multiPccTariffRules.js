@@ -350,9 +350,10 @@ $(function () {
 
 			index = pccElemStore.items.length;
 			html = '<tr class="js-pcc-items-row">' +
-				'<td><input type="text" placeholder="Account Code" class="form-control js-account-code js-account-code-' + index + '"></td>' +
+				'<td><input type="text" placeholder="Account Code" class="form-control all-caps js-account-code-' + index + '"></td>' +
 				'<td><select class="js-ptc-' + index + ' select-single"></select></td>' +
 				'<td><select class="js-fare-type-' + index + ' select-single"></select></td>' +
+				'<td><input type="text" placeholder="/TA.../ PCC" class="form-control all-caps js-ta-pcc-' + index + '"></td>' +
 				'<td class="cell-action"><span class="cross-box"><span class="cross js-remove-pcc-items js-remove-' + index + '" ' +
 				'data-pcc-items-index="' + index + '" role="button"></span></span></td>' +
 				'</tr>';
@@ -363,6 +364,10 @@ $(function () {
 			pccElemStore.items[index].$accountCode = $row.find('.js-account-code-' + index);
 			if (data.account_code) {
 				pccElemStore.items[index].$accountCode.val(data.account_code);
+			}
+			pccElemStore.items[index].$taPcc = $row.find('.js-ta-pcc-' + index);
+			if (data.ta_pcc) {
+				pccElemStore.items[index].$taPcc.val(data.ta_pcc);
 			}
 			pccElemStore.items[index].$ptc = $row.find('.js-ptc-' + index).selectize({
 				allowEmptyOption: true,
@@ -437,6 +442,7 @@ $(function () {
 					_.forEach(items, function (elemRow) {
 						if (elemRow) {
 							var accountCode = elemRow.$accountCode.val().toUpperCase();
+							var taPcc = elemRow.$taPcc.val().toUpperCase();
 							var ptc = elemRow.$ptc[0].selectize.getValue();
 							var fareType = elemRow.$fareType[0].selectize.getValue();
 							var stored = _.find(data.reprice_pcc_records, {
@@ -449,6 +455,7 @@ $(function () {
 							if (!stored) {
 								data.reprice_pcc_records.push({
 									account_code: accountCode,
+									ta_pcc: taPcc,
 									ptc: ptc,
 									fare_type: fareType,
 									pcc: pcc,
@@ -456,6 +463,7 @@ $(function () {
 								});
 								record.reprice_pcc_records.push({
 									account_code: accountCode,
+									ta_pcc: taPcc,
 									ptc: ptc,
 									fare_type: fareType,
 									pcc: pcc,
@@ -468,6 +476,7 @@ $(function () {
 				} else {
 					data.reprice_pcc_records.push({
 						account_code: '',
+						ta_pcc: '',
 						ptc: '',
 						fare_type: '',
 						pcc: pcc,
@@ -475,6 +484,7 @@ $(function () {
 					});
 					record.reprice_pcc_records.push({
 						account_code: '',
+						ta_pcc: '',
 						ptc: '',
 						fare_type: '',
 						pcc: pcc,
@@ -829,7 +839,7 @@ $(function () {
 					_this.save();
 				}
 			})
-			.on('blur', '.js-account-code', function () {
+			.on('blur', '.all-caps', function () {
 				var $this = $(this);
 				var value = $this.val();
 				$this.val(value.toUpperCase());
@@ -879,7 +889,7 @@ $(function () {
 		html += '<span class="' + item.gds + '" title="' +
 			item.consolidator + ' (' + item.gds + ')">' + item.pcc +  '</span>';
 
-		if (item.ptc || item.account_code || item.fare_type) {
+		if (item.ptc || item.account_code || item.fare_type || item.ta_pcc) {
 			html += '<span>';
 			if (item.ptc) {
 				html += ' ' + item.ptc;
@@ -904,6 +914,9 @@ $(function () {
 			}
 			if (item.account_code) {
 				html += ' ' + item.account_code;
+			}
+			if (item.ta_pcc) {
+				html += ' /TA' + item.ta_pcc;
 			}
 
 			html += '</span>';
