@@ -32,8 +32,8 @@ class CanCreatePqRules {
 		for ($segment of Object.values($parsedReservation['itinerary'])) {
 			if (!php.in_array($segment['segmentStatus'], $allowedStatuses)) {
 				$errors.push(Errors.getMessage(Errors.BAD_SEGMENT_STATUS, {
-					'segmentNumber': $segment['segmentNumber'],
-					'segmentStatus': $segment['segmentStatus'],
+					segmentNumber: $segment['segmentNumber'],
+					segmentStatus: $segment['segmentStatus'],
 				}));
 			}
 		}
@@ -76,7 +76,7 @@ class CanCreatePqRules {
 		$tooShortToBeValid = !php.preg_match(/\n.*\n/, StringUtil.wrapLinesAt($output, 64));
 		if ($tooShortToBeValid) {
 			$errors.push(Errors.getMessage(Errors.GDS_PRICING_ERROR, {
-				'response': php.trim(php.str_replace(php.PHP_EOL, ' ', $output)),
+				response: php.trim(php.str_replace(php.PHP_EOL, ' ', $output)),
 			}));
 		}
 		$needsRebook = false;
@@ -90,7 +90,7 @@ class CanCreatePqRules {
 		} else if ($gds == 'galileo') {
 			$needsRebook = php.preg_match(/\*\*\* REBOOK BF SEGMENTS/, $output);
 		} else {
-			$errors.push(Errors.getMessage(Errors.UNSUPPORTED_GDS, {'gds': $gds}));
+			$errors.push(Errors.getMessage(Errors.UNSUPPORTED_GDS, {gds: $gds}));
 		}
 		if ($needsRebook) {
 			$errors.push(Errors.getMessage(Errors.MUST_REBOOK));
@@ -147,7 +147,7 @@ class CanCreatePqRules {
 				]);
 				if (php.count($ageGroupsPlural) > 0) {
 					$errors.push(Errors.getMessage(Errors.BAD_MOD_LOW_FARE_CHILD, {
-						'ageGroupsPlural': php.implode(', ', $ageGroupsPlural), 'modifier': '$BB', 'alternative': '$B',
+						ageGroupsPlural: php.implode(', ', $ageGroupsPlural), modifier: '$BB', alternative: '$B',
 					}));
 				}
 			}
@@ -169,11 +169,11 @@ class CanCreatePqRules {
 			$errors = php.array_merge($errors, Fp.map(($ageGroup) => {
 				let $article;
 				$article = {
-					'child': 'a',
-					'infant': 'an',
-					'adult': 'an',
+					child: 'a',
+					infant: 'an',
+					adult: 'an',
 				}[$ageGroup] || 'a\/an';
-				return Errors.getMessage(Errors.NO_FLYING_PTC_IN_PRICING, {'ageGroup': $ageGroup, 'article': $article});
+				return Errors.getMessage(Errors.NO_FLYING_PTC_IN_PRICING, {ageGroup: $ageGroup, article: $article});
 			}, php.array_unique($lacking)));
 		}
 		return $errors;

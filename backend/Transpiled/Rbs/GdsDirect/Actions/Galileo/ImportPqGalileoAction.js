@@ -61,7 +61,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 
 		$output = this.$cmdToFullOutput[$cmd] || (await fetchAll($cmd, this)).output;
 		this.$cmdToFullOutput[$cmd] = $output;
-		this.$allCommands.push({'cmd': $cmd, 'output': $output});
+		this.$allCommands.push({cmd: $cmd, output: $output});
 		return $output;
 	}
 
@@ -71,7 +71,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		$raw = await this.runOrReuse('*R');
 		$parsed = PnrParser.parse($raw);
 		$common = GalileoPnrCommonFormatAdapter.transform($parsed, this.getBaseDate());
-		$result = {'raw': $raw};
+		$result = {raw: $raw};
 		if ($result['error'] = $common['error']) {
 			return $result;
 		} else {
@@ -86,11 +86,11 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 
 	static transformBagPtcBlock($ptcBlock, $i) {
 		return {
-			'subPricingNumber': +$i + 1,
-			'passengerNameNumbers': $ptcBlock['passengerNameNumbers'],
-			'ptcInfo': $ptcBlock['ptcInfo'],
-			'raw': $ptcBlock['baggageInfo']['raw'],
-			'parsed': $ptcBlock['baggageInfo']['parsed'],
+			subPricingNumber: +$i + 1,
+			passengerNameNumbers: $ptcBlock['passengerNameNumbers'],
+			ptcInfo: $ptcBlock['ptcInfo'],
+			raw: $ptcBlock['baggageInfo']['raw'],
+			parsed: $ptcBlock['baggageInfo']['parsed'],
 		};
 	}
 
@@ -271,7 +271,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 			}
 		}
 
-		$result = {'raw': $raw, 'parsed': $common};
+		$result = {raw: $raw, parsed: $common};
 		if ($result['error'] = $common['error']) {
 			return $result;
 		} else {
@@ -283,14 +283,14 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 	async getFareRules(pricingList, $itinerary) {
 		let $result, $error;
 		if (pricingList.length > 1) {
-			return {'error': 'Fare rules are not supported in multi-pricing PQ'};
+			return {error: 'Fare rules are not supported in multi-pricing PQ'};
 		}
 
 		$result = await (new ImportFareComponentsAction())
 			.useXml(this.useXml)
 			.setTravelportClient(this.travelport)
 			.setSession(this.session).execute([16], 1);
-		if ($error = $result['error']) return {'error': $error};
+		if ($error = $result['error']) return {error: $error};
 
 		this.$allCommands.push($result.cmdRec);
 		for (const $fareData of Object.values($result['fareList'])) {
@@ -298,8 +298,8 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		}
 		return {
 			// could parse them, but nah for now
-			'fareListRecords': [],
-			'ruleRecords': [],
+			fareListRecords: [],
+			ruleRecords: [],
 		};
 	}
 
@@ -309,7 +309,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		$isPrivateFare = pricingList
 			.some(store => store.pricingBlockList
 				.some(b => b.hasPrivateFaresSelectedMessage));
-		$result = {'isRequired': $isPrivateFare, 'raw': null, 'parsed': null};
+		$result = {isRequired: $isPrivateFare, raw: null, parsed: null};
 		if (!$isPrivateFare) return $result;
 
 		$cmd = 'FQ/:N';
@@ -318,7 +318,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		$result['cmd'] = $cmd;
 		$result['raw'] = $raw;
 		if ($error = $processed['error']) {
-			return {'error': 'Failed to fetch published pricing - ' + $error};
+			return {error: 'Failed to fetch published pricing - ' + $error};
 		}
 		$result['parsed'] = $processed['currentPricing']['parsed'];
 		return $result;
@@ -327,14 +327,14 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 	static transformCmdType($parsedCmdType) {
 
 		return ({
-			'redisplayPnr': 'redisplayPnr',
-			'priceItinerary': 'priceItinerary',
-			'redisplayPriceItinerary': 'priceItinerary',
-			'pricingLinearFare': 'priceItinerary',
-			'flightServiceInfo': 'flightServiceInfo',
-			'timeTable': 'flightRoutingAndTimes',
-			'fareList': 'fareList',
-			'fareRules': 'fareRules',
+			redisplayPnr: 'redisplayPnr',
+			priceItinerary: 'priceItinerary',
+			redisplayPriceItinerary: 'priceItinerary',
+			pricingLinearFare: 'priceItinerary',
+			flightServiceInfo: 'flightServiceInfo',
+			timeTable: 'flightRoutingAndTimes',
+			fareList: 'fareList',
+			fareRules: 'fareRules',
 		} || {})[$parsedCmdType];
 	}
 
@@ -342,7 +342,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		let $result, $reservationRecord, $nameRecords, $pricingRecord, $flightServiceRecord,
 			$fareRuleData, $publishedPricingRecord;
 
-		$result = {'pnrData': {}};
+		$result = {pnrData: {}};
 
 		$reservationRecord = await this.getReservation();
 		if ($result['error'] = $reservationRecord['error']) return $result;

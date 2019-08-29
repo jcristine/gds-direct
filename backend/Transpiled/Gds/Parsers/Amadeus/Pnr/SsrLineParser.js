@@ -17,19 +17,19 @@ class SsrLineParser
 
 			php.preg_match('#S(\\d)#', $segment, $segmentMaches = []);
 			return {
-				'travelDocType': $travelDocType,
-				'issuingCountry': $issuingCountry,
-				'travelDocNumber': $travelDocNumber,
-				'nationality': $nationality,
-				'dob': {
-					'raw': $dob,
-					'parsed': SsrBlockParser.parseDateOfBirth($dob),
+				travelDocType: $travelDocType,
+				issuingCountry: $issuingCountry,
+				travelDocNumber: $travelDocNumber,
+				nationality: $nationality,
+				dob: {
+					raw: $dob,
+					parsed: SsrBlockParser.parseDateOfBirth($dob),
 				},
-				'gender': $genderAndI[0],
-				'paxIsInfant': ($genderAndI[1]) === 'I',
-				'expirationDate': CommonParserHelpers.parseCurrentCenturyFullDate($expirationDate),
-				'lastName': $lastName,
-				'firstName': $firstName,
+				gender: $genderAndI[0],
+				paxIsInfant: ($genderAndI[1]) === 'I',
+				expirationDate: CommonParserHelpers.parseCurrentCenturyFullDate($expirationDate),
+				lastName: $lastName,
+				firstName: $firstName,
 			};
 		} else {
 			return null;
@@ -45,12 +45,12 @@ class SsrLineParser
 			[$addressType, $country, $addressDetails, $city, $province, $postalCode] = php.array_pad($tokenParts, 6, '');
 
 			return {
-				'addressType': $addressType,
-				'country': $country,
-				'addressDetails': $addressDetails,
-				'city': $city,
-				'province': $province,
-				'postalCode': $postalCode,
+				addressType: $addressType,
+				country: $country,
+				addressDetails: $addressDetails,
+				city: $city,
+				province: $province,
+				postalCode: $postalCode,
 			};
 		} else {
 			return null;
@@ -68,15 +68,15 @@ class SsrLineParser
 			php.preg_match('#S(\\d)#', $segment, $segmentMaches = []);
 			return {
 				//'pre' => $pre,
-				'travelDocType': $travelDocType,
-				'travelDocNumber': $travelDocNumber,
-				'issuingCountry': $issuingCountry,
-				'dob': {
-					'raw': $dob,
-					'parsed': SsrBlockParser.parseDateOfBirth($dob),
+				travelDocType: $travelDocType,
+				travelDocNumber: $travelDocNumber,
+				issuingCountry: $issuingCountry,
+				dob: {
+					raw: $dob,
+					parsed: SsrBlockParser.parseDateOfBirth($dob),
 				},
-				'countryWhereApplies': $countryWhereApplies,
-				'segmentNumber': $segmentMaches[1] || '',
+				countryWhereApplies: $countryWhereApplies,
+				segmentNumber: $segmentMaches[1] || '',
 			};
 		} else {
 			return null;
@@ -99,9 +99,9 @@ class SsrLineParser
             '\\s*$/';
 		if (php.preg_match($regex, $ssrData['content'], $matches = [])) {
 			return {
-				'airline': $matches['airline'],
-				'flyerNumber': $matches['flyerNumber'],
-				'paxNum': $matches['paxNum'] || '',
+				airline: $matches['airline'],
+				flyerNumber: $matches['flyerNumber'],
+				paxNum: $matches['paxNum'] || '',
 			};
 		}
 		return null;
@@ -117,8 +117,8 @@ class SsrLineParser
             '\\s*$/';
 		if (php.preg_match($regex, $ssrContent, $matches = [])) {
 			return {
-				'segNum': $matches['segNum'],
-				'paxNum': $matches['paxNum'] || '',
+				segNum: $matches['segNum'],
+				paxNum: $matches['paxNum'] || '',
 			};
 		} else {
 			return null;

@@ -22,13 +22,13 @@ class GalileoPnrCommonFormatAdapter
 		$pnrInfo['agentInitials'] = $parsedData['focalPointInitials'];
 		$pnrInfo['receivedFrom'] = null;
 		$pnrInfo['reservationDate'] = php.isset($parsedData['reservationDate']) ? {
-			'raw': $parsedData['reservationDate']['raw'],
-			'parsed': $parsedData['reservationDate']['parsed'],
-			'full': !$fetchedDt ? null : DateTime.decodeRelativeDateInPast($parsedData['reservationDate']['parsed'], $fetchedDt),
+			raw: $parsedData['reservationDate']['raw'],
+			parsed: $parsedData['reservationDate']['parsed'],
+			full: !$fetchedDt ? null : DateTime.decodeRelativeDateInPast($parsedData['reservationDate']['parsed'], $fetchedDt),
 		} : null;
 		$pnrInfo['agencyInfo'] = {
-			'agencyId': $parsedData['agencyId'],
-			'arcNumber': $parsedData['arcNumber'],
+			agencyId: $parsedData['agencyId'],
+			arcNumber: $parsedData['arcNumber'],
 		};
 
 		return $pnrInfo;
@@ -46,25 +46,25 @@ class GalileoPnrCommonFormatAdapter
 			: null;
 		$itinerary = FormatAdapter.adaptApolloItineraryParseForClient($parsed['itineraryData'] || [], $recentPast);
 		$common = {
-			'pnrInfo': $pnrInfo,
-			'passengers': $parsed['passengers']['passengerList'],
-			'itinerary': $itinerary,
-			'confirmationNumbers': Fp.map(($rec) => ({
-				'airline': $rec['airline'],
-				'confirmationNumber': $rec['recordLocator'],
-				'segmentNumber': null,
-				'date': {
-					'raw': $rec['date']['raw'],
-					'parsed': $rec['date']['parsed'],
-					'full': $pnrInfo ? DateTime.decodeRelativeDateInFuture($rec['date']['parsed'],
+			pnrInfo: $pnrInfo,
+			passengers: $parsed['passengers']['passengerList'],
+			itinerary: $itinerary,
+			confirmationNumbers: Fp.map(($rec) => ({
+				airline: $rec['airline'],
+				confirmationNumber: $rec['recordLocator'],
+				segmentNumber: null,
+				date: {
+					raw: $rec['date']['raw'],
+					parsed: $rec['date']['parsed'],
+					full: $pnrInfo ? DateTime.decodeRelativeDateInFuture($rec['date']['parsed'],
 						$pnrInfo['reservationDate']['full']) : null,
 				},
 			}), php.array_filter($parsed['vlocData'] || [])),
-			'dataExistsInfo': {
-				'dividedBookingExists': $parsed['dataExistsInfo']['dividedBookingExists'],
-				'mileageProgramsExist': $parsed['dataExistsInfo']['membershipDataExists'],
-				'fareQuoteExists': ($parsed['dataExistsInfo'] || {})['filedFareDataExists'] || false,
-				'seatDataExists': $parsed['dataExistsInfo']['seatDataExists'],
+			dataExistsInfo: {
+				dividedBookingExists: $parsed['dataExistsInfo']['dividedBookingExists'],
+				mileageProgramsExist: $parsed['dataExistsInfo']['membershipDataExists'],
+				fareQuoteExists: ($parsed['dataExistsInfo'] || {})['filedFareDataExists'] || false,
+				seatDataExists: $parsed['dataExistsInfo']['seatDataExists'],
 				// rest is Galileo-specific
 			},
 		};

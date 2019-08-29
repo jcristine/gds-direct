@@ -22,11 +22,11 @@ class GenericRemarkParser
             && ($tokens['paxNumberS'] == $tokens['paxNumberN'] && $tokens['paxNumberS'] == $tokens['paxNumberF'])
 		) {
 			return {
-				'passengerNumber': php.intval($tokens['paxNumberS']),
-				'sellingPrice': $tokens['sellingPrice'],
-				'netPrice': $tokens['netPrice'],
-				'fare': $tokens['fare'],
-				'fuelSurcharge': $tokens['fuelSurcharge']|| null,
+				passengerNumber: php.intval($tokens['paxNumberS']),
+				sellingPrice: $tokens['sellingPrice'],
+				netPrice: $tokens['netPrice'],
+				fare: $tokens['fare'],
+				fuelSurcharge: $tokens['fuelSurcharge']|| null,
 			};
 		} else {
 			return null;
@@ -55,12 +55,12 @@ class GenericRemarkParser
             '/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'agentLogin': $matches['agentLogin'],
-				'agentId': $matches['agentId'],
-				'leadOwnerLogin': $matches['leadCreatorLogin'] || '' || null,
-				'leadOwnerId': $matches['leadCreatorId'] || '' || null,
-				'leadId': $matches['leadId'],
-				'pcc': $matches['pcc'] || null,
+				agentLogin: $matches['agentLogin'],
+				agentId: $matches['agentId'],
+				leadOwnerLogin: $matches['leadCreatorLogin'] || '' || null,
+				leadOwnerId: $matches['leadCreatorId'] || '' || null,
+				leadId: $matches['leadId'],
+				pcc: $matches['pcc'] || null,
 			};
 		} else {
 			return null;
@@ -87,12 +87,12 @@ class GenericRemarkParser
             '/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'agentLogin': $matches['agentLogin'],
-				'agentId': $matches['agentId'],
-				'leadOwnerLogin': $matches['leadCreatorLogin'] || '' || null,
-				'leadOwnerId': $matches['leadCreatorId'] || '' || null,
-				'leadId': $matches['leadId'] || '' || null,
-				'pcc': $matches['pcc'] || null,
+				agentLogin: $matches['agentLogin'],
+				agentId: $matches['agentId'],
+				leadOwnerLogin: $matches['leadCreatorLogin'] || '' || null,
+				leadOwnerId: $matches['leadCreatorId'] || '' || null,
+				leadId: $matches['leadId'] || '' || null,
+				pcc: $matches['pcc'] || null,
 			};
 		} else {
 			return null;
@@ -119,8 +119,8 @@ class GenericRemarkParser
 			$data = $remark;
 		}
 		return {
-			'remarkType': $type,
-			'data': $data,
+			remarkType: $type,
+			data: $data,
 		};
 	}
 }

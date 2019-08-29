@@ -129,8 +129,8 @@ class FareConstructionTokenizer {
 
 		let $context, $lexeme, $textLeft, $gotAny, $subContext;
 		$context = {
-			'text': $text,
-			'lexemes': [...$prevLexemes],
+			text: $text,
+			lexemes: [...$prevLexemes],
 		};
 		for ($lexeme of this.matchLexemes($text, $context)) {
 			$textLeft = $lexeme['textLeft'];
@@ -141,7 +141,7 @@ class FareConstructionTokenizer {
 				$gotAny = true;
 				yield $subContext;
 			}
-			if (!$gotAny) yield {'text': $textLeft, 'lexemes': $prevLexemes};
+			if (!$gotAny) yield {text: $textLeft, lexemes: $prevLexemes};
 			$prevLexemes.pop();
 		}
 	}

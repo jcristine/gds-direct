@@ -96,8 +96,8 @@ class TranslateAvailabilityCmdAction {
 				[$_, $sign, $joinedAirlines] = $matches;
 				$signs = {'+': 'include', '|': 'include', '-': 'exclude', '-*': 'exclude'};
 				return {
-					'filterType': $signs[$sign],
-					'airlines': php.explode('.', $joinedAirlines),
+					filterType: $signs[$sign],
+					airlines: php.explode('.', $joinedAirlines),
 				};
 			}
 		} else if ($gds === 'galileo') {
@@ -116,8 +116,8 @@ class TranslateAvailabilityCmdAction {
 					return null;
 				}
 				return {
-					'filterType': $filterType,
-					'airlines': Fp.map($trimMinus, $filters),
+					filterType: $filterType,
+					airlines: Fp.map($trimMinus, $filters),
 				};
 			}
 		} else if ($gds === 'sabre') {
@@ -138,8 +138,8 @@ class TranslateAvailabilityCmdAction {
 				return null;
 			}
 			return {
-				'filterType': $filterType,
-				'airlines': $filters.map(trimStar)
+				filterType: $filterType,
+				airlines: $filters.map(trimStar)
 					.map(str => php.str_split(str, 2))
 					.reduce((a, b) => a.concat(b), []),
 			};
@@ -149,8 +149,8 @@ class TranslateAvailabilityCmdAction {
 				[$_, $sign, $joinedAirlines] = $matches;
 				$signs = {'/A': 'include', '/A-': 'exclude'};
 				return {
-					'filterType': $signs[$sign],
-					'airlines': php.explode(',', $joinedAirlines),
+					filterType: $signs[$sign],
+					airlines: php.explode(',', $joinedAirlines),
 				};
 			}
 		}
@@ -169,18 +169,18 @@ class TranslateAvailabilityCmdAction {
 			return '';
 		}
 		if ($toGds === 'apollo') {
-			$signs = {'include': '|', 'exclude': '-'};
+			$signs = {include: '|', exclude: '-'};
 			$sign = $signs[$parsed['filterType']];
 			return $sign + php.implode('.', $parsed['airlines']);
 		} else if ($toGds === 'galileo') {
 			$addSign = ($air) => $parsed['filterType'] === 'exclude' ? $air + '-' : $air + '#';
 			return '/' + php.implode('/', Fp.map($addSign, $parsed['airlines']));
 		} else if ($toGds === 'sabre') {
-			$signs = {'include': '¥', 'exclude': '¥*'};
+			$signs = {include: '¥', exclude: '¥*'};
 			$sign = $signs[$parsed['filterType']];
 			return $sign + php.implode('', $parsed['airlines']);
 		} else if ($toGds === 'amadeus') {
-			$signs = {'include': '/A', 'exclude': '/A-'};
+			$signs = {include: '/A', exclude: '/A-'};
 			$sign = $signs[$parsed['filterType']];
 			return $sign + php.implode(',', $parsed['airlines']);
 		} else {
@@ -252,39 +252,39 @@ class TranslateAvailabilityCmdAction {
 
 		if ($toGds == 'apollo') {
 			$sortArray = {
-				'directLink': null,
-				'availability': null,
-				'class': null,
-				'date': null,
-				'cityPair': null,
-				'connection': null,
-				'flightType': null,
-				'airlines': null,
-				'allianceCode': null,
+				directLink: null,
+				availability: null,
+				class: null,
+				date: null,
+				cityPair: null,
+				connection: null,
+				flightType: null,
+				airlines: null,
+				allianceCode: null,
 			};
 		} else if ($toGds == 'galileo') {
 			$sortArray = {
-				'availability': null,
-				'date': null,
-				'cityPair': null,
-				'connection': null,
-				'flightType': null,
-				'airlines': null,
-				'allianceCode': null,
-				'class': null,
-				'directLink': null,
+				availability: null,
+				date: null,
+				cityPair: null,
+				connection: null,
+				flightType: null,
+				airlines: null,
+				allianceCode: null,
+				class: null,
+				directLink: null,
 			};
 		} else if ($toGds == 'sabre') {
 			$sortArray = {
-				'availability': null,
-				'date': null,
-				'cityPair': null,
-				'connection': null,
-				'allianceCode': null,
-				'directLink': null,
-				'flightType': null,
-				'airlines': null,
-				'class': null,
+				availability: null,
+				date: null,
+				cityPair: null,
+				connection: null,
+				allianceCode: null,
+				directLink: null,
+				flightType: null,
+				airlines: null,
+				class: null,
 			};
 			if (php.isset($data['class'])) {
 				$data['availability'] += 'S';
@@ -309,15 +309,15 @@ class TranslateAvailabilityCmdAction {
 				$data['availability'] += '/';
 			}
 			$sortArray = {
-				'directLink': null,
-				'availability': null,
-				'date': null,
-				'cityPair': null,
-				'connection': null,
-				'flightType': null,
-				'airlines': null,
-				'class': null,
-				'allianceCode': null,
+				directLink: null,
+				availability: null,
+				date: null,
+				cityPair: null,
+				connection: null,
+				flightType: null,
+				airlines: null,
+				class: null,
+				allianceCode: null,
 			};
 		} else {
 			return null;
@@ -330,29 +330,29 @@ class TranslateAvailabilityCmdAction {
 		let $lib;
 
 		$lib = {
-			'availability': {
-				'apollo': ['A', 'A'],
-				'galileo': ['AJ', 'A'],
-				'sabre': ['1', '1'],
-				'amadeus': ['AD', 'AD'],
+			availability: {
+				apollo: ['A', 'A'],
+				galileo: ['AJ', 'A'],
+				sabre: ['1', '1'],
+				amadeus: ['AD', 'AD'],
 			},
-			'directLink': {
-				'apollo': ['L@'],
-				'galileo': ['*'],
-				'sabre': ['\u00A4'],
-				'amadeus': ['1'],
+			directLink: {
+				apollo: ['L@'],
+				galileo: ['*'],
+				sabre: ['\u00A4'],
+				amadeus: ['1'],
 			},
-			'flightType': {
-				'apollo':  [null, '/D' , '/D'  , '/D'   , '/SO'  , '/DO'  ],
-				'galileo': [null, '.D0', '.D0'],
-				'sabre':   [null, '/N¥', '/N'  , '/O¥'  , '/O¥¥' , '/O¥¥¥' , '/O¥¥¥¥'],
-				'amadeus': [null, '/FN', '/FN' , '/FN'  , '/O'   , '/O'   , '/O'   ],
+			flightType: {
+				apollo:  [null, '/D' , '/D'  , '/D'   , '/SO'  , '/DO'  ],
+				galileo: [null, '.D0', '.D0'],
+				sabre:   [null, '/N¥', '/N'  , '/O¥'  , '/O¥¥' , '/O¥¥¥' , '/O¥¥¥¥'],
+				amadeus: [null, '/FN', '/FN' , '/FN'  , '/O'   , '/O'   , '/O'   ],
 			},
-			'allianceCode': {
-				'apollo': ['|/*', '+/*'],
-				'galileo': ['//*', '//*'],
-				'sabre': ['¥/*', '¥/*'],
-				'amadeus': ['/A*', '/A*'],
+			allianceCode: {
+				apollo: ['|/*', '+/*'],
+				galileo: ['//*', '//*'],
+				sabre: ['¥/*', '¥/*'],
+				amadeus: ['/A*', '/A*'],
 			},
 		};
 		return ($lib[$type] || {})[$dialect] || [];
@@ -455,37 +455,37 @@ class TranslateAvailabilityCmdAction {
 		}
 		const toBeFirst = (lexeme) => lexeme.hasConstraint(ctx => ctx && ctx.lexemes.length === 0);
 		$parts = {
-			'apollo': {
-				'directLink': '^L@[A-Z\\d]{2}/(?=A\\/?)',
-				'availability': 'A',
-				'class': ['/\\s*[A-Z]\\d?\\s*/', lex => lex.after(['availability'])],
-				'dateCityPair': '(?<date>\\d{1,2}[A-Z]{3})?(?<cityPair>[A-Z]{6})',
-				'connection': '\\d{1,4}[APNM]?(-?[A-Z]{3}([\\.\\/]?[A-Z]{3})?)?(?<cTime>\\d{1,4}[APNM]?)?',
+			apollo: {
+				directLink: '^L@[A-Z\\d]{2}/(?=A\\/?)',
+				availability: 'A',
+				class: ['/\\s*[A-Z]\\d?\\s*/', lex => lex.after(['availability'])],
+				dateCityPair: '(?<date>\\d{1,2}[A-Z]{3})?(?<cityPair>[A-Z]{6})',
+				connection: '\\d{1,4}[APNM]?(-?[A-Z]{3}([\\.\\/]?[A-Z]{3})?)?(?<cTime>\\d{1,4}[APNM]?)?',
 
-				'flightType': '/DO|/SO|/D',
-				'airlines': '[\\+\\|-]\\*?([A-Z\\d]{2}\\.?)+',
-				'allianceCode': '[\\+\\|]/\\*[A-Z]',
+				flightType: '/DO|/SO|/D',
+				airlines: '[\\+\\|-]\\*?([A-Z\\d]{2}\\.?)+',
+				allianceCode: '[\\+\\|]/\\*[A-Z]',
 			},
-			'sabre': {
-				'dateCityPair': ['(?<date>\\d{1,2}[A-Z]{3})?(?<cityPair>[A-Z]{6})', lex => lex.hasPreviousLexemeConstraint(['availability'])],
-				'availability': ['1S?', toBeFirst],
-				'flightType': '/[ON]',
-				'class': '-\\d?[A-Z]',
-				'connection': '\\d{1,4}[APNM]?\\*?([A-Z]{3}(/[A-Z]{3})?)?(?<cTime>-\\d{1,4}[APNM]?)?',
-				'allianceCode': '¥/\\*[A-Z]',
-				'airlines': '(¥\\*?([A-Z\\d]{2})*)+',
-				'directLink': '\u00A4[A-Z\\d]{2}',
+			sabre: {
+				dateCityPair: ['(?<date>\\d{1,2}[A-Z]{3})?(?<cityPair>[A-Z]{6})', lex => lex.hasPreviousLexemeConstraint(['availability'])],
+				availability: ['1S?', toBeFirst],
+				flightType: '/[ON]',
+				class: '-\\d?[A-Z]',
+				connection: '\\d{1,4}[APNM]?\\*?([A-Z]{3}(/[A-Z]{3})?)?(?<cTime>-\\d{1,4}[APNM]?)?',
+				allianceCode: '¥/\\*[A-Z]',
+				airlines: '(¥\\*?([A-Z\\d]{2})*)+',
+				directLink: '\u00A4[A-Z\\d]{2}',
 			},
-			'amadeus': {
-				'directLink': '1[A-Z\\d]{2}(?=AD)',
-				'availability': 'AD/?',
-				'dateCityPair': '(?<date>\\d{1,2}[A-Z]{3})?(?<cityPair>[A-Z]{6})',
-				'connection': '(\\d{1,4}[APNM]?)(/X-?[A-Z]{3}(,?[A-Z]{3})?)?|(/X-?[A-Z]{3}(,?[A-Z]{3})?)',
-				'flightType': '/FN|\\/O',
-				'airlines': '/A-?([A-Z\\d]{2}\\,?)+',
-				'class': '/C[A-Z]',
-				'seatNum': '/B\\d',
-				'allianceCode': '/A\\*[A-Z]',
+			amadeus: {
+				directLink: '1[A-Z\\d]{2}(?=AD)',
+				availability: 'AD/?',
+				dateCityPair: '(?<date>\\d{1,2}[A-Z]{3})?(?<cityPair>[A-Z]{6})',
+				connection: '(\\d{1,4}[APNM]?)(/X-?[A-Z]{3}(,?[A-Z]{3})?)?|(/X-?[A-Z]{3}(,?[A-Z]{3})?)',
+				flightType: '/FN|\\/O',
+				airlines: '/A-?([A-Z\\d]{2}\\,?)+',
+				class: '/C[A-Z]',
+				seatNum: '/B\\d',
+				allianceCode: '/A\\*[A-Z]',
 			},
 		};
 

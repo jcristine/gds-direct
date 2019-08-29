@@ -25,10 +25,10 @@ class RemarksParser {
 			} else {
 				$lineParse = this.parseLine($line);
 				$remarks.push({
-					'lineNumber': !$lineParse ? null : $lineParse['lineNumber'],
-					'remarkType': !$lineParse ? null : $lineParse['remarkType'],
-					'data': !$lineParse ? null : $lineParse['data'],
-					'line': $line,
+					lineNumber: !$lineParse ? null : $lineParse['lineNumber'],
+					remarkType: !$lineParse ? null : $lineParse['remarkType'],
+					data: !$lineParse ? null : $lineParse['data'],
+					line: $line,
 				});
 			}
 		}
@@ -49,9 +49,9 @@ class RemarksParser {
 			'/^\\.*-\\*?(?:(?<cash>CK|CHECK|CASH)|(?<card>[A-Z]{2}[\\d\\X¥\\\/]{16,}))/ms';
 		if (php.preg_match($filter, $remark, $tokens = [])) {
 			if (!php.empty($tokens['cash'])) {
-				return {'type': this.TYPE_CASH};
+				return {type: this.TYPE_CASH};
 			} else if (!php.empty($tokens['card'])) {
-				return {'type': this.TYPE_CC};
+				return {type: this.TYPE_CC};
 			}
 		}
 		return null;
@@ -82,8 +82,8 @@ class RemarksParser {
 		let $mapping;
 
 		$mapping = {
-			'E': 'EUR',
-			'D': 'USD',
+			E: 'EUR',
+			D: 'USD',
 		};
 
 		if (php.array_key_exists($token, $mapping)) {
@@ -101,9 +101,9 @@ class RemarksParser {
 			$remarks = php.array_map(([$code, $paxNumber, $amount]) => {
 
 				return {
-					'passengerNumber': php.intval($paxNumber),
-					'code': $code,
-					'amount': $amount,
+					passengerNumber: php.intval($paxNumber),
+					code: $code,
+					amount: $amount,
 				};
 			}, Fp.zip([$tokens['code'], $tokens['paxNumber'], $tokens['amount']]));
 			return $remarks;
@@ -131,15 +131,15 @@ class RemarksParser {
 				for ($currencyCode of Object.values($currencies)) {
 					if ($allTokensHaveCode($currencyCode)) {
 						return {
-							'exchangeRate': {
-								'currency': this.parseCurrency($currencyCode),
-								'rate': $firstToken['amount'],
+							exchangeRate: {
+								currency: this.parseCurrency($currencyCode),
+								rate: $firstToken['amount'],
 							},
-							'netPrices': Fp.map(($price) => {
+							netPrices: Fp.map(($price) => {
 
 								return {
-									'passengerNumber': $price['passengerNumber'],
-									'amount': $price['amount'],
+									passengerNumber: $price['passengerNumber'],
+									amount: $price['amount'],
 								};
 							}, $restTokens),
 						};
@@ -166,14 +166,14 @@ class RemarksParser {
 		if (php.preg_match($regex, $line, $matches = [])) {
 			[$pcc, $agentInitials] = php.array_pad(php.explode('*', $matches['agentSign']), 2, '');
 			return {
-				'pcc': $pcc,
-				'agentInitials': StringUtil.startsWith($agentInitials, 'A') ? php.substr($agentInitials, 1) : $agentInitials,
-				'time': {
-					'raw': $matches['time'],
-					'parsed': CommonParserHelpers.decodeApolloTime($matches['time']),
+				pcc: $pcc,
+				agentInitials: StringUtil.startsWith($agentInitials, 'A') ? php.substr($agentInitials, 1) : $agentInitials,
+				time: {
+					raw: $matches['time'],
+					parsed: CommonParserHelpers.decodeApolloTime($matches['time']),
 				},
-				'date': CommonParserHelpers.parseCurrentCenturyFullDate($matches['date']),
-				'recordLocator': $matches['recordLocator'],
+				date: CommonParserHelpers.parseCurrentCenturyFullDate($matches['date']),
+				recordLocator: $matches['recordLocator'],
 			};
 		} else {
 			return null;
@@ -189,28 +189,28 @@ class RemarksParser {
 
 			if ($res = this.parseConversionRateRemark($remark)) {
 				return {
-					'lineNumber': php.intval($lineNumber),
-					'remarkType': 'CONVERSION_RATE_REMARK',
-					'data': $res,
+					lineNumber: php.intval($lineNumber),
+					remarkType: 'CONVERSION_RATE_REMARK',
+					data: $res,
 				};
 			} else if ($res = this.parseFopRemark($remark)) {
 				return {
-					'lineNumber': php.intval($lineNumber),
-					'remarkType': 'FOP_REMARK',
-					'data': $res,
+					lineNumber: php.intval($lineNumber),
+					remarkType: 'FOP_REMARK',
+					data: $res,
 				};
 			} else if ($res = this.parseDividedRemark($remark)) {
 				return {
-					'lineNumber': php.intval($lineNumber),
-					'remarkType': 'DIVIDED_REMARK',
-					'data': $res,
+					lineNumber: php.intval($lineNumber),
+					remarkType: 'DIVIDED_REMARK',
+					data: $res,
 				};
 			} else {
 				$record = GenericRemarkParser.parse($remark);
 				return {
-					'lineNumber': $lineNumber,
-					'remarkType': $record['remarkType'],
-					'data': $record['data'],
+					lineNumber: $lineNumber,
+					remarkType: $record['remarkType'],
+					data: $record['data'],
 				};
 			}
 		} else {

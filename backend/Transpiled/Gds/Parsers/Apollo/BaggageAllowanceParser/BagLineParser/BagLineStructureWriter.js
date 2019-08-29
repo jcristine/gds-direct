@@ -10,15 +10,15 @@ class BagLineStructureWriter
 
 	constructor()  {
 		this.$data = {
-			'bagDescription': null,
-			'bagNumber': null,
-			'feeAmount': null,
-			'feeCurrency': null,
-			'flags': [],
-			'sizeInCm': null,
-			'sizeInInches': null,
-			'weightInKg': null,
-			'weightInLb': null,
+			bagDescription: null,
+			bagNumber: null,
+			feeAmount: null,
+			feeCurrency: null,
+			flags: [],
+			sizeInCm: null,
+			sizeInInches: null,
+			weightInKg: null,
+			weightInLb: null,
 		};
 	}
 

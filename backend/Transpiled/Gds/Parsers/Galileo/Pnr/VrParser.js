@@ -78,20 +78,20 @@ class VrParser
 				$ssrData = {};
 			}
 			return {
-				'lineNumber': $matches['lineNumber'] || '' || '1',
-				'airline': $matches['airline'],
-				'ssrCode': $ssrData['ssrCode'] || '',
-				'status': $ssrData['status'] || '',
-				'statusNumber': $ssrData['statusNumber'] || '',
-				'toAirline': $ssrData['toAirline'] || '',
-				'content': $content,
-				'time': {
-					'raw': $matches['time'],
-					'parsed': CommonParserHelpers.decodeApolloTime($matches['time']),
+				lineNumber: $matches['lineNumber'] || '' || '1',
+				airline: $matches['airline'],
+				ssrCode: $ssrData['ssrCode'] || '',
+				status: $ssrData['status'] || '',
+				statusNumber: $ssrData['statusNumber'] || '',
+				toAirline: $ssrData['toAirline'] || '',
+				content: $content,
+				time: {
+					raw: $matches['time'],
+					parsed: CommonParserHelpers.decodeApolloTime($matches['time']),
 				},
-				'date': {
-					'raw': $matches['date'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['date']),
+				date: {
+					raw: $matches['date'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['date']),
 				},
 			};
 		} else {
@@ -105,12 +105,12 @@ class VrParser
 		$lines = StringUtil.lines(php.rtrim($dump));
 		$headerLine = php.array_shift($lines);
 		if (php.trim($headerLine) === 'NO VENDOR REMARK DATA EXISTS') {
-			return {'records': [], 'linesLeft': $lines};
+			return {records: [], linesLeft: $lines};
 		} else if (php.trim($headerLine) !== 'VENDOR REMARKS') {
-			return {'error': 'Unexpected start of dump - '+php.trim($headerLine)};
+			return {error: 'Unexpected start of dump - '+php.trim($headerLine)};
 		}
 		[$ssrs, $lines] = this.parseSequence($lines, (...args) => this.parseSsrLine(...args));
-		return {'records': $ssrs, 'linesLeft': $lines};
+		return {records: $ssrs, linesLeft: $lines};
 	}
 }
 module.exports = VrParser;

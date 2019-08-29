@@ -162,7 +162,7 @@ class FareRuleParser {
 					php.array_unshift($lines, $line);
 				} else {
 					return [$result + {
-						'error': 'line does not match pattern:' + php.PHP_EOL + $line + php.PHP_EOL + ' \/' + $pattern + '\/',
+						error: 'line does not match pattern:' + php.PHP_EOL + $line + php.PHP_EOL + ' \/' + $pattern + '\/',
 					}, $lines];
 				}
 			}
@@ -174,25 +174,25 @@ class FareRuleParser {
 		$createdDate = CommonParserHelpers.parseApolloFullDate($result['createdDate']);
 
 		$result = php.array_merge($result, {
-			'travelDate': {
-				'raw': $result['travelDate'],
-				'parsed': $travelDate ? '20' + $travelDate : null,
+			travelDate: {
+				raw: $result['travelDate'],
+				parsed: $travelDate ? '20' + $travelDate : null,
 			},
-			'effectiveDateForOutboundTravel': {
-				'raw': $result['effectiveDateForOutboundTravel'],
-				'parsed': $eDate ? '20' + $eDate : null,
+			effectiveDateForOutboundTravel: {
+				raw: $result['effectiveDateForOutboundTravel'],
+				parsed: $eDate ? '20' + $eDate : null,
 			},
-			'discontinueDateForOutboundTravel': {
-				'raw': $result['discontinueDateForOutboundTravel'],
-				'parsed': $dDate ? '20' + $eDate : null,
+			discontinueDateForOutboundTravel: {
+				raw: $result['discontinueDateForOutboundTravel'],
+				parsed: $dDate ? '20' + $eDate : null,
 			},
-			'createdDate': {
-				'raw': $result['createdDate'],
-				'parsed': $createdDate ? '20' + $createdDate : null,
+			createdDate: {
+				raw: $result['createdDate'],
+				parsed: $createdDate ? '20' + $createdDate : null,
 			},
-			'createdTime': {
-				'raw': $result['createdTime'],
-				'parsed': CommonParserHelpers.decodeApolloTime($result['createdTime']),
+			createdTime: {
+				raw: $result['createdTime'],
+				parsed: CommonParserHelpers.decodeApolloTime($result['createdTime']),
 			},
 		});
 
@@ -221,27 +221,27 @@ class FareRuleParser {
 			$month = $months[$rawMonth];
 			for ($rawCode of Object.values(php.str_split($codes))) {
 				$result.push({
-					'code': {
-						'raw': $rawCode,
-						'parsed': $decodes[$rawCode],
+					code: {
+						raw: $rawCode,
+						parsed: $decodes[$rawCode],
 					},
-					'date': {
-						'raw': $day + $rawMonth,
-						'parsed': php.str_pad(+$month + 1, 2, '0', php.STR_PAD_LEFT) + '-' + php.str_pad(+$day, 2, '0', php.STR_PAD_LEFT),
+					date: {
+						raw: $day + $rawMonth,
+						parsed: php.str_pad(+$month + 1, 2, '0', php.STR_PAD_LEFT) + '-' + php.str_pad(+$day, 2, '0', php.STR_PAD_LEFT),
 					},
 				});
 			}
 		} else if ($token === 'S*GA') {
 			$result.push({
-				'code': {
-					'raw': 'S',
-					'parsed': 'subjectToGovernmentApproval',
+				code: {
+					raw: 'S',
+					parsed: 'subjectToGovernmentApproval',
 				},
 			});
 		} else if (!php.preg_match(/^-+$/, $token)) {
 			$result.push({
-				'raw': $token,
-				'error': 'failed to parse',
+				raw: $token,
+				error: 'failed to parse',
 			});
 		}
 
@@ -260,20 +260,20 @@ class FareRuleParser {
 		$token = php.trim($token);
 
 		if (php.preg_match(/^(¥)+$/, $token, $matches = [])) {
-			return {'type': 'complexRule'};
+			return {type: 'complexRule'};
 		} else if (php.preg_match(/^\-*$/, $token, $matches = [])) {
-			return {'type': 'noRequirements'};
+			return {type: 'noRequirements'};
 		} else if (php.preg_match(/^(\d+)(M|)$/, $token, $matches = [])) {
 			[$_, $amount, $monthsMark] = $matches;
 			return {
-				'type': 'amount',
-				'amount': $amount,
-				'units': $monthsMark ? 'months' : 'days',
+				type: 'amount',
+				amount: $amount,
+				units: $monthsMark ? 'months' : 'days',
 			};
 		} else if (php.preg_match(/^[A-Z]{2}$/, $token)) {
 			return {
-				'type': 'dayOfWeek',
-				'dayOfWeek': CommonParserHelpers.apolloDayOfWeekToNumber($token),
+				type: 'dayOfWeek',
+				dayOfWeek: CommonParserHelpers.apolloDayOfWeekToNumber($token),
 			};
 		} else {
 			return null;
@@ -303,10 +303,10 @@ class FareRuleParser {
 		let $tripTypes, $regex, $matches;
 
 		$tripTypes = {
-			'X': 'oneWay',
-			'R': 'roundTrip',
-			'O': 'oneWayDirectional', // cannot be doubled for round trip
-			'H': 'halfRoundTrip',
+			X: 'oneWay',
+			R: 'roundTrip',
+			O: 'oneWayDirectional', // cannot be doubled for round trip
+			H: 'halfRoundTrip',
 		};
 
 		$regex =
@@ -330,33 +330,33 @@ class FareRuleParser {
 
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'componentNumber': $matches['componentNumber'],
-				'sameDayIndicator': php.trim($matches['sameDayIndicator']) || null,
-				'vendorCode': php.trim($matches['vendorCode']),
-				'privateFareIndicator': php.trim($matches['privateFareIndicator']) ? {
-					'raw': $matches['privateFareIndicator'],
+				componentNumber: $matches['componentNumber'],
+				sameDayIndicator: php.trim($matches['sameDayIndicator']) || null,
+				vendorCode: php.trim($matches['vendorCode']),
+				privateFareIndicator: php.trim($matches['privateFareIndicator']) ? {
+					raw: $matches['privateFareIndicator'],
 					//'parsed': TariffDisplayParser.decodeFareType($matches['privateFareIndicator']),
-					'parsed': this.decodeFareType($matches['privateFareIndicator']),
+					parsed: this.decodeFareType($matches['privateFareIndicator']),
 				} : null,
-				'fareBasis': $matches['fareBasis'],
-				'primaryBookingClass': $matches['primaryBookingClass'],
-				'secondaryBookingClassApplies': $matches['secondaryBookingClassAppliesMark'] === '\u00A5',
-				'tripType': {
-					'raw': $matches['tripTypeLetter'],
-					'parsed': $tripTypes[$matches['tripTypeLetter']],
+				fareBasis: $matches['fareBasis'],
+				primaryBookingClass: $matches['primaryBookingClass'],
+				secondaryBookingClassApplies: $matches['secondaryBookingClassAppliesMark'] === '\u00A5',
+				tripType: {
+					raw: $matches['tripTypeLetter'],
+					parsed: $tripTypes[$matches['tripTypeLetter']],
 				},
-				'fare': $matches['fare'],
-				'travelTicketDates': Fp.flatten(php.array_map(raw => this.parseTravelTicketDate(raw),
+				fare: $matches['fare'],
+				travelTicketDates: Fp.flatten(php.array_map(raw => this.parseTravelTicketDate(raw),
 					php.array_filter(php.explode(' ', $matches['travelTicketDates'])))),
-				'advancedPurchaseReservation': $matches['advancedPurchaseReservation'],
-				'advancedPurchaseTicketing': $matches['advancedPurchaseTicketing'],
-				'stayMin': {'raw': $matches['stayMin'], 'parsed': this.parseStayLimit($matches['stayMin'])},
-				'stayMax': {'raw': $matches['stayMax'], 'parsed': this.parseStayLimit($matches['stayMax'])},
-				'tariffRouting': $matches['tariffRouting'],
+				advancedPurchaseReservation: $matches['advancedPurchaseReservation'],
+				advancedPurchaseTicketing: $matches['advancedPurchaseTicketing'],
+				stayMin: {raw: $matches['stayMin'], parsed: this.parseStayLimit($matches['stayMin'])},
+				stayMax: {raw: $matches['stayMax'], parsed: this.parseStayLimit($matches['stayMax'])},
+				tariffRouting: $matches['tariffRouting'],
 			};
 		} else {
 			return {
-				'error': 'line does not match pattern:' + php.PHP_EOL + $line + php.PHP_EOL + ' ' + $regex,
+				error: 'line does not match pattern:' + php.PHP_EOL + $line + php.PHP_EOL + ' ' + $regex,
 			};
 		}
 	}

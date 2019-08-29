@@ -22,7 +22,7 @@ class RetrieveFlightServiceInfoAction extends AbstractGdsAction {
 		let $svcDump, $svcSegments, $pnrSegmentsByNumber, $result, $svcSegment, $rSegment, $pnrSegment;
 
 		if (php.count($segments) === 0) {
-			return {'flightInfoSegments': []};
+			return {flightInfoSegments: []};
 		}
 
 		$svcDump = await this.getCommandOutput('*SVC');
@@ -30,7 +30,7 @@ class RetrieveFlightServiceInfoAction extends AbstractGdsAction {
 
 		$pnrSegmentsByNumber = php.array_combine($segments.map(($s) => $s['segmentNumber']), $segments);
 
-		$result = {'flightInfoSegments': []};
+		$result = {flightInfoSegments: []};
 		for ($svcSegment of Object.values($svcSegments)) {
 			$rSegment = $pnrSegmentsByNumber[$svcSegment['segmentNumber']];
 			if ($rSegment && this.constructor.areCompatible($rSegment, $svcSegment)) {
@@ -61,7 +61,7 @@ class RetrieveFlightServiceInfoAction extends AbstractGdsAction {
 		// 'm-d H:i:s'
 		$svcSegmentData['legs'][0]['departureDate'] = $pnrSegment['departureDate']['parsed'];
 		$svcSegmentData['legs'][0]['departureTime'] = $pnrSegment['departureTime']['parsed'];
-		$svcSegmentData['legs'][$legCount - 1]['destinationDateInfo'] = {'dayOffset': $pnrSegment['dayOffset']};
+		$svcSegmentData['legs'][$legCount - 1]['destinationDateInfo'] = {dayOffset: $pnrSegment['dayOffset']};
 		$svcSegmentData['legs'][$legCount - 1]['destinationTime'] = $pnrSegment['destinationTime']['parsed'];
 
 		if ($legCount > 1) {
@@ -75,7 +75,7 @@ class RetrieveFlightServiceInfoAction extends AbstractGdsAction {
 					$svcSegmentData['legs'][$legIndex]['departureTime'] = $dprtRec['time'];
 				}
 				if ($legIndex < $legCount - 1) {
-					$svcSegmentData['legs'][$legIndex]['destinationDateInfo'] = {'date': $dstRec['date']};
+					$svcSegmentData['legs'][$legIndex]['destinationDateInfo'] = {date: $dstRec['date']};
 					$svcSegmentData['legs'][$legIndex]['destinationTime'] = $dstRec['time'];
 				}
 			}

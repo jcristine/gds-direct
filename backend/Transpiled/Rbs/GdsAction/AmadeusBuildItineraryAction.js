@@ -69,12 +69,12 @@ class AmadeusBuildItineraryAction extends AbstractGdsAction {
 					$errorType = this.constructor.ERROR_GDS_ERROR;
 				}
 				$tplData = {
-					'segmentNumber': '0', // can't tell what line it would be in Amadeus
-					'from': $segment['departureAirport'],
-					'to': $segment['destinationAirport'],
-					'response': php.trim($output),
+					segmentNumber: '0', // can't tell what line it would be in Amadeus
+					from: $segment['departureAirport'],
+					to: $segment['destinationAirport'],
+					response: php.trim($output),
 				};
-				return {'success': false, 'errorType': $errorType, 'errorData': $tplData};
+				return {success: false, errorType: $errorType, errorData: $tplData};
 			}
 		}
 

@@ -17,7 +17,7 @@ class MarriageItineraryParser
 			: null;
 
 		return $parsed
-			? {'raw': $token, 'parsed': $parsed}
+			? {raw: $token, parsed: $parsed}
 			: null;
 	}
 

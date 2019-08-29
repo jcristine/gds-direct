@@ -24,13 +24,13 @@ class PnrParser
 		$linesLeft = StringUtil.lines($dump);
 
 		$result = {
-			'pnrInfo': {
-				'recordLocator': null,
+			pnrInfo: {
+				recordLocator: null,
 			},
-			'passengers': [],
-			'itinerary': [],
-			'tickets': [],
-			'genericFields': [],
+			passengers: [],
+			itinerary: [],
+			tickets: [],
+			genericFields: [],
 		};
 		$unparsedLines = [];
 
@@ -100,9 +100,9 @@ class PnrParser
 		$result['passengers'] = this.transformPassengers($result['passengers'] || []);
 
 		return {
-			'parsed': $result,
-			'unparsed': $unparsedLines,
-			'success': $success,
+			parsed: $result,
+			unparsed: $unparsedLines,
+			success: $success,
 		};
 	}
 
@@ -117,14 +117,14 @@ class PnrParser
 			[$_, $num, $code, $content] = $matches;
 			$parsed = PnrFieldLineParser.parse($code, $content);
 			return {
-				'lineNumber': $num,
-				'code': $code,
-				'type': $parsed['type'],
-				'data': $parsed['data'],
-				'content': $parsed['content'],
-				'infMark': $parsed['infMark'],
-				'segNums': $parsed['segNums'],
-				'paxNums': $parsed['paxNums'],
+				lineNumber: $num,
+				code: $code,
+				type: $parsed['type'],
+				data: $parsed['data'],
+				content: $parsed['content'],
+				infMark: $parsed['infMark'],
+				segNums: $parsed['segNums'],
+				paxNums: $parsed['paxNums'],
 			};
 		} else {
 			return null;
@@ -148,8 +148,8 @@ class PnrParser
 				}}
 			if ($parsedData = HotelLineParser.parse($HhlSegment)) {
 				return {
-					'parsed': $parsedData,
-					'linesLeft': $linesLeft,
+					parsed: $parsedData,
+					linesLeft: $linesLeft,
 				};
 			}
 		}
@@ -177,8 +177,8 @@ class PnrParser
 				}}
 			if ($parsedData = CarLineParser.parse($HhlSegment)) {
 				return {
-					'parsed': $parsedData,
-					'linesLeft': $linesLeft,
+					parsed: $parsedData,
+					linesLeft: $linesLeft,
 				};
 			}
 		}
@@ -200,9 +200,9 @@ class PnrParser
 
 			$record = GenericRemarkParser.parse($msg);
 			return {
-				'lineNumber': $lineNumber,
-				'remarkType': $record['remarkType'],
-				'data': $record['data'],
+				lineNumber: $lineNumber,
+				remarkType: $record['remarkType'],
+				data: $record['data'],
 			};
 		} else {
 			return null;
@@ -224,14 +224,14 @@ class PnrParser
             '/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'date': {
-					'raw': $matches['date'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['date']),
+				date: {
+					raw: $matches['date'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['date']),
 				},
-				'agentInitials': $matches['agentInitials'],
-				'dutyCode': $matches['dutyCode'],
-				'pcc': $matches['pcc'],
-				'recordLocator': $matches['recordLocator'],
+				agentInitials: $matches['agentInitials'],
+				dutyCode: $matches['dutyCode'],
+				pcc: $matches['pcc'],
+				recordLocator: $matches['recordLocator'],
 			};
 		} else {
 			return null;
@@ -257,16 +257,16 @@ class PnrParser
             '\\s*$/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'lineNumber': $matches['lineNumber'],
-				'airline': $matches['airline'],
-				'date': {
-					'raw': $matches['date'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['date']),
+				lineNumber: $matches['lineNumber'],
+				airline: $matches['airline'],
+				date: {
+					raw: $matches['date'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['date']),
 				},
-				'currency': $matches['currency'],
-				'amount': $matches['amount'],
-				'service': $matches['service'],
-				'paxNum': $matches['paxNum'],
+				currency: $matches['currency'],
+				amount: $matches['amount'],
+				service: $matches['service'],
+				paxNum: $matches['paxNum'],
 			};
 		} else {
 			return null;
@@ -320,7 +320,7 @@ class PnrParser
 			$content = php.str_replace(php.PHP_EOL, '', $content);
 			$tokens = php.explode('/', $content);
 			$result = {
-				'lineNumber': $lineNumber,
+				lineNumber: $lineNumber,
 			};
 			$firstToken = php.array_shift($tokens);
 			if (php.preg_match(/^(PAX\s+|INF\s+|)(\d{3})-(\d{10})(-\d+|)$/, $firstToken, $matches = [])) {
@@ -368,43 +368,43 @@ class PnrParser
 		if (php.preg_match(/^([A-Z0-9]{3})\s+(E)(\S)\s+([A-Z\-]+)(.*)/s, $textLeft, $matches = [])) {
 			[$_, $aircraft, $eticket, $unparsed, $meal, $textLeft] = $matches;
 			return {
-				'aircraft': $aircraft,
-				'eticket': $eticket === 'E',
-				'unparsedToken1': $unparsed,
-				'meals': {
-					'raw': $meal,
-					'parsed': Fp.map(m => FlightInfoParser.decodeMeal(m), php.str_split($meal, 1)),
+				aircraft: $aircraft,
+				eticket: $eticket === 'E',
+				unparsedToken1: $unparsed,
+				meals: {
+					raw: $meal,
+					parsed: Fp.map(m => FlightInfoParser.decodeMeal(m), php.str_split($meal, 1)),
 				},
-				'textLeft': $textLeft,
+				textLeft: $textLeft,
 			};
 		} else if (php.preg_match(/^(A)($|\s+)/s, $textLeft, $matches = [])) {
 			[$_, $gkRemark, $textLeft] = $matches;
 			return {
-				'gkRemark': $gkRemark,
-				'textLeft': $textLeft,
+				gkRemark: $gkRemark,
+				textLeft: $textLeft,
 			};
 		} else if (php.preg_match(/^\*([A-Z0-9]{2})\/(E)\*(.*)/s, $textLeft, $matches = [])) {
 			[$_, $gds, $eticket, $textLeft] = $matches;
 			return {
-				'gds': $gds,
-				'eticket': $eticket === 'E',
-				'textLeft': $textLeft,
+				gds: $gds,
+				eticket: $eticket === 'E',
+				textLeft: $textLeft,
 			};
 		} else {
 			return {
-				'textLeft': $textLeft,
+				textLeft: $textLeft,
 			};
 		}
 	}
 
 	static decodeMarriageLetter(letter)  {
 		return ({
-			'M': 'AMADEUS_RULES',
-			'T': 'TRAFFIC_RESTRICTION',
-			'A': 'AIRLINE_TYPE_A',
-			'B': 'AIRLINE_TYPE_B',
-			'R': 'AIRLINE_SPACE_CONTROL',
-			'N': 'NEGOTIATED_SPACE',
+			M: 'AMADEUS_RULES',
+			T: 'TRAFFIC_RESTRICTION',
+			A: 'AIRLINE_TYPE_A',
+			B: 'AIRLINE_TYPE_B',
+			R: 'AIRLINE_SPACE_CONTROL',
+			N: 'NEGOTIATED_SPACE',
 		} || {})[letter];
 	}
 
@@ -440,30 +440,30 @@ class PnrParser
 		const $split = StringUtil.splitByPosition($line, $pattern, null, true);
 		const textLeft = $split['M'] + $line.slice($pattern.length).trim();
 		const $result = {
-			'lineNumber': $split['#'],
-			'segmentType': this.ITINERARY_SEGMENT,
-			'displayFormat': this.FORMAT_DAY_OFFSET,
-			'airline': $split['A'],
-			'flightNumber': $split['F'],
-			'bookingClass': $split['B'],
-			'departureDate': this.parsePartialDate($split['D']),
-			'dayOfWeek': $split['W'],
-			'departureAirport': $split['R'],
-			'destinationAirport': $split['N'],
-			'segmentStatus': $split['S'],
-			'seatCount': $split['Q'],
-			'terminalTime': this.parseTime($split['U']),
-			'terminal': $split['G'],
-			'departureTime': this.parseTime($split['t']),
-			'destinationTime': this.parseTime($split['T']),
+			lineNumber: $split['#'],
+			segmentType: this.ITINERARY_SEGMENT,
+			displayFormat: this.FORMAT_DAY_OFFSET,
+			airline: $split['A'],
+			flightNumber: $split['F'],
+			bookingClass: $split['B'],
+			departureDate: this.parsePartialDate($split['D']),
+			dayOfWeek: $split['W'],
+			departureAirport: $split['R'],
+			destinationAirport: $split['N'],
+			segmentStatus: $split['S'],
+			seatCount: $split['Q'],
+			terminalTime: this.parseTime($split['U']),
+			terminal: $split['G'],
+			departureTime: this.parseTime($split['t']),
+			destinationTime: this.parseTime($split['T']),
 			// may get '|' if pasted Amadeus itinerary in Apollo session
-			'dayOffset': php.intval(($split['O'] || '0').replace('|', '+')),
+			dayOffset: php.intval(($split['O'] || '0').replace('|', '+')),
 			// should get some more dumps to parse following
-			'eticket': null,
-			'confirmationAirline': null,
-			'confirmationNumber': null,
-			'textLeft': textLeft,
-			'raw': $line,
+			eticket: null,
+			confirmationAirline: null,
+			confirmationNumber: null,
+			textLeft: textLeft,
+			raw: $line,
 		};
 		if (php.trim($split[' ']) === '' &&
             (($result['departureDate'] || {})['parsed']) &&
@@ -548,26 +548,26 @@ class PnrParser
 
 		if (php.preg_match($regex, $line, $tokens = [])) {
 			return {
-				'lineNumber': $tokens['lineNumber'],
-				'segmentType': this.ITINERARY_SEGMENT,
-				'displayFormat': this.FORMAT_EXTENDED,
-				'airline': $tokens['airline'],
-				'flightNumber': $tokens['flightNumber'],
-				'bookingClass': $tokens['bookingClass'],
-				'departureDate': this.parsePartialDate($tokens['departureDate']),
-				'dayOfWeek': $tokens['dayOfWeek'],
-				'isMarried': $tokens['marriageMark'] === '*',
-				'departureAirport': $tokens['departureAirport'],
-				'destinationAirport': $tokens['destinationAirport'],
-				'segmentStatus': $tokens['segmentStatus'],
-				'seatCount': $tokens['seatCount'],
-				'eticket': $tokens['eticket'] ? true : false,
-				'departureTime': this.parseTime($tokens['departureTime']),
-				'destinationTime': this.parseTime($tokens['destinationTime']),
-				'destinationDate': this.parsePartialDate($tokens['destinationDate']),
-				'confirmationAirline': $tokens['confirmationAirline'],
-				'confirmationNumber': $tokens['confirmationNumber'],
-				'raw': $line,
+				lineNumber: $tokens['lineNumber'],
+				segmentType: this.ITINERARY_SEGMENT,
+				displayFormat: this.FORMAT_EXTENDED,
+				airline: $tokens['airline'],
+				flightNumber: $tokens['flightNumber'],
+				bookingClass: $tokens['bookingClass'],
+				departureDate: this.parsePartialDate($tokens['departureDate']),
+				dayOfWeek: $tokens['dayOfWeek'],
+				isMarried: $tokens['marriageMark'] === '*',
+				departureAirport: $tokens['departureAirport'],
+				destinationAirport: $tokens['destinationAirport'],
+				segmentStatus: $tokens['segmentStatus'],
+				seatCount: $tokens['seatCount'],
+				eticket: $tokens['eticket'] ? true : false,
+				departureTime: this.parseTime($tokens['departureTime']),
+				destinationTime: this.parseTime($tokens['destinationTime']),
+				destinationDate: this.parsePartialDate($tokens['destinationDate']),
+				confirmationAirline: $tokens['confirmationAirline'],
+				confirmationNumber: $tokens['confirmationNumber'],
+				raw: $line,
 			};
 		} else {
 			return null;
@@ -599,9 +599,9 @@ class PnrParser
 
 		if (php.preg_match($regex, $line, $tokens = [])) {
 			return {
-				'lineNumber': $tokens['lineNumber'],
-				'segmentType': this.SEGMENT_TYPE_OTH,
-				'text': $line,
+				lineNumber: $tokens['lineNumber'],
+				segmentType: this.SEGMENT_TYPE_OTH,
+				text: $line,
 			};
 		} else {
 			return null;
@@ -636,16 +636,16 @@ class PnrParser
 
 		if (php.preg_match($regex, $line, $tokens = [])) {
 			return {
-				'lineNumber': $tokens['lineNumber'],
-				'segmentType': this.FLWN_SEGMENT,
-				'airline': $tokens['airline'],
-				'flightNumber': $tokens['flightNumber'],
-				'bookingClass': $tokens['bookingClass'],
-				'departureDate': this.parsePartialDate($tokens['departureDate']),
-				'dayOfWeek': $tokens['dayOfWeek'],
-				'departureAirport': $tokens['departureAirport'],
-				'destinationAirport': $tokens['destinationAirport'],
-				'raw': $line,
+				lineNumber: $tokens['lineNumber'],
+				segmentType: this.FLWN_SEGMENT,
+				airline: $tokens['airline'],
+				flightNumber: $tokens['flightNumber'],
+				bookingClass: $tokens['bookingClass'],
+				departureDate: this.parsePartialDate($tokens['departureDate']),
+				dayOfWeek: $tokens['dayOfWeek'],
+				departureAirport: $tokens['departureAirport'],
+				destinationAirport: $tokens['destinationAirport'],
+				raw: $line,
 			};
 		} else {
 			return null;
@@ -668,10 +668,10 @@ class PnrParser
 
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'officeId': $matches['officeId'],
-				'agentNumber': $matches['agentNumber'],
-				'agentInitials': $matches['agentInitials'],
-				'date': CommonParserHelpers.parseCurrentCenturyFullDate($matches['date']),
+				officeId: $matches['officeId'],
+				agentNumber: $matches['agentNumber'],
+				agentInitials: $matches['agentInitials'],
+				date: CommonParserHelpers.parseCurrentCenturyFullDate($matches['date']),
 			};
 		} else {
 			return null;
@@ -705,18 +705,18 @@ class PnrParser
 		if (php.preg_match($regex, $line, $tokens = [])) {
 			$parsedDate = CommonParserHelpers.parseApolloFullDate($tokens['date']);
 			return {
-				'responsibleOfficeId': $tokens['responsibleOfficeId'],
-				'queueingOfficeId': $tokens['queueingOfficeId'],
-				'agentInitials': $tokens['agentInitials'] || '',
-				'dutyCode': $tokens['dutyCode'],
-				'recordLocator': $tokens['recordLocator'],
-				'date': {
-					'raw': $tokens['date'],
-					'parsed': $parsedDate ? '20'+$parsedDate : null,
+				responsibleOfficeId: $tokens['responsibleOfficeId'],
+				queueingOfficeId: $tokens['queueingOfficeId'],
+				agentInitials: $tokens['agentInitials'] || '',
+				dutyCode: $tokens['dutyCode'],
+				recordLocator: $tokens['recordLocator'],
+				date: {
+					raw: $tokens['date'],
+					parsed: $parsedDate ? '20'+$parsedDate : null,
 				},
-				'time': {
-					'raw': $tokens['time'],
-					'parsed': CommonParserHelpers.decodeApolloTime($tokens['time']),
+				time: {
+					raw: $tokens['time'],
+					parsed: CommonParserHelpers.decodeApolloTime($tokens['time']),
 				},
 			};
 		} else {
@@ -780,7 +780,7 @@ class PnrParser
 			: null;
 
 		return $parsed
-			? {'raw': $token, 'parsed': $parsed}
+			? {raw: $token, parsed: $parsed}
 			: null;
 	}
 
@@ -792,7 +792,7 @@ class PnrParser
 			: null;
 
 		return php.trim($token)
-			? {'raw': $token, 'parsed': $parsed}
+			? {raw: $token, parsed: $parsed}
 			: null;
 	}
 
@@ -803,7 +803,7 @@ class PnrParser
 		$matches = [];
 		if (php.preg_match(/^OPERATED BY(?<operator>.*)$/, php.trim($line), $matches = [])) {
 			return {
-				'operator': php.trim($matches['operator']),
+				operator: php.trim($matches['operator']),
 			};
 		} else {
 			return null;

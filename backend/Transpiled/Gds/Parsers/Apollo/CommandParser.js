@@ -182,18 +182,18 @@ class CommandParser {
 		$ranges = [];
 		if (!$expr) {
 			$rangeType = 'notSpecified';
-			$ranges.push({'from': 1, 'to': 1});
+			$ranges.push({from: 1, to: 1});
 		} else if (php.preg_match(/^(\d+)-\*$/, $expr, $matches = [])) {
 			$rangeType = 'everythingAfter';
-			$ranges.push({'from': $matches[1]});
+			$ranges.push({from: $matches[1]});
 		} else {
 			$rangeType = 'explicitEnds';
 			for ($rawRange of php.explode('*', php.trim($expr))) {
 				$pair = php.explode('-', $rawRange);
-				$ranges.push({'from': $pair[0], 'to': $pair[1] || $pair[0]});
+				$ranges.push({from: $pair[0], to: $pair[1] || $pair[0]});
 			}
 		}
-		return {'rangeType': $rangeType, 'ranges': $ranges};
+		return {rangeType: $rangeType, ranges: $ranges};
 	}
 
 	static parsePaxRanges($expr) {
@@ -202,8 +202,8 @@ class CommandParser {
 			$lNum = php.explode('-', $num)[0];
 			$fNum = php.explode('-', $num)[1] || null;
 			return {
-				'from': $lNum, 'fromMinor': $fNum,
-				'to': $lNum, 'toMinor': $fNum,
+				from: $lNum, fromMinor: $fNum,
+				to: $lNum, toMinor: $fNum,
 			};
 		}, php.explode('|', $expr));
 	}
@@ -222,14 +222,14 @@ class CommandParser {
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			$rangesData = this.parseRemarkRanges($matches['ranges']);
 			return {
-				'cmd': $matches['cmd'],
-				'type': 'changePnrRemarks',
-				'data': {
-					'rangeType': $rangesData['rangeType'],
-					'ranges': $rangesData['ranges'],
-					'newText': $matches['newText'],
+				cmd: $matches['cmd'],
+				type: 'changePnrRemarks',
+				data: {
+					rangeType: $rangesData['rangeType'],
+					ranges: $rangesData['ranges'],
+					newText: $matches['newText'],
 				},
-				'textLeft': $matches['textLeft'] || '',
+				textLeft: $matches['textLeft'] || '',
 			};
 		} else {
 			return null;
@@ -256,10 +256,10 @@ class CommandParser {
 			if (php.preg_match($pattern, $cmd, $matches = [])) {
 				[$raw, $data] = $matches;
 				return {
-					'cmd': php.rtrim($raw, '|'),
-					'type': $name,
-					'data': $data || null,
-					'textLeft': php.mb_substr($cmd, php.mb_strlen($raw)),
+					cmd: php.rtrim($raw, '|'),
+					type: $name,
+					data: $data || null,
+					textLeft: php.mb_substr($cmd, php.mb_strlen($raw)),
 				};
 			}
 		}
@@ -269,7 +269,7 @@ class CommandParser {
 
 	static parseStorePnr($cmd) {
 		let $result, $textLeft;
-		$result = {'keepPnr': false, 'sendEmail': false};
+		$result = {keepPnr: false, sendEmail: false};
 		if (!StringUtil.startsWith($cmd, 'E')) {
 			return null;
 		}
@@ -311,14 +311,14 @@ class CommandParser {
 			$segments = [];
 			php.preg_match_all('/' + $segmentPattern + '/', $matches['segments'], $tuples = [], php.PREG_SET_ORDER);
 			for ([$_, $bookingClass, $lineNumber] of $tuples) {
-				$segments.push({'bookingClass': $bookingClass, 'lineNumber': $lineNumber});
+				$segments.push({bookingClass: $bookingClass, lineNumber: $lineNumber});
 			}
 			return {
-				'sellType': 'availability',
-				'seatCount': $matches['seatCount'],
-				'segments': $segments,
-				'includeConnections': $matches['includeConnections'] === '*',
-				'segmentStatus': $matches['segmentStatus'],
+				sellType: 'availability',
+				seatCount: $matches['seatCount'],
+				segments: $segments,
+				includeConnections: $matches['includeConnections'] === '*',
+				segmentStatus: $matches['segmentStatus'],
 			};
 		} else {
 			return null;
@@ -342,16 +342,16 @@ class CommandParser {
 			'\\s*$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			return {
-				'sellType': 'directSell',
-				'airline': $matches['airline'],
-				'flightNumber': $matches['flightNumber'],
-				'bookingClass': $matches['bookingClass'],
-				'departureDate': {'raw': $matches['departureDate']},
-				'departureAirport': $matches['departureAirport'],
-				'destinationAirport': $matches['destinationAirport'],
-				'segmentStatus': $matches['segmentStatus'],
-				'seatCount': php.intval($matches['seatCount']),
-				'unparsed': $matches['unparsed'],
+				sellType: 'directSell',
+				airline: $matches['airline'],
+				flightNumber: $matches['flightNumber'],
+				bookingClass: $matches['bookingClass'],
+				departureDate: {raw: $matches['departureDate']},
+				departureAirport: $matches['departureAirport'],
+				destinationAirport: $matches['destinationAirport'],
+				segmentStatus: $matches['segmentStatus'],
+				seatCount: php.intval($matches['seatCount']),
+				unparsed: $matches['unparsed'],
 			};
 		} else {
 			return null;
@@ -366,16 +366,16 @@ class CommandParser {
 			if (php.preg_match(/^(\d{1,2})([A-Z])$/, $rawSeg, $matches = [])) {
 				[$_, $segNum, $bookCls] = $matches;
 				$segments.push({
-					'segmentNumber': $segNum,
-					'bookingClass': $bookCls,
+					segmentNumber: $segNum,
+					bookingClass: $bookCls,
 				});
 			} else {
 				return null;
 			}
 		}
 		return {
-			'sellType': 'rebookSelective',
-			'segments': $segments,
+			sellType: 'rebookSelective',
+			segments: $segments,
 		};
 	}
 
@@ -387,7 +387,7 @@ class CommandParser {
 		$bookingClass = null;
 		for ($value of $values) {
 			if (php.preg_match(/^(\d{1,2}[A-Z]{3})$/, $value, $matches = [])) {
-				$date = {'raw': $matches[1]};
+				$date = {raw: $matches[1]};
 			} else if (php.preg_match(/^([A-Z]|)$/, $value, $matches = [])) {
 				$bookingClass = $value;
 			} else {
@@ -395,9 +395,9 @@ class CommandParser {
 			}
 		}
 		return {
-			'sellType': 'rebookAll',
-			'departureDate': $date,
-			'bookingClass': $bookingClass,
+			sellType: 'rebookAll',
+			departureDate: $date,
+			bookingClass: $bookingClass,
 		};
 	}
 
@@ -410,8 +410,8 @@ class CommandParser {
 			'\\s*$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			return {
-				'sellType': 'openSegment',
-				'unparsed': $matches['unparsed'],
+				sellType: 'openSegment',
+				unparsed: $matches['unparsed'],
 			};
 		} else {
 			return null;
@@ -427,12 +427,12 @@ class CommandParser {
 				|| this.parseRebookAll($textLeft)
 				|| this.parseDirectSell($cmd)
 				|| this.parseOpenSell($cmd)
-				|| {'sellType': null, 'raw': $cmd};
+				|| {sellType: null, raw: $cmd};
 		} else if (php.trim($cmd) === 'Y') {
 			return {
-				'sellType': 'arrivalUnknown',
-				'segments': [
-					{'type': 'ARNK'},
+				sellType: 'arrivalUnknown',
+				segments: [
+					{type: 'ARNK'},
 				],
 			};
 		} else {
@@ -459,13 +459,13 @@ class CommandParser {
 				$segmentNumbers = this.parseRange($range, '|', '-');
 			}
 			return {
-				'field': 'itinerary',
-				'applyToAllAir': $applyToAllAir,
-				'segmentNumbers': $segmentNumbers,
-				'sell': $textLeft ? this.parseSell(php.ltrim($textLeft, '/')) : null,
+				field: 'itinerary',
+				applyToAllAir: $applyToAllAir,
+				segmentNumbers: $segmentNumbers,
+				sell: $textLeft ? this.parseSell(php.ltrim($textLeft, '/')) : null,
 			};
 		} else {
-			return {'field': null, 'unparsed': $textLeft};
+			return {field: null, unparsed: $textLeft};
 		}
 	}
 
@@ -475,8 +475,8 @@ class CommandParser {
 		if (php.preg_match(/^\/(\d+)\|(\S.*)$/, $cmd, $matches = [])) {
 			[$_, $segNum, $value] = $matches;
 			return {
-				'insertAfter': $segNum,
-				'sell': this.parseSell($value),
+				insertAfter: $segNum,
+				sell: this.parseSell($value),
 			};
 		} else {
 			return null;
@@ -489,9 +489,9 @@ class CommandParser {
 		if (php.preg_match(/^(@|)([A-Z0-9]{2})([A-Z0-9]*)$/, $airPart, $matches = [])) {
 			[$_, $at, $air, $code] = $matches;
 			return {
-				'withAllPartners': $at ? true : false,
-				'airline': $air,
-				'code': $code,
+				withAllPartners: $at ? true : false,
+				airline: $air,
+				code: $code,
 			};
 		} else {
 			return null;
@@ -514,9 +514,9 @@ class CommandParser {
 				return null;
 			} else {
 				return {
-					'majorPaxNum': $matches['majorPaxNum'] || '',
-					'minorPaxNum': $matches['minorPaxNum'] || '',
-					'mileagePrograms': $mpAirs,
+					majorPaxNum: $matches['majorPaxNum'] || '',
+					minorPaxNum: $matches['minorPaxNum'] || '',
+					mileagePrograms: $mpAirs,
 				};
 			}
 		} else {
@@ -540,8 +540,8 @@ class CommandParser {
 				return null;
 			} else {
 				return {
-					'type': $xMark ? 'changeFrequentFlyerNumber' : 'addFrequentFlyerNumber',
-					'data': {'passengers': $mpPaxes},
+					type: $xMark ? 'changeFrequentFlyerNumber' : 'addFrequentFlyerNumber',
+					data: {passengers: $mpPaxes},
 				};
 			}
 		} else {
@@ -570,19 +570,19 @@ class CommandParser {
 				}
 			}
 			return {
-				'type': {
+				type: {
 					'9S': 'requestSeats',
 					'9X': 'cancelSeats',
 				}[$matches['baseCmd']] || null,
-				'data': {
-					'paxRanges': php.empty($matches['paxNums']) ? [] :
+				data: {
+					paxRanges: php.empty($matches['paxNums']) ? [] :
 						this.parsePaxRanges($matches['paxNums']),
-					'segNums': php.empty($matches['segNums']) ? [] :
+					segNums: php.empty($matches['segNums']) ? [] :
 						this.parseRange($matches['segNums'], '|', '*'),
-					'location': php.empty($matches['aisleMark']) ? null :
-						{'raw': $matches['aisleMark'], 'parsed': 'aisle'},
-					'zone': null,
-					'seatCodes': $seatCodes,
+					location: php.empty($matches['aisleMark']) ? null :
+						{raw: $matches['aisleMark'], parsed: 'aisle'},
+					zone: null,
+					seatCodes: $seatCodes,
 				},
 			};
 		} else {
@@ -592,20 +592,20 @@ class CommandParser {
 
 	static getCabinClasses() {
 		return {
-			'W': 'premium_economy',
-			'F': 'first',
-			'P': 'premium_first',
-			'C': 'business',
-			'Y': 'economy',
-			'U': 'upper',
+			W: 'premium_economy',
+			F: 'first',
+			P: 'premium_first',
+			C: 'business',
+			Y: 'economy',
+			U: 'upper',
 		};
 	}
 
 	static parseDate($raw) {
 		return !$raw ? null : {
-			'raw': $raw,
-			'partial': CommonParserHelpers.parsePartialDate($raw),
-			'full': CommonParserHelpers.parseCurrentCenturyFullDate($raw)['parsed'],
+			raw: $raw,
+			partial: CommonParserHelpers.parsePartialDate($raw),
+			full: CommonParserHelpers.parseCurrentCenturyFullDate($raw)['parsed'],
 		};
 	}
 
@@ -662,16 +662,16 @@ class CommandParser {
 		$lexed = this.parseTariffMods($modsPart);
 
 		return {
-			'departureDate': this.parseDate($departureDate),
-			'returnDate': this.parseDate($returnDate),
-			'departureAirport': $departureAirport,
-			'destinationAirport': $destinationAirport,
-			'modifiers': Fp.map(($rec) => {
+			departureDate: this.parseDate($departureDate),
+			returnDate: this.parseDate($returnDate),
+			departureAirport: $departureAirport,
+			destinationAirport: $destinationAirport,
+			modifiers: Fp.map(($rec) => {
 				return {
-					'type': $rec['lexeme'], 'raw': $rec['raw'], 'parsed': $rec['data'],
+					type: $rec['lexeme'], raw: $rec['raw'], parsed: $rec['data'],
 				};
 			}, $lexed['lexemes']),
-			'unparsed': $lexed['text'],
+			unparsed: $lexed['text'],
 		};
 	}
 
@@ -817,8 +817,8 @@ class CommandParser {
 
 					if (php.in_array($checkCmd, $availableCommands)) {
 						$parts.push({
-							'field': $checkCmd,
-							'modifiers': $data,
+							field: $checkCmd,
+							modifiers: $data,
 						});
 					} else {
 						return null;
@@ -828,9 +828,9 @@ class CommandParser {
 
 			if (!php.empty($parts)) {
 				return {
-					'cmd': $cmd,
-					'type': 'showPnrFields',
-					'data': $parts,
+					cmd: $cmd,
+					type: 'showPnrFields',
+					data: $parts,
 				};
 			}
 		}
@@ -848,16 +848,16 @@ class CommandParser {
 				$parsedCommands.push($parsedCmd);
 			} else {
 				$parseTillEnd = this.parseSingleCommand($strCmd) || {
-					'cmd': $strCmd,
-					'type': null,
-					'data': null,
+					cmd: $strCmd,
+					type: null,
+					data: null,
 				};
 				$parsedCommands.push($parseTillEnd);
 				$strCmd = '';
 			}
 		}
 		$firstCmd = php.array_shift($parsedCommands)
-			|| {'type': null, 'data': null};
+			|| {type: null, data: null};
 		$firstCmd['followingCommands'] = $parsedCommands;
 		return $firstCmd;
 	}
@@ -896,8 +896,8 @@ class CommandParser {
 			$data = $parsed['data'];
 		} else if ($data = this.parseStorePnr($cmd)) {
 			$type = php.array_keys(php.array_filter({
-				'storePnrSendEmail': $data['sendEmail'],
-				'storeKeepPnr': $data['keepPnr'],
+				storePnrSendEmail: $data['sendEmail'],
+				storeKeepPnr: $data['keepPnr'],
 			}))[0] || 'storePnr';
 		} else if ($data = this.parse_airAvailability($cmd)) {
 			$type = 'airAvailability';
@@ -914,9 +914,9 @@ class CommandParser {
 			return null;
 		}
 		return {
-			'cmd': $cmd,
-			'type': $type,
-			'data': $data,
+			cmd: $cmd,
+			type: $type,
+			data: $data,
 		};
 	}
 }

@@ -8,7 +8,7 @@ class GdsPassengerBlockParser
 {
 	static parse($dump)  {
 		const $parsedData = {
-			'passengerList': [],
+			passengerList: [],
 		};
 		const $lines = require('../../../Lib/Utils/StringUtil.js').lines($dump);
 		while ($lines.length > 0) {
@@ -27,8 +27,8 @@ class GdsPassengerBlockParser
 		}
 		$parsedData['passengerList'] = this.flattenPassengers($parsedData['passengerList']);
 		return {
-			'parsedData': $parsedData,
-			'textLeft': php.implode(php.PHP_EOL, $lines),
+			parsedData: $parsedData,
+			textLeft: php.implode(php.PHP_EOL, $lines),
 		};
 	}
 
@@ -44,8 +44,8 @@ class GdsPassengerBlockParser
 			}
 			if ($passengerList.every(p => p.success)) {
 				return {
-					'passengerList': $passengerList,
-					'success': true,
+					passengerList: $passengerList,
+					success: true,
 				};
 			} else {
 				return {success: false};
@@ -55,22 +55,22 @@ class GdsPassengerBlockParser
 			// ' 1.C/01CREW ',
 			[$_, $recordNumber, $carrierText] = $matches;
 			return {
-				'passengerList': [
+				passengerList: [
 					{
-						'success': false,
-						'nameNumber': {'raw': $recordNumber+'.C'},
-						'carrierText': $carrierText,
+						success: false,
+						nameNumber: {raw: $recordNumber+'.C'},
+						carrierText: $carrierText,
 					},
 				],
-				'success': true,
+				success: true,
 			};
 		} else if (php.trim($line) === 'NO NAMES') {
 			return {
-				'passengerList': [],
-				'success': true,
+				passengerList: [],
+				success: true,
 			};
 		} else {
-			return {'success': false};
+			return {success: false};
 		}
 	}
 
@@ -103,20 +103,20 @@ class GdsPassengerBlockParser
 			}
 
 			return {
-				'success': true,
-				'rawNumber': $matches['number'],
-				'parsedNumber': this.parseNameNumber($matches['number']),
-				'firstName': $matches['firstName'],
-				'lastName': $matches['lastName'],
-				'joinedFirstNames': php.array_values(php.array_filter(php.explode('/', $matches['joinedFirstNames']))),
-				'age': $age,
-				'dob': $dob,
+				success: true,
+				rawNumber: $matches['number'],
+				parsedNumber: this.parseNameNumber($matches['number']),
+				firstName: $matches['firstName'],
+				lastName: $matches['lastName'],
+				joinedFirstNames: php.array_values(php.array_filter(php.explode('/', $matches['joinedFirstNames']))),
+				age: $age,
+				dob: $dob,
 				// Enter "PTC" in focal point for reference
-				'ptc': $ptc,
-				'remark': remark,
+				ptc: $ptc,
+				remark: remark,
 			};
 		} else {
-			return {'success': false};
+			return {success: false};
 		}
 	}
 
@@ -125,8 +125,8 @@ class GdsPassengerBlockParser
 		if (php.preg_match(/^(\d+)\.(I\/|)(\d+)$/, $rawNumber, $matches = [])) {
 			[$_, $fullNameNumber, $infantMark, $firstNameNumber] = $matches;
 			return {
-				'fieldNumber': $fullNameNumber,
-				'quantity': $firstNameNumber,
+				fieldNumber: $fullNameNumber,
+				quantity: $firstNameNumber,
 			};
 		} else {
 			return null;
@@ -136,9 +136,9 @@ class GdsPassengerBlockParser
 	static parsePaxDetailsToken($token)  {
 		let $result, $matches, $ptc, $_, $dob;
 		$result = {
-			'age': null,
-			'dob': null,
-			'ptc': null,
+			age: null,
+			dob: null,
+			ptc: null,
 		};
 		$token = php.trim($token);
 		if (php.preg_match(/^P-C(?<age>\d+)$/, $token, $matches = []) && $matches['age']) {
@@ -151,8 +151,8 @@ class GdsPassengerBlockParser
 			$result['ptc'] = 'C'+$matches['age'];
 		} else if (php.preg_match(/^(?<dob>\d+[A-Z]{3}\d+)$/, $token, $matches = []) && $matches['dob']) {
 			$result['dob'] = {
-				'raw': $matches['dob'],
-				'parsed': this.parseDateOfBirth($matches['dob']),
+				raw: $matches['dob'],
+				parsed: this.parseDateOfBirth($matches['dob']),
 			};
 		} else if (php.preg_match(/^P?-?C?([A-Z0-9]{3})$/, $token, $matches = [])) {
 			$ptc = $matches[1];
@@ -164,8 +164,8 @@ class GdsPassengerBlockParser
 			[$_, $ptc, $dob] = $matches;
 			$result['ptc'] = $ptc;
 			$result['dob'] = {
-				'raw': $dob,
-				'parsed': this.parseDateOfBirth($dob),
+				raw: $dob,
+				parsed: this.parseDateOfBirth($dob),
 			};
 			if (php.is_numeric(php.substr($ptc, 1))) {
 				$result['age'] = php.substr($ptc, 1);
@@ -201,18 +201,18 @@ class GdsPassengerBlockParser
 			for ($i = 0; $i < $pax['parsedNumber']['quantity']; ++$i) {
 				++$absolute;
 				$flatPax = php.array_merge($pax, {
-					'nameNumber': {
-						'raw': $pax['rawNumber'],
-						'absolute': $absolute,
-						'fieldNumber': $pax['parsedNumber']['fieldNumber'],
-						'firstNameNumber': $i + 1,
-						'isInfant': !(php.strpos($pax['rawNumber'], 'I') === false),
+					nameNumber: {
+						raw: $pax['rawNumber'],
+						absolute: $absolute,
+						fieldNumber: $pax['parsedNumber']['fieldNumber'],
+						firstNameNumber: $i + 1,
+						isInfant: !(php.strpos($pax['rawNumber'], 'I') === false),
 					},
-					'lastName': $pax['lastName'],
-					'firstName': $i > 0
+					lastName: $pax['lastName'],
+					firstName: $i > 0
 						? $pax['joinedFirstNames'][$i - 1] || null
 						: $pax['firstName'],
-					'ageGroup': null, // depends on context
+					ageGroup: null, // depends on context
 				});
 				delete($flatPax['joinedFirstNames']);
 				delete($flatPax['rawNumber']);

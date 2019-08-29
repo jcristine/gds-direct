@@ -94,22 +94,22 @@ class SsrBlockParser {
 		let $pattern, $names, $result, $expectations;
 		$pattern = '     _______     ___ AA___ DDDDD TTTT____________________________';
 		$names = {
-			'_': 'template',
-			'A': 'airline',
-			'D': 'date',
-			'T': 'time',
+			_: 'template',
+			A: 'airline',
+			D: 'date',
+			T: 'time',
 		};
 		$result = StringUtil.splitByPosition($line, $pattern, $names, true);
 		if ($result['template'] === 'SSRADMD TO BY OTHERWISE WILL BE CANCELLED') {
 			return {
-				'airline': $result['airline'],
-				'date': {
-					'raw': $result['date'],
-					'parsed': CommonParserHelpers.parsePartialDate($result['date']),
+				airline: $result['airline'],
+				date: {
+					raw: $result['date'],
+					parsed: CommonParserHelpers.parsePartialDate($result['date']),
 				},
-				'time': {
-					'raw': $result['time'],
-					'parsed': CommonParserHelpers.decodeApolloTime($result['time']),
+				time: {
+					raw: $result['time'],
+					parsed: CommonParserHelpers.decodeApolloTime($result['time']),
 				},
 			};
 		} else {
@@ -129,13 +129,13 @@ class SsrBlockParser {
 			'\\s*$/';
 		if (php.preg_match($pattern, $content, $tokens = [])) {
 			return {
-				'departureAirport': $tokens['departureAirport'],
-				'destinationAirport': $tokens['destinationAirport'],
-				'flightNumber': $tokens['flightNumber'],
-				'bookingClass': $tokens['bookingClass'],
-				'departureDate': {
-					'raw': $tokens['departureDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($tokens['departureDate']),
+				departureAirport: $tokens['departureAirport'],
+				destinationAirport: $tokens['destinationAirport'],
+				flightNumber: $tokens['flightNumber'],
+				bookingClass: $tokens['bookingClass'],
+				departureDate: {
+					raw: $tokens['departureDate'],
+					parsed: CommonParserHelpers.parsePartialDate($tokens['departureDate']),
 				},
 			};
 		} else {
@@ -193,26 +193,26 @@ class SsrBlockParser {
 		$parsedExpirationDate = CommonParserHelpers.parseApolloFullDate($expirationDate);
 		return {
 			//'pre' => $pre,
-			'travelDocType': $travelDocType,
-			'issuingCountry': $issuingCountry,
-			'travelDocNumber': $travelDocNumber,
-			'nationality': $nationality,
-			'dob': {
-				'raw': $dob,
-				'parsed': this.parseDateOfBirth($dob),
+			travelDocType: $travelDocType,
+			issuingCountry: $issuingCountry,
+			travelDocNumber: $travelDocNumber,
+			nationality: $nationality,
+			dob: {
+				raw: $dob,
+				parsed: this.parseDateOfBirth($dob),
 			},
-			'gender': $gender,
-			'expirationDate': {
-				'raw': $expirationDate,
-				'parsed': $parsedExpirationDate ? '20' + $parsedExpirationDate : null,
+			gender: $gender,
+			expirationDate: {
+				raw: $expirationDate,
+				parsed: $parsedExpirationDate ? '20' + $parsedExpirationDate : null,
 			},
-			'lastName': $lastName,
-			'firstName': $firstName,  // May also contain middle name (separated by space)
-			'middleName': $middleName,  // Optional
-			'primaryPassportHolderToken': $primaryPassportHolderToken,  // Optional
-			'paxNum': $paxNum,
-			'paxIsInfant': $paxInf,
-			'paxName': $paxName,
+			lastName: $lastName,
+			firstName: $firstName,  // May also contain middle name (separated by space)
+			middleName: $middleName,  // Optional
+			primaryPassportHolderToken: $primaryPassportHolderToken,  // Optional
+			paxNum: $paxNum,
+			paxIsInfant: $paxInf,
+			paxName: $paxName,
 		};
 	}
 
@@ -233,15 +233,15 @@ class SsrBlockParser {
 		[$pre, $addressType, $country, $addressDetails, $city, $province, $postalCode] = php.array_pad(php.explode('/', $documentInfo), 7, '');
 		return {
 			//'pre' => $pre,
-			'addressType': $addressType,
-			'country': $country,
-			'addressDetails': $addressDetails,
-			'city': $city,
-			'province': $province,
-			'postalCode': $postalCode,
-			'paxNum': $paxNum,
-			'paxIsInfant': $paxInf,
-			'paxName': $paxName,
+			addressType: $addressType,
+			country: $country,
+			addressDetails: $addressDetails,
+			city: $city,
+			province: $province,
+			postalCode: $postalCode,
+			paxNum: $paxNum,
+			paxIsInfant: $paxInf,
+			paxName: $paxName,
 		};
 	}
 
@@ -267,18 +267,18 @@ class SsrBlockParser {
 		[$pre, $placeOfBirth, $travelDocType, $travelDocNumber, $issuingCountry, $dateOfBirth, $countryWhereApplies] = php.array_pad(php.explode('/', $documentInfo), 7, '');
 		return {
 			//'pre' => $pre,
-			'placeOfBirth': $placeOfBirth,
-			'travelDocType': $travelDocType,
-			'travelDocNumber': $travelDocNumber,
-			'issuingCountry': $issuingCountry,
-			'dateOfIssue': {
-				'raw': $dateOfBirth,
-				'parsed': this.parseDateOfBirth($dateOfBirth),
+			placeOfBirth: $placeOfBirth,
+			travelDocType: $travelDocType,
+			travelDocNumber: $travelDocNumber,
+			issuingCountry: $issuingCountry,
+			dateOfIssue: {
+				raw: $dateOfBirth,
+				parsed: this.parseDateOfBirth($dateOfBirth),
 			},
-			'countryWhereApplies': $countryWhereApplies,
-			'paxNum': $paxNum,
-			'paxIsInfant': $paxInf,
-			'paxName': $paxName,
+			countryWhereApplies: $countryWhereApplies,
+			paxNum: $paxNum,
+			paxIsInfant: $paxInf,
+			paxName: $paxName,
 		};
 	}
 
@@ -339,16 +339,16 @@ class SsrBlockParser {
 			'$/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'lineNumber': $matches['lineNumber'] === 'GFAX' ? 1 : $matches['lineNumber'],
-				'ssrCode': $matches['ssrCode'],
-				'airline': $matches['airline'],
-				'toAirline': $matches['toAirline'] || null,
-				'status': $matches['status'] || null,
-				'statusNumber': $matches['statusNumber'] || null,
-				'content': $matches['content'],
-				'paxIsInfant': !php.empty($matches['paxInf']),
-				'paxName': $matches['paxName'] || null,
-				'comment': $matches['comment'] || null,
+				lineNumber: $matches['lineNumber'] === 'GFAX' ? 1 : $matches['lineNumber'],
+				ssrCode: $matches['ssrCode'],
+				airline: $matches['airline'],
+				toAirline: $matches['toAirline'] || null,
+				status: $matches['status'] || null,
+				statusNumber: $matches['statusNumber'] || null,
+				content: $matches['content'],
+				paxIsInfant: !php.empty($matches['paxInf']),
+				paxName: $matches['paxName'] || null,
+				comment: $matches['comment'] || null,
 			};
 		} else {
 			return null;
@@ -386,12 +386,12 @@ class SsrBlockParser {
 				$lineData['paxName'] = $extracted['paxName'];
 			}
 			$result.push({
-				'lineNumber': $lineNumber,
-				'airline': $airline,
-				'ssrCode': $ssrCode,
-				'content': $extracted ? $extracted['content'] : null,
-				'data': $lineData,
-				'line': $line,
+				lineNumber: $lineNumber,
+				airline: $airline,
+				ssrCode: $ssrCode,
+				content: $extracted ? $extracted['content'] : null,
+				data: $lineData,
+				line: $line,
 			});
 		}
 		return $result;

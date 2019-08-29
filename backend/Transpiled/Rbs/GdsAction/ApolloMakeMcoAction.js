@@ -47,19 +47,19 @@ class ApolloMakeMcoAction extends AbstractGdsAction
 
 	static getDefaultParams()  {
 		return {
-			'validFor': 'SPLIT',
-			'tourCode': '',
-			'ticketNumber': '',
-			'commission': '0.00/',
-			'taxAmount': '',
-			'taxCode': '',
-			'equivAmount': '',
-			'equivCurrency': '',
-			'rateOfExchange': '',
-			'endorsementBox': '',
-			'remark1': '',
-			'remark2': '',
-			'issueNow': 'Y',
+			validFor: 'SPLIT',
+			tourCode: '',
+			ticketNumber: '',
+			commission: '0.00/',
+			taxAmount: '',
+			taxCode: '',
+			equivAmount: '',
+			equivCurrency: '',
+			rateOfExchange: '',
+			endorsementBox: '',
+			remark1: '',
+			remark2: '',
+			issueNow: 'Y',
 		};
 	}
 
@@ -79,10 +79,10 @@ class ApolloMakeMcoAction extends AbstractGdsAction
 		$cmd = await this.constructor.makeCmd($params);
 		$result = (await fetchAll($cmd, this)).output;
 		return {
-			'success': StringUtil.startsWith($result, 'MCO ISSUED')
+			success: StringUtil.startsWith($result, 'MCO ISSUED')
                     || StringUtil.startsWith($result, 'EXISTING MCO UPDATED')
                     || StringUtil.startsWith($result, 'MCO DATA STORED'),
-			'response': $result,
+			response: $result,
 		};
 	}
 }

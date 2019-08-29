@@ -30,27 +30,27 @@ class SeatsParser
 		let $zones, $locations, $passIssuePermissions, $regex, $matches, $seat;
 
 		$zones = {
-			'S': 'smoking',
-			'N': 'nonSmoking',
-			'C': 'allCabin',
+			S: 'smoking',
+			N: 'nonSmoking',
+			C: 'allCabin',
 		};
 
 		$locations = {
-			'A': 'aisle',
-			'B': 'bulkhead',
-			'F': 'front',
-			'L': 'leftSide',
-			'R': 'rightSide',
-			'T': 'tail',
-			'W': 'window',
-			'X': 'opposingAisleSeats',
+			A: 'aisle',
+			B: 'bulkhead',
+			F: 'front',
+			L: 'leftSide',
+			R: 'rightSide',
+			T: 'tail',
+			W: 'window',
+			X: 'opposingAisleSeats',
 		};
 
 		$passIssuePermissions = {
-			'RB': 'permitted',
-			'RS': 'restricted',
-			'RG': 'permittedOnChangeOfGauge',
-			'RC': 'restrictedOnChangeOfGauge',
+			RB: 'permitted',
+			RS: 'restricted',
+			RG: 'permittedOnChangeOfGauge',
+			RC: 'restrictedOnChangeOfGauge',
 		};
 
 		$regex =
@@ -76,20 +76,20 @@ class SeatsParser
 		if (php.preg_match($regex, $line, $matches = [])) {
 			$seat = this.removeIndexKeys(php.array_filter($matches));
 			$seat['departureDate'] = {
-				'raw': $seat['departureDate'],
-				'parsed': CommonParserHelpers.parsePartialDate($seat['departureDate']),
+				raw: $seat['departureDate'],
+				parsed: CommonParserHelpers.parsePartialDate($seat['departureDate']),
 			};
 			$seat['zone'] = {
-				'raw': $seat['zone'],
-				'parsed': $zones[$seat['zone']],
+				raw: $seat['zone'],
+				parsed: $zones[$seat['zone']],
 			};
 			$seat['location'] = php.isset($seat['location']) ? {
-				'raw': $seat['location'],
-				'parsed': $locations[$seat['location']],
+				raw: $seat['location'],
+				parsed: $locations[$seat['location']],
 			} : null;
 			$seat['passIssuePermission'] = php.isset($seat['passIssuePermission']) ? {
-				'raw': $seat['passIssuePermission'],
-				'parsed': $passIssuePermissions[$seat['passIssuePermission']],
+				raw: $seat['passIssuePermission'],
+				parsed: $passIssuePermissions[$seat['passIssuePermission']],
 			} : null;
 			return $seat;
 		} else {
@@ -101,13 +101,13 @@ class SeatsParser
 		let $error, $lines, $line, $flatList, $cnt, $i, $unparsed;
 
 		if ($error = this.detectNoDataResponse($dump)) {
-			return {'seatsBySegment': []};
+			return {seatsBySegment: []};
 		}
 
 		$lines = StringUtil.lines($dump);
 
 		if (php.trim($line = php.array_shift($lines)) !== 'SEATS\/BOARDING PASS') {
-			return {'error': 'unexpected start of dump', 'line': $line};
+			return {error: 'unexpected start of dump', line: $line};
 		}
 
 		$flatList = php.array_map(a => this.parseSeatLine(a), $lines);
@@ -123,13 +123,13 @@ class SeatsParser
 		$unparsed = Fp.filter('is_null', $flatList);
 		if (php.count($unparsed) > 0) {
 			return {
-				'error': 'failed to parse seat lines: ['+php.implode(',', php.array_keys($unparsed))+']',
-				'dump': $dump,
+				error: 'failed to parse seat lines: ['+php.implode(',', php.array_keys($unparsed))+']',
+				dump: $dump,
 			};
 		}
 
 		return {
-			'seatsBySegment': Fp.groupBy(($seat) => {
+			seatsBySegment: Fp.groupBy(($seat) => {
 
 				return $seat['segmentNumber'];
 			}, $flatList),

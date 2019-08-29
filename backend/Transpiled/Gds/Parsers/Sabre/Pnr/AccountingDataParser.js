@@ -21,15 +21,15 @@ class AccountingDataParser {
 			[$_, $ccc, $ccn] = $matches;
 			$type = 'creditCard';
 			$parsed = {
-				'creditCardCompany': $ccc,
-				'creditCardNumber': $ccn,
+				creditCardCompany: $ccc,
+				creditCardNumber: $ccn,
 			};
 		} else if (php.trim($text) === 'CA') {
 			$type = 'cash';
 		} else {
 			$type = null;
 		}
-		return {'raw': $text, 'type': $type, 'parsed': $parsed};
+		return {raw: $text, type: $type, parsed: $parsed};
 	}
 
 	static parseAccountingLine($line) {
@@ -53,13 +53,13 @@ class AccountingDataParser {
 
 		if (php.preg_match($regex, $line, $matches = [])) {
 			$matches['nameNumber'] = $matches['nameNumber'] ? {
-				'raw': $matches['nameNumber'],
-				'fieldNumber': php.explode('.', $matches['nameNumber'])[0],
-				'firstNameNumber': php.explode('.', $matches['nameNumber'])[1],
+				raw: $matches['nameNumber'],
+				fieldNumber: php.explode('.', $matches['nameNumber'])[0],
+				firstNameNumber: php.explode('.', $matches['nameNumber'])[1],
 			} : null;
 			$matches['source'] = {
-				'raw': $matches['source'],
-				'parsed': ({
+				raw: $matches['source'],
+				parsed: ({
 					'¥': 'automatic',
 					'/': 'manual',
 					'\u00A4': 'msif',
@@ -95,13 +95,13 @@ class AccountingDataParser {
 				$type = null;
 			}
 			$parsed = {
-				'unparsedTokens': $tokens,
+				unparsedTokens: $tokens,
 			};
 		}
 
 		return {
-			'type': $type,
-			'parsed': $parsed,
+			type: $type,
+			parsed: $parsed,
 		};
 	}
 
@@ -124,10 +124,10 @@ class AccountingDataParser {
 				StringUtil.lines($matches['recordBlock'])));
 			$result = this.parseDataLine($raw);
 			$record = {
-				'lineNumber': php.intval($matches['lineNumber']),
-				'type': $result['type'],
-				'raw': $raw,
-				'parsed': $result['parsed'],
+				lineNumber: php.intval($matches['lineNumber']),
+				type: $result['type'],
+				raw: $raw,
+				parsed: $result['parsed'],
 			};
 			return [$record, $matches['textLeft']];
 		} else {
@@ -146,9 +146,9 @@ class AccountingDataParser {
 				[$record, $textLeft] = tuple;
 				$records.push($record);
 			}
-			return {'records': $records};
+			return {records: $records};
 		} else {
-			return {'error': 'Unexpected start of >*PAC; dump'};
+			return {error: 'Unexpected start of >*PAC; dump'};
 		}
 	}
 }

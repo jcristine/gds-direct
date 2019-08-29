@@ -81,9 +81,9 @@ class CmsApolloTerminal
 				php.array_column($parsed['data']['pricingModifiers'], 'parsed')
 			)['passengers'] || null;
 			$ptcs = !$nameMod ? [] : php.array_column($nameMod['passengerProperties'], 'ptc');
-			return {'ptcs': $ptcs};
+			return {ptcs: $ptcs};
 		} else {
-			return {'errors': ['Failed to parse pricing command for PTC matching - '+$cmd]};
+			return {errors: ['Failed to parse pricing command for PTC matching - '+$cmd]};
 		}
 	}
 
@@ -92,7 +92,7 @@ class CmsApolloTerminal
 		$errorRecords = [];
 		$cmdData = CommandParser.parse($pricingCmd)['data'] || null;
 		if (!$cmdData) {
-			$errorRecords.push({'type': Errors.CUSTOM, 'data': {'text': 'Failed to parse pricing command - >' + $pricingCmd + '; for PQ validation'}});
+			$errorRecords.push({type: Errors.CUSTOM, data: {text: 'Failed to parse pricing command - >' + $pricingCmd + '; for PQ validation'}});
 			return $errorRecords;
 		}
 		$mods = $cmdData['pricingModifiers'] || [];
@@ -102,14 +102,14 @@ class CmsApolloTerminal
 			$fareBases = php.array_filter(php.array_column($bundles, 'fareBasis'));
 			const bookingClasses = php.array_filter(php.array_column($bundles, 'bookingClass'));
 			if ($fareBases.length > 0) {
-				$errorRecords.push({'type': Errors.BAD_MOD_BASIS_OVERRIDE, 'data': {'modifier': '/@'+php.implode('@', $fareBases)+'/'}});
+				$errorRecords.push({type: Errors.BAD_MOD_BASIS_OVERRIDE, data: {modifier: '/@'+php.implode('@', $fareBases)+'/'}});
 			}
 			if (bookingClasses.length > 0) {
 				$errorRecords.push({type: Errors.BAD_MOD_BOKING_CLASS_OVERRIDE, data: {modifier: '/.' + bookingClasses.join('.') + '/'}});
 			}
 		}
 		if ($cmdData['baseCmd'] === '$BBA') {
-			$errorRecords.push({'type': Errors.BAD_MOD_IGNORE_AVAILABILITY, 'data': {'modifier': '$BBA/'}});
+			$errorRecords.push({type: Errors.BAD_MOD_IGNORE_AVAILABILITY, data: {modifier: '$BBA/'}});
 		}
 		return $errorRecords;
 	}
@@ -156,12 +156,12 @@ class CmsApolloTerminal
 
 	transformCalledCommand($cmdRecord)  {
 		return {
-			'cmd': this.constructor.encodeCmdForCms($cmdRecord['cmd']),
-			'type': $cmdRecord['type'] || null,
-			'output': this.sanitizeOutput($cmdRecord['output'], $cmdRecord['noWrap'] || false),
-			'tabCommands': this.constructor.extractTabCommands($cmdRecord['output']),
-			'clearScreen': this.constructor.isScreenCleaningCommand($cmdRecord['cmd']),
-			'duration': $cmdRecord['duration'] || null,
+			cmd: this.constructor.encodeCmdForCms($cmdRecord['cmd']),
+			type: $cmdRecord['type'] || null,
+			output: this.sanitizeOutput($cmdRecord['output'], $cmdRecord['noWrap'] || false),
+			tabCommands: this.constructor.extractTabCommands($cmdRecord['output']),
+			clearScreen: this.constructor.isScreenCleaningCommand($cmdRecord['cmd']),
+			duration: $cmdRecord['duration'] || null,
 		};
 	}
 }

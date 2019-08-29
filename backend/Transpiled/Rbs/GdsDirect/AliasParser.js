@@ -24,10 +24,10 @@ class AliasParser {
 			'$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			return {
-				'pcc': $matches['pcc'],
-				'segmentStatus': $matches['status'] || '',
-				'seatCount': $matches['seatCount'] || '',
-				'keepOriginal': !php.empty($matches['keepOriginalMark']),
+				pcc: $matches['pcc'],
+				segmentStatus: $matches['status'] || '',
+				seatCount: $matches['seatCount'] || '',
+				keepOriginal: !php.empty($matches['keepOriginalMark']),
 			};
 		} else {
 			return null;
@@ -69,8 +69,8 @@ class AliasParser {
 			return null;
 		}
 		return {
-			'realCmd': $realCmd,
-			'limit': $limit,
+			realCmd: $realCmd,
+			limit: $limit,
 		};
 	}
 
@@ -149,8 +149,8 @@ class AliasParser {
 			return null;
 		}
 		$guess = (new ParsersController()).guessDumpType({
-			'dump': $cmd,
-			'creationDate': $session.getStartDt(),
+			dump: $cmd,
+			creationDate: $session.getStartDt(),
 		})['result'] || null;
 
 		const passengers = ($guess.data || {}).passengers || [];

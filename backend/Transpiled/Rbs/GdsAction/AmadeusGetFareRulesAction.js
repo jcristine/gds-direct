@@ -55,11 +55,11 @@ class AmadeusGetFareRulesAction extends AbstractGdsAction {
 				}
 			}
 			$fareComponents.push({
-				'componentNumber': $component['componentNumber'],
-				'segmentNumbers': $segmentNumbers,
-				'departureAirport': $dprt,
-				'destinationAirport': $dstn,
-				'fareBasis': $component['fareBasis'],
+				componentNumber: $component['componentNumber'],
+				segmentNumbers: $segmentNumbers,
+				departureAirport: $dprt,
+				destinationAirport: $dstn,
+				fareBasis: $component['fareBasis'],
 			});
 		}
 		return $fareComponents;
@@ -76,13 +76,13 @@ class AmadeusGetFareRulesAction extends AbstractGdsAction {
 	static transformSingleFare($parsed, $dumpNumber, $itinerary) {
 
 		return {
-			'componentNumber': $parsed['fareComponent']['componentNumber'],
-			'dumpNumber': $dumpNumber,
-			'fareBasis': $parsed['fareComponent']['fareBasis'],
-			'ruleRecords': $parsed['sections'],
-			'segmentNumbers': php.array_column($itinerary, 'segmentNumber'),
-			'departureAirport': (ArrayUtil.getFirst($itinerary) || {})['departureAirport'],
-			'destinationAirport': (ArrayUtil.getLast($itinerary) || {})['destinationAirport'],
+			componentNumber: $parsed['fareComponent']['componentNumber'],
+			dumpNumber: $dumpNumber,
+			fareBasis: $parsed['fareComponent']['fareBasis'],
+			ruleRecords: $parsed['sections'],
+			segmentNumbers: php.array_column($itinerary, 'segmentNumber'),
+			departureAirport: (ArrayUtil.getFirst($itinerary) || {})['departureAirport'],
+			destinationAirport: (ArrayUtil.getLast($itinerary) || {})['destinationAirport'],
 		};
 	}
 
@@ -110,16 +110,16 @@ class AmadeusGetFareRulesAction extends AbstractGdsAction {
 				$dump = await this.amadeusFx($cmd);
 				$cmpParsed = FareRuleParser.parse($dump);
 				if ($error = $cmpParsed['error']) {
-					return {'error': 'Failed to parse rules of ' + $i + '-th component - ' + $error};
+					return {error: 'Failed to parse rules of ' + $i + '-th component - ' + $error};
 				} else {
 					$fares[$i]['ruleRecords'] = $cmpParsed['data']['sections'];
 				}
 			}
 		} else {
-			return {'error': 'Failed to parse Fare Rules header - ' + ($parsed['error'] || 'unknown type display ' + $type)};
+			return {error: 'Failed to parse Fare Rules header - ' + ($parsed['error'] || 'unknown type display ' + $type)};
 		}
 		return {
-			'fareList': $fares,
+			fareList: $fares,
 		};
 	}
 }

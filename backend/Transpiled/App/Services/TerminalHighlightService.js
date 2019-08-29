@@ -288,7 +288,7 @@ class TerminalHighlightService {
 			});
 			this.appliedRules[rule.value] = {...rule};
 			const offsets = this.appliedRules[rule.value].offsets || [];
-			offsets.push({'index': index, 'end': index + strlen(matchedText)});
+			offsets.push({index: index, end: index + strlen(matchedText)});
 			this.appliedRules[rule.value].offsets = offsets;
 		}
 	}

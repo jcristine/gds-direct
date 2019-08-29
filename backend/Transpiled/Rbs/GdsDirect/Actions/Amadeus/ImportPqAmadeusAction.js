@@ -90,13 +90,13 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	static transformCmdType($parsedCmdType) {
 
 		return ({
-			'redisplayPnr': 'redisplayPnr',
-			'priceItinerary': 'priceItinerary',
-			'ptcPricingBlock': 'priceItinerary',
-			'flightServiceInfo': 'flightServiceInfo',
-			'fareList': 'fareList',
-			'fareRules': 'fareRules',
-			'statelessFareRules': 'fareRules',
+			redisplayPnr: 'redisplayPnr',
+			priceItinerary: 'priceItinerary',
+			ptcPricingBlock: 'priceItinerary',
+			flightServiceInfo: 'flightServiceInfo',
+			fareList: 'fareList',
+			fareRules: 'fareRules',
+			statelessFareRules: 'fareRules',
 		} || {})[$parsedCmdType];
 	}
 
@@ -126,7 +126,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 				fullState: {
 					area: 'A',
 					areas: {
-						'A': {
+						A: {
 							gds: 'amadeus',
 							area: 'A',
 							pcc: 'SFO1S2195',
@@ -153,7 +153,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		if (!$output) {
 			$output = await this.amadeusRt($cmd);
 		}
-		this.$allCommands.push({'cmd': $cmd, 'output': $output});
+		this.$allCommands.push({cmd: $cmd, output: $output});
 		return $output;
 	}
 
@@ -162,7 +162,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 
 		$raw = await this.runOrReuseRt('RT');
 		$parsed = PnrParser.parse($raw);
-		$result = {'raw': $raw};
+		$result = {raw: $raw};
 		if ($result['error'] = $parsed['error']) {
 			return $result;
 		}
@@ -182,7 +182,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			ArrayUtil.getLast($itinerary)['segmentNumber'];
 		$raw = await this.runOrReuseRt($cmd);
 		$parsed = FlightInfoParser.parse($raw);
-		$result = {'raw': $raw};
+		$result = {raw: $raw};
 		if ($result['error'] = $parsed['error']) {
 			return $result;
 		}
@@ -368,19 +368,19 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 
 		$ptcBlocks = Fp.flatten(php.array_column($pricingRec['parsed']['pricingList'], 'pricingBlockList'));
 		$isPrivateFare = php.array_filter(php.array_column($ptcBlocks, 'hasPrivateFaresSelectedMessage')).length > 0;
-		$result = {'isRequired': $isPrivateFare, 'raw': null, 'parsed': null};
+		$result = {isRequired: $isPrivateFare, raw: null, parsed: null};
 		if (!$isPrivateFare) return $result;
 
 		$cmd = 'FXL/R,P';
 		$raw = await this.amadeusFx($cmd);
-		this.$allCommands.push({'cmd': $cmd, 'output': $raw});
+		this.$allCommands.push({cmd: $cmd, output: $raw});
 		$fullData = await (new AmadeusGetPricingPtcBlocksAction())
 			.setSession(this.session)
 			.execute($cmd, $raw, $nameRecords);
 		$result['cmd'] = $cmd;
 		$result['raw'] = $raw;
 		if ($error = $fullData['error']) {
-			return {'error': 'Failed to fetch published pricing - ' + $error};
+			return {error: 'Failed to fetch published pricing - ' + $error};
 		}
 		$result['parsed'] = $fullData;
 
@@ -409,31 +409,31 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 
 			this.$allCommands.push(...capturing.getCalledCommands());
 			if ($error = $common['error']) {
-				return {'error': $error};
+				return {error: $error};
 			} else {
 				$ptcNum = +$i + 1;
 				for ($i = 0; $i < php.count($common['fareList']); ++$i) {
 					$rules = $common['fareList'][$i]['ruleRecords'];
 					$byNumber = php.array_combine(php.array_column($rules, 'sectionNumber'), $rules);
 					$ruleRecords.push({
-						'subPricingNumber': $ptcNum,
-						'fareComponentNumber': $common['fareList'][$i]['componentNumber'],
-						'sections': {
-							'exchange': $byNumber[16],
+						subPricingNumber: $ptcNum,
+						fareComponentNumber: $common['fareList'][$i]['componentNumber'],
+						sections: {
+							exchange: $byNumber[16],
 						},
 					});
 					delete ($common['fareList'][$i]['ruleRecords']);
 				}
 				$fareListRecords.push({
-					'raw': $mainDump,
-					'subPricingNumber': $ptcNum,
-					'parsed': $common['fareList'],
+					raw: $mainDump,
+					subPricingNumber: $ptcNum,
+					parsed: $common['fareList'],
 				});
 			}
 		}
 		return {
-			'fareListRecords': $fareListRecords,
-			'ruleRecords': $ruleRecords,
+			fareListRecords: $fareListRecords,
+			ruleRecords: $ruleRecords,
 		};
 	}
 
@@ -471,11 +471,11 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			$ptcNum = $ruleRecord['subPricingNumber'];
 			$compNum = $ruleRecord['fareComponentNumber'];
 			$ruleRecords.push({
-				'pricingNumber': $storeNum,
-				'subPricingNumber': $ptcNum,
-				'fareComponentNumber': $ruleRecord['fareComponentNumber'],
-				'sections': {
-					'exchange': $numToSec[16],
+				pricingNumber: $storeNum,
+				subPricingNumber: $ptcNum,
+				fareComponentNumber: $ruleRecord['fareComponentNumber'],
+				sections: {
+					exchange: $numToSec[16],
 				},
 			});
 			$rawFareList = (((($numToStore[$storeNum] || {})['pricingBlockList'] || {})[$ptcNum - 1] || {})['fareInfo'] || {})['fareConstructionRaw'] || 'FROM FARE CALCULATION';
@@ -497,11 +497,11 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			}
 		}
 		for ([$cmd, $dump] of Object.entries($cmdToDump)) {
-			this.$allCommands.push({'cmd': $cmd, 'output': $dump});
+			this.$allCommands.push({cmd: $cmd, output: $dump});
 		}
 		return {
-			'fareListRecords': $fareListRecords,
-			'ruleRecords': $ruleRecords,
+			fareListRecords: $fareListRecords,
+			ruleRecords: $ruleRecords,
 		};
 	}
 
@@ -509,7 +509,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		let $result, $reservationRecord, $nameRecords, $fullPricing, $pricingRecord, $flightServiceRecord,
 			$fareRuleData, $publishedPricingRecord;
 
-		$result = {'pnrData': {}};
+		$result = {pnrData: {}};
 
 		$reservationRecord = await this.getReservation();
 		if ($result['error'] = $reservationRecord['error']) return $result;

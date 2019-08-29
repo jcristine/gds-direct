@@ -67,8 +67,8 @@ class ParsersController {
 		$dump = php.strtoupper($params['dump']);
 		$result = this.tryParseAs($dump, $params['creationDate'] || null);
 		return $result
-			? {'response_code': 1, 'result': $result, 'errors': []}
-			: {'response_code': 3, 'result': {'type': 'unknown', 'data': null}, 'errors': []};
+			? {response_code: 1, result: $result, errors: []}
+			: {response_code: 3, result: {type: 'unknown', data: null}, errors: []};
 	}
 }
 ParsersController.PNR_DUMP_TYPES = PNR_DUMP_TYPES;

@@ -68,7 +68,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		const $output = (this.$cmdToOutput || {})[$cmd]
 			|| (await this.runCmd($cmd)).output;
 		this.$cmdToOutput[$cmd] = $output;
-		this.$allCommands.push({'cmd': $cmd, 'output': $output});
+		this.$allCommands.push({cmd: $cmd, output: $output});
 		return $output;
 	}
 
@@ -91,7 +91,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 
 		$parsed = PnrParser.parse($raw);
 		$common = ImportSabrePnrFormatAdapter.transformReservation($parsed, this.getBaseDate());
-		$result = {'raw': $raw};
+		$result = {raw: $raw};
 		if ($result['error'] = $common['error']) {
 			return $result;
 		} else {
@@ -110,7 +110,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 
 		$parsed = SabreVerifyParser.parse($raw);
 		$common = ImportSabrePnrFormatAdapter.transformFlightServiceInfo($parsed, this.getBaseDate());
-		$result = {'raw': $raw};
+		$result = {raw: $raw};
 		if ($result['error'] = $common['error']) {
 			return $result;
 		} else {
@@ -137,20 +137,20 @@ class ImportPqSabreAction extends AbstractGdsAction {
 
 		$ptcPricingBlocks = $wrapped['pricingList'][0]['pricingBlockList'];
 		return {
-			'pricingPart': {'parsed': $wrapped},
-			'bagPtcPricingBlocks': php.array_map(($priceQuote, $i) => {
+			pricingPart: {parsed: $wrapped},
+			bagPtcPricingBlocks: php.array_map(($priceQuote, $i) => {
 				let $ptcPricing, $parsed;
 
 				$ptcPricing = $ptcPricingBlocks[$i];
 				$parsed = $priceQuote['baggageInfo'];
 				return {
-					'subPricingNumber': +$i + 1,
-					'passengerNameNumbers': $ptcPricing['passengerNameNumbers'],
-					'ptcInfo': $ptcPricing['ptcInfo'],
-					'parsed': $parsed
+					subPricingNumber: +$i + 1,
+					passengerNameNumbers: $ptcPricing['passengerNameNumbers'],
+					ptcInfo: $ptcPricing['ptcInfo'],
+					parsed: $parsed
 						? ImportSabrePnrFormatAdapter.transformBaggageInfo($parsed, $ptcPricing['ptcInfo']['ptc'])
 						: null,
-					'raw': $priceQuote['baggageInfoDump'],
+					raw: $priceQuote['baggageInfoDump'],
 				};
 			}, $parsed['pqList'], php.array_keys($parsed['pqList'])),
 		};
@@ -161,7 +161,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 
 		$errors = GetPqItineraryAction.checkPricingOutput('sabre', $output, this.$leadData);
 		if (!php.empty($errors)) {
-			$result = {'error': 'Invalid pricing data - ' + php.implode(';', $errors)};
+			$result = {error: 'Invalid pricing data - ' + php.implode(';', $errors)};
 		} else {
 			$result = this.parsePricing($output, reservation.passengers, $cmd);
 		}
@@ -203,7 +203,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 					delete numToSeg[segNum];
 				}
 			}
-			return {'segmentsLeft': Object.values(numToSeg)};
+			return {segmentsLeft: Object.values(numToSeg)};
 		}
 	}
 
@@ -279,7 +279,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		$isPrivateFare = pricingList
 			.some(store => store['pricingBlockList']
 				.some(b => b.hasPrivateFaresSelectedMessage));
-		$result = {'isRequired': $isPrivateFare, 'raw': null, 'parsed': null};
+		$result = {isRequired: $isPrivateFare, raw: null, parsed: null};
 		if (!$isPrivateFare) return $result;
 
 		$cmd = 'WPNC¥PL';
@@ -289,7 +289,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		$result['cmd'] = $cmd;
 		$result['raw'] = $raw;
 		if ($error = $processed['error']) {
-			return {'error': 'Failed to fetch published pricing - ' + $error};
+			return {error: 'Failed to fetch published pricing - ' + $error};
 		}
 		$result['parsed'] = $processed['pricingPart']['parsed'];
 
@@ -302,7 +302,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 	async getSabreFareRules($sections, $itinerary, pricingList) {
 		let $fareListRecords, $ruleRecords, $i, $ptc, $common, $error, $recordBase, $raw;
 		if (php.count(pricingList) > 1) {
-			return {'error': 'Fare rules are not supported in multi-pricing PQ'};
+			return {error: 'Fare rules are not supported in multi-pricing PQ'};
 		}
 		const $pricing = pricingList[0];
 
@@ -315,11 +315,11 @@ class ImportPqSabreAction extends AbstractGdsAction {
 			$common = await (new ImportSabreFareRulesActions())
 				.setSession(capturing)
 				.execute($pricing, $itinerary, $sections, $ptc);
-			if ($error = $common['error']) return {'error': $error};
+			if ($error = $common['error']) return {error: $error};
 
 			$recordBase = {
-				'pricingNumber': null,
-				'subPricingNumber': +$i + 1,
+				pricingNumber: null,
+				subPricingNumber: +$i + 1,
 			};
 
 			$raw = capturing.getCalledCommands()
@@ -327,19 +327,19 @@ class ImportPqSabreAction extends AbstractGdsAction {
 				.join('\n-----------------------------\n');
 			this.$allCommands.push(...capturing.getCalledCommands());
 			$fareListRecords.push(php.array_merge($recordBase, {
-				'parsed': $common['fareList'],
-				'raw': $raw,
+				parsed: $common['fareList'],
+				raw: $raw,
 			}));
 			$ruleRecords = php.array_merge($ruleRecords, Fp.map(($ruleRecord) => {
 				return php.array_merge($recordBase, {
-					'fareComponentNumber': $ruleRecord['componentNumber'],
-					'sections': $ruleRecord['sections'],
+					fareComponentNumber: $ruleRecord['componentNumber'],
+					sections: $ruleRecord['sections'],
 				});
 			}, $common['ruleRecords']));
 		}
 		return {
-			'fareListRecords': $fareListRecords,
-			'ruleRecords': $ruleRecords,
+			fareListRecords: $fareListRecords,
+			ruleRecords: $ruleRecords,
 		};
 	}
 
@@ -352,18 +352,18 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		if ($error = $common['error']) {
 			$raw = $common['raw'];
 			$sanitized = $raw ? this.constructor.sanitizeOutput($raw) : null;
-			return {'error': $error, 'raw': $raw};
+			return {error: $error, raw: $raw};
 		}
 
 		return {
-			'fareListRecords': $common['fareListRecords'],
-			'ruleRecords': Fp.map(($fareComp) => {
+			fareListRecords: $common['fareListRecords'],
+			ruleRecords: Fp.map(($fareComp) => {
 				let $sections, $byNumber;
 
 				$sections = $fareComp['sections'] || [];
 				$byNumber = php.array_combine(php.array_column($sections, 'sectionNumber'), $sections);
 				$fareComp['sections'] = {
-					'exchange': $byNumber[16],
+					exchange: $byNumber[16],
 				};
 				return $fareComp;
 			}, $common['ruleRecords']),
@@ -374,7 +374,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		let $result, $reservationRecord, $nameRecords, $pricingRecord, $flightServiceRecord,
 			$fareRuleData, $publishedPricingRecord;
 
-		$result = {'pnrData': {}};
+		$result = {pnrData: {}};
 
 		$reservationRecord = await this.getReservation();
 		if ($result['error'] = $reservationRecord['error']) return $result;
@@ -414,13 +414,13 @@ class ImportPqSabreAction extends AbstractGdsAction {
 	static transformCmdType($parsedCmdType) {
 
 		return ({
-			'redisplayPnr': 'redisplayPnr',
-			'priceItinerary': 'priceItinerary',
-			'redisplayPriceItinerary': 'priceItinerary',
-			'flightServiceInfo': 'flightServiceInfo',
-			'flightRoutingAndTimes': 'flightRoutingAndTimes',
-			'fareList': 'fareList',
-			'fareRules': 'fareRules',
+			redisplayPnr: 'redisplayPnr',
+			priceItinerary: 'priceItinerary',
+			redisplayPriceItinerary: 'priceItinerary',
+			flightServiceInfo: 'flightServiceInfo',
+			flightRoutingAndTimes: 'flightRoutingAndTimes',
+			fareList: 'fareList',
+			fareRules: 'fareRules',
 		} || {})[$parsedCmdType];
 	}
 

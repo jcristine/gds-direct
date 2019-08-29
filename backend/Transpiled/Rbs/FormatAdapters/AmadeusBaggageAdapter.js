@@ -14,14 +14,14 @@ class AmadeusBaggageAdapter
 		$pieces = $unitsToAmount['pieces'] || 1;
 		for ($i = 0; $i < $pieces; ++$i) {
 			$result.push({
-				'flags': ['noFeeFlag'],
-				'bagNumber': $i + 1,
-				'feeAmount': null,
-				'feeCurrency': null,
-				'weightInLb': $unitsToAmount['pounds'],
-				'weightInKg': $unitsToAmount['kilograms'],
-				'sizeInInches': null,
-				'sizeInCm': null,
+				flags: ['noFeeFlag'],
+				bagNumber: $i + 1,
+				feeAmount: null,
+				feeCurrency: null,
+				weightInLb: $unitsToAmount['pounds'],
+				weightInKg: $unitsToAmount['kilograms'],
+				sizeInInches: null,
+				sizeInCm: null,
 			});
 		}
 		return $result;
@@ -32,16 +32,16 @@ class AmadeusBaggageAdapter
 	static transformSegment($segment)  {
 
 		return {
-			'segmentDetails': {
-				'airline': $segment['airline'],
-				'departureAirport': $segment['departureCity'],
-				'destinationAirport': $segment['destinationCity'],
-				'bagWithoutFeeNumber': $segment['freeBaggageAmount']['raw'],
-				'bagWithoutFeeNumberParsed': $segment['freeBaggageAmount'],
-				'isAvailable': true,
-				'error': null,
+			segmentDetails: {
+				airline: $segment['airline'],
+				departureAirport: $segment['departureCity'],
+				destinationAirport: $segment['destinationCity'],
+				bagWithoutFeeNumber: $segment['freeBaggageAmount']['raw'],
+				bagWithoutFeeNumberParsed: $segment['freeBaggageAmount'],
+				isAvailable: true,
+				error: null,
 			},
-			'bags': this.makeBagsFromCode($segment['freeBaggageAmount']),
+			bags: this.makeBagsFromCode($segment['freeBaggageAmount']),
 		};
 	}
 
@@ -94,15 +94,15 @@ class AmadeusBaggageAdapter
 	static transformFromSegments($segments, $ptcInfo)  {
 
 		return {
-			'baggageAllowanceBlocks': [
+			baggageAllowanceBlocks: [
 				{
-					'ptc': $ptcInfo['ptc'],
-					'segments': php.array_map((...args) => this.transformSegment(...args), $segments),
+					ptc: $ptcInfo['ptc'],
+					segments: php.array_map((...args) => this.transformSegment(...args), $segments),
 				},
 			],
-			'carryOnAllowanceBlock': {
+			carryOnAllowanceBlock: {
 				// Amadeus does not provide such info
-				'segments': [],
+				segments: [],
 			},
 		};
 	}

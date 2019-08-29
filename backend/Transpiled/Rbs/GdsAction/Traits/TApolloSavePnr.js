@@ -23,17 +23,17 @@ class TApolloSavePnr
 		if (php.preg_match(/^OK - (?<recordLocator>[A-Z0-9]{6})-/, $dump, $matches = [])) {
 			$recordLocator = $matches['recordLocator'];
 			return {
-				'success': true,
-				'status': SavePnrAction.STATUS_EXECUTED,
-				'recordLocator': $recordLocator,
-				'raw': $dump,
+				success: true,
+				status: SavePnrAction.STATUS_EXECUTED,
+				recordLocator: $recordLocator,
+				raw: $dump,
 			};
 		} else {
 			return {
-				'success': false,
-				'status': this.parseErrorType($dump),
-				'recordLocator': null,
-				'raw': $dump,
+				success: false,
+				status: this.parseErrorType($dump),
+				recordLocator: null,
+				raw: $dump,
 			};
 		}
 	}

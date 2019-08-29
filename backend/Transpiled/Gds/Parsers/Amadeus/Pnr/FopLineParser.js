@@ -47,13 +47,13 @@ class FopLineParser
 
 		if (php.preg_match($filter, $ccLine, $matches = {})) {
 			$return = {
-				'ccType': $matches['ccType'],
-				'ccNumber': $matches['ccNumber'],
+				ccType: $matches['ccType'],
+				ccNumber: $matches['ccNumber'],
 			};
 			if ($matches['date']) {
 				$return['expirationDate'] = {
-					'parsed': this.decodeExpirationDate($matches['date']),
-					'raw': $matches['date'],
+					parsed: this.decodeExpirationDate($matches['date']),
+					raw: $matches['date'],
 				};
 			}
 			if (!php.empty($matches['code'])) {
@@ -125,8 +125,8 @@ class FopLineParser
 		if (php.preg_match('/^\\s*(\\d+)\\sFP\\s+([A-Z]{3}\\s|)\\s*(.+?)$/s', $line, $matches = [])) {
 			[$_, $lineNumber, $pax, $dataStr] = $matches;
 			return {
-				'lineNumber': $lineNumber,
-				'data': this.parseDataStr($dataStr, $pax),
+				lineNumber: $lineNumber,
+				data: this.parseDataStr($dataStr, $pax),
 			};
 		} else {
 			return null;

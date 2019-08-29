@@ -49,8 +49,8 @@ class ImportFareComponentsAction extends AbstractGdsAction {
 
 		$sections = [];
 		const params = {
-			'fareComponentNumber': $fareNumber,
-			'paragraphs': $paragraphs,
+			fareComponentNumber: $fareNumber,
+			paragraphs: $paragraphs,
 		};
 
 		if(this.usesXml) {
@@ -71,7 +71,7 @@ class ImportFareComponentsAction extends AbstractGdsAction {
 
 		for ($paragraph of Object.values($paragraphs)) {
 			if ($error) {
-				$section = {'error': $error};
+				$section = {error: $error};
 				$sections[$paragraph] = $section;
 			} else if ($sectionRecord = $byNumber[$paragraph]) {
 				$sections[$paragraph] = $sectionRecord;
@@ -79,8 +79,8 @@ class ImportFareComponentsAction extends AbstractGdsAction {
 		}
 
 		return {
-			'sections': $sections,
-			'cmdRec': $cmdRecord,
+			sections: $sections,
+			cmdRec: $cmdRecord,
 		};
 	}
 
@@ -93,7 +93,7 @@ class ImportFareComponentsAction extends AbstractGdsAction {
 		$fqn = FqnParser.parse($dump);
 		if ($error = $fqn['error']) {
 			$error = 'Failed to parse Fare Component List - ' + $error;
-			return {'error': $error};
+			return {error: $error};
 		}
 
 		const $comps = $fqn['components'];
@@ -108,8 +108,8 @@ class ImportFareComponentsAction extends AbstractGdsAction {
 		}
 
 		return {
-			'fareList': $comps,
-			'cmdRec': cmdRec,
+			fareList: $comps,
+			cmdRec: cmdRec,
 		};
 	}
 }

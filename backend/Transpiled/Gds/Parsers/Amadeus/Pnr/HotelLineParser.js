@@ -25,8 +25,8 @@ class HotelLineParser
 	static parseDate($date)  {
 
 		return {
-			'raw': $date,
-			'parsed': CommonParserHelpers.parsePartialDate($date),
+			raw: $date,
+			parsed: CommonParserHelpers.parsePartialDate($date),
 		};
 	}
 
@@ -35,8 +35,8 @@ class HotelLineParser
 
 		$data = php.explode('/', $context);
 		return {
-			'hotelName': php.array_shift($data),
-			'unparsedCodes': $data,
+			hotelName: php.array_shift($data),
+			unparsedCodes: $data,
 		};
 	}
 
@@ -79,7 +79,7 @@ class HotelLineParser
 
 		if (php.empty($result)) {
 			$msg = 'ERROR: Exist unparsed hhl(hotel) lines';
-			return {'error': $msg};
+			return {error: $msg};
 		}
 		return $result;
 

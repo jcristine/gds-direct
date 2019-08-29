@@ -21,27 +21,27 @@ class TktgParser
             '/';
 		if (php.preg_match($ticketedRegex, $dump, $tokens = [])) {
 			return {
-				'agencyCode': $tokens['agencyCode'],
-				'ticketingDate': {
-					'raw': $tokens['ticketingDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($tokens['ticketingDate']),
+				agencyCode: $tokens['agencyCode'],
+				ticketingDate: {
+					raw: $tokens['ticketingDate'],
+					parsed: CommonParserHelpers.parsePartialDate($tokens['ticketingDate']),
 				},
-				'ticketingTime': {
-					'raw': $tokens['ticketingTime'],
-					'parsed': CommonParserHelpers.decodeApolloTime($tokens['ticketingTime']),
+				ticketingTime: {
+					raw: $tokens['ticketingTime'],
+					parsed: CommonParserHelpers.decodeApolloTime($tokens['ticketingTime']),
 				},
-				'timezone': {
-					'raw': $tokens['timezone'],
-					'parsed': $tokens['timezone'] === 'Z' ? 'UTC' : null,
+				timezone: {
+					raw: $tokens['timezone'],
+					parsed: $tokens['timezone'] === 'Z' ? 'UTC' : null,
 				},
-				'fpInitials': $tokens['fpInitials'],
+				fpInitials: $tokens['fpInitials'],
 			};
 		} else if (php.preg_match(/^TKTG-TAU\/(\d{1,2}[A-Z]{3})$/, $dump, $matches = [])) {
 			[$_, $tauDate] = $matches;
 			return {
-				'tauDate': {
-					'raw': $tauDate,
-					'parsed': CommonParserHelpers.parsePartialDate($tauDate),
+				tauDate: {
+					raw: $tauDate,
+					parsed: CommonParserHelpers.parsePartialDate($tauDate),
 				},
 			};
 		} else {

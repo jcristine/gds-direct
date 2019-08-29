@@ -52,10 +52,10 @@ class LinearFareParser {
 			'\/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'passengerNumbers': this.parsePaxNums($matches['paxNums']),
-				'fareTypeCode': $matches['fareTypeCode'],
-				'addedDate': CommonParserHelpers.parseCurrentCenturyFullDate($matches['addedDate']),
-				'ptc': $matches['ptc'],
+				passengerNumbers: this.parsePaxNums($matches['paxNums']),
+				fareTypeCode: $matches['fareTypeCode'],
+				addedDate: CommonParserHelpers.parseCurrentCenturyFullDate($matches['addedDate']),
+				ptc: $matches['ptc'],
 			};
 		} else {
 			return null;
@@ -86,16 +86,16 @@ class LinearFareParser {
 			$matches = php.array_filter($matches);
 			php.preg_match_all('\/' + $taxPattern + '\/', $matches['taxList'] || '', $taxMatches = [], php.PREG_SET_ORDER);
 			return {
-				'fcText': $matches['fcText'],
-				'baseFare': {
-					'currency': $matches['baseCurrency'],
-					'amount': $matches['baseAmount'],
+				fcText: $matches['fcText'],
+				baseFare: {
+					currency: $matches['baseCurrency'],
+					amount: $matches['baseAmount'],
 				},
-				'fareEquivalent': php.isset($matches['equivalentCurrency']) ? {
-					'currency': $matches['equivalentCurrency'],
-					'amount': $matches['equivalentAmount'],
+				fareEquivalent: php.isset($matches['equivalentCurrency']) ? {
+					currency: $matches['equivalentCurrency'],
+					amount: $matches['equivalentAmount'],
 				} : null,
-				'taxes': Fp.map(($tuple) => {
+				taxes: Fp.map(($tuple) => {
 					let $_, $taxCode, $amount;
 
 					[$_, $taxCode, $amount] = $tuple;
@@ -103,15 +103,15 @@ class LinearFareParser {
 						$amount = '0.00';
 					}
 					return {
-						'taxCode': $taxCode,
-						'amount': $amount,
+						taxCode: $taxCode,
+						amount: $amount,
 					};
 				}, $taxMatches),
-				'netPrice': {
-					'currency': $matches['totalCurrency'],
-					'amount': $matches['totalAmount'],
+				netPrice: {
+					currency: $matches['totalCurrency'],
+					amount: $matches['totalAmount'],
 				},
-				'textLeft': $matches['textLeft'] || '',
+				textLeft: $matches['textLeft'] || '',
 			};
 		} else {
 			return null;
@@ -153,15 +153,15 @@ class LinearFareParser {
 			return [$fqData, $lines];
 		}
 		$ptcBlock = {
-			'passengerNumbers': $fqData['passengerNumbers'],
-			'fareTypeCode': $fqData['fareTypeCode'],
-			'addedDate': $fqData['addedDate'],
-			'ptc': $fqData['ptc'],
-			'fareConstruction': $fc['parsed'],
-			'baseFare': $breakdown['baseFare'],
-			'fareEquivalent': $breakdown['fareEquivalent'],
-			'taxes': $breakdown['taxes'],
-			'netPrice': $breakdown['netPrice'],
+			passengerNumbers: $fqData['passengerNumbers'],
+			fareTypeCode: $fqData['fareTypeCode'],
+			addedDate: $fqData['addedDate'],
+			ptc: $fqData['ptc'],
+			fareConstruction: $fc['parsed'],
+			baseFare: $breakdown['baseFare'],
+			fareEquivalent: $breakdown['fareEquivalent'],
+			taxes: $breakdown['taxes'],
+			netPrice: $breakdown['netPrice'],
 		};
 		return [$ptcBlock, $lines];
 	}
@@ -178,17 +178,17 @@ class LinearFareParser {
 			$linesLeft = $left;
 		}
 		if (php.empty($ptcBlocks)) {
-			return {'error': 'Unexpected start of dump - ' + $linesLeft[0]};
+			return {error: 'Unexpected start of dump - ' + $linesLeft[0]};
 		}
 		$getError = ($block) => $block['error'];
 		$errors = php.array_filter(Fp.map($getError, $ptcBlocks));
 		if (!php.empty($errors)) {
 			$error = 'Failed to parse ' + php.implode(', ', php.array_keys($errors)) + '-th F*Q block FC - ' + php.implode('; ', $errors);
-			return {'error': $error};
+			return {error: $error};
 		} else {
 			return {
-				'ptcBlocks': $ptcBlocks,
-				'linesLeft': $linesLeft,
+				ptcBlocks: $ptcBlocks,
+				linesLeft: $linesLeft,
 			};
 		}
 	}

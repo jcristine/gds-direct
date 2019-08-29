@@ -13,7 +13,7 @@ const {
 class CommonParserHelpers
 {
 	getMonthIndexList() {
-		return {'JAN': 1,'FEB': 2,'MAR': 3,'APR': 4,'MAY': 5,'JUN': 6,'JUL': 7,'AUG': 8,'SEP': 9,'OCT': 10,'NOV': 11,'DEC': 12};
+		return {JAN: 1,FEB: 2,MAR: 3,APR: 4,MAY: 5,JUN: 6,JUL: 7,AUG: 8,SEP: 9,OCT: 10,NOV: 11,DEC: 12};
 	}
 
 	apolloMonthToNumber($str) {
@@ -36,7 +36,7 @@ class CommonParserHelpers
 	}
 
 	apolloDayOfWeekToNumber($str) {
-		const $dayOfWeekIndex = {'MO': 1,'TU': 2,'WE': 3,'TH': 4,'FR': 5,'SA': 6,'SU': 7};
+		const $dayOfWeekIndex = {MO: 1,TU: 2,WE: 3,TH: 4,FR: 5,SA: 6,SU: 7};
 		if (array_key_exists($str, $dayOfWeekIndex)) {
         	return $dayOfWeekIndex[$str];
 		} else {
@@ -159,7 +159,7 @@ class CommonParserHelpers
 			$century = $century || '20';
 			$parsed = $century + $parsed;
 		}
-		return {'raw': $raw,'parsed': $parsed};
+		return {raw: $raw,parsed: $parsed};
 	}
 
 	/**
@@ -176,7 +176,7 @@ class CommonParserHelpers
 		} else {
 			$parsed = null;
 		}
-		return {'raw': $raw,'parsed': $parsed};
+		return {raw: $raw,parsed: $parsed};
 	}
 }
 

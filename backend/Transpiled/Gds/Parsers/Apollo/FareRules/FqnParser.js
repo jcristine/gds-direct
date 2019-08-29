@@ -27,12 +27,12 @@ class FqnParser
 			while ($line = php.array_shift($lines)) {
 				if (php.preg_match($pattern, $line, $matches = [])) {
 					$components.push({
-						'componentNumber': php.intval($matches['componentNumber']),
-						'departureAirport': $matches['departureAirport'],
-						'destinationAirport': $matches['destinationAirport'],
-						'fareBasis': $matches['fareBasis'],
-						'info': $matches['info'],
-						'line': $matches[0],
+						componentNumber: php.intval($matches['componentNumber']),
+						departureAirport: $matches['departureAirport'],
+						destinationAirport: $matches['destinationAirport'],
+						fareBasis: $matches['fareBasis'],
+						info: $matches['info'],
+						line: $matches[0],
 					});
 				} else {
 					php.array_unshift($lines, $line);
@@ -41,12 +41,12 @@ class FqnParser
 			}
 
 			return {
-				'quoteNumber': $quoteNumber,
-				'components': $components,
-				'additionalInfo': $lines,
+				quoteNumber: $quoteNumber,
+				components: $components,
+				additionalInfo: $lines,
 			};
 		} else {
-			return {'error': 'unexpectedStartOfDump', 'line': $quoteNumberLine};
+			return {error: 'unexpectedStartOfDump', line: $quoteNumberLine};
 		}
 	}
 }

@@ -72,10 +72,10 @@ class PnrSearchParser
 		$cmdCopy = php.trim(php.array_shift($lines));
 		[$entries, $lines] = this.parseSequence($lines, (...args) => this.parsePnrListEntry(...args));
 		return {
-			'commandCopy': $cmdCopy,
-			'success': php.count($entries) >= 2,
-			'entries': $entries,
-			'linesLeft': $lines,
+			commandCopy: $cmdCopy,
+			success: php.count($entries) >= 2,
+			entries: $entries,
+			linesLeft: $lines,
 		};
 	}
 }

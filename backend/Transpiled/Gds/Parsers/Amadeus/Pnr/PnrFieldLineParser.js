@@ -50,10 +50,10 @@ class PnrFieldLineParser
             '$\/s';
 		if (php.preg_match($regex, $content, $matches = [])) {
 			return {
-				'infMark': $matches['infMark'] || '',
-				'content': $matches['content'],
-				'segNums': this.parseRange($matches['segNums'] || ''),
-				'paxNums': this.parseRange($matches['paxNums'] || ''),
+				infMark: $matches['infMark'] || '',
+				content: $matches['content'],
+				segNums: this.parseRange($matches['segNums'] || ''),
+				paxNums: this.parseRange($matches['paxNums'] || ''),
 			};
 		} else {
 			return null;
@@ -75,7 +75,7 @@ class PnrFieldLineParser
 			$text = $content;
 			$airline = null;
 		}
-		return {'text': $text, 'airline': $airline};
+		return {text: $text, airline: $airline};
 	}
 
 	// '*M*16.50A', '*M*0', '*M*14'
@@ -85,8 +85,8 @@ class PnrFieldLineParser
 		if (php.preg_match(/^\s*\*M\*(\d*\.?\d+)(A|)$/, $content, $matches = [])) {
 			[$_, $value, $amountMark] = $matches;
 			return {
-				'value': $value,
-				'units': $amountMark ? 'amount' : 'percent',
+				value: $value,
+				units: $amountMark ? 'amount' : 'percent',
 			};
 		} else {
 			return null;
@@ -109,14 +109,14 @@ class PnrFieldLineParser
             '\\s*$/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'airlineNumber': $matches['airlineNumber'],
-				'documentNumber': $matches['documentNumber'],
-				'location': $matches['location'],
-				'date': CommonParserHelpers.parseCurrentCenturyFullDate($matches['date']),
-				'iata': $matches['iata'],
-				'exchangedFor': {
-					'airlineNumber': $matches['exchangedForAirlineNumber'],
-					'documentNumber': $matches['exchangedForDocumentNumber'],
+				airlineNumber: $matches['airlineNumber'],
+				documentNumber: $matches['documentNumber'],
+				location: $matches['location'],
+				date: CommonParserHelpers.parseCurrentCenturyFullDate($matches['date']),
+				iata: $matches['iata'],
+				exchangedFor: {
+					airlineNumber: $matches['exchangedForAirlineNumber'],
+					documentNumber: $matches['exchangedForDocumentNumber'],
 				},
 			};
 		} else {
@@ -162,15 +162,15 @@ class PnrFieldLineParser
 		} else if ($code === 'FT') {
 			$type = 'tourCode';
 			$data = {
-				'tourCode': php.ltrim($content, '*'),
-				'isStarred': StringUtil.startsWith($content, '*'),
+				tourCode: php.ltrim($content, '*'),
+				isStarred: StringUtil.startsWith($content, '*'),
 			};
 		} else if ($code === 'FI') {
 			$type = 'invoice';
 			$pair = $content.split(/\s*INV\s*/);
 			if (php.count($pair) === 2) {
 				[$seq, $inv] = $pair;
-				$data = {'sequenceNumber': $seq, 'invoiceNumber': $inv};
+				$data = {sequenceNumber: $seq, invoiceNumber: $inv};
 			} else {
 				$data = null;
 			}
@@ -183,12 +183,12 @@ class PnrFieldLineParser
 			$data = null;
 		}
 		return {
-			'type': $type,
-			'data': $data,
-			'content': $content,
-			'segNums': $paxSegData['segNums'] || [],
-			'paxNums': $paxSegData['paxNums'] || [],
-			'infMark': $paxSegData['infMark'] || '',
+			type: $type,
+			data: $data,
+			content: $content,
+			segNums: $paxSegData['segNums'] || [],
+			paxNums: $paxSegData['paxNums'] || [],
+			infMark: $paxSegData['infMark'] || '',
 		};
 	}
 }

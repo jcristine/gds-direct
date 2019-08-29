@@ -41,13 +41,13 @@ class SimplePatternTranslator {
 			$output = StringUtil.format($patternTo, $params);
 
 			return {
-				'output': $output,
-				'translated': true,
+				output: $output,
+				translated: true,
 			};
 		} else {
 			return {
-				'output': null,
-				'translated': false,
+				output: null,
+				translated: false,
 			};
 		}
 	}

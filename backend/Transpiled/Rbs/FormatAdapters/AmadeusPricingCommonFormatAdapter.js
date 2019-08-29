@@ -46,8 +46,8 @@ class AmadeusPricingCommonFormatAdapter {
 	static parseDiscountCode($code) {
 		let $twoLetterCodes;
 
-		$twoLetterCodes = {'CH': 'child', 'IN': 'infant'};
-		return {'ageGroup': $twoLetterCodes[$code]};
+		$twoLetterCodes = {CH: 'child', IN: 'infant'};
+		return {ageGroup: $twoLetterCodes[$code]};
 	}
 
 	static parsePtc($code) {
@@ -109,9 +109,9 @@ class AmadeusPricingCommonFormatAdapter {
 						continue;
 					}
 					$cmdPaxes.push({
-						'ptc': (($mods['generic'] || {})['ptcs'] || {})[0],
-						'nameRecord': $paxRec,
-						'mods': $storeMods,
+						ptc: (($mods['generic'] || {})['ptcs'] || {})[0],
+						nameRecord: $paxRec,
+						mods: $storeMods,
 					});
 				}
 			}
@@ -206,15 +206,15 @@ class AmadeusPricingCommonFormatAdapter {
 			);
 			$cmdPtc = (($mods['generic'] || {})['ptcs'] || {})[$storePtcNum - 1];
 			return {
-				'ptc': $ptc,
-				'ptcRequested': $cmdPtc,
-				'quantity': $quantity,
-				'ageGroup': this.parsePtc($ptc)['ageGroup'],
-				'ageGroupRequested': $cmdPtc ? this.parsePtc($cmdPtc)['ageGroup'] : null,
-				'pricingPaxNums': [$paxRow['lineNumber']],
-				'nameNumbers': $nameNumber ? [$nameNumber] : [],
+				ptc: $ptc,
+				ptcRequested: $cmdPtc,
+				quantity: $quantity,
+				ageGroup: this.parsePtc($ptc)['ageGroup'],
+				ageGroupRequested: $cmdPtc ? this.parsePtc($cmdPtc)['ageGroup'] : null,
+				pricingPaxNums: [$paxRow['lineNumber']],
+				nameNumbers: $nameNumber ? [$nameNumber] : [],
 				// it would be nice to group by store too one day
-				'storeNumber': $storeNumber,
+				storeNumber: $storeNumber,
 			};
 		}, $pricingPaxes);
 	}

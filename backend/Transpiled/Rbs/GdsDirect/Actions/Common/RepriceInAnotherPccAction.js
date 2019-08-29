@@ -12,15 +12,15 @@ const parseAlias = $cmd => {
 	let $matches, $dialects;
 	if (php.preg_match(/^(?<cmdPrefix>\$B|WP|FQ|FX)(?<realCmd>.*)\/(\||\+|¥)(?<targetGdsPcc>[0-9A-Z]{2,})$/, $cmd, $matches = [])) {
 		$dialects = {
-			'$B': 'apollo',
-			'WP': 'sabre',
-			'FX': 'amadeus',
-			'FQ': 'galileo',
+			$B: 'apollo',
+			WP: 'sabre',
+			FX: 'amadeus',
+			FQ: 'galileo',
 		};
 		return {
-			'target': $matches['targetGdsPcc'],
-			'dialect': $dialects[$matches['cmdPrefix']] || null,
-			'cmd': $matches['cmdPrefix'] + $matches['realCmd'],
+			target: $matches['targetGdsPcc'],
+			dialect: $dialects[$matches['cmdPrefix']] || null,
+			cmd: $matches['cmdPrefix'] + $matches['realCmd'],
 		};
 	} else {
 		return null;
@@ -46,23 +46,23 @@ class RepriceInAnotherPccAction {
 	static async getTargetGdsAndPcc($target) {
 		let $gdsCodes, $gdsCodeAliases, $gds;
 		$gdsCodes = {
-			'1A': {'gds': 'amadeus', 'pcc': 'SFO1S2195'},
-			'1G': {'gds': 'galileo', 'pcc': '711M'},
-			'1V': {'gds': 'apollo', 'pcc': '2F3K'},
-			'1W': {'gds': 'sabre', 'pcc': '6IIF'},
+			'1A': {gds: 'amadeus', pcc: 'SFO1S2195'},
+			'1G': {gds: 'galileo', pcc: '711M'},
+			'1V': {gds: 'apollo', pcc: '2F3K'},
+			'1W': {gds: 'sabre', pcc: '6IIF'},
 		};
 		$gdsCodeAliases = {
-			'AM': '1A',
-			'GA': '1G',
-			'AP': '1V',
-			'SA': '1W',
+			AM: '1A',
+			GA: '1G',
+			AP: '1V',
+			SA: '1W',
 		};
 		if ($gdsCodes[$target] || null) {
 			return $gdsCodes[$target];
 		} else if ($gdsCodes[$gdsCodeAliases[$target] || null] || null) {
 			return $gdsCodes[$gdsCodeAliases[$target]];
 		} else if ($gds = await Pccs.getGdsByPcc($target)) {
-			return {'gds': $gds, 'pcc': $target};
+			return {gds: $gds, pcc: $target};
 		} else {
 			return null;
 		}
@@ -96,7 +96,7 @@ class RepriceInAnotherPccAction {
 		const target = await this.constructor.getTargetGdsAndPcc(targetStr)
 			.catch(coverExc([NotFound], exc => null));
 		if (!target) {
-			return {'errors': ['Unknown GDS/PCC target - ' + targetStr]};
+			return {errors: ['Unknown GDS/PCC target - ' + targetStr]};
 		}
 		const {gds, pcc} = target;
 		const itinerary = pnr.getItinerary();
@@ -112,7 +112,7 @@ class RepriceInAnotherPccAction {
 			gds, pcc, itinerary, pricingCmd, baseDate,
 		});
 
-		return {'calledCommands': result.calledCommands};
+		return {calledCommands: result.calledCommands};
 	}
 }
 

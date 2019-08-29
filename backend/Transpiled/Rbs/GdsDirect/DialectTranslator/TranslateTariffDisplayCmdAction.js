@@ -85,12 +85,12 @@ class TranslateTariffDisplayCmdAction {
 				$data['tariff'] += 'V';
 			}
 			$sortArray = {
-				'tariff': null,
-				'changeDep': null,
-				'changeDes': null,
-				'date': null,
-				'cityPair': null,
-				'rDate': null,
+				tariff: null,
+				changeDep: null,
+				changeDes: null,
+				date: null,
+				cityPair: null,
+				rDate: null,
 			};
 		} else if ($toGds == 'galileo') {
 			if (!php.empty($data['rDate'])) {
@@ -102,11 +102,11 @@ class TranslateTariffDisplayCmdAction {
 				$data['tariff'] += '*';
 			}
 			$sortArray = {
-				'tariff': null,
-				'date': null,
-				'cityPair': null,
-				'rDate': null,
-				'issueDate': null,
+				tariff: null,
+				date: null,
+				cityPair: null,
+				rDate: null,
+				issueDate: null,
 			};
 		} else if ($toGds == 'sabre') {
 			if (!php.empty($data['tariff'])) {
@@ -122,18 +122,18 @@ class TranslateTariffDisplayCmdAction {
 			}
 
 			$sortArray = {
-				'tariff': null,
-				'changeDep': null,
-				'changeDes': null,
-				'issueDate': null,
-				'cityPair': null,
-				'date': null,
-				'rDate': null,
-				'class': null,
-				'paxType': null,
-				'airlines': null,
-				'fareType': null,
-				'flightType': null,
+				tariff: null,
+				changeDep: null,
+				changeDes: null,
+				issueDate: null,
+				cityPair: null,
+				date: null,
+				rDate: null,
+				class: null,
+				paxType: null,
+				airlines: null,
+				fareType: null,
+				flightType: null,
 			};
 		} else if ($toGds == 'amadeus') {
 			$existPaxParams = !php.empty(php.array_intersect(['issueDate', 'paxType', 'fareType'], $keys));
@@ -152,18 +152,18 @@ class TranslateTariffDisplayCmdAction {
 				}
 			}
 			$sortArray = {
-				'tariff': null,
-				'changeDes': null,
-				'cityPair': null,
-				'date': null,
-				'rDate': null,
-				'paxParam': null,
-				'paxType': null,
-				'issueDate': null,
-				'fareType': null,
-				'class': null,
-				'airlines': null,
-				'flightType': null,
+				tariff: null,
+				changeDes: null,
+				cityPair: null,
+				date: null,
+				rDate: null,
+				paxParam: null,
+				paxType: null,
+				issueDate: null,
+				fareType: null,
+				class: null,
+				airlines: null,
+				flightType: null,
 			};
 		} else {
 			return null;
@@ -176,93 +176,93 @@ class TranslateTariffDisplayCmdAction {
 		let $lib;
 
 		$lib = {
-			'tariff': {
-				'apollo': ['$D'],
-				'galileo': ['FD'],
-				'sabre': ['FQ'],
-				'amadeus': ['FQD'],
+			tariff: {
+				apollo: ['$D'],
+				galileo: ['FD'],
+				sabre: ['FQ'],
+				amadeus: ['FQD'],
 			},
-			'issueDatePredicate': {
-				'apollo': ['T'],
-				'galileo': ['.T'],
-				'sabre': [''],
-				'amadeus': [','],
+			issueDatePredicate: {
+				apollo: ['T'],
+				galileo: ['.T'],
+				sabre: [''],
+				amadeus: [','],
 			},
-			'airlinePredicate': {
-				'apollo': ['|', '+'],
-				'galileo': ['/', '/'],
-				'sabre': ['-', '-'],
-				'amadeus': ['/A', '/A'],
+			airlinePredicate: {
+				apollo: ['|', '+'],
+				galileo: ['/', '/'],
+				sabre: ['-', '-'],
+				amadeus: ['/A', '/A'],
 			},
-			'airlineDelimiter': {
-				'apollo': ['|', '+'],
-				'galileo': ['/', '/'],
-				'sabre': ['-', '-'],
-				'amadeus': [',', ','],
+			airlineDelimiter: {
+				apollo: ['|', '+'],
+				galileo: ['/', '/'],
+				sabre: ['-', '-'],
+				amadeus: [',', ','],
 			},
-			'currencyPredicate': {
-				'apollo': [':'],
-				'galileo': [':'],
-				'sabre': ['/'],
-				'amadeus': [''],
+			currencyPredicate: {
+				apollo: [':'],
+				galileo: [':'],
+				sabre: ['/'],
+				amadeus: [''],
 			},
-			'flightType': {
-				'apollo': [null, ':RT', ':OW'],
-				'galileo': [null, '-RT', '-OW'],
-				'sabre': [null, '¥RT', '¥OW'],
-				'amadeus': [null, '/IR', '/IO'],
+			flightType: {
+				apollo: [null, ':RT', ':OW'],
+				galileo: [null, '-RT', '-OW'],
+				sabre: [null, '¥RT', '¥OW'],
+				amadeus: [null, '/IR', '/IO'],
 			},
-			'class': {
-				'apollo': [null, '@Y', '@W', '@C', '@F', '@AB'],
-				'galileo': [null, '@Y', '@W', '@C', '@F', '@AB'],
-				'sabre': [null, 'YB', 'SB', 'BB', 'FB', ''],
-				'amadeus': [null, '/KM', '/KW', '/KC', '/KF'],
+			class: {
+				apollo: [null, '@Y', '@W', '@C', '@F', '@AB'],
+				galileo: [null, '@Y', '@W', '@C', '@F', '@AB'],
+				sabre: [null, 'YB', 'SB', 'BB', 'FB', ''],
+				amadeus: [null, '/KM', '/KW', '/KC', '/KF'],
 			},
-			'paxType': {
-				'apollo': ['-'],
-				'galileo': ['*'],
-				'sabre': ['¥P'],
-				'amadeus': [',-'],
+			paxType: {
+				apollo: ['-'],
+				galileo: ['*'],
+				sabre: ['¥P'],
+				amadeus: [',-'],
 			},
-			'fareType': {
-				'apollo': [null, ':N', '/:N', ':A', '/:A', ':P', ':G'],
-				'galileo': [null, ':N', ':N', ':A', ':A', ':P', ':G'],
-				'sabre': [null, '¥PL', '¥PL', '¥PV', '¥PV', '¥PV', '¥PV'],
-				'amadeus': [null, ',P', ',P', ',U', ',U', ',U', ',U'],
+			fareType: {
+				apollo: [null, ':N', '/:N', ':A', '/:A', ':P', ':G'],
+				galileo: [null, ':N', ':N', ':A', ':A', ':P', ':G'],
+				sabre: [null, '¥PL', '¥PL', '¥PV', '¥PV', '¥PV', '¥PV'],
+				amadeus: [null, ',P', ',P', ',U', ',U', ',U', ',U'],
 			},
-			'changeBookClass': {
-				'apollo': ['-'],
-				'galileo': ['-'],
-				'sabre': ['¥B'],
-				'amadeus': ['/C'],
+			changeBookClass: {
+				apollo: ['-'],
+				galileo: ['-'],
+				sabre: ['¥B'],
+				amadeus: ['/C'],
 			},
-			'changeDeparture': {
-				'apollo': ['B'],
-				'galileo': ['O'],
-				'sabre': ['D'],
-				'amadeus': [''],
+			changeDeparture: {
+				apollo: ['B'],
+				galileo: ['O'],
+				sabre: ['D'],
+				amadeus: [''],
 			},
-			'changeDestination': {
-				'apollo': ['D'],
-				'galileo': ['D'],
-				'sabre': ['A'],
-				'amadeus': ['C/'],
+			changeDestination: {
+				apollo: ['D'],
+				galileo: ['D'],
+				sabre: ['A'],
+				amadeus: ['C/'],
 			},
-			'changeAirline': {
-				'apollo': ['|', '+'],
-				'galileo': ['/', '/'],
-				'sabre': ['-', '-'],
-				'amadeus': ['C\/A', 'C\/A'],
+			changeAirline: {
+				apollo: ['|', '+'],
+				galileo: ['/', '/'],
+				sabre: ['-', '-'],
+				amadeus: ['C\/A', 'C\/A'],
 			},
-			'datePredicate': {
-				'apollo': [''],
-				'sabre': [''],
-				'amadeus': ['/'],
+			datePredicate: {
+				apollo: [''],
+				sabre: [''],
+				amadeus: ['/'],
 			},
-			'returnDatePredicate': {
-				'apollo': [''],
-				'sabre': ['¥R'],
-				'amadeus': ['*'],
+			returnDatePredicate: {
+				apollo: [''],
+				sabre: ['¥R'],
+				amadeus: ['*'],
 			},
 		};
 		return ($lib[$type] || {})[$dialect] || [];
@@ -367,21 +367,21 @@ class TranslateTariffDisplayCmdAction {
 		}
 		$data = $parsed['data'];
 		$parts = php.array_filter({
-			'tariff': 'FD',
-			'cityPair': $data['departureAirport'] + $data['destinationAirport'],
-			'date': ($data['departureDate'] || {})['raw'] || '',
-			'rDate': ($data['returnDate'] || {})['raw'] || '',
+			tariff: 'FD',
+			cityPair: $data['departureAirport'] + $data['destinationAirport'],
+			date: ($data['departureDate'] || {})['raw'] || '',
+			rDate: ($data['returnDate'] || {})['raw'] || '',
 		});
 		$modPartNames = {
-			'tripType': 'flightType',
-			'bookingClass': 'bookClass',
-			'cabinClass': 'class',
-			'airlines': 'airlines',
-			'ticketingDate': 'issueDate',
+			tripType: 'flightType',
+			bookingClass: 'bookClass',
+			cabinClass: 'class',
+			airlines: 'airlines',
+			ticketingDate: 'issueDate',
 			//'allianceCode' => '',
-			'currency': 'currency',
-			'fareType': 'fareType',
-			'ptc': 'paxType',
+			currency: 'currency',
+			fareType: 'fareType',
+			ptc: 'paxType',
 		};
 		for ($mod of Object.values($data['modifiers'] || [])) {
 			if ($partName = $modPartNames[$mod['type']]) {
@@ -401,61 +401,61 @@ class TranslateTariffDisplayCmdAction {
 			return this.normalizeGalileoParts($input);
 		}
 		$parts = {
-			'apollo': {
-				'tariff': '^\\$DV?',
-				'changeAir': ['(?<=\\$D)[\\+\\|][A-Z\\d]{2}$', l => l.after(['tariff'])],
-				'changeDep': ['B[A-Z]{3}$', l => l.after(['tariff'])],
-				'changeDes': ['D[A-Z]{3}$', l => l.after(['tariff'])],
+			apollo: {
+				tariff: '^\\$DV?',
+				changeAir: ['(?<=\\$D)[\\+\\|][A-Z\\d]{2}$', l => l.after(['tariff'])],
+				changeDep: ['B[A-Z]{3}$', l => l.after(['tariff'])],
+				changeDes: ['D[A-Z]{3}$', l => l.after(['tariff'])],
 
-				'date': ['\\d{1,2}[A-Z]{3}(\\d{2})?', l => l.after(['tariff'])],
-				'cityPair': '[A-Z]{6}',
-				'rDate': ['\\d{1,2}[A-Z]{3}(\\d{2})?', l => l.after(['cityPair'])],
-				'issueDate': 'T(\\d{1,2}[A-Z]{3}(\\d{2})?)',
+				date: ['\\d{1,2}[A-Z]{3}(\\d{2})?', l => l.after(['tariff'])],
+				cityPair: '[A-Z]{6}',
+				rDate: ['\\d{1,2}[A-Z]{3}(\\d{2})?', l => l.after(['cityPair'])],
+				issueDate: 'T(\\d{1,2}[A-Z]{3}(\\d{2})?)',
 
-				'flightType': ':(OW|RT)',
-				'class': '/{0,2}@[A-Z]B?',
-				'paxType': '-([A-Z][A-Z0-9]{2})',
-				'bookClass': '-[A-Z]',
-				'airlines': '([\\+\\|][A-Z\\d]{2})+',
-				'currency': ':[A-Z]{3}',
-				'fareType': '/?:[A-Z]',
+				flightType: ':(OW|RT)',
+				class: '/{0,2}@[A-Z]B?',
+				paxType: '-([A-Z][A-Z0-9]{2})',
+				bookClass: '-[A-Z]',
+				airlines: '([\\+\\|][A-Z\\d]{2})+',
+				currency: ':[A-Z]{3}',
+				fareType: '/?:[A-Z]',
 			},
-			'sabre': {
-				'tariff': '^FQ\\*?',
-				'changeAir': ['-[A-Z\\d]{2}$', l => l.after(['tariff'])],
-				'changeDep': ['D[A-Z]{3}$', l => l.after(['tariff'])],
-				'changeDes': ['A[A-Z]{3}$', l => l.after(['tariff'])],
+			sabre: {
+				tariff: '^FQ\\*?',
+				changeAir: ['-[A-Z\\d]{2}$', l => l.after(['tariff'])],
+				changeDep: ['D[A-Z]{3}$', l => l.after(['tariff'])],
+				changeDes: ['A[A-Z]{3}$', l => l.after(['tariff'])],
 
-				'issueDate': ['\\d{1,2}[A-Z]{3}(\\d{2})?', l => l.after(['tariff'])],
-				'cityPair': '[A-Z]{6}',
-				'date': ['\\d{1,2}[A-Z]{3}(\\d{2})?', l => l.after(['cityPair'])],
-				'rDate': '¥R\\d{1,2}[A-Z]{3}(\\d{2})?',
+				issueDate: ['\\d{1,2}[A-Z]{3}(\\d{2})?', l => l.after(['tariff'])],
+				cityPair: '[A-Z]{6}',
+				date: ['\\d{1,2}[A-Z]{3}(\\d{2})?', l => l.after(['cityPair'])],
+				rDate: '¥R\\d{1,2}[A-Z]{3}(\\d{2})?',
 
-				'class': '[YSBF]B',
-				'bookClass': '¥B[A-Z]',
-				'airlines': '(-[A-Z\\d]{2})+',
-				'currency': '/[A-Z]{3}',
-				'paxType': '¥P([A-Z][A-Z0-9]{2})',
-				'flightType': '¥(OW|RT)',
-				'fareType': '¥P[LV]',
+				class: '[YSBF]B',
+				bookClass: '¥B[A-Z]',
+				airlines: '(-[A-Z\\d]{2})+',
+				currency: '/[A-Z]{3}',
+				paxType: '¥P([A-Z][A-Z0-9]{2})',
+				flightType: '¥(OW|RT)',
+				fareType: '¥P[LV]',
 			},
-			'amadeus': {
-				'tariff': '^(MP)?FQD',
-				'changeAir': ['C\/A[A-Z\\d]{2}', l => l.after(['tariff'])],
-				'changeDes': ['C\/[A-Z]{3}', l => l.after(['tariff'])],
+			amadeus: {
+				tariff: '^(MP)?FQD',
+				changeAir: ['C\/A[A-Z\\d]{2}', l => l.after(['tariff'])],
+				changeDes: ['C\/[A-Z]{3}', l => l.after(['tariff'])],
 
-				'cityPair': '[A-Z]{6}',
-				'date': '/D?\\d{1,2}[A-Z]{3}(\\d{2})?',
-				'rDate': '\\*\\d{1,2}[A-Z]{3}(\\d{2})?',
-				'issueDate': ',\\d{1,2}[A-Z]{3}(\\d{2})?',
+				cityPair: '[A-Z]{6}',
+				date: '/D?\\d{1,2}[A-Z]{3}(\\d{2})?',
+				rDate: '\\*\\d{1,2}[A-Z]{3}(\\d{2})?',
+				issueDate: ',\\d{1,2}[A-Z]{3}(\\d{2})?',
 
-				'paxParam': '/R',
-				'class': '/K[MWCF]',
-				'bookClass': '/C[A-Z]',
-				'airlines': '/A([A-Z\\d]{2},?)+',
-				'paxType': ',-([A-Z][A-Z0-9]{2})',
-				'flightType': '/I[OR]',
-				'fareType': ',[PU]',
+				paxParam: '/R',
+				class: '/K[MWCF]',
+				bookClass: '/C[A-Z]',
+				airlines: '/A([A-Z\\d]{2},?)+',
+				paxType: ',-([A-Z][A-Z0-9]{2})',
+				flightType: '/I[OR]',
+				fareType: ',[PU]',
 			},
 		};
 

@@ -68,7 +68,7 @@ class TerminalBaseController {
 					continue;
 				}
 				promises.push(agentSettings.setSettings($gds, {
-					'keyBindings': $data['keyBindings'] == '' ? ''
+					keyBindings: $data['keyBindings'] == '' ? ''
 						: json_encode($data['keyBindings']),
 				}));
 				const $areaSettings = $data['areaSettings'] || [];

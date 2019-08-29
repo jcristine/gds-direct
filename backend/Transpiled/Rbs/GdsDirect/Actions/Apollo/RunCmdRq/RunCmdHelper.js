@@ -98,7 +98,7 @@ const RunCmdHelper = ({
 			$errors.push('This PCC is restricted. Please use 2G2H instead.');
 		}
 		if (php.in_array($pcc, ['2F9H', '2E8U'])) {
-			$errors.push(Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_US, {'pcc': $pcc}));
+			$errors.push(Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_US, {pcc: $pcc}));
 		}
 		return $errors;
 	};

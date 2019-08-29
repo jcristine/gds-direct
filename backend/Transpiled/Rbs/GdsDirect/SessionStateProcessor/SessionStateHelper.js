@@ -22,8 +22,8 @@ class SessionStateHelper
 		$row = $cmdLog.getSessionData();
 		return {
 			...$row,
-			'canCreatePqErrors': await this.checkCanCreatePq($cmdLog, $leadData),
-			'canCreatePqFor': await this.getPricedAgeGroups($cmdLog),
+			canCreatePqErrors: await this.checkCanCreatePq($cmdLog, $leadData),
+			canCreatePqFor: await this.getPricedAgeGroups($cmdLog),
 		};
 	}
 

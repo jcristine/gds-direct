@@ -48,22 +48,22 @@ class FactsBlockParser
 
 				$cleanLine = this.popKey($lineData, 'line');
 				$result.push({
-					'lineNumber': this.popKey($lineData, 'lineNumber', null),
-					'ssrCode': $ssrCode,
-					'airline': this.popKey($lineData, 'airline', null),
-					'status': this.popKey($lineData, 'status', null),
-					'statusNumber': this.popKey($lineData, 'statusNumber', null),
-					'content': this.popKey($lineData, 'content', null),
-					'data': $lineData,
-					'line': $cleanLine,
+					lineNumber: this.popKey($lineData, 'lineNumber', null),
+					ssrCode: $ssrCode,
+					airline: this.popKey($lineData, 'airline', null),
+					status: this.popKey($lineData, 'status', null),
+					statusNumber: this.popKey($lineData, 'statusNumber', null),
+					content: this.popKey($lineData, 'content', null),
+					data: $lineData,
+					line: $cleanLine,
 				});
 				$unindentedText = '';
 			}
 		}
 
 		return {
-			'ssrList': $result,
-			'linesLeft': $linesLeft,
+			ssrList: $result,
+			linesLeft: $linesLeft,
 		};
 	}
 
@@ -78,10 +78,10 @@ class FactsBlockParser
 		if (php.preg_match(/^([ \d]{3})\.OSI ([A-Z]{2})? ?(.*)$/s, $osiLine, $matches = [])) {
 			[$_, $lineNumber, $airline, $comment] = $matches;
 			return {
-				'lineNumber': php.intval($lineNumber),
-				'airline': $airline,
-				'comment': $comment,
-				'line': $osiLine,
+				lineNumber: php.intval($lineNumber),
+				airline: $airline,
+				comment: $comment,
+				line: $osiLine,
 			};
 		} else {
 			return null;
@@ -134,20 +134,20 @@ class FactsBlockParser
 
 		if (php.preg_match($regex, $ssrLine, $matches = [])) {
 			return {
-				'lineNumber': php.intval($matches['lineNumber']),
-				'ssrCode': $matches['ssrCode'],
-				'airline': $matches['airline'],
-				'status': $matches['status'],
-				'statusNumber': $matches['statusNumber'],
-				'departureAirport': $matches['departureAirport'],
-				'destinationAirport': $matches['destinationAirport'],
-				'flightNumber': $matches['flightNumber'],
-				'bookingClass': $matches['bookingClass'],
-				'departureDate': {
-					'raw': $matches['departureDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['departureDate']),
+				lineNumber: php.intval($matches['lineNumber']),
+				ssrCode: $matches['ssrCode'],
+				airline: $matches['airline'],
+				status: $matches['status'],
+				statusNumber: $matches['statusNumber'],
+				departureAirport: $matches['departureAirport'],
+				destinationAirport: $matches['destinationAirport'],
+				flightNumber: $matches['flightNumber'],
+				bookingClass: $matches['bookingClass'],
+				departureDate: {
+					raw: $matches['departureDate'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['departureDate']),
 				},
-				'comment': $matches['comment'] || '',
+				comment: $matches['comment'] || '',
 			};
 		} else {
 			return null;
@@ -172,17 +172,17 @@ class FactsBlockParser
 
 		if (php.preg_match($regex, $ssrLine, $matches = [])) {
 			return {
-				'lineNumber': php.intval($matches['lineNumber']),
-				'ssrCode': $matches['ssrCode'],
-				'airline': $matches['airline'],
-				'flightNumber': $matches['flightNumber'],
-				'bookingClass': $matches['bookingClass'],
-				'departureDate': php.isset($matches['departureDate']) ? {
-					'raw': $matches['departureDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['departureDate']),
+				lineNumber: php.intval($matches['lineNumber']),
+				ssrCode: $matches['ssrCode'],
+				airline: $matches['airline'],
+				flightNumber: $matches['flightNumber'],
+				bookingClass: $matches['bookingClass'],
+				departureDate: php.isset($matches['departureDate']) ? {
+					raw: $matches['departureDate'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['departureDate']),
 				} : null,
-				'status': $matches['status'],
-				'statusNumber': $matches['statusNumber'],
+				status: $matches['status'],
+				statusNumber: $matches['statusNumber'],
 			};
 		}
 
@@ -206,10 +206,10 @@ class FactsBlockParser
 
 		if (php.preg_match($regex, $ssrLine, $matches = [])) {
 			return {
-				'lineNumber': php.intval($matches['lineNumber']),
-				'ssrCode': $matches['ssrCode'],
-				'airline': $matches['airline'],
-				'comment': php.rtrim($matches['comment']),
+				lineNumber: php.intval($matches['lineNumber']),
+				ssrCode: $matches['ssrCode'],
+				airline: $matches['airline'],
+				comment: php.rtrim($matches['comment']),
 			};
 		} else {
 			return null;
@@ -229,9 +229,9 @@ class FactsBlockParser
 		$firstLine = php.array_shift($lines);
 		$split = StringUtil.splitByPosition($firstLine, $pattern, $names, false);
 		$result = {
-			'ssrPart': $split['S'],
-			'paxNum': php.trim($split['N']),
-			'paxName': php.rtrim($split['F']),
+			ssrPart: $split['S'],
+			paxNum: php.trim($split['N']),
+			paxName: php.rtrim($split['F']),
 		};
 		[$lname, $fname] = php.array_pad(php.explode('/', $result['paxName']), 2, '');
 		$nameRegex = /^[A-Z](\s*[^\d\W]+)*$/; // \w except numbers
@@ -270,12 +270,12 @@ class FactsBlockParser
 		if (php.preg_match($firstLineRegex, $gluedLine, $matches = [])) {
 			$matches = php.array_filter($matches);
 			return {
-				'tokens': php.explode('/', $matches['tokensPart']),
-				'lineNumber': php.intval($matches['lineNumber']),
-				'ssrCode': $matches['ssrCode'],
-				'airline': $matches['airline'],
-				'status': $matches['status'],
-				'statusNumber': $matches['statusNumber'],
+				tokens: php.explode('/', $matches['tokensPart']),
+				lineNumber: php.intval($matches['lineNumber']),
+				ssrCode: $matches['ssrCode'],
+				airline: $matches['airline'],
+				status: $matches['status'],
+				statusNumber: $matches['statusNumber'],
 			};
 		}
 
@@ -291,15 +291,15 @@ class FactsBlockParser
 			[$dobMark, $dob, $genderAndI, $lastName, $firstName, $middleName] = php.array_pad($tokens, 6, null);
 			if ($dobMark === 'DB') {
 				return {
-					'dob': {
-						'raw': $dob,
-						'parsed': SsrBlockParser.parseDateOfBirth($dob),
+					dob: {
+						raw: $dob,
+						parsed: SsrBlockParser.parseDateOfBirth($dob),
 					},
-					'gender': $genderAndI[0],
-					'paxIsInfant': ($genderAndI[1]) === 'I',
-					'lastName': $lastName,
-					'firstName': $firstName,
-					'middleName': $middleName,
+					gender: $genderAndI[0],
+					paxIsInfant: ($genderAndI[1]) === 'I',
+					lastName: $lastName,
+					firstName: $firstName,
+					middleName: $middleName,
 				};
 			} else {
 				return null;
@@ -319,21 +319,21 @@ class FactsBlockParser
 			[$travelDocType, $issuingCountry, $travelDocNumber, $nationality, $dob, $genderAndI, $expirationDate, $lastName, $firstName, $middleName, $primaryPassportHolderToken] = php.array_pad($tokens, 11, null);
 
 			return {
-				'travelDocType': $travelDocType,
-				'issuingCountry': $issuingCountry,
-				'travelDocNumber': $travelDocNumber,
-				'nationality': $nationality,
-				'dob': {
-					'raw': $dob,
-					'parsed': SsrBlockParser.parseDateOfBirth($dob),
+				travelDocType: $travelDocType,
+				issuingCountry: $issuingCountry,
+				travelDocNumber: $travelDocNumber,
+				nationality: $nationality,
+				dob: {
+					raw: $dob,
+					parsed: SsrBlockParser.parseDateOfBirth($dob),
 				},
-				'gender': $genderAndI[0],
-				'paxIsInfant': ($genderAndI[1]) === 'I',
-				'expirationDate': CommonParserHelpers.parseCurrentCenturyFullDate($expirationDate),
-				'lastName': $lastName,
-				'firstName': $firstName,
-				'middleName': $middleName,
-				'primaryPassportHolderToken': $primaryPassportHolderToken,
+				gender: $genderAndI[0],
+				paxIsInfant: ($genderAndI[1]) === 'I',
+				expirationDate: CommonParserHelpers.parseCurrentCenturyFullDate($expirationDate),
+				lastName: $lastName,
+				firstName: $firstName,
+				middleName: $middleName,
+				primaryPassportHolderToken: $primaryPassportHolderToken,
 			};
 		} else {
 			return null;
@@ -346,7 +346,7 @@ class FactsBlockParser
 		if ($result = this.parseTokenSsr($gluedLine, ['DOCS'])) {
 			$tokens = $result['tokens'];
 			delete($result['tokens']);
-			$data = this.parseDocsSsrCompleteTokens($tokens) || this.parseDocsSsrPartialTokens($tokens) || {'error': 'failed to parse', 'tokens': $tokens};
+			$data = this.parseDocsSsrCompleteTokens($tokens) || this.parseDocsSsrPartialTokens($tokens) || {error: 'failed to parse', tokens: $tokens};
 
 			return php.array_merge($result, $data);
 		}
@@ -376,12 +376,12 @@ class FactsBlockParser
 		if (php.preg_match($regex, $ssrLine, $matches = [])) {
 			$matches = php.array_filter($matches);
 			return {
-				'lineNumber': php.intval($matches['lineNumber']),
-				'ssrCode': $matches['ssrCode'],
-				'airline': $matches['airline'],
-				'status': $matches['status'],
-				'statusNumber': $matches['statusNumber'],
-				'content': $matches['content'] || '',
+				lineNumber: php.intval($matches['lineNumber']),
+				ssrCode: $matches['ssrCode'],
+				airline: $matches['airline'],
+				status: $matches['status'],
+				statusNumber: $matches['statusNumber'],
+				content: $matches['content'] || '',
 			};
 		} else {
 			return null;

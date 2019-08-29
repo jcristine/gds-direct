@@ -28,33 +28,33 @@ class McoMaskParser extends AbstractMaskParser
 {
 	static transformResult($fields)  {
 		return {
-			'passengerName': $fields['passengerName'],
-			'to': $fields['to'],
-			'at': $fields['at'],
-			'validFor': $fields['validFor'],
-			'tourCode': $fields['tourCode'],
-			'ticketNumber': $fields['ticketNumber'],
-			'formOfPayment': {'raw': $fields['formOfPayment']},
-			'expirationMonth': ($fields['expirationDate'] || null) ? php.mb_substr($fields['expirationDate'], 0, 2) : null,
-			'expirationYear': ($fields['expirationDate'] || null) ? php.mb_substr($fields['expirationDate'], 2, 2) : null,
-			'approvalCode': $fields['approvalCode'],
-			'commission': $fields['commission'],
-			'taxAmount': $fields['taxAmount'],
-			'taxCode': $fields['taxCode'],
-			'baseFare': {
-				'currency': $fields['amountCurrency'],
-				'amount': $fields['amount'],
+			passengerName: $fields['passengerName'],
+			to: $fields['to'],
+			at: $fields['at'],
+			validFor: $fields['validFor'],
+			tourCode: $fields['tourCode'],
+			ticketNumber: $fields['ticketNumber'],
+			formOfPayment: {raw: $fields['formOfPayment']},
+			expirationMonth: ($fields['expirationDate'] || null) ? php.mb_substr($fields['expirationDate'], 0, 2) : null,
+			expirationYear: ($fields['expirationDate'] || null) ? php.mb_substr($fields['expirationDate'], 2, 2) : null,
+			approvalCode: $fields['approvalCode'],
+			commission: $fields['commission'],
+			taxAmount: $fields['taxAmount'],
+			taxCode: $fields['taxCode'],
+			baseFare: {
+				currency: $fields['amountCurrency'],
+				amount: $fields['amount'],
 			},
-			'fareEquivalent': ($fields['equivCurrency'] || $fields['equivAmount']) ? {
-				'currency': $fields['equivCurrency'],
-				'amount': $fields['equivAmount'],
+			fareEquivalent: ($fields['equivCurrency'] || $fields['equivAmount']) ? {
+				currency: $fields['equivCurrency'],
+				amount: $fields['equivAmount'],
 			} : null,
-			'rateOfExchange': $fields['bsr'],
-			'endorsementBox': $fields['endorsementBox'],
-			'remark1': $fields['remark1'],
-			'remark2': $fields['remark2'],
-			'validatingCarrier': $fields['validatingCarrier'],
-			'issueNow': $fields['issueNow'] === 'Y',
+			rateOfExchange: $fields['bsr'],
+			endorsementBox: $fields['endorsementBox'],
+			remark1: $fields['remark1'],
+			remark2: $fields['remark2'],
+			validatingCarrier: $fields['validatingCarrier'],
+			issueNow: $fields['issueNow'] === 'Y',
 		};
 	}
 
@@ -91,7 +91,7 @@ class McoMaskParser extends AbstractMaskParser
 		$dump = StringUtil.padLines($dump, 63, ' ');
 		const error = this.checkDumpMatchesMask($dump, $mask);
 		if (error) {
-			return {'error': 'Bad MCO mask output: ' + error + php.PHP_EOL + $dump+php.PHP_EOL};
+			return {error: 'Bad MCO mask output: ' + error + php.PHP_EOL + $dump+php.PHP_EOL};
 		}
 		return this.transformResult(this.parseMask($mask, $fields, $dump));
 	}

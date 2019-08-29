@@ -15,13 +15,13 @@ class PricingStructureWriter
 		this.$currentPricingBlock = {};
 		this.$baggageInfoLines = [];
 		this.dataStructure = {
-			'wholePricingMarkers': {
-				'fareGuaranteedAtTicketIssuance': false,
-				'fareHasPlatingCarrierRestriction': false,
-				'agentSelectedFareUsed': false,
-				'eTicketRequired': false,
+			wholePricingMarkers: {
+				fareGuaranteedAtTicketIssuance: false,
+				fareHasPlatingCarrierRestriction: false,
+				agentSelectedFareUsed: false,
+				eTicketRequired: false,
 			},
-			'pricingBlockList': [],
+			pricingBlockList: [],
 		};
 	}
 
@@ -49,19 +49,19 @@ class PricingStructureWriter
 			this.saveCurrentPricingBlock();
 		}
 		this.$currentPricingBlock = {
-			'baggageInfo': {'raw': '', 'parsed': null},
-			'defaultPlatingCarrier': null,
-			'fareConstruction': null,
-			'lastDateToPurchaseTicket': null,
-			'notValidBA': [],
-			'passengerNumbers': null,
-			'penaltyApplies': false,
-			'ticketingAgencyPcc': null,
-			'tourCode': null,
-			'privateFaresSelected': false,
-			'bankSellingRate': null,
-			'bsrCurrencyFrom': null,
-			'bsrCurrencyTo': null,
+			baggageInfo: {raw: '', parsed: null},
+			defaultPlatingCarrier: null,
+			fareConstruction: null,
+			lastDateToPurchaseTicket: null,
+			notValidBA: [],
+			passengerNumbers: null,
+			penaltyApplies: false,
+			ticketingAgencyPcc: null,
+			tourCode: null,
+			privateFaresSelected: false,
+			bankSellingRate: null,
+			bsrCurrencyFrom: null,
+			bsrCurrencyTo: null,
 		};
 	}
 
@@ -159,9 +159,9 @@ class PricingStructureWriter
 	notValidBeforeOrAfterLineFound($res)  {
 		this.$currentPricingBlock['notValidBA'] = this.$currentPricingBlock['notValidBA'] || [];
 		this.$currentPricingBlock['notValidBA'].push({
-			'number': $res['number'],
-			'notValidBefore': $res['notValidBefore'],
-			'notValidAfter': $res['notValidAfter'],
+			number: $res['number'],
+			notValidBefore: $res['notValidBefore'],
+			notValidAfter: $res['notValidAfter'],
 		});
 	}
 

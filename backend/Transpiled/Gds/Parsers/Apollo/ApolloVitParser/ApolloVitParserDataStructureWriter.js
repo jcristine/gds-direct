@@ -13,10 +13,10 @@ class ApolloVitParserDataStructureWriter
 		this.$currentSegment = null;
 		this.$currentDate = null;
 		this.$result = {
-			'airline': null,
-			'flightNumber': null,
-			'segments': [],
-			'totalTravelTime': null,
+			airline: null,
+			flightNumber: null,
+			segments: [],
+			totalTravelTime: null,
 		};
 	}
 
@@ -29,7 +29,7 @@ class ApolloVitParserDataStructureWriter
 			this.$result['flightNumber'] = $data['flightNumber'];
 		}
 
-		this.$currentDate = {'date': $data['date']['parsed'], 'dayOfTheWeek': $data['dayOfWeek']['parsed']};
+		this.$currentDate = {date: $data['date']['parsed'], dayOfTheWeek: $data['dayOfWeek']['parsed']};
 	}
 
 	savePreviousSegment($data)  {
@@ -48,19 +48,19 @@ class ApolloVitParserDataStructureWriter
 
 	startNewSegment($data)  {
 		this.$currentSegment = {
-			'segmentNumber': this.$currentSegmentNumber,
+			segmentNumber: this.$currentSegmentNumber,
 
-			'departureDate': this.$currentDate['date'],
-			'departureDayOfTheWeek': this.$currentDate['dayOfTheWeek'],
-			'departureAirport': $data['airport'],
-			'departureTime': $data['departureTime']['parsed'],
+			departureDate: this.$currentDate['date'],
+			departureDayOfTheWeek: this.$currentDate['dayOfTheWeek'],
+			departureAirport: $data['airport'],
+			departureTime: $data['departureTime']['parsed'],
 
-			'destinationDate': null,
-			'destinationDayOfTheWeek': null,
-			'destinationAirport': null,
-			'destinationTime': null,
+			destinationDate: null,
+			destinationDayOfTheWeek: null,
+			destinationAirport: null,
+			destinationTime: null,
 
-			'flightDuration': null,
+			flightDuration: null,
 		};
 	}
 

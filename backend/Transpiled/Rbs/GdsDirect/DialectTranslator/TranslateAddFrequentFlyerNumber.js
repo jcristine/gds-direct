@@ -18,33 +18,33 @@ class TranslateAddFrequentFlyerNumber
 		if ($gds === 'apollo') {
 			return $parsedData;
 		} else if ($gds === 'sabre') {
-			return {'passengers': [{
-				'majorPaxNum': $parsedData['majorPaxNum'],
-				'minorPaxNum': $parsedData['minorPaxNum'],
-				'mileagePrograms': [{
-					'airline': $parsedData['airline'],
-					'code': $parsedData['code'],
-					'partners': $parsedData['partners'],
+			return {passengers: [{
+				majorPaxNum: $parsedData['majorPaxNum'],
+				minorPaxNum: $parsedData['minorPaxNum'],
+				mileagePrograms: [{
+					airline: $parsedData['airline'],
+					code: $parsedData['code'],
+					partners: $parsedData['partners'],
 				}],
 			}]};
 		} else if ($gds === 'amadeus') {
-			return {'passengers': [{
-				'majorPaxNum': $parsedData['majorPaxNum'],
-				'minorPaxNum': null,
-				'mileagePrograms': [{
-					'airline': $parsedData['airline'],
-					'code': $parsedData['code'],
-					'partners': php.array_values(Fp.filter(($partner) => {
+			return {passengers: [{
+				majorPaxNum: $parsedData['majorPaxNum'],
+				minorPaxNum: null,
+				mileagePrograms: [{
+					airline: $parsedData['airline'],
+					code: $parsedData['code'],
+					partners: php.array_values(Fp.filter(($partner) => {
 
 						return $partner !== $parsedData['airline'];
 					}, $parsedData['partners'])),
 				}],
 			}]};
 		} else if ($gds === 'galileo') {
-			return {'passengers': [{
-				'majorPaxNum': $parsedData['majorPaxNum'],
-				'minorPaxNum': null,
-				'mileagePrograms': $parsedData['mileagePrograms'],
+			return {passengers: [{
+				majorPaxNum: $parsedData['majorPaxNum'],
+				minorPaxNum: null,
+				mileagePrograms: $parsedData['mileagePrograms'],
 			}]};
 		} else {
 			return null;
@@ -58,11 +58,11 @@ class TranslateAddFrequentFlyerNumber
 		for ($pax of Object.values($norm['passengers'])) {
 			for ($mp of Object.values($pax['mileagePrograms'])) {
 				$flatMps.push({
-					'airline': $mp['airline'],
-					'code': $mp['code'],
-					'partners': $mp['partners'] || [],
-					'majorPaxNum': $pax['majorPaxNum'],
-					'minorPaxNum': $pax['majorPaxNum'],
+					airline: $mp['airline'],
+					code: $mp['code'],
+					partners: $mp['partners'] || [],
+					majorPaxNum: $pax['majorPaxNum'],
+					minorPaxNum: $pax['majorPaxNum'],
 				});}}
 		return $flatMps;
 	}

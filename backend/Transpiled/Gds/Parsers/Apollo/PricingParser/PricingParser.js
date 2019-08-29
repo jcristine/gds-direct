@@ -124,7 +124,7 @@ class PricingParser
 					$text = $res['textLeft'];
 				} else if ($text && !$commandLinesEnded) {
 					$lines = StringUtil.lines($text);
-					$structureWriter.commandCopyLineFound({'line': php.array_shift($lines)});
+					$structureWriter.commandCopyLineFound({line: php.array_shift($lines)});
 					$text = php.implode(php.PHP_EOL, $lines);
 					$nonCommandLinesFound = false;
 				} else {

@@ -361,14 +361,13 @@ $(function () {
 			$row.prepend(html);
 
 			pccElemStore.items[index] = {};
+
 			pccElemStore.items[index].$accountCode = $row.find('.js-account-code-' + index);
-			if (data.account_code) {
-				pccElemStore.items[index].$accountCode.val(data.account_code);
-			}
+			pccElemStore.items[index].$accountCode.val(data.account_code || '');
+
 			pccElemStore.items[index].$taPcc = $row.find('.js-ta-pcc-' + index);
-			if (data.ta_pcc) {
-				pccElemStore.items[index].$taPcc.val(data.ta_pcc);
-			}
+			pccElemStore.items[index].$taPcc.val(data.ta_pcc || '');
+
 			pccElemStore.items[index].$ptc = $row.find('.js-ptc-' + index).selectize({
 				allowEmptyOption: true,
 				options: ptcs,

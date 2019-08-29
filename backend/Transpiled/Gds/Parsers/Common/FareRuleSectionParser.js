@@ -44,11 +44,11 @@ class FareRuleSectionParser
 			: $sectionNumber;
 
 		$result = {
-			'sectionNumber': $sectionNumber,
-			'sectionName': $sectionName,
-			'doesApply': $doesApply,
-			'parsed': $data,
-			'raw': $text,
+			sectionNumber: $sectionNumber,
+			sectionName: $sectionName,
+			doesApply: $doesApply,
+			parsed: $data,
+			raw: $text,
 		};
 		if ($error) {
 			$result['error'] = $error;

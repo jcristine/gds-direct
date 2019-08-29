@@ -23,9 +23,9 @@ class VlParser
 		$names = php.array_combine($symbols, $symbols);
 		$split = StringUtil.splitByPosition($str, $pattern, $names, true);
 		$result = {
-			'lineNumber': $split['N'] === 'VLOC' ? '1' : php.trim($split['N'], ' .'),
-			'airline': $split['Y'],
-			'recordLocator': $split['R'],
+			lineNumber: $split['N'] === 'VLOC' ? '1' : php.trim($split['N'], ' .'),
+			airline: $split['Y'],
+			recordLocator: $split['R'],
 		};
 		if ($result['recordLocator']) {
 			return $result;
@@ -43,13 +43,13 @@ class VlParser
 		$names = php.array_combine($symbols, $symbols);
 		$split = StringUtil.splitByPosition($str, $pattern, $names, true);
 		$result = {
-			'date': {
-				'raw': $split['D'],
-				'parsed': CommonParserHelpers.parsePartialDate($split['D']),
+			date: {
+				raw: $split['D'],
+				parsed: CommonParserHelpers.parsePartialDate($split['D']),
 			},
-			'time': {
-				'raw': $split['T'],
-				'parsed': CommonParserHelpers.decodeApolloTime($split['T']),
+			time: {
+				raw: $split['T'],
+				parsed: CommonParserHelpers.decodeApolloTime($split['T']),
 			},
 		};
 		if ($result['date']['parsed'] && $result['time']['parsed']) {
@@ -87,12 +87,12 @@ class VlParser
 		$lines = StringUtil.lines(php.rtrim($dump));
 		$headerLine = php.array_shift($lines);
 		if (php.trim($headerLine) === 'NO VENDOR LOCATOR DATA EXISTS') {
-			return {'records': []};
+			return {records: []};
 		} else if (php.trim($headerLine) !== 'VENDOR LOCATOR') {
-			return {'error': 'Unexpected start of dump - '+php.trim($headerLine)};
+			return {error: 'Unexpected start of dump - '+php.trim($headerLine)};
 		}
 		$records = Fp.map((...args) => this.parseVlocLine(...args), $lines);
-		return {'records': $records};
+		return {records: $records};
 	}
 }
 module.exports = VlParser;

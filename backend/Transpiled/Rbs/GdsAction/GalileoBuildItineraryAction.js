@@ -62,7 +62,7 @@ const GalileoBuildItineraryAction = ({
 				? segment['departureDate']['raw']
 				: formatGdsDate(segment['departureDate']);
 
-			return {...segment, 'departureDate': date};
+			return {...segment, departureDate: date};
 		});
 
 		resultItinerary = [];
@@ -77,16 +77,16 @@ const GalileoBuildItineraryAction = ({
 					errorType = GalileoBuildItineraryAction.ERROR_GDS_ERROR;
 				}
 				tplData = {
-					'segmentNumber': i + 1,
-					'from': segment['departureAirport'],
-					'to': segment['destinationAirport'],
-					'response': php.trim(output),
+					segmentNumber: i + 1,
+					from: segment['departureAirport'],
+					to: segment['destinationAirport'],
+					response: php.trim(output),
 				};
-				return {'success': false, 'errorType': errorType, 'errorData': tplData};
+				return {success: false, errorType: errorType, errorData: tplData};
 			}
 			resultItinerary = php.array_merge(resultItinerary, segments);
 		}
-		return {'success': true, 'itinerary': resultItinerary};
+		return {success: true, itinerary: resultItinerary};
 	};
 
 	const execute = async (itinerary, isParserFormat) => {

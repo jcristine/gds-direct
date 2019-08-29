@@ -117,16 +117,16 @@ class FqParser {
 			'\\s*$\/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'guaranteeCode': $matches['guaranteeCode'],
-				'passengerNumbers': this.parsePaxNums($matches['paxNums']),
-				'fareBasis': $matches['fareBasis'],
-				'fareBasisMark': $matches['fareBasisMark'],
-				'currency': $matches['currency'],
-				'baseFare': $matches['baseFare'],
-				'taxAmount': $matches['taxAmount'],
-				'netPrice': $matches['netPrice'],
-				'ptc': $matches['ptc'],
-				'ptcDescription': $matches['ptcDescription'],
+				guaranteeCode: $matches['guaranteeCode'],
+				passengerNumbers: this.parsePaxNums($matches['paxNums']),
+				fareBasis: $matches['fareBasis'],
+				fareBasisMark: $matches['fareBasisMark'],
+				currency: $matches['currency'],
+				baseFare: $matches['baseFare'],
+				taxAmount: $matches['taxAmount'],
+				netPrice: $matches['netPrice'],
+				ptc: $matches['ptc'],
+				ptcDescription: $matches['ptcDescription'],
 			};
 		} else {
 			return null;
@@ -152,7 +152,7 @@ class FqParser {
 			$type = null;
 			$parsed = null;
 		}
-		return {'type': $type, 'parsed': $parsed};
+		return {type: $type, parsed: $parsed};
 	}
 
 	static parsePtcMessageLine($line) {
@@ -170,11 +170,11 @@ class FqParser {
 		$raw = $split['M'];
 		$parsed = this.parsePtcMessage($raw);
 		$result = {
-			'ptc': php.trim($split['P']),
-			'ptcDescription': php.trim($split['D']),
-			'raw': $raw,
-			'type': $parsed['type'],
-			'parsed': $parsed['parsed'],
+			ptc: php.trim($split['P']),
+			ptcDescription: php.trim($split['D']),
+			raw: $raw,
+			type: $parsed['type'],
+			parsed: $parsed['parsed'],
 		};
 		if (php.trim($split[' ']) === '' && $raw &&
 			php.preg_match(/^[A-Z0-9]+$/, $result['ptc'])
@@ -201,8 +201,8 @@ class FqParser {
 			}
 		}
 		return {
-			'unparsed': $unparsed,
-			'ptcMessages': $ptcMessages,
+			unparsed: $unparsed,
+			ptcMessages: $ptcMessages,
 		};
 	}
 
@@ -218,7 +218,7 @@ class FqParser {
 		}
 		if ($guarLine = php.array_shift($lines)) {
 			if (StringUtil.contains($guarLine, 'GUARANTEED')) {
-				$parsed['guarantee'] = {'raw': php.trim($guarLine)};
+				$parsed['guarantee'] = {raw: php.trim($guarLine)};
 			} else {
 				php.array_unshift($lines, $guarLine);
 			}
@@ -239,8 +239,8 @@ class FqParser {
 			$baggageParsed = null;
 		}
 		return {
-			'raw': php.implode(php.PHP_EOL, $blockLines),
-			'parsed': $baggageParsed,
+			raw: php.implode(php.PHP_EOL, $blockLines),
+			parsed: $baggageParsed,
 		};
 	}
 
@@ -262,7 +262,7 @@ class FqParser {
 			$blockLines.push($line);
 		}
 		$bagPtcPricingBlocks.push(this.parseBagPtcBlock($header, $blockLines));
-		return {'bagPtcPricingBlocks': $bagPtcPricingBlocks};
+		return {bagPtcPricingBlocks: $bagPtcPricingBlocks};
 	}
 
 	static parse(dump) {
@@ -274,7 +274,7 @@ class FqParser {
 		if (php.preg_match(/^\s*>(FQ.*?);?\s*$/, cmdCopyLine, matches = [])) {
 			cmdCopy = matches[1];
 		} else {
-			return {'error': 'Unexpected start of dump - ' + cmdCopyLine};
+			return {error: 'Unexpected start of dump - ' + cmdCopyLine};
 		}
 		dump = php.implode(php.PHP_EOL, rawLines);
 
@@ -290,7 +290,7 @@ class FqParser {
 		}
 		const headerInfo = this.parseHeaderMessages(headerMessages);
 		if (php.empty(linesLeft)) {
-			return {'error': 'Could not find FQ column headers line - ' + headerMessages[0]};
+			return {error: 'Could not find FQ column headers line - ' + headerMessages[0]};
 		}
 		const ptcRows = [];
 		let tuple;
@@ -306,7 +306,7 @@ class FqParser {
 		if (php.preg_match(/^GRAND TOTAL INCLUDING TAXES\s*\*+\s+([A-Z]{3})\s+(\d*\.\d+)/, grandLine, matches = [])) {
 			[, grandCurrency, grandAmount] = matches;
 		} else {
-			return {'error': 'Failed to parse GRAND TOTAL line - ' + php.trim(grandLine)};
+			return {error: 'Failed to parse GRAND TOTAL line - ' + php.trim(grandLine)};
 		}
 		const additionalMessages = [];
 		while (line = php.array_shift(linesLeft)) {

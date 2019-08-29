@@ -43,9 +43,9 @@ class AmadeusGetStatelessRulesAction extends AbstractGdsAction {
 		// specifying a ticket designator or departure date often makes
 		// rules not applicable, so they should not be included
 		const cmdMods = {
-			'D': moment.utc(params.ticketingDt).format('DDMMMYY'),
-			'A': params.airline,
-			'FB': params.fareBasis,
+			D: moment.utc(params.ticketingDt).format('DDMMMYY'),
+			A: params.airline,
+			FB: params.fareBasis,
 		};
 
 		let cmd = `FRN${params.origin}${params.destination}`;
@@ -80,7 +80,7 @@ class AmadeusGetStatelessRulesAction extends AbstractGdsAction {
 				const fareListRec = ImportPnrCommonFormatAdapter.collectFcFares(fc, itinerary);
 
 				if(fareListRec.error) {
-					return {'error': `Failed to collect ${i} - ${j} -th FC fares: ${fareListRec.error}`};
+					return {error: `Failed to collect ${i} - ${j} -th FC fares: ${fareListRec.error}`};
 				}
 
 				const numToSeg = itinerary.reduce((obj, itin) => {
@@ -95,16 +95,16 @@ class AmadeusGetStatelessRulesAction extends AbstractGdsAction {
 					const dstnSeg = numToSeg[_.last(fare['segmentNumbers'])];
 
 					const parsed = await this.getComponentRules({
-						'origin': dprtSeg['departureAirport'],
-						'destination': dstnSeg['destinationAirport'],
-						'ticketingDt': ptcBlock['lastDateToPurchase']['parsed'],
-						'airline': ptcBlock['validatingCarrier'],
-						'fareBasis': fare['fareBasis'],
+						origin: dprtSeg['departureAirport'],
+						destination: dstnSeg['destinationAirport'],
+						ticketingDt: ptcBlock['lastDateToPurchase']['parsed'],
+						airline: ptcBlock['validatingCarrier'],
+						fareBasis: fare['fareBasis'],
 					});
 
 					if (parsed.error) {
 						return {
-							'error': `Failed to parse ${i}-${j}-${k}-th fare rules: ${parsed.error}`,
+							error: `Failed to parse ${i}-${j}-${k}-th fare rules: ${parsed.error}`,
 						};
 					}
 
@@ -121,7 +121,7 @@ class AmadeusGetStatelessRulesAction extends AbstractGdsAction {
 			}
 		}
 
-		return {'data': ruleRecs};
+		return {data: ruleRecs};
 	}
 }
 

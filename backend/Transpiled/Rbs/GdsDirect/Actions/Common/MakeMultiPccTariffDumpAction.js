@@ -120,16 +120,16 @@ class MakeMultiPccTariffDumpAction {
 		$fare = $chooseResult['mainFare'];
 		$others = $chooseResult['otherFares'];
 		$gdsCodes = {
-			'apollo': '1V',
-			'sabre': '1S',
-			'galileo': '1G',
-			'amadeus': '1A',
+			apollo: '1V',
+			sabre: '1S',
+			galileo: '1G',
+			amadeus: '1A',
 		};
 		$fareTypeMark = {
-			'public': '',
-			'airlinePrivate': '-',
-			'agencyPrivate': '/',
-			'accountPrivate': '*',
+			public: '',
+			airlinePrivate: '-',
+			agencyPrivate: '/',
+			accountPrivate: '*',
 		}[$fare['fareType'] || null];
 		$fareTypeMark = $fareTypeMark === undefined ? '?' : $fareTypeMark;
 		$getPccField = ($fare) => {
@@ -217,10 +217,10 @@ class MakeMultiPccTariffDumpAction {
 		$destinations = php.array_values(php.array_unique(php.array_filter($destinations)));
 		$destination = php.count($destinations) === 1 ? $destinations[0] : null;
 		return {
-			'mainDeparture': $departure,
-			'mainDestination': $destination,
-			'mainCurrency': $currency,
-			'cmdData': $cmdData,
+			mainDeparture: $departure,
+			mainDestination: $destination,
+			mainCurrency: $currency,
+			cmdData: $cmdData,
 		};
 	}
 
@@ -233,7 +233,7 @@ class MakeMultiPccTariffDumpAction {
 			$summary = this.makeSummary($mergedFares, $sessionData, $cmdData);
 			$lines.push('     CX    FARE   FARE     C  AP MIN\/    FE SEASONS..... MR GI');
 			$lines.push(StringUtil.formatLine('           $$$    BASIS            MAX                        ',
-				{'$': [$summary['mainCurrency'], 'left']}));
+				{$: [$summary['mainCurrency'], 'left']}));
 			//  '  1 -SQ   279.00R NSFV           SU/165 P50 01JAN -31DEC MR PA 1A YTOGO310E'
 			//  'LLLL/YYFFFFFFFFFR BBBBBBBB   PPP NN/XXX AAA SSSSS -sssss MM OO GG CCCCCCCCC UUU'
 			for ([$i, $sameFares] of Object.entries(php.array_values($mergedFares))) {
@@ -252,9 +252,9 @@ class MakeMultiPccTariffDumpAction {
 		$groupedFares = this.constructor.mergeJobFares($finishedJobs, $cmdData);
 		$dump += php.PHP_EOL + this.constructor.makeContentDump($groupedFares, $sessionData, $cmdData);
 		return {
-			'cmd': '$D\/MIX',
-			'output': $dump,
-			'noWrap': true,
+			cmd: '$D\/MIX',
+			output: $dump,
+			noWrap: true,
 		};
 	}
 }

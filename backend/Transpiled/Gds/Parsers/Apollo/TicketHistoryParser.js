@@ -24,7 +24,7 @@ class TicketHistoryParser
 			}
 			$tz = $tz === 'Z' ? 'UTC' : null;
 		}
-		return {'raw': $raw, 'parsed': $parsed, 'tz': $tz};
+		return {raw: $raw, parsed: $parsed, tz: $tz};
 	}
 
 	// "TI-BULATAO/JOSEPH-00010899/0017917255225/-USD/606.86/TE/26FEB0346Z"
@@ -82,8 +82,8 @@ class TicketHistoryParser
 				}
 			}}
 		return {
-			'currentTickets': $currentTickets,
-			'deletedTickets': $deletedTickets,
+			currentTickets: $currentTickets,
+			deletedTickets: $deletedTickets,
 		};
 	}
 }

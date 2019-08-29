@@ -29,14 +29,14 @@ class PricingCommonHelper {
 				[$taxList, $lines] = this.parseTaxBreakDown($lines);
 			} else {
 				$taxList = $totalsTax ? [{
-					'taxCode': $totalsTax['taxCode'],
-					'amount': $totalsTax['amount'],
+					taxCode: $totalsTax['taxCode'],
+					amount: $totalsTax['amount'],
 				}] : [];
 			}
 
 			return [{
-				'totals': $totals,
-				'taxList': $taxList,
+				totals: $totals,
+				taxList: $taxList,
 			}, $lines];
 		} else {
 			php.array_unshift($lines, $totalsLine);
@@ -70,25 +70,25 @@ class PricingCommonHelper {
 		if (php.preg_match($regex, $valuesLine, $matches = [])) {
 			$matches = php.array_filter($matches);
 			return {
-				'quantity': $matches['quantity'],
-				'baseFare': {
-					'currency': $matches['baseFareCurrency'],
-					'amount': $matches['baseFareAmount'],
+				quantity: $matches['quantity'],
+				baseFare: {
+					currency: $matches['baseFareCurrency'],
+					amount: $matches['baseFareAmount'],
 				},
-				'inDefaultCurrency': php.isset($matches['equivAmount']) ? {
-					'currency': $matches['equivCurrency'],
-					'amount': $matches['equivAmount'],
+				inDefaultCurrency: php.isset($matches['equivAmount']) ? {
+					currency: $matches['equivCurrency'],
+					amount: $matches['equivAmount'],
 				} : null,
-				'tax': {
-					'amount': $matches['taxAmount'],
-					'taxCode': $matches['taxCode'],
+				tax: {
+					amount: $matches['taxAmount'],
+					taxCode: $matches['taxCode'],
 				},
-				'total': {
-					'currency': $matches['totalCurrency'],
-					'amount': $matches['totalAmount'],
-					'ptc': $matches['ptc'],
+				total: {
+					currency: $matches['totalCurrency'],
+					amount: $matches['totalAmount'],
+					ptc: $matches['ptc'],
 				},
-				'line': $valuesLine,
+				line: $valuesLine,
 			};
 		} else {
 			return null;
@@ -116,8 +116,8 @@ class PricingCommonHelper {
 				for ($tuple of Object.values(this.getAllMatches('/' + $taxPattern + '/', $line))) {
 					[$amount, $taxType] = $tuple;
 					$taxList.push({
-						'amount': $amount,
-						'taxCode': $taxType,
+						amount: $amount,
+						taxCode: $taxType,
 					});
 				}
 			} else {
@@ -136,12 +136,12 @@ class PricingCommonHelper {
 		if (php.preg_match(/^([A-Z0-9]{3})-(\d{2})  (.*)$/, $line, $matches = [])) {
 			[$_, $ptc, $number, $fareBasisList] = $matches;
 			return {
-				'ptc': $ptc,
-				'quantity': $number,
-				'records': Fp.map(($fb) => {
+				ptc: $ptc,
+				quantity: $number,
+				records: Fp.map(($fb) => {
 					return {
-						'fareBasis': php.explode('/', $fb)[0],
-						'ticketDesignator': (php.explode('/', $fb) || {})[1],
+						fareBasis: php.explode('/', $fb)[0],
+						ticketDesignator: (php.explode('/', $fb) || {})[1],
 					};
 				},
 				php.array_filter($fareBasisList.split(/ +/))),
@@ -175,17 +175,17 @@ class PricingCommonHelper {
 		}
 
 		return {
-			'line': !$error ? $completeLine : null,
-			'error': $error,
-			'data': $data,
-			'textLeft': $textLeft,
+			line: !$error ? $completeLine : null,
+			error: $error,
+			data: $data,
+			textLeft: $textLeft,
 		};
 	}
 
 	static parseFareConstructionInfo($lines, $endorsementBeforeCarrier) {
 		let $result, $validatingCarrierFound, $line, $matches;
 
-		$result = {'unparsedLines': []};
+		$result = {unparsedLines: []};
 
 		$validatingCarrierFound = false;
 
@@ -251,8 +251,8 @@ class PricingCommonHelper {
 			if (php.preg_match(/^(.*) AVAILABLE - SEE (.*)$/, $line, $matches = [])) {
 				[$_, $dataName, $command] = $matches;
 				$dataExistsRecords.push({
-					'name': $dataName,
-					'command': $command,
+					name: $dataName,
+					command: $command,
 				});
 			} else {
 				$lines.push($line);

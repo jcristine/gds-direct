@@ -12,7 +12,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^>\$B.*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'line': php.rtrim($matches[0]), 'textLeft': $textLeft};
+			return {line: php.rtrim($matches[0]), textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -23,7 +23,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
+			return {textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -34,7 +34,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^\*FARE GUARANTEED AT TICKET ISSUANCE\*\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
+			return {textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -45,7 +45,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^\s*\*\*AGENT SELECTED FARE USED\*\*\s*\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
+			return {textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -56,7 +56,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^\*FARE HAS A PLATING CARRIER RESTRICTION\*\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
+			return {textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -67,7 +67,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^FARE HAS FORM OF PAYMENT RESTRICTION\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
+			return {textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -78,7 +78,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^\s*?\*\*CARRIER MAY OFFER ADDITIONAL SERVICES\*\*SEE >\$B\/.*\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
+			return {textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -168,7 +168,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^E-TKT REQUIRED\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
+			return {textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -179,7 +179,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^\*PENALTY APPLIES\*\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
+			return {textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -190,7 +190,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^BEST FARE FOR PSGR TYPE\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
+			return {textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -203,10 +203,10 @@ class NextToken
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
 			$raw = $matches[1];
 			$parsed = CommonParserHelpers.parseApolloFullDate($raw);
-			return {'date': {
-				'raw': $raw,
-				'parsed': $parsed ? '20'+$parsed : null,
-			}, 'textLeft': $textLeft};
+			return {date: {
+				raw: $raw,
+				parsed: $parsed ? '20'+$parsed : null,
+			}, textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -218,9 +218,9 @@ class NextToken
 		if (php.preg_match(/^TICKETING WITHIN \d+ (HOURS|MINUTES) AFTER RESERVATION\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
 
-			return {'ticketingTimeLimit': {
-				'raw': $matches[0],
-			}, 'textLeft': $textLeft};
+			return {ticketingTimeLimit: {
+				raw: $matches[0],
+			}, textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -249,7 +249,7 @@ class NextToken
 			}
 
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'passengerNumbers': $numbers, 'textLeft': $textLeft};
+			return {passengerNumbers: $numbers, textLeft: $textLeft};
 		} else if (php.preg_match(/^\$B(B|BA|B0)?-([\-\/\d]+).*?\d{2}[A-Z]{3}\d{2}.*?\n/, $text, $matches = [])) {
 			// $B-1-3 C24SEP13
 			// $B-1/3 C07AUG17
@@ -257,7 +257,7 @@ class NextToken
 			[$_, $pricingType, $paxNumExpr] = $matches;
 			$numbers = this.parseCmdPaxNums($paxNumExpr);
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'passengerNumbers': $numbers, 'textLeft': $textLeft};
+			return {passengerNumbers: $numbers, textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -273,8 +273,8 @@ class NextToken
 			$textLeft = $fcRecord['textLeft'];
 		}
 		return {
-			'fareConstruction': $result,
-			'textLeft': $textLeft,
+			fareConstruction: $result,
+			textLeft: $textLeft,
 		};
 	}
 
@@ -283,13 +283,13 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^S(\d+) NVB(\d{2}\w{3})\/NVA(\d{2}\w{3})\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'number': $matches[1], 'notValidBefore': $matches[2], 'notValidAfter': $matches[3], 'textLeft': $textLeft};
+			return {number: $matches[1], notValidBefore: $matches[2], notValidAfter: $matches[3], textLeft: $textLeft};
 		} else if (php.preg_match(/^S(\d+) NVB(\d{2}\w{3})\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'number': $matches[1], 'notValidBefore': $matches[2], 'notValidAfter': null, 'textLeft': $textLeft};
+			return {number: $matches[1], notValidBefore: $matches[2], notValidAfter: null, textLeft: $textLeft};
 		} else if (php.preg_match(/^S(\d+) \/NVA(\d{2}\w{3})\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'number': $matches[1], 'notValidBefore': null, 'notValidAfter': $matches[2], 'textLeft': $textLeft};
+			return {number: $matches[1], notValidBefore: null, notValidAfter: $matches[2], textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -300,7 +300,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^E (.*)\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'endorsementBox': $matches[1], 'textLeft': $textLeft};
+			return {endorsementBox: $matches[1], textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -311,7 +311,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^SUM IDENTIFIED AS UB IS A PASSENGER SERVICE CHARGE\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
+			return {textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -322,7 +322,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^TICKETING AGENCY ([0-9A-Z]{4})\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'pcc': $matches[1], 'textLeft': $textLeft};
+			return {pcc: $matches[1], textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -335,7 +335,7 @@ class NextToken
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
 			$code = $matches[1];
 
-			return {'airline': $code, 'textLeft': $textLeft};
+			return {airline: $code, textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -349,8 +349,8 @@ class NextToken
 		if (php.preg_match(/^(\w{2}) PFC: .*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
 			return {
-				'countryCode': $matches[1],
-				'textLeft': $textLeft,
+				countryCode: $matches[1],
+				textLeft: $textLeft,
 			};
 		} else {
 			return false;
@@ -366,10 +366,10 @@ class NextToken
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
 
 			return {
-				'bankSellingRate': $matches['bsr'],
-				'bsrCurrencyFrom': $matches['bsrCurrencyFrom'],
-				'bsrCurrencyTo': $matches['bsrCurrencyTo'],
-				'textLeft': $textLeft,
+				bankSellingRate: $matches['bsr'],
+				bsrCurrencyFrom: $matches['bsrCurrencyFrom'],
+				bsrCurrencyTo: $matches['bsrCurrencyTo'],
+				textLeft: $textLeft,
 			};
 		} else {
 			return false;
@@ -381,7 +381,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^BAGGAGE ALLOWANCE\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'line': $matches[0], 'textLeft': $textLeft};
+			return {line: $matches[0], textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -393,7 +393,7 @@ class NextToken
 		if (php.preg_match(/^(\w{3})\s*?\n/, $text, $matches = [])) {
 			$passengerTypeCode = $matches[1];
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'passengerTypeCode': $passengerTypeCode, 'line': $matches[0], 'textLeft': $textLeft};
+			return {passengerTypeCode: $passengerTypeCode, line: $matches[0], textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -404,7 +404,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^\s.+\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'line': $matches[0], 'textLeft': $textLeft};
+			return {line: $matches[0], textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -415,7 +415,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^.*?(\n|$)/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'line': $matches[0], 'textLeft': $textLeft};
+			return {line: $matches[0], textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -426,7 +426,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^\s*?FLIGHT NOT FOUND - CHECK AVAILABILITY\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
+			return {textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -437,7 +437,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^\s*?NO VALID FARE FOR INPUT CRITERIA\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
+			return {textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -448,7 +448,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^\s*?NO ITIN\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
+			return {textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -459,7 +459,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^TOUR CODE: ([0-9A-Z\/]+)\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'tourCode': $matches[1], 'textLeft': $textLeft};
+			return {tourCode: $matches[1], textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -470,7 +470,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^\*\* PRIVATE FARES SELECTED \*\*\s*?\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'textLeft': $textLeft};
+			return {textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -508,7 +508,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^\*+(.*?[^\S\n]+\S.*?|)\s*\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'line': $matches[0], 'textLeft': $textLeft};
+			return {line: $matches[0], textLeft: $textLeft};
 		} else {
 			return false;
 		}
@@ -521,7 +521,7 @@ class NextToken
 		$matches = [];
 		if (php.preg_match(/^\s+([^\s].*)\n/, $text, $matches = [])) {
 			$textLeft = php.mb_substr($text, php.mb_strlen($matches[0]));
-			return {'comment': $matches[0], 'textLeft': $textLeft};
+			return {comment: $matches[0], textLeft: $textLeft};
 		} else {
 			return false;
 		}

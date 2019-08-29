@@ -36,7 +36,7 @@ class FxParser {
 			return $flightSegment;
 		} else if (php.preg_match(/^\s*([A-Z]{3})\s+S U R F A C E\s*$/, $line, $matches = [])) {
 			// ' YAO      S U R F A C E',
-			return {'type': 'surface', 'destinationCity': $matches[1], 'isStopover': true};
+			return {type: 'surface', destinationCity: $matches[1], isStopover: true};
 		} else {
 			return null;
 		}
@@ -165,13 +165,13 @@ class FxParser {
 			$fcRecord['raw'] = $raw;
 			if ($fcRecord['parsed']) {
 				$fcRecord['parsed']['date'] = {
-					'raw': $dateRaw,
-					'parsed': '20' + CommonParserHelpers.parseApolloFullDate($dateRaw),
+					raw: $dateRaw,
+					parsed: '20' + CommonParserHelpers.parseApolloFullDate($dateRaw),
 				};
 			}
 			return $fcRecord;
 		} else {
-			return {'error': 'Failed to match FC start - ' + php.substr($raw, 0, 7)};
+			return {error: 'Failed to match FC start - ' + php.substr($raw, 0, 7)};
 		}
 	}
 
@@ -186,19 +186,19 @@ class FxParser {
 			[$_, $fcLine, $xtTaxesRaw, $facilityChargesRaw] = $matches;
 			if (php.preg_match_all(/([A-Z]{3})\s*(\d*\.?\d+)\s*/, $facilityChargesRaw, $tuples = [], php.PREG_SET_ORDER)) {
 				for ([$_, $airport, $amount] of Object.values($tuples)) {
-					$facilityCharges.push({'airport': $airport, 'amount': $amount});
+					$facilityCharges.push({airport: $airport, amount: $amount});
 				}
 			}
 			$taxRegex = /([A-Z]{3})\s*(\d*\.?\d+)[\s\-]*([A-Z0-9]{2})/;
 			if (php.preg_match_all($taxRegex, $xtTaxesRaw, $tuples = [], php.PREG_SET_ORDER)) {
 				for ([$_, $taxCurrency, $amount, $taxCode] of Object.values($tuples)) {
-					$xtTaxes.push({'currency': $taxCurrency, 'amount': $amount, 'taxCode': $taxCode});
+					$xtTaxes.push({currency: $taxCurrency, amount: $amount, taxCode: $taxCode});
 				}
 			}
 		}
 		$taxBreakdown = {
-			'xtTaxes': $xtTaxes,
-			'facilityCharges': $facilityCharges,
+			xtTaxes: $xtTaxes,
+			facilityCharges: $facilityCharges,
 		};
 		return [$fcLine, $taxBreakdown];
 	}
@@ -206,7 +206,7 @@ class FxParser {
 	static parseWholeMessages($lines, $appliesTo) {
 		let $result, $lastDateToPurchase, $line, $matches, $_, $dateRaw, $unparsed;
 
-		$result = {'appliesTo': $appliesTo};
+		$result = {appliesTo: $appliesTo};
 		$lastDateToPurchase = null;
 		for ($line of Object.values($lines)) {
 			if (php.trim($line) === 'REBOOK TO CHANGE BOOKING CLASS AS SPECIFIED') {
@@ -216,9 +216,9 @@ class FxParser {
 			} else if (php.preg_match(/^LAST TKT DTE (\d{1,2}[A-Z]{3}\d{2})\s*(.*?)\s*$/, $line, $matches = [])) {
 				[$_, $dateRaw, $unparsed] = $matches;
 				$result['lastDateToPurchase'] = {
-					'raw': $dateRaw,
-					'parsed': '20' + CommonParserHelpers.parseApolloFullDate($dateRaw),
-					'unparsed': $unparsed,
+					raw: $dateRaw,
+					parsed: '20' + CommonParserHelpers.parseApolloFullDate($dateRaw),
+					unparsed: $unparsed,
 				};
 			} else {
 				$result['unparsed'] = $result['unparsed'] || [];
@@ -234,17 +234,17 @@ class FxParser {
 		let $parsed;
 
 		$parsed = ({
-			'I': 'IATA_AUTOPRICED_FARE',
-			'B': 'NEGOTIATED_FARE',
-			'A': 'ATAF_AUTOPRICED_FARE',
-			'F': 'NEGOTIATED_AUTOPRICED_FARE_UPDATED_BY_AN_AIRLINE',
-			'G': 'NEGOTIATED_FARE_UPDATED_BY_AN_AGENT_OR_CONSOLIDATOR',
-			'M': 'MANUAL_PRICED_FARE',
-			'T': 'AUTOPRICED_INCLUSIVE_TOUR_FARE',
-			'W': 'NO_FARE_CALC_CHECK_AGAINST_TST_ITINERARY',
-			'O': 'CABIN_CLASS_OVERRIDE_USED_IN_PRICING',
+			I: 'IATA_AUTOPRICED_FARE',
+			B: 'NEGOTIATED_FARE',
+			A: 'ATAF_AUTOPRICED_FARE',
+			F: 'NEGOTIATED_AUTOPRICED_FARE_UPDATED_BY_AN_AIRLINE',
+			G: 'NEGOTIATED_FARE_UPDATED_BY_AN_AGENT_OR_CONSOLIDATOR',
+			M: 'MANUAL_PRICED_FARE',
+			T: 'AUTOPRICED_INCLUSIVE_TOUR_FARE',
+			W: 'NO_FARE_CALC_CHECK_AGAINST_TST_ITINERARY',
+			O: 'CABIN_CLASS_OVERRIDE_USED_IN_PRICING',
 		} || {})[$code];
-		return {'raw': $code, 'parsed': $parsed};
+		return {raw: $code, parsed: $parsed};
 	}
 
 	static parsePtcPricingMessages($lines) {
@@ -450,14 +450,14 @@ class FxParser {
 
 		if ($type !== null) {
 			return {
-				'commandCopy': $commandCopy,
-				'wholeMessages': this.parseWholeMessages($wholeMessages),
-				'type': $type,
-				'data': $data,
-				'error': $data.error || undefined,
+				commandCopy: $commandCopy,
+				wholeMessages: this.parseWholeMessages($wholeMessages),
+				type: $type,
+				data: $data,
+				error: $data.error || undefined,
 			};
 		} else {
-			return {'error': 'Failed to parse PTC list/pricing - ' + $dump.trim().slice(0, 100)};
+			return {error: 'Failed to parse PTC list/pricing - ' + $dump.trim().slice(0, 100)};
 		}
 	}
 }

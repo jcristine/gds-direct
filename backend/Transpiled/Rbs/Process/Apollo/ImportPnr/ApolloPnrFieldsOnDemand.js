@@ -16,11 +16,11 @@ class ApolloPnrFieldsOnDemand
             php.preg_match(/^\s*NO PUBLIC FARES VALID FOR PASSENGER TYPE\/CLASS OF SERVICE\s*\.\s*/s, $dump) ||
             php.preg_match(/^\s*ERROR \d+ - INVALID INPUT UNPRICEABLE PNR.*/s, $dump)
 		) {
-			return {'error': 'noData', 'errorType': 'NO_VALID_FARE'};
+			return {error: 'noData', errorType: 'NO_VALID_FARE'};
 		} else if (php.trim($dump) === 'NO VALIDATING AIRLINE FOUND') {
-			return {'error': 'error response - '+$trimmed, 'errorType': 'NO_VALIDATING_AIRLINE_FOUND'};
+			return {error: 'error response - '+$trimmed, errorType: 'NO_VALIDATING_AIRLINE_FOUND'};
 		} else if (!php.preg_match(/\n.*\n/, $trimmed)) {
-			return {'error': 'error response - '+$trimmed, 'errorType': 'CUSTOM_GDS_ERROR'};
+			return {error: 'error response - '+$trimmed, errorType: 'CUSTOM_GDS_ERROR'};
 		} else {
 			return null;
 		}

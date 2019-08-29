@@ -38,12 +38,12 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 	static makeBagPtcBlock($ptcPricing, $storeNum, $ptcNum)  {
 
 		return {
-			'quoteNumber': $storeNum,
-			'subPricingNumber': $ptcNum,
-			'passengerNameNumbers': $ptcPricing['passengerNameNumbers'],
-			'ptcInfo': $ptcPricing['ptcInfo'],
-			'raw': $ptcPricing['baggageInfo']['raw'],
-			'parsed': $ptcPricing['baggageInfo']['parsed'],
+			quoteNumber: $storeNum,
+			subPricingNumber: $ptcNum,
+			passengerNameNumbers: $ptcPricing['passengerNameNumbers'],
+			ptcInfo: $ptcPricing['ptcInfo'],
+			raw: $ptcPricing['baggageInfo']['raw'],
+			parsed: $ptcPricing['baggageInfo']['parsed'],
 		};
 	}
 
@@ -58,13 +58,13 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 		$discount = (($mods['generic'] || {})['ptcs'] || {})[0] || 'ADT';
 		$ageGroup = AmadeusPricingCommonFormatAdapter.parsePtc($discount)['ageGroup'];
 		return {
-			'ptc': $discount,
-			'ptcRequested': (($mods['generic'] || {})['ptcs'] || {})[0],
-			'quantity': !php.empty($nameRecords) ? php.count($nameRecords) : 1,
-			'pricingPaxNums': !php.empty($nameRecords) ? php.range(1, php.count($nameRecords)) : [1],
-			'ageGroup': $ageGroup,
-			'ageGroupRequested': $ageGroup,
-			'nameNumbers': php.array_column($nameRecords, 'nameNumber'),
+			ptc: $discount,
+			ptcRequested: (($mods['generic'] || {})['ptcs'] || {})[0],
+			quantity: !php.empty($nameRecords) ? php.count($nameRecords) : 1,
+			pricingPaxNums: !php.empty($nameRecords) ? php.range(1, php.count($nameRecords)) : [1],
+			ageGroup: $ageGroup,
+			ageGroupRequested: $ageGroup,
+			nameNumbers: php.array_column($nameRecords, 'nameNumber'),
 		};
 	}
 
@@ -78,9 +78,9 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 		$output = await this.runOrReuseFx($cmd);
 		$parsed = FxParser.parse($output);
 		if ($error = $parsed['error']) {
-			return {'error': $error};
+			return {error: $error};
 		} else if ($parsed['type'] !== 'ptcPricing') {
-			return {'error': 'Failed to fetch particular PTC pricing because GDS returned '+$parsed['type']};
+			return {error: 'Failed to fetch particular PTC pricing because GDS returned '+$parsed['type']};
 		} else {
 			$ptcBlock = AmadeusPricingCommonFormatAdapter.transformPtcBlock($parsed, $ptcInfo);
 			return $ptcBlock;
@@ -93,7 +93,7 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 
 		$pager = PagingHelper.parseFxPager($pricingDump);
 		if ($pager['hasMore']) {
-			return {'error': 'Internal error - pricing has more pages'};
+			return {error: 'Internal error - pricing has more pages'};
 		}
 
 		$parsed = FxParser.parse($pricingDump);
@@ -101,7 +101,7 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 		$pricingList = [];
 		$bagPtcBlocks = [];
 		if ($error = $parsed['error']) {
-			return {'error': $error};
+			return {error: $error};
 		} else if ($parsed['type'] === 'ptcPricing') {
 			// GDS returned single PTC pricing instantly
 			if (php.count($cmdStores) <= 1) {
@@ -111,10 +111,10 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 				$ptcBlock['fetchedDumpNumber'] = null;
 				$bagPtcBlocks.push(this.constructor.makeBagPtcBlock($ptcBlock, 1, 1));
 				delete($ptcBlock['baggageInfo']);
-				$pricingList.push({'quoteNumber': 1, 'pricingModifiers': $mods, 'pricingBlockList': [$ptcBlock]});
+				$pricingList.push({quoteNumber: 1, pricingModifiers: $mods, pricingBlockList: [$ptcBlock]});
 
 			} else {
-				return {'error': 'GDS returned output for single PTC even though there were multiple pricing stores in command'};
+				return {error: 'GDS returned output for single PTC even though there were multiple pricing stores in command'};
 			}
 		} else if ($parsed['type'] === 'ptcList') {
 			// pricing summary with partial data - no FC, carrier, taxes...
@@ -124,7 +124,7 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 				$storeNum = $ptcInfo['storeNumber'] || 1;
 				$ptcBlock = await this.fetchPtcBlock($ptcInfo);
 				if ($error = $ptcBlock['error']) {
-					return {'error': 'Failed to fetch '+$ptcInfo['ptc']+' PTC block - '+$error};
+					return {error: 'Failed to fetch '+$ptcInfo['ptc']+' PTC block - '+$error};
 				} else {
 					$bagPtcBlocks.push(this.constructor.makeBagPtcBlock($ptcBlock, $storeNum, +$i + 1));
 					delete($ptcBlock['baggageInfo']);
@@ -136,12 +136,12 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 					$pricingList[$storeNum - 1]['pricingBlockList'].push($ptcBlock);
 				}}
 		} else {
-			return {'error': 'Unexpected pricing type - '+$parsed['type']};
+			return {error: 'Unexpected pricing type - '+$parsed['type']};
 		}
 
 		return {
-			'pricingList': $pricingList,
-			'bagPtcPricingBlocks': $bagPtcBlocks,
+			pricingList: $pricingList,
+			bagPtcPricingBlocks: $bagPtcBlocks,
 		};
 	}
 }

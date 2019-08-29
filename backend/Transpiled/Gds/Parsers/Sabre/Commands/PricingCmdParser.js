@@ -32,11 +32,11 @@ const parseNameQualifier = ($token) => {
 			[$_, $from, $to] = $matches;
 			$to = php.substr($to, 1);
 			return {
-				'fieldNumber': php.explode('.', $from)[0],
-				'firstNameNumber': (php.explode('.', $from) || {})[1] || '0',
-				'through': $to ? {
-					'fieldNumber': php.explode('.', $to)[0],
-					'firstNameNumber': (php.explode('.', $to) || {})[1] || '0',
+				fieldNumber: php.explode('.', $from)[0],
+				firstNameNumber: (php.explode('.', $from) || {})[1] || '0',
+				through: $to ? {
+					fieldNumber: php.explode('.', $to)[0],
+					firstNameNumber: (php.explode('.', $to) || {})[1] || '0',
 				} : null,
 			};
 		} else {
@@ -87,7 +87,7 @@ const parsePtcQualifier = ($token) => {
 		if (php.preg_match(/^(\d*)([A-Z0-9]{3})$/, $ptcToken, $matches = [])) {
 			[$_, $cnt, $ptc] = $matches;
 			$cnt = $cnt !== '' ? php.intval($cnt) : null;
-			return {'quantity': $cnt, 'ptc': $ptc};
+			return {quantity: $cnt, ptc: $ptc};
 		} else {
 			return null;
 		}
@@ -100,12 +100,12 @@ const parsePtcQualifier = ($token) => {
 };
 
 const cabinClassMapping = {
-	'YB': 'economy',
-	'SB': 'premiumEconomy',
-	'BB': 'business',
-	'JB': 'premiumBusiness',
-	'FB': 'first',
-	'PB': 'premiumFirst',
+	YB: 'economy',
+	SB: 'premiumEconomy',
+	BB: 'business',
+	JB: 'premiumBusiness',
+	FB: 'first',
+	PB: 'premiumFirst',
 };
 
 /**
@@ -122,7 +122,7 @@ const parsePricingQualifier = ($token) => {
 		[$name, $data] = ['forceProperEconomy', true];
 	} else if (php.preg_match(/^MPC-(?<mpc>[A-Z0-9]+)$/, $token, $matches = [])) {
 		[$name, $data] = ['maxPenaltyForChange', {
-			'value': $matches['mpc'],
+			value: $matches['mpc'],
 		}];
 	} else if (php.in_array($token, ['PL', 'PV'])) {
 		[$name, $data] = ['fareType', $token === 'PL' ? 'public' : 'private'];
@@ -137,9 +137,9 @@ const parsePricingQualifier = ($token) => {
 	} else if (php.preg_match(/^K(P|)([A-Z]*)(\d*\.?\d+)$/, $token, $matches = [])) {
 		[$_, $percentMarker, $region, $amount] = $matches;
 		[$name, $data] = ['commission', {
-			'units': $percentMarker ? 'percent' : 'amount',
-			'region': $region || null,
-			'value': $amount,
+			units: $percentMarker ? 'percent' : 'amount',
+			region: $region || null,
+			value: $amount,
 		}];
 	} else if (php.preg_match(/^A([A-Z0-9]{2})$/, $token, $matches = [])) {
 		[$name, $data] = ['validatingCarrier', $matches[1]];
@@ -195,8 +195,8 @@ exports.parse = ($cmd) => {
 	if ($command === 'WP') {
 		$data = parsePricingQualifiers(php.substr($cmd, 2));
 		return {
-			'baseCmd': $command,
-			'pricingModifiers': $data,
+			baseCmd: $command,
+			pricingModifiers: $data,
 		};
 	} else {
 		return null;

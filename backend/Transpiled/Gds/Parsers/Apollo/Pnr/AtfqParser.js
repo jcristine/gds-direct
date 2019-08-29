@@ -22,10 +22,10 @@ const BagAllowanceParser = {
 				'': 'airlineDefaultUnits',
 			};
 			return {
-				'units': $codeMap[$unitsCode] || null,
-				'amount': $amount,
-				'unitsCode': $unitsCode,
-				'raw': $code,
+				units: $codeMap[$unitsCode] || null,
+				amount: $amount,
+				unitsCode: $unitsCode,
+				raw: $code,
 			};
 		} else {
 			return null;
@@ -34,11 +34,11 @@ const BagAllowanceParser = {
 };
 
 const fareTypes = {
-	'N': 'public',
-	'P': 'private',
-	'G': 'agencyPrivate',
-	'A': 'airlinePrivate',
-	'C': 'netAirlinePrivate',
+	N: 'public',
+	P: 'private',
+	G: 'agencyPrivate',
+	A: 'airlinePrivate',
+	C: 'netAirlinePrivate',
 };
 
 class AtfqParser {
@@ -113,11 +113,11 @@ class AtfqParser {
 				$pricingModifiers = $parsedCommand['pricingModifiers'];
 
 				return {
-					'lineNumber': $matches['lineNumber'] || 1,
-					'atfqType': $matches['atfqType'],
-					'isManualPricingRecord': $parsedCommand['isManualPricingRecord'],
-					'baseCmd': $parsedCommand['baseCmd'],
-					'pricingModifiers': $pricingModifiers,
+					lineNumber: $matches['lineNumber'] || 1,
+					atfqType: $matches['atfqType'],
+					isManualPricingRecord: $parsedCommand['isManualPricingRecord'],
+					baseCmd: $parsedCommand['baseCmd'],
+					pricingModifiers: $pricingModifiers,
 				};
 			}
 		}
@@ -134,9 +134,9 @@ class AtfqParser {
 		if (php.preg_match($regex, $command, $matches = [])) {
 			$pricingModifiers = this.parsePricingModifiers($matches['pricingModifiers']);
 			return {
-				'baseCmd': $matches['baseCmd'],
-				'isManualPricingRecord': !StringUtil.startsWith($matches['baseCmd'], '$B'),
-				'pricingModifiers': $pricingModifiers,
+				baseCmd: $matches['baseCmd'],
+				isManualPricingRecord: !StringUtil.startsWith($matches['baseCmd'], '$B'),
+				pricingModifiers: $pricingModifiers,
 			};
 		} else {
 			return null;
@@ -180,25 +180,25 @@ class AtfqParser {
 			}
 		}
 		return {
-			'raw': $token,
-			'type': $parsed ? $type : null,
-			'parsed': $parsed,
+			raw: $token,
+			type: $parsed ? $type : null,
+			parsed: $parsed,
 		};
 	}
 
 	// HELP PRICING MODIFIERS
 	static getPricingModifierSchema() {
 		return {
-			'generic': ($token) => this.parseGenericModifier($token),
-			'segments': ($token) => this.parseSegmentModifier($token),
-			'cabinClass': ($token) => this.parseCabinClassModifier($token),
-			'fareType': ($token) => this.parseFareTypeModifier($token),
-			'passengers': ($token) => this.parseNameModifier($token),
-			'commission': ($token) => this.parseCommissionModifier($token),
-			'validatingCarrier': ($token) => php.preg_match(/^C../, $token) ? php.substr($token, 1) : null,
-			'overrideCarrier': ($token) => php.preg_match(/^OC../, $token) ? php.substr($token, 2) : null,
-			'ticketingAgencyPcc': ($token) => php.preg_match(/^TA[A-Z0-9]{3,4}/, $token) ? php.substr($token, 2) : null,
-			'ticketingDate': ($token) => {
+			generic: ($token) => this.parseGenericModifier($token),
+			segments: ($token) => this.parseSegmentModifier($token),
+			cabinClass: ($token) => this.parseCabinClassModifier($token),
+			fareType: ($token) => this.parseFareTypeModifier($token),
+			passengers: ($token) => this.parseNameModifier($token),
+			commission: ($token) => this.parseCommissionModifier($token),
+			validatingCarrier: ($token) => php.preg_match(/^C../, $token) ? php.substr($token, 1) : null,
+			overrideCarrier: ($token) => php.preg_match(/^OC../, $token) ? php.substr($token, 2) : null,
+			ticketingAgencyPcc: ($token) => php.preg_match(/^TA[A-Z0-9]{3,4}/, $token) ? php.substr($token, 2) : null,
+			ticketingDate: ($token) => {
 				const match = $token.match(/^:(\d{1,2}[A-Z]{3}\d{0,4})/);
 				if (match) {
 					return {raw: match[1]};
@@ -206,20 +206,20 @@ class AtfqParser {
 					return null;
 				}
 			},
-			'currency': ($token) => php.preg_match(/^:[A-Z]{3}$/, $token) ? php.substr($token, 1) : null,
-			'tourCode': ($token) => {
+			currency: ($token) => php.preg_match(/^:[A-Z]{3}$/, $token) ? php.substr($token, 1) : null,
+			tourCode: ($token) => {
 				let $matches;
 				if (php.preg_match(/^IT([A-Z0-9\*]+)$/, $token, $matches = [])) {
-					return {'tourCodes': php.explode('*', $matches[1])};
+					return {tourCodes: php.explode('*', $matches[1])};
 				} else {
 					return null;
 				}
 			},
-			'areElectronicTickets': ($token) => $token == 'ET' ? true : null,
-			'noCreditCardAllowed': ($token) => $token == 'NOCCGR' ? true : null,
-			'formOfPayment': this.parseFopModifier,
-			'forceProperEconomy': ($token) => $token == 'FXD' ? true : null,
-			'accompaniedChild': ($token) => $token == 'ACC' ? true : null,
+			areElectronicTickets: ($token) => $token == 'ET' ? true : null,
+			noCreditCardAllowed: ($token) => $token == 'NOCCGR' ? true : null,
+			formOfPayment: this.parseFopModifier,
+			forceProperEconomy: ($token) => $token == 'FXD' ? true : null,
+			accompaniedChild: ($token) => $token == 'ACC' ? true : null,
 		};
 	}
 
@@ -227,7 +227,7 @@ class AtfqParser {
 		let $content;
 		if (StringUtil.startsWith($rawMod, 'F') && $rawMod !== 'FXD') {
 			$content = php.substr($rawMod, php.strlen('F'));
-			return {'raw': $content};
+			return {raw: $content};
 		} else {
 			return null;
 		}
@@ -265,10 +265,10 @@ class AtfqParser {
 		}
 		for ($passengerToken of php.array_filter($passengerTokens)) {
 			$passengerProperties = {
-				'passengerNumber': null,
-				'firstNameNumber': null,
-				'ptc': null,
-				'markup': null,
+				passengerNumber: null,
+				firstNameNumber: null,
+				ptc: null,
+				markup: null,
 			};
 			for ($propertyToken of php.explode('*', $passengerToken)) {
 				$passengerProperties = php.array_merge($passengerProperties, this.parsePicModifier($propertyToken));
@@ -276,8 +276,8 @@ class AtfqParser {
 			$pricingInfo.push($passengerProperties);
 		}
 		return {
-			'passengersSpecified': $passengersSpecified,
-			'passengerProperties': $pricingInfo,
+			passengersSpecified: $passengersSpecified,
+			passengerProperties: $pricingInfo,
 		};
 	}
 
@@ -318,11 +318,11 @@ class AtfqParser {
 			$typeToData = php.array_combine(php.array_column($lexed['lexemes'], 'lexeme'),
 				php.array_column($lexed['lexemes'], 'data'));
 			return {
-				'segmentNumbers': [],
-				'fareBasis': $typeToData['fareBasis'] || null,
-				'accountCode': ($typeToData['privateFare'] || {})[0] || null,
-				'pcc': ($typeToData['privateFare'] || {})[1] || null,
-				'bookingClass': $typeToData['bookingClass'] || null,
+				segmentNumbers: [],
+				fareBasis: $typeToData['fareBasis'] || null,
+				accountCode: ($typeToData['privateFare'] || {})[0] || null,
+				pcc: ($typeToData['privateFare'] || {})[1] || null,
+				bookingClass: $typeToData['bookingClass'] || null,
 			};
 		}
 	}
@@ -374,20 +374,20 @@ class AtfqParser {
 		}
 		$pccs = php.array_column($bundles, 'pcc');
 		return {
-			'privateFaresPcc': php.count(php.array_unique($pccs)) === 1 ? $pccs[0] : null,
-			'bundles': $bundles,
+			privateFaresPcc: php.count(php.array_unique($pccs)) === 1 ? $pccs[0] : null,
+			bundles: $bundles,
 		};
 	}
 
 	static getCabinClassMapping() {
 		return {
-			'C': 'business',
-			'Y': 'economy',
-			'F': 'first',
-			'W': 'premiumEconomy',
-			'P': 'premiumFirst',
-			'U': 'upper',
-			'AB': 'sameAsBooked',
+			C: 'business',
+			Y: 'economy',
+			F: 'first',
+			W: 'premiumEconomy',
+			P: 'premiumFirst',
+			U: 'upper',
+			AB: 'sameAsBooked',
 		};
 	}
 
@@ -396,8 +396,8 @@ class AtfqParser {
 		if (php.preg_match(/^\/@([A-Z]{1,2})$/, $token, $matches = [])) {
 			$letter = $matches[1];
 			return {
-				'raw': $letter,
-				'parsed': this.getCabinClassMapping()[$letter] || null,
+				raw: $letter,
+				parsed: this.getCabinClassMapping()[$letter] || null,
 			};
 		} else {
 			return null;
@@ -415,14 +415,14 @@ class AtfqParser {
 			$parsed = BagAllowanceParser.parseAmountCode($matches[1]);
 		} else if (php.preg_match(/^E(.+)$/, $raw, $matches = [])) {
 			$type = 'endorsementLine';
-			$parsed = {'text': php.str_replace('@', ' ', $matches[1])};
+			$parsed = {text: php.str_replace('@', ' ', $matches[1])};
 		} else if (php.preg_match(/^TD([A-Z0-9]+)$/, $raw, $matches = [])) {
 			$type = 'ticketDesignator';
-			$parsed = {'code': $matches[1]};
+			$parsed = {code: $matches[1]};
 		} else {
 			$type = null;
 		}
-		return {'raw': $raw, 'type': $type, 'parsed': $parsed};
+		return {raw: $raw, type: $type, parsed: $parsed};
 	}
 
 	// HELP TICKETING MODIFIERS-GENERIC
@@ -435,7 +435,7 @@ class AtfqParser {
 			$rawSubMods = $matches[1].split(/[|+]/, );
 			$subMods = php.array_map(a => this.parseGenericSubModifier(a), $rawSubMods);
 			$isBulk = php.in_array('isBulk', php.array_column($subMods, 'type'));
-			return {'subModifiers': $subMods, 'isBulk': $isBulk};
+			return {subModifiers: $subMods, isBulk: $isBulk};
 		} else {
 			return null;
 		}
@@ -467,9 +467,9 @@ class AtfqParser {
 		if (php.preg_match(/^Z(.*?)(\d*\.?\d+)$/, $token, $matches = [])) {
 			[$_, $currencySign, $amount] = $matches;
 			return {
-				'units': $currencySign ? 'amount' : 'percent',
-				'currencySign': $currencySign || null,
-				'value': $amount,
+				units: $currencySign ? 'amount' : 'percent',
+				currencySign: $currencySign || null,
+				value: $amount,
 			};
 		} else {
 			return null;

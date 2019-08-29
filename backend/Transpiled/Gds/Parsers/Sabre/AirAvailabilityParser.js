@@ -40,20 +40,20 @@ class AirAvailabilityParser
             '\/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'date': {
-					'raw': $matches['date'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['date']),
+				date: {
+					raw: $matches['date'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['date']),
 				},
-				'dayOfWeek': {'raw': $matches['dayOfWeek']},
-				'departureCity': $matches['departureCity'],
-				'departureTz': {
-					'raw': $matches['departureTz'],
-					'offset': php.str_replace('¥', '+', $matches['departureTzOffset']),
+				dayOfWeek: {raw: $matches['dayOfWeek']},
+				departureCity: $matches['departureCity'],
+				departureTz: {
+					raw: $matches['departureTz'],
+					offset: php.str_replace('¥', '+', $matches['departureTzOffset']),
 				},
-				'destinationCity': $matches['destinationCity'],
-				'destinationTz': {
-					'raw': $matches['destinationTz'],
-					'offset': php.str_replace('¥', '+', $matches['destinationTzOffset']),
+				destinationCity: $matches['destinationCity'],
+				destinationTz: {
+					raw: $matches['destinationTz'],
+					offset: php.str_replace('¥', '+', $matches['destinationTzOffset']),
 				},
 			};
 		} else {
@@ -138,30 +138,30 @@ class AirAvailabilityParser
             '\\s*$\/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'lineNumber': php.trim($matches['lineNumber']),
-				'airline': $matches['airline'],
-				'operatingAirline': $matches['operatingAirline'] || '',
-				'flightNumber': $matches['flightNumber'],
-				'availability': this.parseAvailability($matches['availability']),
-				'moreClassesExist': $matches['moreClassesExist'] === '*',
-				'departureAirport': $matches['departureAirport'],
-				'destinationAirport': $matches['destinationAirport'],
-				'ontimeMarker': php.trim($matches['ontimeMarker']),
-				'departureDayOffset': this.parseDayOffset(this.reverseStr($matches['departureDayOffset'])),
-				'departureTime': {
-					'raw': $matches['departureTime'],
-					'parsed': CommonParserHelpers.decodeApolloTime($matches['departureTime']),
+				lineNumber: php.trim($matches['lineNumber']),
+				airline: $matches['airline'],
+				operatingAirline: $matches['operatingAirline'] || '',
+				flightNumber: $matches['flightNumber'],
+				availability: this.parseAvailability($matches['availability']),
+				moreClassesExist: $matches['moreClassesExist'] === '*',
+				departureAirport: $matches['departureAirport'],
+				destinationAirport: $matches['destinationAirport'],
+				ontimeMarker: php.trim($matches['ontimeMarker']),
+				departureDayOffset: this.parseDayOffset(this.reverseStr($matches['departureDayOffset'])),
+				departureTime: {
+					raw: $matches['departureTime'],
+					parsed: CommonParserHelpers.decodeApolloTime($matches['departureTime']),
 				},
-				'destinationTime': {
-					'raw': $matches['destinationTime'],
-					'parsed': CommonParserHelpers.decodeApolloTime($matches['destinationTime']),
+				destinationTime: {
+					raw: $matches['destinationTime'],
+					parsed: CommonParserHelpers.decodeApolloTime($matches['destinationTime']),
 				},
-				'destinationDayOffset': this.parseDayOffset($matches['destinationDayOffset']),
-				'aircraft': php.trim($matches['aircraft'] || ''),
-				'meals': !php.empty($matches['meals']) ? {'raw': php.trim($matches['meals'])} : null,
-				'hiddenStops': php.trim($matches['hiddenStops'] || ''),
-				'dcaMark': $matches['dcaMark'] || '',
-				'unparsed': $matches['unparsed'],
+				destinationDayOffset: this.parseDayOffset($matches['destinationDayOffset']),
+				aircraft: php.trim($matches['aircraft'] || ''),
+				meals: !php.empty($matches['meals']) ? {raw: php.trim($matches['meals'])} : null,
+				hiddenStops: php.trim($matches['hiddenStops'] || ''),
+				dcaMark: $matches['dcaMark'] || '',
+				unparsed: $matches['unparsed'],
 			};
 		} else {
 			return null;
@@ -190,7 +190,7 @@ class AirAvailabilityParser
 
 		// dump consists of just one line
 		if (php.preg_match(/^\s*.+\s*$/, $dump)) {
-			return {'error': 'GDS returned error - '+php.trim($dump)};
+			return {error: 'GDS returned error - '+php.trim($dump)};
 		}
 
 		$dump = php.rtrim($dump);
@@ -208,7 +208,7 @@ class AirAvailabilityParser
 			}
 		}
 		if (!$header) {
-			return {'error': 'Unexpected start of dump - '+php.trim($unparsedLines[0])};
+			return {error: 'Unexpected start of dump - '+php.trim($unparsedLines[0])};
 		}
 
 		$flights = [];
@@ -224,10 +224,10 @@ class AirAvailabilityParser
 			}}
 
 		return {
-			'header': $header,
-			'flights': $flights,
-			'moreMark': $moreMark,
-			'unparsedLines': $unparsedLines,
+			header: $header,
+			flights: $flights,
+			moreMark: $moreMark,
+			unparsedLines: $unparsedLines,
 		};
 	}
 }

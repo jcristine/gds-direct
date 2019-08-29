@@ -24,7 +24,7 @@ class NmeScreenParser {
 
 		if (php.preg_match(/(\d+)\/;([A-Z0-9]+)/, $token, $matches = [])) {
 			[$_, $segNum, $td] = $matches;
-			return {'segmentNumber': $segNum, 'ticketDesignator': $td};
+			return {segmentNumber: $segNum, ticketDesignator: $td};
 		} else {
 			return null;
 		}
@@ -51,8 +51,8 @@ class NmeScreenParser {
 			}
 			$label = $split['L'];
 			$record = {
-				'current': php.intval($split['C']),
-				'total': php.intval($split['A']),
+				current: php.intval($split['C']),
+				total: php.intval($split['A']),
 			};
 			if ($label === 'MREC') {
 				$result['record']['storeNumber'] = $record;
@@ -92,12 +92,12 @@ class NmeScreenParser {
 				$unparsed = $commValue;
 			}
 			return {
-				'fareEquivalent': $equivalentCurrency ? {
-					'currency': $equivalentCurrency,
-					'amount': $equivalentAmount,
+				fareEquivalent: $equivalentCurrency ? {
+					currency: $equivalentCurrency,
+					amount: $equivalentAmount,
 				} : null,
-				'commission': $commission,
-				'unparsed': php.trim($unparsed),
+				commission: $commission,
+				unparsed: php.trim($unparsed),
 			};
 		} else {
 			return null;
@@ -117,13 +117,13 @@ class NmeScreenParser {
 		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
 		if ($split['L'] === 'FAREDOTAXESAPPLY?') {
 			return {
-				'lastCityIsStopover': $split['S'] !== 'X',
-				'lastCity': this.cleanMaskValue($split['W']),
-				'baseFare': {
-					'currency': this.cleanMaskValue($split['C']),
-					'amount': this.cleanMaskValue($split['A']),
+				lastCityIsStopover: $split['S'] !== 'X',
+				lastCity: this.cleanMaskValue($split['W']),
+				baseFare: {
+					currency: this.cleanMaskValue($split['C']),
+					amount: this.cleanMaskValue($split['A']),
 				},
-				'doTaxesApply': $split['F'] === 'Y',
+				doTaxesApply: $split['F'] === 'Y',
 			};
 		} else {
 			return null;
@@ -156,30 +156,30 @@ class NmeScreenParser {
 			$nva = CommonParserHelpers.parsePartialDate($matches['notValidBefore']);
 			$nvb = CommonParserHelpers.parsePartialDate($matches['notValidAfter']);
 			return {
-				'type': 'flight',
-				'isStopover': $matches['stopoverMark'] !== 'X',
-				'departureCity': $matches['departureCity'],
-				'airline': $matches['airline'],
-				'flightNumber': $matches['flightNumber'],
-				'bookingClass': $matches['bookingClass'],
-				'departureDate': {
-					'raw': $matches['departureDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['departureDate']),
+				type: 'flight',
+				isStopover: $matches['stopoverMark'] !== 'X',
+				departureCity: $matches['departureCity'],
+				airline: $matches['airline'],
+				flightNumber: $matches['flightNumber'],
+				bookingClass: $matches['bookingClass'],
+				departureDate: {
+					raw: $matches['departureDate'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['departureDate']),
 				},
-				'departureTime': {
-					'raw': $matches['departureTime'],
-					'parsed': CommonParserHelpers.decodeApolloTime($matches['departureTime']),
+				departureTime: {
+					raw: $matches['departureTime'],
+					parsed: CommonParserHelpers.decodeApolloTime($matches['departureTime']),
 				},
-				'status': $matches['status'],
-				'fareBasis': $matches['fareBasis'],
-				'fare': $matches['fare'],
-				'notValidBefore': $nva ? {
-					'raw': $matches['notValidBefore'],
-					'parsed': $nva,
+				status: $matches['status'],
+				fareBasis: $matches['fareBasis'],
+				fare: $matches['fare'],
+				notValidBefore: $nva ? {
+					raw: $matches['notValidBefore'],
+					parsed: $nva,
 				} : null,
-				'notValidAfter': $nvb ? {
-					'raw': $matches['notValidAfter'],
-					'parsed': $nvb,
+				notValidAfter: $nvb ? {
+					raw: $matches['notValidAfter'],
+					parsed: $nvb,
 				} : null,
 			};
 		} else {
@@ -196,9 +196,9 @@ class NmeScreenParser {
 		if ($parsed = this.parseFlightSegment($line)) {
 			return $parsed;
 		} else if (php.preg_match(/^\s*\.\s+([A-Z]{3})(?:\s|\.)+VOID(?:\s|\.)+$/, $line, $matches = [])) {
-			return {'type': 'void', 'departureCity': $matches[1], 'isStopover': true};
+			return {type: 'void', departureCity: $matches[1], isStopover: true};
 		} else if (php.preg_match(/(?:\s|\.)+VOID(?:\s|\.)+$/, $line)) {
-			return {'type': 'void', 'departureCity': null, 'isStopover': true};
+			return {type: 'void', departureCity: null, isStopover: true};
 		} else {
 			return null;
 		}
@@ -212,7 +212,7 @@ class NmeScreenParser {
 		$nameLine = php.array_shift($lines);
 
 		if (!php.preg_match(/>\$NME\s+(.+)\/(.+?)\s*\.*\s*$/, $nameLine, $nameMatches = [])) {
-			return {'error': 'Unexpected start of dump - ' + $nameLine};
+			return {error: 'Unexpected start of dump - ' + $nameLine};
 		}
 		[$_, $lastName, $firstName] = $nameMatches;
 		$labelsLine = php.array_shift($lines);
@@ -230,17 +230,17 @@ class NmeScreenParser {
 		}
 		$line = php.array_shift($lines);
 		if (!($lastCityLineData = this.parseLastCityLine($line))) {
-			return {'error': 'Failed to parse last city line - ' + $line};
+			return {error: 'Failed to parse last city line - ' + $line};
 		}
 		if (!($miscFareLineData = this.parseMiscFareLine(php.array_shift($lines)))) {
-			return {'error': 'Failed to parse misc fare info line'};
+			return {error: 'Failed to parse misc fare info line'};
 		}
 
 		if ($lastCityLineData['lastCity']) {
 			$segments.push({
-				'isStopover': $lastCityLineData['lastCityIsStopover'],
-				'departureCity': $lastCityLineData['lastCity'],
-				'type': 'void',
+				isStopover: $lastCityLineData['lastCityIsStopover'],
+				departureCity: $lastCityLineData['lastCity'],
+				type: 'void',
 			});
 		}
 
@@ -251,15 +251,15 @@ class NmeScreenParser {
 		}
 
 		return {
-			'lastName': $lastName,
-			'firstName': $firstName,
+			lastName: $lastName,
+			firstName: $firstName,
 			// does not include flown segments
-			'segments': $segments,
-			'baseFare': $lastCityLineData['baseFare'],
-			'doTaxesApply': $lastCityLineData['doTaxesApply'],
-			'fareEquivalent': $miscFareLineData['fareEquivalent'],
-			'commission': $miscFareLineData['commission'],
-			'record': $footer['record'],
+			segments: $segments,
+			baseFare: $lastCityLineData['baseFare'],
+			doTaxesApply: $lastCityLineData['doTaxesApply'],
+			fareEquivalent: $miscFareLineData['fareEquivalent'],
+			commission: $miscFareLineData['commission'],
+			record: $footer['record'],
 		};
 	}
 }

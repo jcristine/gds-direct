@@ -48,7 +48,7 @@ class CommandParser
                 php.in_array($searchTokens[0], ['U', '*E']) ||
                 php.preg_match(/\/\s*\S/, $searchTokens[0])
 			) {
-				return {'searchTokens': $searchTokens};
+				return {searchTokens: $searchTokens};
 			} else {
 				return null;
 			}
@@ -94,11 +94,11 @@ class CommandParser
             '$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			return {
-				'airline': $matches['airline'],
-				'code': $matches['code'],
-				'partners': php.empty($matches['partners']) ? [] :
+				airline: $matches['airline'],
+				code: $matches['code'],
+				partners: php.empty($matches['partners']) ? [] :
 					php.explode(',', php.ltrim($matches['partners'], ',')),
-				'majorPaxNum': $matches['majorPaxNum'] || '',
+				majorPaxNum: $matches['majorPaxNum'] || '',
 			};
 		} else {
 			return null;
@@ -118,10 +118,10 @@ class CommandParser
 				for ($num of Object.values(php.range($from, $to))) {
 					$pair = php.explode('.', $num);
 					$lineNumbers.push({
-						'major': $pair[0],
-						'minor': $pair[1],
+						major: $pair[0],
+						minor: $pair[1],
 					});}}
-			return {'lineNumbers': $lineNumbers};
+			return {lineNumbers: $lineNumbers};
 		} else {
 			return null;
 		}
@@ -133,9 +133,9 @@ class CommandParser
 		if (php.preg_match(/^\s*(\d+)(\.\d+|)\/(.+)$/, $cmd, $matches = [])) {
 			[$_, $major, $minor, $content] = $matches;
 			return {
-				'majorNum': $major,
-				'minorNum': php.ltrim($minor, '.'),
-				'content': $content,
+				majorNum: $major,
+				minorNum: php.ltrim($minor, '.'),
+				content: $content,
 			};
 		} else {
 			return null;
@@ -165,19 +165,19 @@ class CommandParser
 			$paxNums = php.empty($matches['paxNums']) ? [] :
 				this.parseRange($matches['paxNums']);
 			return {
-				'paxRanges': Fp.map(($num) => {
+				paxRanges: Fp.map(($num) => {
 					return {
-						'from': $num, 'fromMinor': null,
-						'to': $num, 'toMinor': null,
+						from: $num, fromMinor: null,
+						to: $num, toMinor: null,
 					};}, $paxNums),
-				'segNums': php.empty($matches['segNums']) ? [] :
+				segNums: php.empty($matches['segNums']) ? [] :
 					this.parseRange($matches['segNums']),
-				'location': php.empty($matches['location']) ? null : {
-					'raw': $matches['location'],
-					'parsed': ({'A': 'aisle', 'W': 'window', 'B': 'bulkhead'} || {})[$matches['location']],
+				location: php.empty($matches['location']) ? null : {
+					raw: $matches['location'],
+					parsed: ({A: 'aisle', W: 'window', B: 'bulkhead'} || {})[$matches['location']],
 				},
-				'zone': null,
-				'seatCodes': $seatCodes,
+				zone: null,
+				seatCodes: $seatCodes,
 			};
 		} else {
 			return null;
@@ -196,15 +196,15 @@ class CommandParser
 			$paxNums = php.empty($matches['paxNums']) ? [] :
 				this.parseRange($matches['paxNums']);
 			return {
-				'paxRanges': Fp.map(($num) => ({
-					'from': $num, 'fromMinor': null,
-					'to': $num, 'toMinor': null,
+				paxRanges: Fp.map(($num) => ({
+					from: $num, fromMinor: null,
+					to: $num, toMinor: null,
 				}), $paxNums),
-				'segNums': php.empty($matches['segNums']) ? [] :
+				segNums: php.empty($matches['segNums']) ? [] :
 					this.parseRange($matches['segNums']),
-				'location': null,
-				'zone': null,
-				'seatCodes': [],
+				location: null,
+				zone: null,
+				seatCodes: [],
 			};
 		} else {
 			return null;
@@ -273,25 +273,25 @@ class CommandParser
 		let $is, $startsWith, $regex, $pattern, $type, $name;
 
 		$is = {
-			'RT': 'redisplayPnr',
-			'RTI': 'itinerary',
-			'RTN': 'names',
-			'MT': 'moveTop',
-			'MU': 'moveUp',
-			'MDR': 'moveRest',
-			'M': 'moveDownShort',
-			'MD': 'moveDown',
-			'MB': 'moveBottom',
-			'IG': 'ignore',
-			'IR': 'ignoreKeepPnr',
-			'ETX': 'deletePnr',
-			'ET': 'storePnr',
-			'ER': 'storeKeepPnr',
-			'JD': 'workAreas',
-			'DMI': 'verifyConnectionTimes',
-			'RRI': 'cloneItinerary',
-			'VFFD': 'frequentFlyerData',
-			'EF': 'fileDividedBooking',
+			RT: 'redisplayPnr',
+			RTI: 'itinerary',
+			RTN: 'names',
+			MT: 'moveTop',
+			MU: 'moveUp',
+			MDR: 'moveRest',
+			M: 'moveDownShort',
+			MD: 'moveDown',
+			MB: 'moveBottom',
+			IG: 'ignore',
+			IR: 'ignoreKeepPnr',
+			ETX: 'deletePnr',
+			ET: 'storePnr',
+			ER: 'storeKeepPnr',
+			JD: 'workAreas',
+			DMI: 'verifyConnectionTimes',
+			RRI: 'cloneItinerary',
+			VFFD: 'frequentFlyerData',
+			EF: 'fileDividedBooking',
 		};
 
 		$startsWith = {
@@ -406,9 +406,9 @@ class CommandParser
 		}
 
 		return {
-			'type': $type,
-			'data': $data,
-			'cmd': $cmd,
+			type: $type,
+			data: $data,
+			cmd: $cmd,
 		};
 	}
 

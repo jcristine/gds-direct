@@ -101,10 +101,10 @@ const parseSeatIncreasePseudoCmd = ($cmd) => {
 		'$/';
 	if (php.preg_match($regex, $cmd, $matches = [])) {
 		return {
-			'seatAmount': $matches['seatAmount'],
-			'segNumStart': $matches['segNumStart'] || '' || null,
-			'segNumEnd': $matches['segNumEnd'] || '' || null,
-			'segmentStatus': $matches['segmentStatus'] || '' || null,
+			seatAmount: $matches['seatAmount'],
+			segNumStart: $matches['segNumStart'] || '' || null,
+			segNumEnd: $matches['segNumEnd'] || '' || null,
+			segmentStatus: $matches['segmentStatus'] || '' || null,
 		};
 	} else {
 		return null;
@@ -137,7 +137,7 @@ const translateApolloPricingModifiers = ($apolloMods) => {
 			return Rej.NotImplemented('Unsupported modifier - ' + $apolloMod.raw);
 		}
 	}
-	return {'mods': $mods, 'rSubMods': $rSubMods};
+	return {mods: $mods, rSubMods: $rSubMods};
 };
 
 /** @param stateful = await require('StatefulSession.js')() */
@@ -241,9 +241,9 @@ const execute = ({
 
 		$pnr = await getCurrentPnr();
 		if (!CommonDataHelper.isValidPnr($pnr)) {
-			return {'errors': [Errors.getMessage(Errors.INVALID_PNR, {'response': php.trim($pnr.getDump())})]};
+			return {errors: [Errors.getMessage(Errors.INVALID_PNR, {response: php.trim($pnr.getDump())})]};
 		} else if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
-			return {'errors': $errors};
+			return {errors: $errors};
 		}
 
 		$login = getAgent().getLogin();
@@ -267,7 +267,7 @@ const execute = ({
 		$output = await amadeusRt($cmd);
 
 		if (isSaveConfirmationRequired($output)) {
-			$calledCommands.push({'cmd': 'ER', 'output': $output});
+			$calledCommands.push({cmd: 'ER', output: $output});
 			$output = await amadeusRt('ER');
 		}
 		$parsedStoredPnr = PnrParser.parse($output);
@@ -275,8 +275,8 @@ const execute = ({
 			handlePnrSave($rloc);
 		}
 
-		$calledCommands.push({'cmd': 'PNR', 'output': $output});
-		return {'calledCommands': $calledCommands};
+		$calledCommands.push({cmd: 'PNR', output: $output});
+		return {calledCommands: $calledCommands};
 	};
 
 	const processSortItinerary = async () => {
@@ -292,7 +292,7 @@ const execute = ({
 		$cmd = 'RS' + itinerary.map(s => s.segmentNumber).join(',');
 		const output = await runCommand($cmd);
 		$calledCommands.push({cmd: $cmd, output});
-		return {'calledCommands': $calledCommands};
+		return {calledCommands: $calledCommands};
 	};
 
 	const deleteSegments = async ($segNumStart, $segNumEnd) => {
@@ -300,7 +300,7 @@ const execute = ({
 
 		$rtamDump = await amadeusRt('RTAM');
 		if (php.empty($itinerary = MarriageItineraryParser.parse($rtamDump))) {
-			return {'errors': [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
+			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
 		}
 
 		if ($segNumStart) {
@@ -318,11 +318,11 @@ const execute = ({
 		$xeOutput = await runCommand($xeCmd);
 		if (!isOkXeOutput($xeOutput)) {
 			return {
-				'errors': ['Failed to delete segments - ' + $xeOutput],
-				'calledCommands': stateful.flushCalledCommands(),
+				errors: ['Failed to delete segments - ' + $xeOutput],
+				calledCommands: stateful.flushCalledCommands(),
 			};
 		}
-		return {'matchedSegments': $matchedSegments};
+		return {matchedSegments: $matchedSegments};
 	};
 
 	/** @param $params = ProcessAmadeusTerminalInputAction::parseSeatIncreasePseudoCmd() */
@@ -330,7 +330,7 @@ const execute = ({
 		let $deleted, $matchedSegments, $i;
 
 		if ($params['seatAmount'] > 9) {
-			return {'errors': ['Seat amount must be a one-digit number']};
+			return {errors: ['Seat amount must be a one-digit number']};
 		}
 		$deleted = await deleteSegments($params['segNumStart'], $params['segNumEnd']);
 		if (php.empty($matchedSegments = $deleted['matchedSegments'] || [])) {
@@ -361,11 +361,11 @@ const execute = ({
 		}
 
 		if (php.empty($itinerary)) {
-			return {'errors': [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
+			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
 		}
 
 		if (php.empty($emptyAreas = getEmptyAreasFromDbState())) {
-			return {'errors': [Errors.getMessage(Errors.NO_FREE_AREAS)]};
+			return {errors: [Errors.getMessage(Errors.NO_FREE_AREAS)]};
 		}
 		if (!getSessionData()['isPnrStored'] && !$aliasData['keepOriginal'] && $segmentStatus !== 'GK') {
 			await runCommand('IG'); // ignore the itinerary it initial area
@@ -444,11 +444,11 @@ const execute = ({
 		}
 		const calledCommands = rebookCmdRecs.length > 0 ? rebookCmdRecs : buildCmdRecs;
 		return {
-			'calledCommands': !php.empty($errors) ? calledCommands : [
+			calledCommands: !php.empty($errors) ? calledCommands : [
 				// last command should have resulting PNR dump
-				{'cmd': 'RT', 'output': ArrayUtil.getLast(calledCommands)['output']},
+				{cmd: 'RT', output: ArrayUtil.getLast(calledCommands)['output']},
 			],
-			'errors': $errors,
+			errors: $errors,
 		};
 	};
 
@@ -519,8 +519,8 @@ const execute = ({
 				});
 			} else {
 				return Errors.getMessage(Errors.REBOOK_FAILURE, {
-					'segNums': $numberStr,
-					'output': php.trim($output),
+					segNums: $numberStr,
+					output: php.trim($output),
 				});
 			}
 		}
@@ -532,7 +532,7 @@ const execute = ({
 		const gkSegments = (await getCurrentPnr()).getItinerary()
 			.filter(($seg) => $seg['segmentStatus'] === 'GK');
 		if (php.empty(gkSegments)) {
-			return {'errors': ['No GK segments']};
+			return {errors: ['No GK segments']};
 		}
 		await runCommand('XE' + php.implode(',', php.array_column(gkSegments, 'lineNumber')));
 		const newSegments = Fp.map(($seg) => {
@@ -844,25 +844,25 @@ const execute = ({
 
 		if (php.in_array($type, CommonDataHelper.getTicketingCommands())) {
 			if (!$agent.canIssueTickets()) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
+				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type}));
 			}
 		} else if (php.in_array($type, CommonDataHelper.getCountedFsCommands())) {
 			$totalAllowed = $agent.getFsLimit();
 			if (!$totalAllowed) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
+				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type}));
 			} else if ((await $agent.getFsCallsUsed()) >= $totalAllowed) {
-				$errors.push(Errors.getMessage(Errors.FS_LIMIT_EXHAUSTED, {'totalAllowed': $totalAllowed}));
+				$errors.push(Errors.getMessage(Errors.FS_LIMIT_EXHAUSTED, {totalAllowed: $totalAllowed}));
 			}
 		} else if ($isQueueCmd && !php.in_array($type, ['movePnrToQueue'])) {
 			if (!$agent.canProcessQueues()) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type || 'queueOperation'}));
+				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type || 'queueOperation'}));
 			}
 		} else if ($type === 'searchPnr') {
 			if (!$agent.canSearchPnr()) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
+				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type}));
 			}
 		} else if (php.in_array($type, CommonDataHelper.getTotallyForbiddenCommands())) {
-			$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
+			$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type}));
 		}
 		if ($type == 'deletePnrField' || $type == 'deletePnr') {
 			if (stateful.getSessionData()['isPnrStored'] &&
@@ -881,12 +881,12 @@ const execute = ({
 			for ($flatCmd of Object.values($flatCmds)) {
 				if ($flatCmd['type'] === 'changePnrField') {
 					if (await isGdRemarkLine($flatCmd['data']['majorNum'])) {
-						$errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {'lineNum': $flatCmd['data']['majorNum']}));
+						$errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {lineNum: $flatCmd['data']['majorNum']}));
 					}
 				} else if ($flatCmd['type'] === 'deletePnrField') {
 					for ($numRec of Object.values(($flatCmd['data'] || {})['lineNumbers'] || [])) {
 						if (await isGdRemarkLine($numRec['major'])) {
-							$errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {'lineNum': $numRec['major']}));
+							$errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {lineNum: $numRec['major']}));
 						}
 					}
 				}
@@ -930,10 +930,10 @@ const execute = ({
 				!stateful.getAgent().canOpenPrivatePnr()
 			) {
 				await runCommand('IG');
-				return {'errors': ['Restricted PNR']};
+				return {errors: ['Restricted PNR']};
 			}
 		}
-		return {'calledCommands': $calledCommands, 'userMessages': $userMessages};
+		return {calledCommands: $calledCommands, userMessages: $userMessages};
 	};
 
 	const processRealCommand = async ($cmd) => {
@@ -941,7 +941,7 @@ const execute = ({
 
 		$cmd = await preprocessCommand($cmd);
 		if (!php.empty($errors = await checkIsForbidden($cmd))) {
-			return {'errors': $errors};
+			return {errors: $errors};
 		}
 		$calledCommands = [];
 		$calledCommands = php.array_merge($calledCommands, await callImplicitCommandsBefore($cmd));
@@ -969,7 +969,7 @@ const execute = ({
 			const pcc = matches[1];
 			return fakeAreaUtil.changePcc(pcc);
 		} else if (php.preg_match(/^JD$/, cmd, matches = [])) {
-			return {'calledCommands': [imitateGetAreasCmd()]};
+			return {calledCommands: [imitateGetAreasCmd()]};
 		} else if (mdaData = AliasParser.parseMda(cmd)) {
 			const limit = mdaData.limit || null;
 			const cmdReal = mdaData.realCmd;

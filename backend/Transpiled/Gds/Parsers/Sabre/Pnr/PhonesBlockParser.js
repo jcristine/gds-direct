@@ -21,9 +21,9 @@ class PhonesBlockParser
 				$lineNumber = php.intval($tokens['lineNumber']);
 				$line = php.trim($tokens['raw']);
 				$phones.push({
-					'lineNumber': $lineNumber,
-					'raw': $line,
-					'parsed': this.parsePhone($line),
+					lineNumber: $lineNumber,
+					raw: $line,
+					parsed: this.parsePhone($line),
 				});
 			}}
 
@@ -35,9 +35,9 @@ class PhonesBlockParser
 
 		if (php.preg_match(/^(?<city>[A-Z]*)(?<phoneNumber>\d+)(-(?<phoneTypeToken>[A-Z]+))?/, $line, $tokens = [])) {
 			return {
-				'city': $tokens['city'],
-				'phoneNumber': $tokens['phoneNumber'],
-				'phoneTypeToken': $tokens['phoneTypeToken'],
+				city: $tokens['city'],
+				phoneNumber: $tokens['phoneNumber'],
+				phoneTypeToken: $tokens['phoneTypeToken'],
 			};
 		} else {
 			return null;

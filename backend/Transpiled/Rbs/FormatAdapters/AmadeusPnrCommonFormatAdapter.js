@@ -19,8 +19,8 @@ class AmadeusPnrCommonFormatAdapter
 			? DateTime.decodeRelativeDateInFuture($dateRecord['parsed'], $baseDate)
 			: null;
 		return {
-			'parsed': $dateRecord['parsed']+' '+$timeRecord['parsed'],
-			'full': $fullDate ? $fullDate+' '+$timeRecord['parsed']+':00' : null,
+			parsed: $dateRecord['parsed']+' '+$timeRecord['parsed'],
+			full: $fullDate ? $fullDate+' '+$timeRecord['parsed']+':00' : null,
 		};
 	}
 
@@ -36,8 +36,8 @@ class AmadeusPnrCommonFormatAdapter
 				if ($segment['displayFormat'] === PnrParser.FORMAT_DAY_OFFSET) {
 					$dayOffset = $segment['dayOffset'];
 					$destinationDt = {
-						'parsed': $dayOffset,
-						'full': php.date('Y-m-d', php.strtotime('+'+$dayOffset+' day', php.strtotime($departureDt['full'])))
+						parsed: $dayOffset,
+						full: php.date('Y-m-d', php.strtotime('+'+$dayOffset+' day', php.strtotime($departureDt['full'])))
                             +' '+$segment['destinationTime']['parsed']+':00',
 					};
 				} else {
@@ -74,11 +74,11 @@ class AmadeusPnrCommonFormatAdapter
 
 			$baseDate = $dateRecord['parsed'];
 			$pnrInfo = {
-				'recordLocator': (($parsed['parsed'] || {})['pnrInfo'] || {})['recordLocator'],
-				'receivedFrom': null,
-				'agentInitials': (($parsed['parsed'] || {})['pnrCreationInfo'] || {})['agentInitials'] || (($parsed['parsed'] || {})['pnrInfo'] || {})['agentInitials'],
-				'reservationDate': $dateRecord,
-				'agencyInfo': null,
+				recordLocator: (($parsed['parsed'] || {})['pnrInfo'] || {})['recordLocator'],
+				receivedFrom: null,
+				agentInitials: (($parsed['parsed'] || {})['pnrCreationInfo'] || {})['agentInitials'] || (($parsed['parsed'] || {})['pnrInfo'] || {})['agentInitials'],
+				reservationDate: $dateRecord,
+				agencyInfo: null,
 			};
 		} else {
 			$pnrInfo = null;
@@ -88,12 +88,12 @@ class AmadeusPnrCommonFormatAdapter
 		$itinerary = this.transformItinerary(($parsed['parsed'] || {})['itinerary'] || [], $baseDate);
 
 		$common = {
-			'pnrInfo': $pnrInfo,
-			'passengers': $nameRecords,
-			'itinerary': $itinerary,
-			'confirmationNumbers': ImportPnrCommonFormatAdapter.collectConfirmationNumbers($itinerary),
-			'dataExistsInfo': {
-				'dividedBookingExists': php.count(($parsed['parsed'] || {})['dividedBookings'] || []) > 0,
+			pnrInfo: $pnrInfo,
+			passengers: $nameRecords,
+			itinerary: $itinerary,
+			confirmationNumbers: ImportPnrCommonFormatAdapter.collectConfirmationNumbers($itinerary),
+			dataExistsInfo: {
+				dividedBookingExists: php.count(($parsed['parsed'] || {})['dividedBookings'] || []) > 0,
 			},
 		};
 		$common = ImportPnrCommonFormatAdapter.addContextDataToPaxes($common);

@@ -36,7 +36,7 @@ const PtcUtil = ({
 	 */
 	const parsePtc = (ptc) => {
 		if (!ptc) {
-			return {'ageGroup': null};
+			return {ageGroup: null};
 		}
 		const infantPtcs = [
 			'INF', 'INS', 'JNF', 'JNS', /* rare -> */

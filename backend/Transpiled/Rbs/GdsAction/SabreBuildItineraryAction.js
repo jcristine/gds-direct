@@ -55,7 +55,7 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 				? $segment['departureDate']['raw']
 				: this.constructor.formatSabreDate($segment['departureDate']);
 
-			return {...$segment, 'departureDate': $date};
+			return {...$segment, departureDate: $date};
 		}, $itinerary);
 
 		for ([$i, $segment] of Object.entries($itinerary)) {
@@ -73,16 +73,16 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 					$errorType = Errors.REBUILD_GDS_ERROR;
 				}
 				$tplData = {
-					'segmentNumber': $i + 1,
-					'from': $segment['departureDate'],
-					'to': $segment['destinationAirport'],
-					'waitlist': waitlist,
-					'response': php.trim($output),
+					segmentNumber: $i + 1,
+					from: $segment['departureDate'],
+					to: $segment['destinationAirport'],
+					waitlist: waitlist,
+					response: php.trim($output),
 				};
 				return {
-					'success': false,
-					'errorType': $errorType,
-					'errorData': $tplData,
+					success: false,
+					errorType: $errorType,
+					errorData: $tplData,
 				};
 			}
 		}
@@ -90,7 +90,7 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 		// happening on the next command after passive segment sell of some
 		// airlines, for example: >0DY7088C20APRLAXARNGK1;
 		const pnrCmdRec = await this.runCmd('*R');
-		return {'success': true, pnrCmdRec};
+		return {success: true, pnrCmdRec};
 	}
 
 	async executeViaXml(itinerary, isParserFormat) {
@@ -130,7 +130,7 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 			return {
 				success: false,
 				airSegmentCount: result.newAirSegments.length,
-				errorType: Errors.REBUILD_MULTISEGMENT, 'errorData': {response: result.error},
+				errorType: Errors.REBUILD_MULTISEGMENT, errorData: {response: result.error},
 			};
 		}
 

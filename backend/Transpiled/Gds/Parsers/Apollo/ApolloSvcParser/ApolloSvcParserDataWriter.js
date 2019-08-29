@@ -23,17 +23,17 @@ class ApolloSvcParserDataWriter {
 	startNewSegment($data) {
 		this.finalizeSegment();
 		this.$currentSegment = {
-			'segmentNumber': $data['segmentNumber'],
-			'airline': $data['airline'],
-			'flightNumber': $data['flightNumber'],
-			'bookingClass': $data['bookingClass'],
+			segmentNumber: $data['segmentNumber'],
+			airline: $data['airline'],
+			flightNumber: $data['flightNumber'],
+			bookingClass: $data['bookingClass'],
 
-			'departureTerminal': null,
-			'arrivalTerminal': null,
-			'operatedByText': '',
-			'miscInfoText': '',
+			departureTerminal: null,
+			arrivalTerminal: null,
+			operatedByText: '',
+			miscInfoText: '',
 
-			'legs': [],
+			legs: [],
 		};
 	}
 
@@ -48,14 +48,14 @@ class ApolloSvcParserDataWriter {
 	startNewLeg($data) {
 		this.finalizeLeg();
 		this.$currentLeg = {
-			'departureAirport': $data['departureAirport'],
-			'destinationAirport': $data['destinationAirport'],
-			'aircraft': $data['aircraft'],
-			'mealOptions': $data['mealOptions'],
-			'mealOptionsParsed': $data['mealOptionsParsed'],
-			'flightDuration': $data['flightDuration'],
+			departureAirport: $data['departureAirport'],
+			destinationAirport: $data['destinationAirport'],
+			aircraft: $data['aircraft'],
+			mealOptions: $data['mealOptions'],
+			mealOptionsParsed: $data['mealOptionsParsed'],
+			flightDuration: $data['flightDuration'],
 
-			'inFlightServicesText': '',
+			inFlightServicesText: '',
 		};
 	}
 

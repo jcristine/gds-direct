@@ -16,7 +16,7 @@ class TranslateChangeFrequentFlyerNumber {
 		}
 		if ($gds === 'apollo') {
 			return {
-				'passengers': Fp.map(($pax) => {
+				passengers: Fp.map(($pax) => {
 
 					$pax['airline'] = (($pax['mileagePrograms'] || {})[0] || {})['airline'];
 					return $pax;
@@ -24,7 +24,7 @@ class TranslateChangeFrequentFlyerNumber {
 			};
 		} else if ($gds === 'sabre') {
 			if (php.empty($parsedData['lineNums'])) { // ALL
-				return {'passengers': []};
+				return {passengers: []};
 			} else {
 				// Sabre allows deleting only by line number, not by pax
 				return null;

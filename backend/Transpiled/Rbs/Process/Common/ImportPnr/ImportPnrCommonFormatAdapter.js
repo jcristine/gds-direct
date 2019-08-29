@@ -36,10 +36,10 @@ class ImportPnrCommonFormatAdapter
 	static collectConfirmationNumbers($itinerary)  {
 		return Fp.map(($seg) => {
 			return {
-				'confirmationNumber': $seg['confirmationNumber'],
-				'airline': $seg['airline'],
-				'segmentNumber': $seg['segmentNumber'] || null,
-				'date': null,
+				confirmationNumber: $seg['confirmationNumber'],
+				airline: $seg['airline'],
+				segmentNumber: $seg['segmentNumber'] || null,
+				date: null,
 			};
 		}, php.array_values(Fp.filter(($seg) => {
 			return php.isset($seg['confirmationNumber']);
@@ -68,8 +68,8 @@ class ImportPnrCommonFormatAdapter
 			$group = 'unknown';
 		}
 		return {
-			'raw': $ssrCode,
-			'group': $group,
+			raw: $ssrCode,
+			group: $group,
 		};
 	}
 
@@ -77,23 +77,23 @@ class ImportPnrCommonFormatAdapter
 		if ($ssrCode === 'DOCS') {
 			$data = php.array_filter($data); // remove both ''-s and null-s
 			return {
-				'travelDocType': $data['travelDocType'] || null,
-				'issuingCountry': $data['issuingCountry'] || null,
-				'travelDocNumber': $data['travelDocNumber'] || null,
-				'nationality': $data['nationality'] || null,
-				'dob': $data['dob'] || null,
-				'gender': $data['gender'] || null,
-				'expirationDate': $data['expirationDate'] || null,
-				'lastName': $data['lastName'] || null,
-				'firstName': $data['firstName'] || null,
-				'middleName': $data['middleName'] || null,
-				'primaryPassportHolderToken': $data['primaryPassportHolderToken'] || null,
-				'paxIsInfant': $data['paxIsInfant'] || false,
+				travelDocType: $data['travelDocType'] || null,
+				issuingCountry: $data['issuingCountry'] || null,
+				travelDocNumber: $data['travelDocNumber'] || null,
+				nationality: $data['nationality'] || null,
+				dob: $data['dob'] || null,
+				gender: $data['gender'] || null,
+				expirationDate: $data['expirationDate'] || null,
+				lastName: $data['lastName'] || null,
+				firstName: $data['firstName'] || null,
+				middleName: $data['middleName'] || null,
+				primaryPassportHolderToken: $data['primaryPassportHolderToken'] || null,
+				paxIsInfant: $data['paxIsInfant'] || false,
 
 				// may be absent if SSR was created by airline
-				'paxNum': $data['paxNum'] || null,
-				'paxName': $data['paxName'] || null,
-				'passengerNameNumber': $data['passengerNameNumber'] || null,
+				paxNum: $data['paxNum'] || null,
+				paxName: $data['paxName'] || null,
+				passengerNameNumber: $data['passengerNameNumber'] || null,
 			};
 		} else {
 			return $data;
@@ -104,15 +104,15 @@ class ImportPnrCommonFormatAdapter
 	static transformSsrList($ssrList, $isForAmericanAirlines)  {
 		return Fp.map(($ssr) => {
 			return {
-				'lineNumber': $ssr['lineNumber'],
-				'ssrCode': this.transformSsrCode($ssr['ssrCode']),
-				'airline': $ssr['airline'],
-				'content': $ssr['content'] || null,
-				'line': $ssr['line'],
-				'data': php.isset($ssr['data'])
+				lineNumber: $ssr['lineNumber'],
+				ssrCode: this.transformSsrCode($ssr['ssrCode']),
+				airline: $ssr['airline'],
+				content: $ssr['content'] || null,
+				line: $ssr['line'],
+				data: php.isset($ssr['data'])
 					? this.transformSsrData($ssr['data'], $ssr['ssrCode'])
 					: null,
-				'isForAmericanAirlines': $isForAmericanAirlines,
+				isForAmericanAirlines: $isForAmericanAirlines,
 			};
 		}, $ssrList);
 	}
@@ -129,9 +129,9 @@ class ImportPnrCommonFormatAdapter
 					continue;
 				}
 				$summedData = {
-					'type': $rules['limit']['type'],
-					'conditions': $condition['conditions'],
-					'condition': php.implode(', ', $condition['conditions']),
+					type: $rules['limit']['type'],
+					conditions: $condition['conditions'],
+					condition: php.implode(', ', $condition['conditions']),
 				};
 				if ($summedData['type'] == 'amount') {
 					$summedData['amount'] = $rules['limit']['amount'];
@@ -164,14 +164,14 @@ class ImportPnrCommonFormatAdapter
 		$minStay = $sections[6] || null;
 		$maxStay = $sections[7] || null;
 		return {
-			'pricingNumber': $pricingLink ? $pricingLink['pricingNumber'] : null,
-			'subPricingNumber': $pricingLink ? $pricingLink['subPricingNumber'] : null,
-			'fareComponentNumber': $ruleRecord ? $ruleRecord['componentNumber'] : null,
-			'data': {
-				'minStay': $minStay ? ImportPnrCommonFormatAdapter.transformStayLimitRecord($minStay) : null,
-				'maxStay': $maxStay ? ImportPnrCommonFormatAdapter.transformStayLimitRecord($maxStay) : null,
+			pricingNumber: $pricingLink ? $pricingLink['pricingNumber'] : null,
+			subPricingNumber: $pricingLink ? $pricingLink['subPricingNumber'] : null,
+			fareComponentNumber: $ruleRecord ? $ruleRecord['componentNumber'] : null,
+			data: {
+				minStay: $minStay ? ImportPnrCommonFormatAdapter.transformStayLimitRecord($minStay) : null,
+				maxStay: $maxStay ? ImportPnrCommonFormatAdapter.transformStayLimitRecord($maxStay) : null,
 			},
-			'error': $ruleRecord['error'] || null,
+			error: $ruleRecord['error'] || null,
 		};
 	}
 
@@ -189,7 +189,7 @@ class ImportPnrCommonFormatAdapter
 		$fcSegs = $fc['segments'];
 		if (php.count($fcSegs) !== php.count($rSegs)) {
 			$error = 'PNR segments do not match FC segments in counts';
-			return {'error': $error};
+			return {error: $error};
 		}
 		$fares = [];
 		$dprt = null;
@@ -202,20 +202,20 @@ class ImportPnrCommonFormatAdapter
 			$segNums.push($rSeg['segmentNumber']);
 			if (php.isset($fcSeg['fare'])) {
 				$fares.push({
-					'componentNumber': php.count($fares) + 1,
-					'segmentNumbers': php.array_splice($segNums, 0),
-					'departureAirport': $dprt,
-					'destinationAirport': $rSeg['destinationAirport'],
-					'departureCity': $dprtCty,
-					'destinationCity': $fcSeg['destination'],
-					'fareBasis': $fcSeg['fareBasis'] || null,
-					'ticketDesignator': $fcSeg['ticketDesignator'] || null,
+					componentNumber: php.count($fares) + 1,
+					segmentNumbers: php.array_splice($segNums, 0),
+					departureAirport: $dprt,
+					destinationAirport: $rSeg['destinationAirport'],
+					departureCity: $dprtCty,
+					destinationCity: $fcSeg['destination'],
+					fareBasis: $fcSeg['fareBasis'] || null,
+					ticketDesignator: $fcSeg['ticketDesignator'] || null,
 				});
 				$dprt = null;
 				$dprtCty = ($fcSeg['nextDeparture'] && $fcSeg['nextDeparture']['city']) || null;
 			}
 		}
-		return {'fares': $fares};
+		return {fares: $fares};
 	}
 
 	/** @param $reservation = IGdsPnrFieldsProvider::getReservation()
@@ -225,7 +225,7 @@ class ImportPnrCommonFormatAdapter
 		$dumpNumbers = php.array_merge($reservation['dumpNumbers'] || [],
 			$fareQuoteInfo['dumpNumbers'] || []);
 		if ($error = $reservation['error'] || $fareQuoteInfo['error'] || null) {
-			return {'error': 'noData', 'dumpNumbers': $dumpNumbers};
+			return {error: 'noData', dumpNumbers: $dumpNumbers};
 		}
 		$error = null;
 		$segments = [];
@@ -240,18 +240,18 @@ class ImportPnrCommonFormatAdapter
 				} else {
 					for ($pair of $joined['pairs']) {
 						$segments.push({
-							'pnrSegmentNumber': $pair['pnrSegment']['segmentNumber'],
-							'fcSegmentNumber': $pair['fcSegmentNumber'],
-							'pricingNumber': $storeNum,
-							'ptc': $ptcBlock['ptcInfo']['ptc'],
-							'fareBasis': $pair['fcSegment']['fareBasis'] || null,
-							'ticketDesignator': $pair['fcSegment']['ticketDesignator'] || null,
+							pnrSegmentNumber: $pair['pnrSegment']['segmentNumber'],
+							fcSegmentNumber: $pair['fcSegmentNumber'],
+							pricingNumber: $storeNum,
+							ptc: $ptcBlock['ptcInfo']['ptc'],
+							fareBasis: $pair['fcSegment']['fareBasis'] || null,
+							ticketDesignator: $pair['fcSegment']['ticketDesignator'] || null,
 						});}
 				}}}
 		return {
-			'segments': $segments,
-			'dumpNumbers': $dumpNumbers,
-			'error': $error,
+			segments: $segments,
+			dumpNumbers: $dumpNumbers,
+			error: $error,
 		};
 	}
 }

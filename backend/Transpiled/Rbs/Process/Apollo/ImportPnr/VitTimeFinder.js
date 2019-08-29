@@ -92,12 +92,12 @@ class VitTimeFinder {
 			let $dprtDt, $dstDt;
 
 			$dprtDt = {
-				'date': $seg['departureDate'],
-				'time': $seg['departureTime'],
+				date: $seg['departureDate'],
+				time: $seg['departureTime'],
 			};
 			$dstDt = {
-				'date': $seg['destinationDate'],
-				'time': $seg['destinationTime'],
+				date: $seg['destinationDate'],
+				time: $seg['destinationTime'],
 			};
 
 			return [$seg['departureAirport'], $seg['destinationAirport'], $dprtDt, $dstDt];

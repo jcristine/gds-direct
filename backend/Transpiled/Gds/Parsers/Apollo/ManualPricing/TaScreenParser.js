@@ -19,7 +19,7 @@ class TaScreenParser {
 			php.preg_match_all('\/' + $taxPattern + '\/', $matches[1], $taxTokens = [], php.PREG_SET_ORDER);
 			for ([$_, $amount, $taxCode] of Object.values($taxTokens)) {
 				if ($taxCode !== '..') {
-					$taxList.push({'taxCode': $taxCode, 'amount': $amount});
+					$taxList.push({taxCode: $taxCode, amount: $amount});
 				}
 			}
 		} else {
@@ -50,17 +50,17 @@ class TaScreenParser {
 
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'fareEquivalent': !$matches['fareEquivalentCurrency'] ? null : {
-					'currency': $matches['fareEquivalentCurrency'],
-					'amount': $matches['fareEquivalentAmount'],
+				fareEquivalent: !$matches['fareEquivalentCurrency'] ? null : {
+					currency: $matches['fareEquivalentCurrency'],
+					amount: $matches['fareEquivalentAmount'],
 				},
-				'baseFare': !$matches['baseFareCurrency'] ? null : {
-					'currency': $matches['baseFareCurrency'],
-					'amount': $matches['baseFareAmount'],
+				baseFare: !$matches['baseFareCurrency'] ? null : {
+					currency: $matches['baseFareCurrency'],
+					amount: $matches['baseFareAmount'],
 				},
-				'netPrice': {
-					'currency': $matches['netPriceCurrency'],
-					'amount': $matches['netPriceAmount']
+				netPrice: {
+					currency: $matches['netPriceCurrency'],
+					amount: $matches['netPriceAmount']
 						.replace(/^\.+/, '')
 						.replace(/\.$/, ''),
 				},
@@ -77,12 +77,12 @@ class TaScreenParser {
 		$lines = StringUtil.lines($dump);
 		$header = php.array_shift($lines);
 		if (!StringUtil.contains($header, 'TAX BREAKDOWN SCREEN')) {
-			return {'error': 'Unexpected start of dump - ' + php.trim($header)};
+			return {error: 'Unexpected start of dump - ' + php.trim($header)};
 		}
 
 		$summaryLine = php.array_shift($lines);
 		if (!($result = this.parseSummaryLine($summaryLine))) {
-			return {'error': 'Failed to parse summary line - ' + php.trim($summaryLine)};
+			return {error: 'Failed to parse summary line - ' + php.trim($summaryLine)};
 		}
 
 		$taxList = [];

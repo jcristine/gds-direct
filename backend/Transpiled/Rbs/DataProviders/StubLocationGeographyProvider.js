@@ -65,9 +65,9 @@ class StubLocationGeographyProvider {
 			}
 		}
 		$airportToBorderCities = {
-			'EWR': ['NYC'],
-			'ROB': ['MLW'],
-			'HBE': ['ALY'],
+			EWR: ['NYC'],
+			ROB: ['MLW'],
+			HBE: ['ALY'],
 		};
 		if ($airportCode === $cityCode) {
 			return true;

@@ -26,9 +26,9 @@ class HteParser
 			$result = TicketParser.parse($dump);
 		}
 		if (php.empty($result['error'])) {
-			return {'type': $type, 'result': $result};
+			return {type: $type, result: $result};
 		} else {
-			return {'error': $result['error'], 'errorType': $result['errorType']};
+			return {error: $result['error'], errorType: $result['errorType']};
 		}
 	}
 }

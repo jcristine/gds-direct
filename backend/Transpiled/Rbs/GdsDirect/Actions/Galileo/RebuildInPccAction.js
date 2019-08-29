@@ -66,7 +66,7 @@ class RebuildInPccAction extends AbstractGdsAction {
 				}
 			}
 		}
-		return {'failedSegmentNumbers': failedSegNums};
+		return {failedSegmentNumbers: failedSegNums};
 	}
 
 	static transformBuildError($result) {
@@ -90,9 +90,9 @@ class RebuildInPccAction extends AbstractGdsAction {
 			segmentNumber: i + 1,
 			...s,
 			segmentStatus: {
-				'GK': 'AK',
-				'HK': 'NN',
-				'SS': 'NN',
+				GK: 'AK',
+				HK: 'NN',
+				SS: 'NN',
 			}[s.segmentStatus] || s.segmentStatus,
 		}));
 
@@ -135,11 +135,11 @@ class RebuildInPccAction extends AbstractGdsAction {
 		} else {
 			$gkRebook = await this.rebookGkSegments($itinerary, $result.reservation);
 			if (!php.empty($failedSegNums = $gkRebook['failedSegmentNumbers'])) {
-				$errors.push(Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, {'segNums': php.implode(',', $failedSegNums)}));
+				$errors.push(Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, {segNums: php.implode(',', $failedSegNums)}));
 			}
 			await this.runCmd('*R');
 		}
-		return {'errors': $errors};
+		return {errors: $errors};
 	}
 
 	/** @param $itinerary = GalileoPnr::getItinerary() */
@@ -149,16 +149,16 @@ class RebuildInPccAction extends AbstractGdsAction {
 		$output = (await fetchAll('S' + $area, this)).output;
 		if (!UpdateGalileoSessionStateAction.isSuccessChangeAreaOutput($output)) {
 			$error = Errors.getMessage(Errors.FAILED_TO_CHANGE_AREA, {
-				'area': $area, 'response': php.trim($output),
+				area: $area, response: php.trim($output),
 			});
-			return {'errors': [$error]};
+			return {errors: [$error]};
 		}
 		$output = (await fetchAll('SEM/' + $pcc + '/AG', this)).output;
 		if (!UpdateGalileoSessionStateAction.wasPccChangedOk($output)) {
 			$error = Errors.getMessage(Errors.PCC_GDS_ERROR, {
-				'pcc': $pcc, 'response': php.trim($output),
+				pcc: $pcc, response: php.trim($output),
 			});
-			return {'errors': [$error]};
+			return {errors: [$error]};
 		}
 		return this.bookItinerary($itinerary);
 	}

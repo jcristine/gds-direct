@@ -25,15 +25,15 @@ class SabreTicketListParser
             '\\s*$/';
 		if (php.preg_match($tawRegex, $line, $matches = [])) {
 			return {
-				'type': 'timeLimit',
-				'pcc': $matches['pcc'] || '' || null,
-				'tauDate': {
-					'raw': $matches['tauDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['tauDate']),
+				type: 'timeLimit',
+				pcc: $matches['pcc'] || '' || null,
+				tauDate: {
+					raw: $matches['tauDate'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['tauDate']),
 				},
-				'tauTime': !php.empty($matches['tauTime']) ? {
-					'raw': $matches['tauTime'],
-					'parsed': CommonParserHelpers.decodeApolloTime($matches['tauTime']),
+				tauTime: !php.empty($matches['tauTime']) ? {
+					raw: $matches['tauTime'],
+					parsed: CommonParserHelpers.decodeApolloTime($matches['tauTime']),
 				} : null,
 			};
 		} else {
@@ -61,14 +61,14 @@ class SabreTicketListParser
 		if (php.preg_match($normalRegex, $line, $matches = [])) {
 			$matches = php.array_filter($matches);
 			return {
-				'type': 'ticketed',
-				'ticketingDate': {
-					'raw': $matches['ticketingDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['ticketingDate']),
+				type: 'ticketed',
+				ticketingDate: {
+					raw: $matches['ticketingDate'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['ticketingDate']),
 				},
-				'pcc': $matches['pcc'],
-				'agentInitials': $matches['agentInitials'],
-				'otherMadeByIndicator': $matches['otherMadeByIndicator'],
+				pcc: $matches['pcc'],
+				agentInitials: $matches['agentInitials'],
+				otherMadeByIndicator: $matches['otherMadeByIndicator'],
 			};
 		} else {
 			return null;
@@ -78,9 +78,9 @@ class SabreTicketListParser
 	static parseTicketingLine($line)  {
 
 		return this.parseTimeLimitLine($line) || this.parseTicketedLine($line) || {
-			'type': 'error',
-			'error': 'Failed to parse ticketing line',
-			'line': $line,
+			type: 'error',
+			error: 'Failed to parse ticketing line',
+			line: $line,
 		};
 	}
 
@@ -110,42 +110,42 @@ class SabreTicketListParser
             '\\s*$/';
 
 		$borderings = {
-			'I': 'international',
-			'D': 'domestic',
-			'F': 'foreign',
+			I: 'international',
+			D: 'domestic',
+			F: 'foreign',
 		};
 
 		if (php.preg_match($regex, $line, $matches = [])) {
 			$matches = php.array_filter($matches); // to remove ambiguity between '' and null
 			return {
-				'lineNumber': $matches['lineNumber'],
-				'transactionIndicator': $matches['transactionIndicator'],
-				'ticketNumber': $matches['ticketNumber'],
-				'ticketNumberExtension': $matches['ticketNumberExtension'],
-				'ticketStock': $matches['ticketStock'],
-				'passengerName': $matches['passengerName'],
-				'transaction': $matches['transaction'],
-				'pcc': $matches['pcc'],
-				'agentInitials': $matches['agentInitials'],
-				'otherMadeByIndicator': $matches['otherMadeByIndicator'],
-				'issueTime': {
-					'raw': $matches['issueTime'],
-					'parsed': CommonParserHelpers.decodeApolloTime($matches['issueTime']),
+				lineNumber: $matches['lineNumber'],
+				transactionIndicator: $matches['transactionIndicator'],
+				ticketNumber: $matches['ticketNumber'],
+				ticketNumberExtension: $matches['ticketNumberExtension'],
+				ticketStock: $matches['ticketStock'],
+				passengerName: $matches['passengerName'],
+				transaction: $matches['transaction'],
+				pcc: $matches['pcc'],
+				agentInitials: $matches['agentInitials'],
+				otherMadeByIndicator: $matches['otherMadeByIndicator'],
+				issueTime: {
+					raw: $matches['issueTime'],
+					parsed: CommonParserHelpers.decodeApolloTime($matches['issueTime']),
 				},
-				'issueDate': {
-					'raw': $matches['issueDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['issueDate']),
+				issueDate: {
+					raw: $matches['issueDate'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['issueDate']),
 				},
-				'formOfPayment': php.isset($matches['cashFopMark']) ? 'cash' : 'creditCard',
-				'bordering': php.isset($matches['remark']) && $matches['transactionIndicator'] === 'TR'
+				formOfPayment: php.isset($matches['cashFopMark']) ? 'cash' : 'creditCard',
+				bordering: php.isset($matches['remark']) && $matches['transactionIndicator'] === 'TR'
 					? $borderings[$matches['remark']]
 					: null,
-				'remark': $matches['remark'],
+				remark: $matches['remark'],
 			};
 		} else {
 			return {
-				'error': 'failed to parse ticket line '+$regex,
-				'line': $line,
+				error: 'failed to parse ticket line '+$regex,
+				line: $line,
 			};
 		}
 	}
@@ -160,8 +160,8 @@ class SabreTicketListParser
 		$lines = StringUtil.lines(php.rtrim($dump));
 		if (php.trim($line = php.array_shift($lines)) !== 'TKT\/TIME LIMIT') {
 			return {
-				'error': 'unexpectedStartOfDump',
-				'line': $line,
+				error: 'unexpectedStartOfDump',
+				line: $line,
 			};
 		}
 
@@ -172,8 +172,8 @@ class SabreTicketListParser
 		$tickets = php.array_map(l => this.parseTicketLine(l), $lines);
 
 		return {
-			'ticketingInfo': $ticketingInfo,
-			'tickets': $tickets,
+			ticketingInfo: $ticketingInfo,
+			tickets: $tickets,
 		};
 	}
 }

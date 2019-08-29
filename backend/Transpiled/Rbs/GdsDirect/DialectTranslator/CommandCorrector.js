@@ -20,15 +20,15 @@ class CommandCorrector {
 	static getLegendData() {
 
 		return {
-			'pcc': '[A-Z\\d]{3,9}',
-			'not_ag': '(?!AG$).*',
-			'not_city': '(?![A-Z]{3})',
-			'not_date': '(?!\\d{3}[A-Z]{3})',
-			'not_pcc': '[A-Z\\d]{5}',
-			'wrong_date': '\\d{3}[A-Z]{3}',
-			'wrong_month': '\\d{2}[A-Z]{2}',
-			'nc_modificator': 'NC[SC]?',
-			'char_or_num': '[A-Z0-9]',
+			pcc: '[A-Z\\d]{3,9}',
+			not_ag: '(?!AG$).*',
+			not_city: '(?![A-Z]{3})',
+			not_date: '(?!\\d{3}[A-Z]{3})',
+			not_pcc: '[A-Z\\d]{5}',
+			wrong_date: '\\d{3}[A-Z]{3}',
+			wrong_month: '\\d{2}[A-Z]{2}',
+			nc_modificator: 'NC[SC]?',
+			char_or_num: '[A-Z0-9]',
 		};
 	}
 
@@ -36,28 +36,28 @@ class CommandCorrector {
 		let $patterns;
 
 		$patterns = {
-			'apollo': [
+			apollo: [
 				{
-					'mistake': 'BB{free_text}',
-					'correct': '$BB{free_text}',
-					'message': 'CORRECTED! DON\\\'T FORGET $ SIGN NEXT TIME',
+					mistake: 'BB{free_text}',
+					correct: '$BB{free_text}',
+					message: 'CORRECTED! DON\\\'T FORGET $ SIGN NEXT TIME',
 				},
 				{
-					'mistake': '$BBB{free_text}',
-					'correct': '$BB{free_text}',
+					mistake: '$BBB{free_text}',
+					correct: '$BB{free_text}',
 				},
 				{
-					'mistake': '#BB{free_text}',
-					'correct': '$BB{free_text}',
-					'message': 'CORRECTED! USE $ SIGN NEXT TIME',
+					mistake: '#BB{free_text}',
+					correct: '$BB{free_text}',
+					message: 'CORRECTED! USE $ SIGN NEXT TIME',
 				},
 				{
-					'mistake': '$BB{pax_pricing_type}',
-					'correct': '$BB*{pax_pricing_type}',
+					mistake: '$BB{pax_pricing_type}',
+					correct: '$BB*{pax_pricing_type}',
 				},
 				{
-					'mistake': '$BB*JC',
-					'correct': '$BB*JCB',
+					mistake: '$BB*JC',
+					correct: '$BB*JCB',
 				},
 				{mistake: '*:LF', correct: '*LF'},
 				{mistake: '*L:F', correct: '*LF'},
@@ -82,19 +82,19 @@ class CommandCorrector {
 				// could be a >E; command probably...
 				//{mistake: 'ES', correct: 'SE'},
 				{
-					'mistake': 'A{date}',
-					'correct': 'A*{date}',
-					'message': 'CORRECTED! DON\\\'T FORGET * BEFORE THE DATE',
+					mistake: 'A{date}',
+					correct: 'A*{date}',
+					message: 'CORRECTED! DON\\\'T FORGET * BEFORE THE DATE',
 				},
 				{
-					'mistake': '1*{date}{free_text}',
-					'correct': '1{date}{free_text}',
-					'message': 'CORRECTED! THERE IS NO NEED IN *',
+					mistake: '1*{date}{free_text}',
+					correct: '1{date}{free_text}',
+					message: 'CORRECTED! THERE IS NO NEED IN *',
 				},
 				{
 					// Error
-					'mistake': 'A{date}{city}{not_city}{free_text}',
-					'message': 'ERROR! PLEASE CHECK AVAILABILITY PARAMS!',
+					mistake: 'A{date}{city}{not_city}{free_text}',
+					message: 'ERROR! PLEASE CHECK AVAILABILITY PARAMS!',
 				},
 				{
 					// they often try to type >*R; >A*O10JAN;, but type >*; >RA*O10JAN;
@@ -102,143 +102,143 @@ class CommandCorrector {
 					correct: 'A{free_text}',
 				},
 				{
-					'mistake': 'A.{class}.{free_text}',
-					'correct': 'A\/{class}\/{free_text}',
-					'message': 'CORRECTED! USE \/ INSTEAD OF . NEXT TIME',
+					mistake: 'A.{class}.{free_text}',
+					correct: 'A\/{class}\/{free_text}',
+					message: 'CORRECTED! USE \/ INSTEAD OF . NEXT TIME',
 				},
 				{
 					// Error
-					'mistake': 'A{wrong_date}{city_pair}{free_text}',
-					'message': 'ERROR! CHECK THE DATE, IT\\\'S TOO LONG',
+					mistake: 'A{wrong_date}{city_pair}{free_text}',
+					message: 'ERROR! CHECK THE DATE, IT\\\'S TOO LONG',
 				},
 				{
 					// Error
-					'mistake': 'A{wrong_month}{city_pair}',
-					'message': 'ERROR! CHECK THE DATE, IT\\\'S TOO SHORT',
+					mistake: 'A{wrong_month}{city_pair}',
+					message: 'ERROR! CHECK THE DATE, IT\\\'S TOO SHORT',
 				},
 				{
-					'mistake': 'A{date}{city_pair}{ss}',
-					'correct': 'A{date}{city_pair}+{ss}',
-					'message': 'CORRECTED! DON\\\'T FORGET + SIGN NEXT TIME',
+					mistake: 'A{date}{city_pair}{ss}',
+					correct: 'A{date}{city_pair}+{ss}',
+					message: 'CORRECTED! DON\\\'T FORGET + SIGN NEXT TIME',
 				},
 				{
 					// Error
-					'mistake': 'A{date}{city_pair}+{single_char}',
-					'message': 'ERROR! AIRLINE NAME IS TOO SHORT!',
+					mistake: 'A{date}{city_pair}+{single_char}',
+					message: 'ERROR! AIRLINE NAME IS TOO SHORT!',
 				},
 				{
-					'mistake': 'SEM\/{pcc}\/{not_ag}{free_text}',
-					'correct': 'SEM\/{pcc}\/AG{free_text}',
-					'message': 'CORRECTED! SEM COMMAND ENDS WITH \/AG',
+					mistake: 'SEM\/{pcc}\/{not_ag}{free_text}',
+					correct: 'SEM\/{pcc}\/AG{free_text}',
+					message: 'CORRECTED! SEM COMMAND ENDS WITH \/AG',
 				},
 				{
-					'mistake': 'SEM\/{pcc}',
-					'correct': 'SEM\/{pcc}\/AG',
-					'message': 'CORRECTED! DON\\\'T FORGET \/AG NEXT TIME',
+					mistake: 'SEM\/{pcc}',
+					correct: 'SEM\/{pcc}\/AG',
+					message: 'CORRECTED! DON\\\'T FORGET \/AG NEXT TIME',
 				},
 				{
-					'mistake': 'RE\/{pcc}\/AG',
-					'correct': 'RE\/{pcc}\/GK',
-					'message': 'CORRECTED! GK WAS USED INSTEAD OF WRONG STATUS AG',
+					mistake: 'RE\/{pcc}\/AG',
+					correct: 'RE\/{pcc}\/GK',
+					message: 'CORRECTED! GK WAS USED INSTEAD OF WRONG STATUS AG',
 				},
 				{
-					'mistake': 'A-C{free_text}',
-					'correct': 'A*C{free_text}',
-					'message': 'CORRECTED! USE * INSTEAD OF -',
+					mistake: 'A-C{free_text}',
+					correct: 'A*C{free_text}',
+					message: 'CORRECTED! USE * INSTEAD OF -',
 				},
 				{
-					'mistake': 'A&C{free_text}',
-					'correct': 'A*C{free_text}',
-					'message': 'CORRECTED! USE * INSTEAD OF &',
+					mistake: 'A&C{free_text}',
+					correct: 'A*C{free_text}',
+					message: 'CORRECTED! USE * INSTEAD OF &',
 				},
 				{
-					'mistake': 'A8C{free_text}',
-					'correct': 'A*C{free_text}',
-					'message': 'CORRECTED! USE * INSTEAD OF 8',
+					mistake: 'A8C{free_text}',
+					correct: 'A*C{free_text}',
+					message: 'CORRECTED! USE * INSTEAD OF 8',
 				},
 				{
-					'mistake': 'AC',
-					'correct': 'A*C',
-					'message': 'CORRECTED! USE * BETWEEN A and C',
+					mistake: 'AC',
+					correct: 'A*C',
+					message: 'CORRECTED! USE * BETWEEN A and C',
 				},
 				{
-					'mistake': '0{number}{class}{int_num}**',
-					'correct': '0{number}{class}{int_num}*',
-					'message': 'CORRECTED! USE ONE *',
+					mistake: '0{number}{class}{int_num}**',
+					correct: '0{number}{class}{int_num}*',
+					message: 'CORRECTED! USE ONE *',
 				},
 				{
-					'mistake': '1*{date}',
-					'correct': '1{date}',
-					'message': 'CORRECTED! THERE IS NO NEED IN *',
+					mistake: '1*{date}',
+					correct: '1{date}',
+					message: 'CORRECTED! THERE IS NO NEED IN *',
 				},
 				{
-					'mistake': '*C',
-					'correct': 'A*C',
+					mistake: '*C',
+					correct: 'A*C',
 				},
 				{
-					'mistake': '*VCT',
-					'correct': 'VCT*',
+					mistake: '*VCT',
+					correct: 'VCT*',
 				},
 				{
-					'mistake': 'R',
-					'correct': '*R',
+					mistake: 'R',
+					correct: '*R',
 				},
 
 				{
-					'mistake': '8R',
-					'correct': '*R',
+					mistake: '8R',
+					correct: '*R',
 				},
 				{
-					'mistake': '*R*',
-					'correct': '*R',
+					mistake: '*R*',
+					correct: '*R',
 				},
 				{
-					'mistake': 'R*',
-					'correct': '*R',
+					mistake: 'R*',
+					correct: '*R',
 				},
 				{
-					'mistake': 'R*R',
-					'correct': '*R',
+					mistake: 'R*R',
+					correct: '*R',
 				},
 				{
-					'mistake': '*E',
-					'correct': '*R',
+					mistake: '*E',
+					correct: '*R',
 				},
 				{
-					'mistake': '03L1**',
-					'correct': '03L1*',
+					mistake: '03L1**',
+					correct: '03L1*',
 				},
 				{
-					'mistake': '*',
-					'correct': '*R',
+					mistake: '*',
+					correct: '*R',
 				},
 				{
-					'mistake': '&*R',
-					'correct': '*R',
+					mistake: '&*R',
+					correct: '*R',
 				},
 				{
-					'mistake': '\u00A7*R',
-					'correct': '*R',
+					mistake: '\u00A7*R',
+					correct: '*R',
 				},
 				{
-					'mistake': '*(R',
-					'correct': '*R',
+					mistake: '*(R',
+					correct: '*R',
 				},
 				{
-					'mistake': '(R',
-					'correct': '*R',
+					mistake: '(R',
+					correct: '*R',
 				},
 				{
-					'mistake': '**R',
-					'correct': '*R',
+					mistake: '**R',
+					correct: '*R',
 				},
 				{
-					'mistake': 'UI',
-					'correct': 'I',
+					mistake: 'UI',
+					correct: 'I',
 				},
 				{
-					'mistake': 'U',
-					'correct': 'I',
+					mistake: 'U',
+					correct: 'I',
 				},
 				{mistake: 'H', correct: '*H'},
 				{mistake: 'HA', correct: '*HA'},
@@ -260,23 +260,23 @@ class CommandCorrector {
 			sabre: [
 				{
 					// Error
-					'mistake': '1{date}{city}{not_city}{free_text}',
-					'message': 'ERROR! PLEASE CHECK AVAILABILITY PARAMS!',
+					mistake: '1{date}{city}{not_city}{free_text}',
+					message: 'ERROR! PLEASE CHECK AVAILABILITY PARAMS!',
 				},
 				{
 					// Error
-					'mistake': '1{date}{city_pair}\u2021{single_char}',
-					'message': 'ERROR! AIRLINE NAME IS TOO SHORT!',
+					mistake: '1{date}{city_pair}\u2021{single_char}',
+					message: 'ERROR! AIRLINE NAME IS TOO SHORT!',
 				},
 				{
 					// Error
-					'mistake': '1{date}{city_pair}\u2021{single_char}',
-					'message': 'ERROR! AIRLINE NAME IS TOO SHORT!',
+					mistake: '1{date}{city_pair}\u2021{single_char}',
+					message: 'ERROR! AIRLINE NAME IS TOO SHORT!',
 				},
 				{
 					// Error
-					'mistake': '1{date}{city_pair}+{single_char}',
-					'message': 'ERROR! AIRLINE NAME IS TOO SHORT!',
+					mistake: '1{date}{city_pair}+{single_char}',
+					message: 'ERROR! AIRLINE NAME IS TOO SHORT!',
 				},
 				{
 					mistake: 'A{date}{city_pair}{free_text}',
@@ -290,219 +290,219 @@ class CommandCorrector {
 				},
 				{
 					// Error
-					'mistake': '1{wrong_date}{free_text}',
-					'message': 'ERROR! CHECK THE DATE, IT\\\'S TOO LONG',
+					mistake: '1{wrong_date}{free_text}',
+					message: 'ERROR! CHECK THE DATE, IT\\\'S TOO LONG',
 				},
 				{
 					// Error
-					'mistake': '1{wrong_month}{city_pair}',
-					'message': 'ERROR! CHECK THE DATE, IT\\\'S TOO SHORT',
+					mistake: '1{wrong_month}{city_pair}',
+					message: 'ERROR! CHECK THE DATE, IT\\\'S TOO SHORT',
 				},
 				{
-					'mistake': '1{date}{city_pair}+{ss}',
-					'correct': '1{date}{city_pair}\u2021{ss}',
-					'message': 'CORRECTED! USE \u2021 SIGN INSTEAD OF + NEXT TIME',
+					mistake: '1{date}{city_pair}+{ss}',
+					correct: '1{date}{city_pair}\u2021{ss}',
+					message: 'CORRECTED! USE \u2021 SIGN INSTEAD OF + NEXT TIME',
 				},
 				{
-					'mistake': '1{date}{city_pair}{ss}',
-					'correct': '1{date}{city_pair}\u2021{ss}',
-					'message': 'CORRECTED! USE \u2021 SIGN BEFORE AIRLINE NEXT TIME',
+					mistake: '1{date}{city_pair}{ss}',
+					correct: '1{date}{city_pair}\u2021{ss}',
+					message: 'CORRECTED! USE \u2021 SIGN BEFORE AIRLINE NEXT TIME',
 				},
 				{
-					'mistake': '1{date}{city_pair}:{ss}',
-					'correct': '1{date}{city_pair}\u2021{ss}',
-					'message': 'CORRECTED! USE \u2021 SIGN INSTEAD OF : NEXT TIME',
+					mistake: '1{date}{city_pair}:{ss}',
+					correct: '1{date}{city_pair}\u2021{ss}',
+					message: 'CORRECTED! USE \u2021 SIGN INSTEAD OF : NEXT TIME',
 				},
 				{
-					'mistake': '1{date}{city_pair}+{ss}',
-					'correct': '1{date}{city_pair}\u2021{ss}',
-					'message': 'CORRECTED! USE \u2021 SIGN INSTEAD OF + NEXT TIME',
+					mistake: '1{date}{city_pair}+{ss}',
+					correct: '1{date}{city_pair}\u2021{ss}',
+					message: 'CORRECTED! USE \u2021 SIGN INSTEAD OF + NEXT TIME',
 				},
 				{
-					'mistake': '1{date}{city_pair}\u00A7{ss}',
-					'correct': '1{date}{city_pair}\u2021{ss}',
-					'message': 'CORRECTED! USE \u2021 SIGN INSTEAD OF \u00A7 NEXT TIME',
+					mistake: '1{date}{city_pair}\u00A7{ss}',
+					correct: '1{date}{city_pair}\u2021{ss}',
+					message: 'CORRECTED! USE \u2021 SIGN INSTEAD OF \u00A7 NEXT TIME',
 				},
 				{
-					'mistake': '1{date}{city_pair}\u00A5{ss}\u00A7',
-					'correct': '1{date}{city_pair}\u2021{ss}',
+					mistake: '1{date}{city_pair}\u00A5{ss}\u00A7',
+					correct: '1{date}{city_pair}\u2021{ss}',
 				},
 				{
-					'mistake': '1&C{free_text}',
-					'correct': '1*C{free_text}',
-					'message': 'CORRECTED! USE * INSTEAD OF &',
+					mistake: '1&C{free_text}',
+					correct: '1*C{free_text}',
+					message: 'CORRECTED! USE * INSTEAD OF &',
 				},
 				{
-					'mistake': '18C{free_text}',
-					'correct': '1*C{free_text}',
-					'message': 'CORRECTED! USE * INSTEAD OF 8',
+					mistake: '18C{free_text}',
+					correct: '1*C{free_text}',
+					message: 'CORRECTED! USE * INSTEAD OF 8',
 				},
 				{
-					'mistake': '1C{free_text_but_not_2_letters}',
-					'correct': '1*C{free_text_but_not_2_letters}',
-					'message': 'CORRECTED! USE * BETWEEN 1 and C',
+					mistake: '1C{free_text_but_not_2_letters}',
+					correct: '1*C{free_text_but_not_2_letters}',
+					message: 'CORRECTED! USE * BETWEEN 1 and C',
 				},
 				{
-					'mistake': '*C{free_text_but_not_5_chars}',
-					'correct': '1*C{free_text_but_not_5_chars}',
+					mistake: '*C{free_text_but_not_5_chars}',
+					correct: '1*C{free_text_but_not_5_chars}',
 				},
 				{
-					'mistake': '1*CX{free_text}',
-					'correct': '1\u2021CX{free_text}',
+					mistake: '1*CX{free_text}',
+					correct: '1\u2021CX{free_text}',
 				},
 				{
-					'mistake': '1-C{free_text}',
-					'correct': '1*C{free_text}',
-					'message': 'CORRECTED! USE * INSTEAD OF -',
+					mistake: '1-C{free_text}',
+					correct: '1*C{free_text}',
+					message: 'CORRECTED! USE * INSTEAD OF -',
 				},
 				{
-					'mistake': '1*V{free_text}',
-					'correct': '1*C{free_text}',
-					'message': 'CORRECTED! USE * INSTEAD OF -',
+					mistake: '1*V{free_text}',
+					correct: '1*C{free_text}',
+					message: 'CORRECTED! USE * INSTEAD OF -',
 				},
 				{
-					'mistake': 'AAAA{pcc}{free_text}',
-					'correct': 'AAA{pcc}{free_text}',
-					'message': 'CORRECTED! USE AAA ONLY',
+					mistake: 'AAAA{pcc}{free_text}',
+					correct: 'AAA{pcc}{free_text}',
+					message: 'CORRECTED! USE AAA ONLY',
 				},
 				{
 					// Error
-					'mistake': 'AAA{not_pcc}',
-					'message': 'ERROR! CHECK PCC NAME, IT\\\'S TOO LONG',
+					mistake: 'AAA{not_pcc}',
+					message: 'ERROR! CHECK PCC NAME, IT\\\'S TOO LONG',
 				},
 				{
-					'mistake': '0{number}{class}{int_num}**',
-					'correct': '0{number}{class}{int_num}*',
-					'message': 'CORRECTED! USE ONE *',
+					mistake: '0{number}{class}{int_num}**',
+					correct: '0{number}{class}{int_num}*',
+					message: 'CORRECTED! USE ONE *',
 				},
 				{
-					'mistake': 'R',
-					'correct': '*R',
+					mistake: 'R',
+					correct: '*R',
 				},
 				{
-					'mistake': '8R',
-					'correct': '*R',
+					mistake: '8R',
+					correct: '*R',
 				},
 				{
-					'mistake': '*R*',
-					'correct': '*R',
+					mistake: '*R*',
+					correct: '*R',
 				},
 				{
-					'mistake': 'R*',
-					'correct': '*R',
+					mistake: 'R*',
+					correct: '*R',
 				},
 				{
-					'mistake': 'R*R',
-					'correct': '*R',
+					mistake: 'R*R',
+					correct: '*R',
 				},
 				{
-					'mistake': '*E',
-					'correct': '*R',
+					mistake: '*E',
+					correct: '*R',
 				},
 				{
-					'mistake': '03L1**',
-					'correct': '03L1*',
+					mistake: '03L1**',
+					correct: '03L1*',
 				},
 				{
-					'mistake': '*',
-					'correct': '*R',
+					mistake: '*',
+					correct: '*R',
 				},
 				{
-					'mistake': '**IA',
-					'correct': '*IA',
+					mistake: '**IA',
+					correct: '*IA',
 				},
 				{
-					'mistake': '*IA$',
-					'correct': '*IA',
+					mistake: '*IA$',
+					correct: '*IA',
 				},
 				{
-					'mistake': '*IAQ',
-					'correct': '*IA',
+					mistake: '*IAQ',
+					correct: '*IA',
 				},
 				{
-					'mistake': '*(IA',
-					'correct': '*IA',
+					mistake: '*(IA',
+					correct: '*IA',
 				},
 				{
-					'mistake': '&*R',
-					'correct': '*R',
+					mistake: '&*R',
+					correct: '*R',
 				},
 				{
-					'mistake': '\u2021*R',
-					'correct': '*R',
+					mistake: '\u2021*R',
+					correct: '*R',
 				},
 				{
-					'mistake': '\u00A7*R',
-					'correct': '*R',
+					mistake: '\u00A7*R',
+					correct: '*R',
 				},
 				{
-					'mistake': '\u00A5*R',
-					'correct': '*R',
+					mistake: '\u00A5*R',
+					correct: '*R',
 				},
 				{
-					'mistake': '*(R',
-					'correct': '*R',
+					mistake: '*(R',
+					correct: '*R',
 				},
 				{
-					'mistake': '(R',
-					'correct': '*R',
+					mistake: '(R',
+					correct: '*R',
 				},
 				{
-					'mistake': '**R',
-					'correct': '*R',
+					mistake: '**R',
+					correct: '*R',
 				},
 				{
-					'mistake': '**IA',
-					'correct': '*IA',
+					mistake: '**IA',
+					correct: '*IA',
 				},
 				{
-					'mistake': 'P3D',
-					'correct': '*P3D',
+					mistake: 'P3D',
+					correct: '*P3D',
 				},
 				{
-					'mistake': '1&',
-					'correct': '1*',
+					mistake: '1&',
+					correct: '1*',
 				},
 				{
-					'mistake': '1*(',
-					'correct': '1*',
+					mistake: '1*(',
+					correct: '1*',
 				},
 				{
-					'mistake': '1(',
-					'correct': '1*',
+					mistake: '1(',
+					correct: '1*',
 				},
 				{
-					'mistake': 'WPPP{pax_pricing_type}',
-					'correct': 'WPP{pax_pricing_type}',
+					mistake: 'WPPP{pax_pricing_type}',
+					correct: 'WPP{pax_pricing_type}',
 				},
 				{
-					'mistake': 'WPP{pax_pricing_type}:{nc_modificator}{free_text}',
-					'correct': 'WPP{pax_pricing_type}\u2021{nc_modificator}{free_text}',
-					'message': 'CORRECTED! USE \u2021 SIGN INSTEAD OF : NEXT TIME',
+					mistake: 'WPP{pax_pricing_type}:{nc_modificator}{free_text}',
+					correct: 'WPP{pax_pricing_type}\u2021{nc_modificator}{free_text}',
+					message: 'CORRECTED! USE \u2021 SIGN INSTEAD OF : NEXT TIME',
 				},
 				{
-					'mistake': 'WPP{pax_pricing_type}{nc_modificator}{free_text}',
-					'correct': 'WPP{pax_pricing_type}\u2021{nc_modificator}{free_text}',
-					'message': 'CORRECTED! DON\\\'T FORGET ABOUT \u2021 NEXT TIME',
+					mistake: 'WPP{pax_pricing_type}{nc_modificator}{free_text}',
+					correct: 'WPP{pax_pricing_type}\u2021{nc_modificator}{free_text}',
+					message: 'CORRECTED! DON\\\'T FORGET ABOUT \u2021 NEXT TIME',
 				},
 				{
-					'mistake': 'RE\/{pcc}\/AG',
-					'correct': 'RE\/{pcc}\/GK',
-					'message': 'CORRECTED! GK WAS USED INSTEAD OF WRONG STATUS AG',
-				},
-			],
-			'galileo': [
-				{
-					'mistake': 'RE\/{pcc}\/AG',
-					'correct': 'RE\/{pcc}\/AK',
-					'message': 'CORRECTED! AK WAS USED INSTEAD OF WRONG STATUS AG',
+					mistake: 'RE\/{pcc}\/AG',
+					correct: 'RE\/{pcc}\/GK',
+					message: 'CORRECTED! GK WAS USED INSTEAD OF WRONG STATUS AG',
 				},
 			],
-			'amadeus': [
+			galileo: [
 				{
-					'mistake': 'RE\/{pcc}\/AG',
-					'correct': 'RE\/{pcc}\/GK',
-					'message': 'CORRECTED! GK WAS USED INSTEAD OF WRONG STATUS AG',
+					mistake: 'RE\/{pcc}\/AG',
+					correct: 'RE\/{pcc}\/AK',
+					message: 'CORRECTED! AK WAS USED INSTEAD OF WRONG STATUS AG',
+				},
+			],
+			amadeus: [
+				{
+					mistake: 'RE\/{pcc}\/AG',
+					correct: 'RE\/{pcc}\/GK',
+					message: 'CORRECTED! GK WAS USED INSTEAD OF WRONG STATUS AG',
 				},
 			],
 		};
@@ -526,10 +526,10 @@ class CommandCorrector {
 
 	convertFromCyrillic(cmd) {
 		const cyrillicToLatin = {
-			"Ё":"`","Й":
-			"Q","Ц":"W","У":"E","К":"R","Е":"T","Н":"Y","Г":"U","Ш":"I","Щ":"O","З":"P","Х":"[","Ъ":"]",
-			"Ф":"A","Ы":"S","В":"D","А":"F","П":"G","Р":"H","О":"J","Л":"K","Д":"L","Ж":";","Э":"'",
-			"Я":"Z","Ч":"X","С":"C","М":"V","И":"B","Т":"N","Ь":"M","Б":",","Ю":".",
+			Ё:"`",Й:
+			"Q",Ц:"W",У:"E",К:"R",Е:"T",Н:"Y",Г:"U",Ш:"I",Щ:"O",З:"P",Х:"[",Ъ:"]",
+			Ф:"A",Ы:"S",В:"D",А:"F",П:"G",Р:"H",О:"J",Л:"K",Д:"L",Ж:";",Э:"'",
+			Я:"Z",Ч:"X",С:"C",М:"V",И:"B",Т:"N",Ь:"M",Б:",",Ю:".",
 		};
 		const converted = cmd
 			.split('')
@@ -606,9 +606,9 @@ class CommandCorrector {
 		$self = new this();
 		$output = $self.execute($input, $dialect);
 		return {
-			'output': $output,
-			'messages': $self.$messages,
-			'errors': $self.$errors,
+			output: $output,
+			messages: $self.$messages,
+			errors: $self.$errors,
 		};
 	}
 

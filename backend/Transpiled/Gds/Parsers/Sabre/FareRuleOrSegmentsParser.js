@@ -55,12 +55,12 @@ class FareRuleOrSegmentsParser
 			php.array_shift($lines);// "SEG  CTYPAIR  FQ       RULE   CXR  PU   FARE      FAREBASIS "
 			php.array_pop($lines); // "."
 			return {
-				'type': this.SEGMENT_LIST,
-				'data': php.array_filter(php.array_map(l => this.parseComponentLine(l), $lines)),
+				type: this.SEGMENT_LIST,
+				data: php.array_filter(php.array_map(l => this.parseComponentLine(l), $lines)),
 			};
 		} else {
 			$data = FareRuleParser.parse($dump);
-			$result = {'type': this.SINGLE_RULE};
+			$result = {type: this.SINGLE_RULE};
 			if ($error = $data['error']) {
 				$result['error'] = $error;
 			} else {

@@ -38,29 +38,29 @@ class ImportApolloPnrFormatAdapter
 		$reservation['remarks'] = FormatAdapter.transformApolloRemarks($parsedData['remarks'] || []);
 		$reservation['confirmationNumbers'] = Fp.map(($acknDataEl) => {
 			return {
-				'airline': $acknDataEl['airline'],
-				'confirmationNumber': $acknDataEl['confirmationNumber'],
-				'segmentNumber': null,
-				'date': {
-					'raw': $acknDataEl['date']['raw'],
-					'parsed': $acknDataEl['date']['parsed'],
-					'full': $pnrInfo ? DateTime.decodeRelativeDateInFuture($acknDataEl['date']['parsed'],
+				airline: $acknDataEl['airline'],
+				confirmationNumber: $acknDataEl['confirmationNumber'],
+				segmentNumber: null,
+				date: {
+					raw: $acknDataEl['date']['raw'],
+					parsed: $acknDataEl['date']['parsed'],
+					full: $pnrInfo ? DateTime.decodeRelativeDateInFuture($acknDataEl['date']['parsed'],
 						$pnrInfo['reservationDate']['full']) : null,
 				},
 			};
 		}, $parsedData['acknData'] || []);
 		$reservation['dataExistsInfo'] = {
-			'mileageProgramsExist': $parsedData['dataExistsInfo']['frequentFlyerDataExists'],
-			'fareQuoteExists': $parsedData['dataExistsInfo']['linearFareDataExists'],
-			'dividedBookingExists': $parsedData['dataExistsInfo']['dividedBookingExists'],
-			'globalInformationExists': $parsedData['dataExistsInfo']['globalInformationExists'],
-			'itineraryRemarksExist': $parsedData['dataExistsInfo']['itineraryRemarksExist'],
-			'miscDocumentDataExists': $parsedData['dataExistsInfo']['miscDocumentDataExists'],
-			'profileAssociationsExist': $parsedData['dataExistsInfo']['profileAssociationsExist'],
-			'seatDataExists': $parsedData['dataExistsInfo']['seatDataExists'],
-			'tinRemarksExist': $parsedData['dataExistsInfo']['tinRemarksExist'],
-			'nmePricingRecordsExist': $parsedData['dataExistsInfo']['nmePricingRecordsExist'],
-			'eTicketDataExists': $parsedData['dataExistsInfo']['eTicketDataExists'],
+			mileageProgramsExist: $parsedData['dataExistsInfo']['frequentFlyerDataExists'],
+			fareQuoteExists: $parsedData['dataExistsInfo']['linearFareDataExists'],
+			dividedBookingExists: $parsedData['dataExistsInfo']['dividedBookingExists'],
+			globalInformationExists: $parsedData['dataExistsInfo']['globalInformationExists'],
+			itineraryRemarksExist: $parsedData['dataExistsInfo']['itineraryRemarksExist'],
+			miscDocumentDataExists: $parsedData['dataExistsInfo']['miscDocumentDataExists'],
+			profileAssociationsExist: $parsedData['dataExistsInfo']['profileAssociationsExist'],
+			seatDataExists: $parsedData['dataExistsInfo']['seatDataExists'],
+			tinRemarksExist: $parsedData['dataExistsInfo']['tinRemarksExist'],
+			nmePricingRecordsExist: $parsedData['dataExistsInfo']['nmePricingRecordsExist'],
+			eTicketDataExists: $parsedData['dataExistsInfo']['eTicketDataExists'],
 		};
 		$reservation['dumpNumbers'] = $parsedData['dumpNumbers'] || null;
 		$reservation = ImportPnrCommonFormatAdapter.addContextDataToPaxes($reservation);
@@ -81,26 +81,26 @@ class ImportApolloPnrFormatAdapter
 	/** @param $parsedData = RetrieveFlightServiceInfoAction::execute() */
 	static transformFlightServiceInfo($parsedData, $baseDate)  {
 		return !php.isset($parsedData['error']) ? {
-			'segments': Fp.map(($svcSegData) => {
+			segments: Fp.map(($svcSegData) => {
 				let $legs, $i, $legData, $leg, $fullDepartureDate, $relDate, $dayOffset;
 				$legs = [];
 				for ([$i, $legData] of Object.entries(php.array_values($svcSegData['legs']))) {
 					$leg = {};
 					$leg['departureTerminal'] = php.isset($svcSegData['departureTerminal']) && $i === 0
 						? {
-							'raw': $svcSegData['departureTerminal'],
-							'parsed': $svcSegData['departureTerminal'],
+							raw: $svcSegData['departureTerminal'],
+							parsed: $svcSegData['departureTerminal'],
 						} : null;
 					$leg['destinationTerminal'] = php.isset($svcSegData['arrivalTerminal']) && $i === php.count($svcSegData['legs']) - 1
 						? {
-							'raw': $svcSegData['arrivalTerminal'],
-							'parsed': $svcSegData['arrivalTerminal'],
+							raw: $svcSegData['arrivalTerminal'],
+							parsed: $svcSegData['arrivalTerminal'],
 						}: null;
 					$leg['departureAirport'] = $legData['departureAirport'];
 					$leg['destinationAirport'] = $legData['destinationAirport'];
 					$leg['meals'] = {
-						'raw': $legData['mealOptions'],
-						'parsed': $legData['mealOptionsParsed'],
+						raw: $legData['mealOptions'],
+						parsed: $legData['mealOptionsParsed'],
 					};
 					$leg['smoking'] = php.preg_match(/NON-SMOKING/, $legData['inFlightServicesText']) ? false : true;
 					$leg['aircraft'] = $legData['aircraft'];
@@ -125,26 +125,26 @@ class ImportApolloPnrFormatAdapter
 						}
 					}
 					$leg['departureDt'] = {
-						'parsed': php.date('m-d', php.strtotime($fullDepartureDate))+' '+$legData['departureTime'],
-						'full': $fullDepartureDate
+						parsed: php.date('m-d', php.strtotime($fullDepartureDate))+' '+$legData['departureTime'],
+						full: $fullDepartureDate
 							? $fullDepartureDate+' '+$legData['departureTime']+':00'
 							: null,
 					};
 					$leg['destinationDt'] = {
-						'parsed': php.date('m-d', php.strtotime($fullDestinationDate))+' '+$legData['destinationTime'],
-						'full': $fullDestinationDate
+						parsed: php.date('m-d', php.strtotime($fullDestinationDate))+' '+$legData['destinationTime'],
+						full: $fullDestinationDate
 							? $fullDestinationDate+' '+$legData['destinationTime']+':00'
 							: null,
 					};
 					$legs.push($leg);}
 				return {
-					'segmentNumber': $svcSegData['segmentNumber'],
-					'airline': $svcSegData['airline'],
-					'flightNumber': $svcSegData['flightNumber'],
-					'legs': $legs,
+					segmentNumber: $svcSegData['segmentNumber'],
+					airline: $svcSegData['airline'],
+					flightNumber: $svcSegData['flightNumber'],
+					legs: $legs,
 				};
 			}, $parsedData['flightInfoSegments']),
-			'dumpNumbers': $parsedData['dumpNumbers'] || null,
+			dumpNumbers: $parsedData['dumpNumbers'] || null,
 		} : $parsedData;
 	}
 
@@ -160,28 +160,28 @@ class ImportApolloPnrFormatAdapter
 		for ($doc of $allDocs) {
 			if ($airMco = $fullNumToAirMcos[$doc['ticketNumber']][0] || null) {
 				$mcoRecords.push({
-					'type': 'AIRLINE_CHARGE',
-					'airlineNumber': php.substr($airMco['documentNumber'], 0, 3),
-					'documentNumber': php.substr($airMco['documentNumber'], 3),
-					'status': null,
-					'currency': $airMco['maskData']['baseFare']['currency'],
-					'amount': $airMco['maskData']['baseFare']['amount'],
-					'passengerName': $airMco['maskData']['passengerName'],
-					'nameNumber': this.findPaxMatchingName($nameRecords, $airMco['maskData']['passengerName'])['nameNumber'] || null,
+					type: 'AIRLINE_CHARGE',
+					airlineNumber: php.substr($airMco['documentNumber'], 0, 3),
+					documentNumber: php.substr($airMco['documentNumber'], 3),
+					status: null,
+					currency: $airMco['maskData']['baseFare']['currency'],
+					amount: $airMco['maskData']['baseFare']['amount'],
+					passengerName: $airMco['maskData']['passengerName'],
+					nameNumber: this.findPaxMatchingName($nameRecords, $airMco['maskData']['passengerName'])['nameNumber'] || null,
 				});
 			} else if (StringUtil.startsWith($doc['ticketNumber'], '890')) {
 				$mcoRecords.push({
-					'type': 'AGENCY_CHARGE',
-					'airlineNumber': php.substr($doc['ticketNumber'], 0, 3),
-					'documentNumber': php.substr($doc['ticketNumber'], 3),
-					'status': null,
-					'currency': $doc['currency'],
-					'amount': $doc['amount'],
-					'passengerName': $doc['lastName']+'/'+$doc['firstName'],
-					'nameNumber': this.findPaxMatchingName($nameRecords, $doc['lastName']+'/'+$doc['firstName'], true)['nameNumber'] || null,
+					type: 'AGENCY_CHARGE',
+					airlineNumber: php.substr($doc['ticketNumber'], 0, 3),
+					documentNumber: php.substr($doc['ticketNumber'], 3),
+					status: null,
+					currency: $doc['currency'],
+					amount: $doc['amount'],
+					passengerName: $doc['lastName']+'/'+$doc['firstName'],
+					nameNumber: this.findPaxMatchingName($nameRecords, $doc['lastName']+'/'+$doc['firstName'], true)['nameNumber'] || null,
 				});
 			}}
-		return {'mcoRecords': $mcoRecords};
+		return {mcoRecords: $mcoRecords};
 	}
 
 	static transformSeatInfo($parsedData, $passengers)  {
@@ -205,7 +205,7 @@ class ImportApolloPnrFormatAdapter
 				$seat['zone'] = $seatData['zone']['raw'];
 				$seat['location'] = $seatData['location']['raw'];
 				$seats.push($seat);}}
-		return {'seats': $seats, 'dumpNumbers': $parsedData['dumpNumbers'] || null};
+		return {seats: $seats, dumpNumbers: $parsedData['dumpNumbers'] || null};
 	}
 
 	static transformFrequentFlyerInfo($parsedData, $passengers)  {
@@ -223,16 +223,16 @@ class ImportApolloPnrFormatAdapter
 				$mp['passengerNameNumber'] = $flatPassengers[$passengerRecord['passengerInfo']['passengerNumber'] - 1]['nameNumber'] || null;
 				$mp['passengerName'] = $passengerRecord['passengerInfo']['passengerName'];
 				$programs.push($mp);}}
-		return {'mileagePrograms': $programs, 'dumpNumbers': $parsedData['dumpNumbers'] || null};
+		return {mileagePrograms: $programs, dumpNumbers: $parsedData['dumpNumbers'] || null};
 	}
 
 	static transformRepeatedItineraryInfo($parsedData, $baseDate)  {
 		return !php.isset($parsedData['error']) ? {
-			'dumpNumber': $parsedData['dumpNumber'] || null,
-			'isSameAsOriginal': $parsedData['isSameAsOriginal'] || null,
-			'isReadyToSell': $parsedData['isReadyToSell'] || null,
-			'itinerary': FormatAdapter.adaptApolloItineraryParseForClient($parsedData['itinerary'] || [], $baseDate),
-			'dumpNumbers': $parsedData['dumpNumbers'] || null,
+			dumpNumber: $parsedData['dumpNumber'] || null,
+			isSameAsOriginal: $parsedData['isSameAsOriginal'] || null,
+			isReadyToSell: $parsedData['isReadyToSell'] || null,
+			itinerary: FormatAdapter.adaptApolloItineraryParseForClient($parsedData['itinerary'] || [], $baseDate),
+			dumpNumbers: $parsedData['dumpNumbers'] || null,
 		} : $parsedData;
 	}
 
@@ -304,16 +304,16 @@ class ImportApolloPnrFormatAdapter
 				}
 			}
 			if (!$segmentNumbers) {
-				return {'error': 'Failed to match '+$i+'-th fare to segments'};
+				return {error: 'Failed to match '+$i+'-th fare to segments'};
 			}
 			$fareComponents.push({
-				'componentNumber': $component['componentNumber'],
-				'segmentNumbers': $segmentNumbers,
-				'departureAirport': $component['departureAirport'],
-				'destinationAirport': $component['destinationAirport'],
-				'fareBasis': $component['fareBasis'],
+				componentNumber: $component['componentNumber'],
+				segmentNumbers: $segmentNumbers,
+				departureAirport: $component['departureAirport'],
+				destinationAirport: $component['destinationAirport'],
+				fareBasis: $component['fareBasis'],
 			});}
-		return {'fareList': $fareComponents};
+		return {fareList: $fareComponents};
 	}
 
 	static transformFareComponents($restoredPricing, $itinerary)  {
@@ -335,11 +335,11 @@ class ImportApolloPnrFormatAdapter
 			}
 			$fareListRecords.push($fareListRecord);}
 		if (php.count($fareListRecords) === 0) {
-			return {'error': 'noData'};
+			return {error: 'noData'};
 		}
 		return {
-			'data': $fareListRecords,
-			'dumpNumbers': $dumpNumbers,
+			data: $fareListRecords,
+			dumpNumbers: $dumpNumbers,
 		};
 	}
 
@@ -355,9 +355,9 @@ class ImportApolloPnrFormatAdapter
 			if (!php.isset($fareListRecord['error'])) {
 				for ($fareComponent of $fareListRecord['fareList']) {
 					$record = {
-						'pricingNumber': $fareListRecord['pricingNumber'],
-						'subPricingNumber': $fareListRecord['subPricingNumber'],
-						'fareComponentNumber': $fareComponent['componentNumber'],
+						pricingNumber: $fareListRecord['pricingNumber'],
+						subPricingNumber: $fareListRecord['subPricingNumber'],
+						fareComponentNumber: $fareComponent['componentNumber'],
 					};
 					if ($rule = $fareComponent['ruleSections'][$sectionCode] || null) {
 						if (php.isset($rule['error'])) {
@@ -379,13 +379,13 @@ class ImportApolloPnrFormatAdapter
 				? 'noData'
 				: php.implode(php.PHP_EOL, $errors);
 			return {
-				'error': $error,
-				'dumpNumbers': $dumpNumbers,
+				error: $error,
+				dumpNumbers: $dumpNumbers,
 			};
 		} else {
 			return {
-				'data': $fareRuleRecords,
-				'dumpNumbers': $dumpNumbers,
+				data: $fareRuleRecords,
+				dumpNumbers: $dumpNumbers,
 			};
 		}
 	}
@@ -412,8 +412,8 @@ class ImportApolloPnrFormatAdapter
 				$fareRuleRecords.push($fareListRecord);
 			}}
 		return {
-			'data': $fareRuleRecords,
-			'dumpNumbers': $dumpNumbers,
+			data: $fareRuleRecords,
+			dumpNumbers: $dumpNumbers,
 		};
 	}
 
@@ -430,15 +430,15 @@ class ImportApolloPnrFormatAdapter
 		$pnrInfo['agentInitials'] = $parsedData['focalPointInitials'];
 		$pnrInfo['receivedFrom'] = $headerData['agentName'] || null;
 		$pnrInfo['reservationDate'] = php.isset($parsedData['reservationDate']) ? {
-			'raw': $parsedData['reservationDate']['raw'],
-			'parsed': $parsedData['reservationDate']['parsed'],
-			'full': DateTime.decodeRelativeDateInPast($parsedData['reservationDate']['parsed'], $fetchedDt),
+			raw: $parsedData['reservationDate']['raw'],
+			parsed: $parsedData['reservationDate']['parsed'],
+			full: DateTime.decodeRelativeDateInPast($parsedData['reservationDate']['parsed'], $fetchedDt),
 		} : null;
 		$pnrInfo['agencyInfo'] = {
-			'agencyId': $parsedData['agencyId'],
-			'agencyToken': $parsedData['agencyToken'],
-			'agentToken': $parsedData['agentToken'],
-			'arcNumber': $parsedData['arcNumber'],
+			agencyId: $parsedData['agencyId'],
+			agencyToken: $parsedData['agencyToken'],
+			agentToken: $parsedData['agentToken'],
+			arcNumber: $parsedData['arcNumber'],
 		};
 		return $pnrInfo;
 	}
@@ -456,9 +456,9 @@ class ImportApolloPnrFormatAdapter
 			$ticket['dumpNumber'] = $ticketData['dumpNumber'] || null;
 			$ticket['passengerName'] = $ticketData['header']['passengerName'];
 			$ticket['issueDate'] = {
-				'raw': $ticketData['header']['issueDate']['raw'],
-				'parsed': $ticketData['header']['issueDate']['parsed'],
-				'full': $ticketData['header']['issueDate']['parsed'],
+				raw: $ticketData['header']['issueDate']['raw'],
+				parsed: $ticketData['header']['issueDate']['parsed'],
+				full: $ticketData['header']['issueDate']['parsed'],
 			};
 			$ticket['pcc'] = $ticketData['header']['pcc'];
 			$ticket['tourCode'] = $ticketData['footer']['extraFields']['tourCode'] || null;
@@ -492,9 +492,9 @@ class ImportApolloPnrFormatAdapter
 		$segment['flightNumber'] = $segmentData['flightNumber'];
 		$segment['bookingClass'] = $segmentData['bookingClass'];
 		$segment['departureDate'] = {
-			'raw': $segmentData['departureDate']['raw'],
-			'parsed': $segmentData['departureDate']['parsed'],
-			'full': $fullDate,
+			raw: $segmentData['departureDate']['raw'],
+			parsed: $segmentData['departureDate']['parsed'],
+			full: $fullDate,
 		};
 		$segment['departureAirport'] = $segmentData['departureAirport'];
 		$segment['destinationAirport'] = $segmentData['destinationAirport'];

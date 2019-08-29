@@ -75,8 +75,8 @@ class CmsAmadeusTerminal {
 			}
 		}
 		return {
-			'success': $recordLocator ? true : false,
-			'recordLocator': $recordLocator,
+			success: $recordLocator ? true : false,
+			recordLocator: $recordLocator,
 		};
 	}
 
@@ -113,9 +113,9 @@ class CmsAmadeusTerminal {
 			$discounts = $flatMods
 				.map(m => ((m.parsed || {}).ptcs || []))
 				.reduce((a,b) => a.concat(b), []);
-			return {'ptcs': $discounts};
+			return {ptcs: $discounts};
 		} else {
-			return {'errors': ['Failed to parse pricing command - ' + $cmd]};
+			return {errors: ['Failed to parse pricing command - ' + $cmd]};
 		}
 	}
 
@@ -127,11 +127,11 @@ class CmsAmadeusTerminal {
 		for ($mods of Object.values($cmdData['pricingStores'])) {
 			$mods = php.array_combine(php.array_column($mods, 'type'), $mods);
 			if ((($mods['fareBasis'] || {})['parsed'] || {})['override'] || false) {
-				$errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {'modifier': '/' + $mods['fareBasis']['raw']}));
+				$errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {modifier: '/' + $mods['fareBasis']['raw']}));
 			}
 		}
 		if ($cmdData['baseCmd'] === 'FXL') {
-			$errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {'modifier': 'FXL'}));
+			$errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {modifier: 'FXL'}));
 		}
 		return $errors;
 	}
@@ -154,10 +154,10 @@ class CmsAmadeusTerminal {
 	transformCalledCommand($cmdRecord) {
 
 		return {
-			'cmd': $cmdRecord['cmd'],
-			'output': this.sanitizeOutput($cmdRecord['output']),
-			'tabCommands': [],
-			'clearScreen': false,
+			cmd: $cmdRecord['cmd'],
+			output: this.sanitizeOutput($cmdRecord['output']),
+			tabCommands: [],
+			clearScreen: false,
 		};
 	}
 }

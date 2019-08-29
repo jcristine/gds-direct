@@ -11,14 +11,14 @@ class BaggageAllowanceParserDataStructureWriter
 		this.$currentPassengerTypeInfoBlock = null;
 		this.$currentBaBlockSegment = null;
 		this.$result = {
-			'baggageAllowanceBlocks': [],
-			'carryOnAllowanceBlock': {
-				'segments': [],
+			baggageAllowanceBlocks: [],
+			carryOnAllowanceBlock: {
+				segments: [],
 			},
-			'embargoBlock': {
-				'segments': [],
+			embargoBlock: {
+				segments: [],
 			},
-			'flags': [],
+			flags: [],
 		};
 	}
 
@@ -51,8 +51,8 @@ class BaggageAllowanceParserDataStructureWriter
 	passengerTypeLineFound($res)  {
 		this.flushCurrentPassengerTypeInfoBlock();
 		this.$currentPassengerTypeInfoBlock = {
-			'paxTypeCode': $res['paxTypeCode'],
-			'segments': [],
+			paxTypeCode: $res['paxTypeCode'],
+			segments: [],
 		};
 	}
 
@@ -60,30 +60,30 @@ class BaggageAllowanceParserDataStructureWriter
 	baBlockSpecificSegmentLineFound($res)  {
 		this.flushCurrentBaBlockSegment();
 		this.$currentBaBlockSegment = {
-			'segmentDetails': {
-				'airline': $res['airline'],
-				'departureAirport': $res['departureAirport'],
-				'destinationAirport': $res['destinationAirport'],
-				'freeBaggageAmount': $res['freeBaggageAmount'] || null,
-				'isAvailable': $res['isAvailable'],
-				'error': $res['error'] || null,
+			segmentDetails: {
+				airline: $res['airline'],
+				departureAirport: $res['departureAirport'],
+				destinationAirport: $res['destinationAirport'],
+				freeBaggageAmount: $res['freeBaggageAmount'] || null,
+				isAvailable: $res['isAvailable'],
+				error: $res['error'] || null,
 			},
-			'bags': [],
+			bags: [],
 		};
 	}
 
 	baBlockBagLineFound($res)  {
 		let $bag;
 		$bag = {
-			'bagNumber': $res['bagNumber'],
-			'flags': $res['flags'],
-			'bagDescription': $res['bagDescription'],
-			'weightInLb': $res['weightInLb'],
-			'weightInKg': $res['weightInKg'],
-			'sizeInInches': $res['sizeInInches'],
-			'sizeInCm': $res['sizeInCm'],
-			'feeAmount': $res['feeAmount'],
-			'feeCurrency': $res['feeCurrency'],
+			bagNumber: $res['bagNumber'],
+			flags: $res['flags'],
+			bagDescription: $res['bagDescription'],
+			weightInLb: $res['weightInLb'],
+			weightInKg: $res['weightInKg'],
+			sizeInInches: $res['sizeInInches'],
+			sizeInCm: $res['sizeInCm'],
+			feeAmount: $res['feeAmount'],
+			feeCurrency: $res['feeCurrency'],
 		};
 		this.$currentBaBlockSegment['bags'].push($bag);
 	}
@@ -99,7 +99,7 @@ class BaggageAllowanceParserDataStructureWriter
 	carryOnAllowanceBlockStartLineFound($res)  {
 		this.flushCurrentPassengerTypeInfoBlock();
 		this.$result['carryOnAllowanceBlock'] = {
-			'segments': [],
+			segments: [],
 		};
 	}
 
@@ -107,29 +107,29 @@ class BaggageAllowanceParserDataStructureWriter
 	carryOnBlockSpecificSegmentLineFound($res)  {
 		this.flushCurrentCarryonBlockSegment();
 		this.$currentCarryonBlockSegment = {
-			'segmentDetails': {
-				'airline': $res['airline'],
-				'departureAirport': $res['departureAirport'],
-				'destinationAirport': $res['destinationAirport'],
-				'freeBaggageAmount': $res['freeBaggageAmount'] || null,
-				'isAvailable': $res['isAvailable'],
-				'error': $res['error'] || null,
+			segmentDetails: {
+				airline: $res['airline'],
+				departureAirport: $res['departureAirport'],
+				destinationAirport: $res['destinationAirport'],
+				freeBaggageAmount: $res['freeBaggageAmount'] || null,
+				isAvailable: $res['isAvailable'],
+				error: $res['error'] || null,
 			},
-			'flags': [],
-			'bags': [],
+			flags: [],
+			bags: [],
 		};
 	}
 
 	carryOnBlockBagLineFound($res)  {
 		let $bag;
 		$bag = {
-			'bagNumber': $res['bagNumber'],
-			'flags': $res['flags'],
-			'bagDescription': $res['bagDescription'],
-			'weightInLb': $res['weightInLb'],
-			'weightInKg': $res['weightInKg'],
-			'sizeInInches': $res['sizeInInches'],
-			'sizeInCm': $res['sizeInCm'],
+			bagNumber: $res['bagNumber'],
+			flags: $res['flags'],
+			bagDescription: $res['bagDescription'],
+			weightInLb: $res['weightInLb'],
+			weightInKg: $res['weightInKg'],
+			sizeInInches: $res['sizeInInches'],
+			sizeInCm: $res['sizeInCm'],
 		};
 		this.$currentCarryonBlockSegment['bags'].push($bag);
 	}
@@ -145,11 +145,11 @@ class BaggageAllowanceParserDataStructureWriter
 	embargoSpecificSegmentUrlLineFound($res)  {
 		let $segment;
 		$segment = {
-			'airline': $res['airline'],
-			'departureAirport': $res['departureAirport'],
-			'destinationAirport': $res['destinationAirport'],
+			airline: $res['airline'],
+			departureAirport: $res['departureAirport'],
+			destinationAirport: $res['destinationAirport'],
 			//            'link' => $res['link'],
-			'myTripAndMoreUrl': $res['myTripAndMoreUrl'],
+			myTripAndMoreUrl: $res['myTripAndMoreUrl'],
 		};
 		this.$result['embargoBlock']['segments'].push($segment);
 	}

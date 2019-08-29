@@ -18,15 +18,15 @@ class MoveDownAllAction extends AbstractGdsAction {
 		$mdCmdRows = await $cmdLog.getScrolledCmdMrs();
 		if (!($originalCmdRow = php.array_shift($mdCmdRows))) {
 			// if session just started for example
-			return {'userMessages': ['There is nothing to scroll']};
+			return {userMessages: ['There is nothing to scroll']};
 		}
 		if (!($format = AmadeusUtils.guessFormatFromCmd($originalCmdRow['cmd']))) {
-			return {'errors': ['Unsupported scrolling format - ' + $originalCmdRow['cmd']]};
+			return {errors: ['Unsupported scrolling format - ' + $originalCmdRow['cmd']]};
 		}
 		$usedMdCmds = php.array_values(php.array_unique(php.array_column($mdCmdRows, 'cmd')));
 		if (!php.empty($wrongMds = php.array_diff($usedMdCmds, [$format['moveRestCmd']]))) {
 			// probably could do >MT; and fetch from start in such case
-			return {'errors': ['Mixed MD commands are not supported - got ' + php.implode(', ', $wrongMds) + ', expected only ' + $format['moveRestCmd']]};
+			return {errors: ['Mixed MD commands are not supported - got ' + php.implode(', ', $wrongMds) + ', expected only ' + $format['moveRestCmd']]};
 		}
 
 		$pages = php.array_merge(
@@ -48,12 +48,12 @@ class MoveDownAllAction extends AbstractGdsAction {
 		}
 
 		$fullCalledCommand = {
-			'cmd': $originalCmdRow['cmd'],
-			'output': php.implode(php.PHP_EOL, $cleanPages),
-			'hasMore': $hasMore,
+			cmd: $originalCmdRow['cmd'],
+			output: php.implode(php.PHP_EOL, $cleanPages),
+			hasMore: $hasMore,
 		};
 
-		return {'calledCommands': [$fullCalledCommand]};
+		return {calledCommands: [$fullCalledCommand]};
 	}
 }
 
