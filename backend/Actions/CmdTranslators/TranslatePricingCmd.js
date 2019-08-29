@@ -7,7 +7,7 @@ const AtfqParser = require('../../Transpiled/Gds/Parsers/Apollo/Pnr/AtfqParser.j
 const Rej = require('klesun-node-tools/src/Rej.js');
 const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
 
-const NormalizePricingCmd = require('gds-utils/src/CmdTranslators/NormalizePricingCmd.js');
+const NormalizePricingCmd = require('gds-utils/src/cmd_translators/NormalizePricingCmd.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 const PRIVATE_FARE_TYPES = ['private', 'agencyPrivate', 'airlinePrivate', 'netAirlinePrivate'];

@@ -1,6 +1,6 @@
 const Fp = require('../../../../Lib/Utils/Fp.js');
-const Lexeme = require('gds-utils/src/Lexer/Lexeme.js');
-const Lexer = require('gds-utils/src/Lexer/Lexer.js');
+const Lexeme = require('gds-utils/src/lexer/Lexeme.js');
+const Lexer = require('gds-utils/src/lexer/Lexer.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 
 /**

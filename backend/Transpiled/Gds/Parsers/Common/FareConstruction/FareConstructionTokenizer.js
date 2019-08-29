@@ -1,5 +1,5 @@
 
-const Lexeme = require('gds-utils/src/Lexer/Lexeme.js');
+const Lexeme = require('gds-utils/src/lexer/Lexeme.js');
 
 /**
  * Whereas Lexer.js works with cases where single text

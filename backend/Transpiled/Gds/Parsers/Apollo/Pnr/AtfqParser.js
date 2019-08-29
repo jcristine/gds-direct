@@ -1,7 +1,7 @@
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
-const Lexeme = require('gds-utils/src/Lexer/Lexeme.js');
-const Lexer = require('gds-utils/src/Lexer/Lexer.js');
+const Lexeme = require('gds-utils/src/lexer/Lexeme.js');
+const Lexer = require('gds-utils/src/lexer/Lexer.js');
 const php = require("klesun-node-tools/src/Transpiled/php.js");
 const FqLineParser = require("./FqLineParser.js");
 
