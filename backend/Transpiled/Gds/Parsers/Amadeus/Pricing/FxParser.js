@@ -3,9 +3,8 @@ const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const FareConstructionParser = require('../../../../Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
-const BagAllowanceParser = require('../../../../Gds/Parsers/Sabre/BagAllowanceParser.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const {parseSequence} = require('../../../../../Parsers/ParserUtil.js');
+const {parseSequence, parseBagAmountCode} = require('../../../../../Parsers/ParserUtil.js');
 
 /**
  * parses output of FX{modifiers} command which contains pricing with fare
@@ -74,7 +73,7 @@ class FxParser {
 			ticketDesignator: ticketDesignator,
 			notValidBefore: nvbDate ? {raw: split['O'], parsed: nvbDate} : null,
 			notValidAfter: nvaDate ? {raw: split['E'], parsed: nvaDate} : null,
-			freeBaggageAmount: BagAllowanceParser.parseAmountCode(split['B']),
+			freeBaggageAmount: parseBagAmountCode(split['B']),
 		};
 		if (date && time && php.trim(split[' ']) === '' &&
 			$result.bookingClass && !Fp.any(isEmptyString, $result)

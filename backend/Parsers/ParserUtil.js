@@ -25,3 +25,29 @@ exports.parseSequence = (linesLeft, parse) => {
 	}
 	return [parsedLines, linesLeft];
 };
+
+// '15K', '2P', '1PC', '25', '50'
+exports.parseBagAmountCode = (code) => {
+	const match = code.match(/^(\d{0,2})([A-Z]{0,3})$/);
+	if (match) {
+		const [$_, amount, unitsCode] = match;
+		const codeMap = {
+			'P': 'pieces',
+			'PC': 'pieces',
+			'K': 'kilograms',
+			'KG': 'kilograms',
+			'L': 'pounds',
+			'LB': 'pounds',
+			'NIL': null,
+			'': 'airlineDefaultUnits',
+		};
+		return {
+			units: codeMap[unitsCode],
+			amount: amount,
+			unitsCode: unitsCode,
+			raw: code,
+		};
+	} else {
+		return null;
+	}
+};

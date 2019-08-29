@@ -1,3 +1,4 @@
+const ParserUtil = require('../../../../Parsers/ParserUtil.js');
 
 const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
@@ -29,31 +30,8 @@ class BagAllowanceParser
 		};
 	}
 
-	// '15K', '2P', '1PC', '25', '50'
 	static parseAmountCode($code)  {
-		let $matches, $_, $amount, $unitsCode, $codeMap;
-
-		if (php.preg_match(/^(\d{0,2})([A-Z]{0,3})$/, $code, $matches = [])) {
-			[$_, $amount, $unitsCode] = $matches;
-			$codeMap = {
-				'P': 'pieces',
-				'PC': 'pieces',
-				'K': 'kilograms',
-				'KG': 'kilograms',
-				'L': 'pounds',
-				'LB': 'pounds',
-				'NIL': null,
-				'': 'airlineDefaultUnits',
-			};
-			return {
-				'units': $codeMap[$unitsCode],
-				'amount': $amount,
-				'unitsCode': $unitsCode,
-				'raw': $code,
-			};
-		} else {
-			return null;
-		}
+		return ParserUtil.parseBagAmountCode($code);
 	}
 
 	static splitToSections($lines)  {
