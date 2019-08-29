@@ -563,4 +563,14 @@ module.exports.migrations = [
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8',
 		].join('\n')),
 	},
+	{
+		name: 'GRECT/2019.08.28007-create-multi_pcc_tariff_rules',
+		perform: async (db) => db.query([
+			'CREATE TABLE `multi_pcc_tariff_rules` (',
+			'  `id` int(11) PRIMARY KEY AUTO_INCREMENT,',
+			'  `updated_dt` datetime NOT NULL,',
+			'  `data` text NOT NULL',
+			') ENGINE=MyISAM DEFAULT CHARSET=utf8',
+		].join('\n')),
+	},
 ];
