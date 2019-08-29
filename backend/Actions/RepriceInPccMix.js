@@ -14,13 +14,15 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 
 
 const makePricingCmd = async (aliasData, pccRec) => {
-	const normalized = NormalizePricingCmd.inApollo({
+	const dialect = aliasData.dialect || 'apollo';
+	const normalized = NormalizePricingCmd({
 		type: 'priceItinerary',
 		data: {
-			baseCmd: '$BB',
+			baseCmd: aliasData.baseCmd || '$BB',
 			pricingModifiers: aliasData.pricingModifiers || [],
 		},
-	});
+	}, dialect);
+
 	normalized.pricingModifiers.push({type: 'namePosition'});
 	if (aliasData.isAll && normalized.ptcs.length === 0) {
 		normalized.paxNums = [];
@@ -34,7 +36,9 @@ const makePricingCmd = async (aliasData, pccRec) => {
 			const converted = [];
 			for (const srcPtc of normalized.ptcs) {
 				const {ageGroup, age} = PtcUtil.parsePtc(srcPtc);
-				const ptc = await PtcUtil.convertPtcByAgeGroup(pccRec.ptc, ageGroup, age || 7);
+				const ptc = await PtcUtil.convertPtcByAgeGroup(pccRec
+					.ptc, ageGroup || 'adult', age || 7
+				);
 				converted.push(ptc);
 			}
 			normalized.ptcs = converted;
@@ -55,8 +59,11 @@ const makePricingCmd = async (aliasData, pccRec) => {
 	if (pccRec.pricingPcc) {
 		normalized.pricingModifiers.push({type: 'ticketingAgencyPcc', parsed: pccRec.pricingPcc});
 	}
+	const bbActions = ['lowestFare', 'lowestFareIgnoringAvailability', 'lowestFareAndRebook'];
 	// it's important that it was in the end apparently
-	if (!normalized.pricingModifiers.some(mod => mod.type === 'cabinClass')) {
+	if (bbActions.includes(normalized.action) &&
+		!normalized.pricingModifiers.some(mod => mod.type === 'cabinClass')
+	) {
 		normalized.pricingModifiers.push({type: 'cabinClass', parsed: {parsed: 'sameAsBooked'}});
 	}
 

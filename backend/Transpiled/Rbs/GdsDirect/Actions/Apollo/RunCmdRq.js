@@ -1,3 +1,4 @@
+const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
 const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
 const TravelportBuildItineraryActionViaXml = require('../../../GdsAction/TravelportBuildItineraryActionViaXml.js');
 const RunCmdHelper = require('./RunCmdRq/RunCmdHelper.js');
@@ -1183,10 +1184,29 @@ const RunCmdRq = ({
 		};
 	};
 
+	const assertPriceMix = ({type, data}) => {
+		if (type !== 'priceItinerary' || !data) {
+			return Promise.resolve(null);
+		}
+		const srcMods = data.pricingModifiers;
+		// /MIX is our fake modifier that triggers reprice in multiple PCCs
+		const cleanMods = srcMods.filter(m => m.raw !== 'MIX');
+		if (srcMods.length === cleanMods.length) {
+			// no /MIX in modifiers
+			return Promise.resolve(null);
+		} else {
+			return RepriceInPccMix({stateful, gdsClients, aliasData: {
+				dialect: 'apollo', ptcs: [],
+				baseCmd: data.baseCmd,
+				pricingModifiers: cleanMods,
+			}});
+		}
+	};
+
 	const processRequestedCommand = async (cmd) => {
 		let $mdaData, $limit, $cmdReal, $matches, $_, $plus, $seatAmount,
 			$segmentNumbers, $segmentStatus;
-		let reservation;
+		let reservation, result;
 		const alias = await ApoAliasParser.parse(cmd, stateful);
 		const parsed = CommandParser.parse(cmd);
 		if ($mdaData = alias['moveDownAll'] || null) {
@@ -1249,6 +1269,8 @@ const RunCmdRq = ({
 			return {calledCommands: [cmdRec]};
 		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr(cmd, stateful))) {
 			return bookPnr(reservation);
+		} else if (result = await assertPriceMix(parsed)) {
+			return result;
 		} else if (alias.type === 'fareSearchValidatedChangeCity') {
 			return fareSearchValidatedChangeCity(alias.realCmd);
 		} else {
