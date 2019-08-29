@@ -1,3 +1,4 @@
+const MultiPccTariffRules = require('./MultiPccTariffRules.js');
 const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 const RbsClient = require('../IqClients/RbsClient.js');
 const _ = require('lodash');
@@ -71,7 +72,8 @@ exports.getMatchingPccs = async ({
 }) => {
 	const routeRules = [];
 	let fallbackPccs = [];
-	const rules = repricePccRules || (await RbsClient.getMultiPccTariffRules()).result.result.records;
+	// maybe should merge RepricePccRules.js and MultiPccTariffRules.js to single module?
+	const rules = repricePccRules || (await MultiPccTariffRules.getAll());
 	for (const rule of Object.values(rules)) {
 		if (!php.empty(rule.departure_items) ||
 			!php.empty(rule.destination_items)

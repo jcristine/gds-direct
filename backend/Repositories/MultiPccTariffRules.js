@@ -5,18 +5,6 @@ const {sqlNow} = require('klesun-node-tools/src/Utils/Misc.js');
 
 const TABLE = 'multi_pcc_tariff_rules';
 
-/** @param $item = ['type' => 'country','value' => 'US'] */
-const getLocationName = ($item) => {
-
-	if ($item['type'] === 'region') {
-		return (new LocationGeographyProvider()).getRegionNameById($item['value']);
-	} else if ($item['type'] === 'country') {
-		return (new LocationGeographyProvider()).getCountryNameByCode($item['value']);
-	} else {
-		return null;
-	}
-};
-
 const normalizeRule = (rule, forClient) => {
 	// remove empty condition keys to make field more readable in db cli
 	const normDict = !forClient
@@ -28,14 +16,12 @@ const normalizeRule = (rule, forClient) => {
 			return normDict({
 				type: php.strval(item.type),
 				value: php.strval(item.value),
-				//name: forClient ? this.getLocationName($item) : null,
 			});
 		}),
 		destination_items: (rule.destination_items || []).map((item) => {
 			return normDict({
 				type: php.strval(item.type),
 				value: php.strval(item.value),
-				//name: forClient ? this.getLocationName($item) : null,
 			});
 		}),
 		reprice_pcc_records: (rule.reprice_pcc_records || []).map((item) => {
