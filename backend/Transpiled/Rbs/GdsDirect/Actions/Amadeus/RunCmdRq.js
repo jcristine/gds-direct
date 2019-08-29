@@ -1,3 +1,4 @@
+const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
 const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
 const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
 
@@ -665,6 +666,24 @@ const execute = ({
 		}
 	};
 
+	/** @param cmdData = require('PricingCmdParser.js').parse() */
+	const processPriceItinerary = async (cmd, cmdData) => {
+		const stores = cmdData.pricingStores;
+		if (stores.length === 1) {
+			const srcMods = stores[0];
+			// /MIX is our fake modifier that triggers reprice in multiple PCCs
+			const cleanMods = srcMods.filter(m => m.raw !== 'MIX');
+			if (srcMods.length > cleanMods.length) {
+				return RepriceInPccMix({stateful, gdsClients, aliasData: {
+					dialect: 'amadeus',
+					baseCmd: cmdData.baseCmd,
+					pricingStores: [cleanMods],
+				}});
+			}
+		}
+		return _fetchPricing(cmd, cmdData);
+	};
+
 	const getEmptyAreasFromDbState =  () => {
 		let $isOccupied, $occupiedRows, $occupiedAreas;
 
@@ -938,12 +957,10 @@ const execute = ({
 		return callImplicitCommandsAfter(cmdRec, $calledCommands, $userMessages);
 	};
 
-	const priceInAnotherPcc = async ($cmd, $target, $dialect) => {
-		let $pnr;
-
-		$pnr = await getCurrentPnr();
+	const priceInAnotherPcc = async (cmd, target, dialect) => {
+		const pnr = await getCurrentPnr();
 		return (new RepriceInAnotherPccAction({gdsClients}))
-			.execute($pnr, $cmd, $dialect, $target, stateful);
+			.execute(pnr, cmd, dialect, target, stateful);
 	};
 
 	const processRequestedCommand = async (cmd) => {
@@ -991,7 +1008,7 @@ const execute = ({
 		} else if (result = RepriceInAnotherPccAction.parseAlias(cmd)) {
 			return priceInAnotherPcc(result.cmd, result.target, result.dialect);
 		} else if (parsed.type === 'priceItinerary') {
-			return _fetchPricing(cmd, parsed.data);
+			return processPriceItinerary(cmd, parsed.data);
 		} else {
 			return processRealCommand(cmd);
 		}
