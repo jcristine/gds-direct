@@ -123,6 +123,8 @@ const translatePaxes_amadeus = ({ptcs, paxNums, pricingModifiers = []}) => {
 			subMods.push('OCC-' + mod.parsed);
 		} else if (mod.type === 'ticketingDate') {
 			subMods.push(mod.parsed.raw);
+		} else if (mod.type === 'forceProperEconomy') {
+			subMods.push('*BD');
 		} else {
 			superMods.push(mod);
 		}
@@ -244,6 +246,8 @@ const processTravelportMod = (effectiveMods, mod, coma, thru) => {
 	} else if (mod.raw === 'MIX') {
 		// fake alias modifier
 		effectiveMods.push('MIX');
+	} else if (mod.type === 'forceProperEconomy') {
+		effectiveMods.push('FXD');
 	} else {
 		return false;
 	}
@@ -405,6 +409,8 @@ const inSabre = (norm) => {
 			const {units, value} = mod.parsed;
 			const sabreMod = 'K' + (units === 'percent' ? 'P' : '') + value;
 			effectiveMods.push(sabreMod);
+		} else if (mod.type === 'forceProperEconomy') {
+			effectiveMods.push('FXD');
 		} else if (mod.raw === 'MIX') {
 			// fake alias modifier
 			postfix += '/MIX';

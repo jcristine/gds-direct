@@ -3150,6 +3150,10 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
 			['apollo', 'galileo', '$B/+2CV4', null],
 			['apollo', 'sabre', 'M*FWYESB', 'W/-ATFWY¥ATESB'],
 			['apollo', 'amadeus', '$B:A', 'FXX/R,U'],
+			['apollo', 'sabre', '$B/FXD', 'WPFXD'],
+			['apollo', 'amadeus', '$B/FXD', 'FXX/R,*BD'],
+			['apollo', 'galileo', '$B/FXD', 'FQ/FXD'],
+			['sabre', 'apollo', 'WPFXD', '$B/FXD'],
 		];
 
 		return $tests;
