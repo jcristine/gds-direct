@@ -528,34 +528,27 @@ const execute = ({
 	};
 
 	const rebookAsSs = async () => {
-		let $gkSegments, $newSegments, $result, $calledCommands, $error;
-
 		stateful.flushCalledCommands();
-		$gkSegments = (await getCurrentPnr()).getItinerary()
+		const gkSegments = (await getCurrentPnr()).getItinerary()
 			.filter(($seg) => $seg['segmentStatus'] === 'GK');
-		if (php.empty($gkSegments)) {
+		if (php.empty(gkSegments)) {
 			return {'errors': ['No GK segments']};
 		}
-		await runCommand('XE' + php.implode(',', php.array_column($gkSegments, 'lineNumber')));
-		$newSegments = Fp.map(($seg) => {
+		await runCommand('XE' + php.implode(',', php.array_column(gkSegments, 'lineNumber')));
+		const newSegments = Fp.map(($seg) => {
 			$seg['segmentStatus'] = '';
 			return $seg;
-		}, $gkSegments);
-		$result = await (new AmadeusBuildItineraryAction())
-			.setSession(stateful).execute($newSegments);
+		}, gkSegments);
+		const result = await (new AmadeusBuildItineraryAction())
+			.setSession(stateful).execute(newSegments);
 
-		$calledCommands = stateful.flushCalledCommands();
-		if ($error = transformBuildError($result)) {
-			return {
-				'calledCommands': $calledCommands,
-				'errors': [$error],
-			};
+		const calledCommands = stateful.flushCalledCommands();
+		const error = transformBuildError(result);
+		if (error) {
+			return {calledCommands, errors: [error]};
 		} else {
-			return {
-				'calledCommands': [
-					{'cmd': 'RT', 'output': ArrayUtil.getLast($calledCommands)['output']},
-				],
-			};
+			const cmdRec = {cmd: 'RT', output: ArrayUtil.getLast(calledCommands).output};
+			return {calledCommands: [cmdRec]};
 		}
 	};
 
