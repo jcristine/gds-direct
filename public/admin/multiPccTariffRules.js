@@ -827,7 +827,7 @@ $(function () {
 				var record;
 				if ($tr.length) {
 					id = _.toString($tr.data('recordId'));
-					record = _.find(records, ['id', id]);
+					record = _.find(records, ['id', +id]);
 				}
 				_this.open(record, $tr);
 			})
