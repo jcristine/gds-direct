@@ -200,10 +200,12 @@ const translateApolloPricingModifier = (mod) => {
 };
 
 /**
-* since we use our own _fake_ areas, _real_ letter in AAA{pcc} output would
-* always be "A", that's confusing - so we change the area letter in the dump
-*/
-const makeCalledCommandsPccOutputCorrect = ($calledCommands, $area) => {
+ * since we use our own _fake_ areas, _real_ letter in AAA{pcc} output would
+ * always be "A", that's confusing - so we change the area letter in the dump
+ *
+ * not sure it is relevant anymore, as we now use real areas in Sabre with OIATH
+ */
+const forgePccChangeOutput = ($calledCommands, $area) => {
 	return Fp.map(($calledCommand) => {
 		if (CommandParser.parse($calledCommand['cmd'])['type'] == 'changePcc' && !php.empty($area)) {
 			$calledCommand['output'] = php.preg_replace('#(?<=^[A-Z\\d]{4}\\.L3II\\*AWS\\.)[A-Z]#', $area, $calledCommand['output']);
@@ -907,73 +909,66 @@ const execute = ({
 			.execute($pnr, $cmd, $dialect, $target, stateful);
 	};
 
-	const processRequestedCommand = async  ($cmd) => {
-		let $parsed, $matches, $result, $reData, $aliasData, $itinerary;
+	const processRequestedCommand = async  (cmd) => {
+		let matches, result, reData, aliasData, reservation;
 
-		$parsed = CommandParser.parse($cmd);
-		if (php.preg_match(/^PNR$/, $cmd, $matches = [])) {
+		const parsed = CommandParser.parse(cmd);
+		if (php.preg_match(/^PNR$/, cmd, matches = [])) {
 			return processSavePnr();
-		} else if (php.preg_match(/^SORT$/, $cmd, $matches = [])) {
+		} else if (php.preg_match(/^SORT$/, cmd, matches = [])) {
 			return processSortItinerary();
-		} else if ($parsed['type'] === 'changePcc') {
-			$result = await processRealCommand($cmd);
-
-			if (php.array_key_exists('errors', $result)) {
-				return $result;
+		} else if (parsed['type'] === 'changePcc') {
+			const result = await processRealCommand(cmd);
+			if (php.array_key_exists('errors', result)) {
+				return result;
 			} else {
-				$result['calledCommands'] = makeCalledCommandsPccOutputCorrect($result['calledCommands'], getSessionData()['area']);
-				return $result;
+				result.calledCommands = forgePccChangeOutput(result.calledCommands, getSessionData().area);
+				return result;
 			}
-		} else if ($parsed['type'] === 'changeArea') {
-			return changeArea($parsed['data']);
-		} else if ($reData = AliasParser.parseRe($cmd)) {
-			return processCloneItinerary($reData);
-		} else if ($aliasData = AliasParser.parseStore($cmd)) {
-			return storePricing($aliasData);
-		} else if ($aliasData = await AliasParser.parsePrice($cmd, stateful)) {
-			return priceAll($aliasData);
-		} else if ($aliasData = parseMultiPriceItineraryAlias($cmd)) {
-			return multiPriceItinerary($aliasData);
-		} else if ($cmd === '/SS') {
+		} else if (parsed['type'] === 'changeArea') {
+			return changeArea(parsed['data']);
+		} else if (reData = AliasParser.parseRe(cmd)) {
+			return processCloneItinerary(reData);
+		} else if (aliasData = AliasParser.parseStore(cmd)) {
+			return storePricing(aliasData);
+		} else if (aliasData = await AliasParser.parsePrice(cmd, stateful)) {
+			return priceAll(aliasData);
+		} else if (aliasData = parseMultiPriceItineraryAlias(cmd)) {
+			return multiPriceItinerary(aliasData);
+		} else if (cmd === '/SS') {
 			return rebookAsSs();
-		} else if (php.preg_match(/^(FQ.*)\/MIX$/, $cmd, $matches = [])) {
-			return getMultiPccTariffDisplay($matches[1]);
-		} else if (!php.empty($itinerary = await AliasParser.parseCmdAsPnr($cmd, stateful))) {
-			return bookPnr($itinerary, true);
-		} else if ($result = RepriceInAnotherPccAction.parseAlias($cmd)) {
-			return priceInAnotherPcc($result['cmd'], $result['target'], $result['dialect']);
+		} else if (php.preg_match(/^(FQ.*)\/MIX$/, cmd, matches = [])) {
+			return getMultiPccTariffDisplay(matches[1]);
+		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr(cmd, stateful))) {
+			return bookPnr(reservation, true);
+		} else if (result = RepriceInAnotherPccAction.parseAlias(cmd)) {
+			return priceInAnotherPcc(result['cmd'], result['target'], result['dialect']);
 		} else {
 		// not an alias
-			return processRealCommand($cmd);
+			return processRealCommand(cmd);
 		}
 	};
 
-	const execute = async  ($cmdRequested) => {
-		let $callResult, $errors, $status, $userMessages;
+	const execute = async  (cmdRequested) => {
 		const calledCommands = [];
-
-		if ($cmdRequested.match(/^.+\/MDA$/)) {
-		// no /MDA in sabre
-			$cmdRequested = $cmdRequested.slice(0, -'/MDA'.length);
+		if (cmdRequested.match(/^.+\/MDA$/)) {
+			// no /MDA in sabre
+			cmdRequested = cmdRequested.slice(0, -'/MDA'.length);
 		}
-
-		$callResult = await processRequestedCommand($cmdRequested);
-
-		if (!php.empty($errors = $callResult['errors'])) {
-			$status = GdsDirect.STATUS_FORBIDDEN;
-			calledCommands.push(...$callResult['calledCommands'] || []);
-			$userMessages = $errors;
+		const callResult = await processRequestedCommand(cmdRequested);
+		const errors = callResult['errors'];
+		let status, userMessages;
+		if (!php.empty(errors)) {
+			status = GdsDirect.STATUS_FORBIDDEN;
+			calledCommands.push(...callResult['calledCommands'] || []);
+			userMessages = errors;
 		} else {
-			$status = GdsDirect.STATUS_EXECUTED;
-			calledCommands.push(...$callResult['calledCommands']);
-			$userMessages = $callResult['userMessages'] || [];
+			status = GdsDirect.STATUS_EXECUTED;
+			calledCommands.push(...callResult['calledCommands']);
+			userMessages = callResult['userMessages'] || [];
 		}
 
-		return {
-			'status': $status,
-			'calledCommands': calledCommands,
-			'userMessages': $userMessages,
-		};
+		return {status, calledCommands, userMessages};
 	};
 
 	return execute(cmdRq);
