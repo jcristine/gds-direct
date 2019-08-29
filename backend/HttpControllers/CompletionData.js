@@ -9,7 +9,7 @@ exports.getPccList = async () => {
 		/** @deprecated - should drop it where it is used */
 		name: row.pcc,
 		gds: row.gds,
-		consolidatorName: row.consolidator,
+		consolidator: row.consolidator,
 		isTourFare: row.content_type === 'Tour',
 	}));
 };
