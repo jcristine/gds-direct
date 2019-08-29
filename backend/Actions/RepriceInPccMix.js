@@ -14,13 +14,10 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 
 
 const normalizePricingCmd = async (aliasData, pccRec) => {
-	const dialect = aliasData.dialect || 'apollo';
+	const dialect = aliasData.dialect;
 	const normalized = NormalizePricingCmd({
 		type: 'priceItinerary',
-		data: {
-			baseCmd: aliasData.baseCmd || '$BB',
-			pricingModifiers: aliasData.pricingModifiers || [],
-		},
+		data: aliasData,
 	}, dialect);
 
 	normalized.pricingModifiers.push({type: 'namePosition'});

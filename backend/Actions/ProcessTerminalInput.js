@@ -228,7 +228,8 @@ const ProcessTerminalInput = async ({
 		if (parsedAlias.type === 'addMpRemark') {
 			return AddMpRemark({stateful, airline: parsedAlias.data.airline});
 		} else if (parsedAlias.type === 'priceAll' && parsedAlias.data.isMix) {
-			return RepriceInPccMix({stateful, aliasData: parsedAlias.data, gdsClients});
+			const aliasData = {...parsedAlias.data, dialect: 'apollo', baseCmd: '$BB'};
+			return RepriceInPccMix({stateful, aliasData, gdsClients});
 		}
 
 		const bulkCmdRecs = parsedAlias.type !== 'bulkCmds'
@@ -250,6 +251,7 @@ const ProcessTerminalInput = async ({
 			}
 			const gdsResult = await running;
 			const isSuccess = gdsResult.status === GdsDirect.STATUS_EXECUTED;
+			messages.push(...(gdsResult.messages || []));
 			messages.push(...(gdsResult.userMessages || [])
 				.map(msg => ({type: isSuccess ? 'info' : 'error', text: msg})));
 			actions.push(...(gdsResult.actions || []));
