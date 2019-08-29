@@ -350,10 +350,11 @@ $(function () {
 
 			index = pccElemStore.items.length;
 			html = '<tr class="js-pcc-items-row">' +
-				'<td><input type="text" placeholder="Account Code" class="form-control all-caps js-account-code-' + index + '"></td>' +
-				'<td><select class="js-ptc-' + index + ' select-single"></select></td>' +
-				'<td><select class="js-fare-type-' + index + ' select-single"></select></td>' +
-				'<td><input type="text" placeholder="/TA.../ PCC" class="form-control all-caps js-ta-pcc-' + index + '"></td>' +
+				'<td colspan="2"><input type="text" placeholder="Account Code" class="form-control all-caps js-account-code-' + index + '"></td>' +
+				'<td colspan="1"><select class="js-ptc-' + index + ' select-single"></select></td>' +
+				'<td colspan="2"><select class="js-fare-type-' + index + ' select-single"></select></td>' +
+				'<td colspan="1"><input type="text" placeholder="/TA.../ PCC" class="form-control all-caps js-ta-pcc-' + index + '"></td>' +
+				'<td colspan="3"><input type="text" placeholder="Only For Airlines... (through \',\')" class="form-control all-caps js-allowed-airlines-' + index + '"></td>' +
 				'<td class="cell-action"><span class="cross-box"><span class="cross js-remove-pcc-items js-remove-' + index + '" ' +
 				'data-pcc-items-index="' + index + '" role="button"></span></span></td>' +
 				'</tr>';
@@ -367,6 +368,9 @@ $(function () {
 
 			pccElemStore.items[index].$taPcc = $row.find('.js-ta-pcc-' + index);
 			pccElemStore.items[index].$taPcc.val(data.ta_pcc || '');
+
+			pccElemStore.items[index].$allowedAirlines = $row.find('.js-allowed-airlines-' + index);
+			pccElemStore.items[index].$allowedAirlines.val((data.allowed_airlines || []).join(','));
 
 			pccElemStore.items[index].$ptc = $row.find('.js-ptc-' + index).selectize({
 				allowEmptyOption: true,
@@ -442,6 +446,8 @@ $(function () {
 						if (elemRow) {
 							var accountCode = elemRow.$accountCode.val().toUpperCase();
 							var taPcc = elemRow.$taPcc.val().toUpperCase();
+							var allowedAirlinesStr = elemRow.$allowedAirlines.val().toUpperCase();
+							var allowedAirlines = !allowedAirlinesStr ? [] : allowedAirlinesStr.split(',');
 							var ptc = elemRow.$ptc[0].selectize.getValue();
 							var fareType = elemRow.$fareType[0].selectize.getValue();
 							var stored = _.find(data.reprice_pcc_records, {
@@ -455,6 +461,7 @@ $(function () {
 								data.reprice_pcc_records.push({
 									account_code: accountCode,
 									ta_pcc: taPcc,
+									allowed_airlines: allowedAirlines,
 									ptc: ptc,
 									fare_type: fareType,
 									pcc: pcc,
@@ -463,6 +470,7 @@ $(function () {
 								record.reprice_pcc_records.push({
 									account_code: accountCode,
 									ta_pcc: taPcc,
+									allowed_airlines: allowedAirlines,
 									ptc: ptc,
 									fare_type: fareType,
 									pcc: pcc,
@@ -476,6 +484,7 @@ $(function () {
 					data.reprice_pcc_records.push({
 						account_code: '',
 						ta_pcc: '',
+						allowed_airlines: [],
 						ptc: '',
 						fare_type: '',
 						pcc: pcc,
@@ -484,6 +493,7 @@ $(function () {
 					record.reprice_pcc_records.push({
 						account_code: '',
 						ta_pcc: '',
+						allowed_airlines: [],
 						ptc: '',
 						fare_type: '',
 						pcc: pcc,
@@ -915,6 +925,9 @@ $(function () {
 		}
 		if (item.ta_pcc) {
 			html += ' /TA' + item.ta_pcc;
+		}
+		if ((item.allowed_airlines || []).length > 0) {
+			html += ' -' + item.allowed_airlines.join(',');
 		}
 
 		html += '</span>';

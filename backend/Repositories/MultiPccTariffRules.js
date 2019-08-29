@@ -32,6 +32,7 @@ const normalizeRule = (rule, forClient) => {
 				account_code: php.strval(item.account_code || ''),
 				fare_type: php.strval(item.fare_type || ''),
 				ta_pcc: php.strval(item.ta_pcc || ''),
+				allowed_airlines: (item.allowed_airlines || []).map(php.strval),
 			})),
 	});
 };

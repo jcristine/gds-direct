@@ -414,3 +414,7 @@
     background-color: rgba(231,76,60,1);
     border-color: rgba(231,76,60,1);
 }
+
+.modal-dialog {
+    width: 900px;
+}
