@@ -1,3 +1,5 @@
+const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
+const PricingCmdParser = require('../../../../Gds/Parsers/Sabre/Commands/PricingCmdParser.js');
 const BookViaGk_sabre = require('../../../../../Actions/BookViaGk/BookViaGk_sabre.js');
 const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
 const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
@@ -909,6 +911,16 @@ const execute = ({
 			.execute($pnr, $cmd, $dialect, $target, stateful);
 	};
 
+	const repriceInPccMix = (cleanCmd) => {
+		const data = PricingCmdParser.parse(cleanCmd);
+		if (!data) {
+			return Rej.NotImplemented('Unsupported pricing format: ' + cleanCmd);
+		} else {
+			const aliasData = {...data, dialect: 'sabre'};
+			return RepriceInPccMix({stateful, gdsClients, aliasData});
+		}
+	};
+
 	const processRequestedCommand = async  (cmd) => {
 		let matches, result, reData, aliasData, reservation;
 
@@ -943,8 +955,10 @@ const execute = ({
 			return bookPnr(reservation, true);
 		} else if (result = RepriceInAnotherPccAction.parseAlias(cmd)) {
 			return priceInAnotherPcc(result['cmd'], result['target'], result['dialect']);
+		} else if (matches = cmd.match(/^(WP.*)\/MIX$/)) {
+			return repriceInPccMix(matches[1]);
 		} else {
-		// not an alias
+			// not an alias
 			return processRealCommand(cmd);
 		}
 	};
@@ -956,19 +970,21 @@ const execute = ({
 			cmdRequested = cmdRequested.slice(0, -'/MDA'.length);
 		}
 		const callResult = await processRequestedCommand(cmdRequested);
-		const errors = callResult['errors'];
+		const errors = callResult.errors;
+		const messages = callResult.messages || [];
+		const actions = callResult.actions || [];
 		let status, userMessages;
 		if (!php.empty(errors)) {
 			status = GdsDirect.STATUS_FORBIDDEN;
-			calledCommands.push(...callResult['calledCommands'] || []);
+			calledCommands.push(...callResult.calledCommands || []);
 			userMessages = errors;
 		} else {
 			status = GdsDirect.STATUS_EXECUTED;
-			calledCommands.push(...callResult['calledCommands']);
-			userMessages = callResult['userMessages'] || [];
+			calledCommands.push(...(callResult.calledCommands || []));
+			userMessages = callResult.userMessages || [];
 		}
 
-		return {status, calledCommands, userMessages};
+		return {status, actions, calledCommands, messages, userMessages};
 	};
 
 	return execute(cmdRq);

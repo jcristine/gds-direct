@@ -23,7 +23,7 @@ const normalizePricingCmd = async (aliasData, pccRec) => {
 	normalized.pricingModifiers.push({type: 'namePosition'});
 	if (aliasData.isAll && normalized.ptcs.length === 0) {
 		normalized.paxNums = [];
-		normalized.ptcs = aliasData.ptcs;
+		normalized.ptcs = aliasData.ptcs || [];
 	}
 	if (pccRec.ptc) {
 		if (normalized.ptcs.length === 0) {

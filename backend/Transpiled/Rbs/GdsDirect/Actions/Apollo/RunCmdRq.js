@@ -1196,7 +1196,7 @@ const RunCmdRq = ({
 			return Promise.resolve(null);
 		} else {
 			return RepriceInPccMix({stateful, gdsClients, aliasData: {
-				dialect: 'apollo', ptcs: [],
+				dialect: 'apollo',
 				baseCmd: data.baseCmd,
 				pricingModifiers: cleanMods,
 			}});
