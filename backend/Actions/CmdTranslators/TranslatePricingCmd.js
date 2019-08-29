@@ -207,7 +207,6 @@ const processTravelportMod = (effectiveMods, mod, coma, thru) => {
 		if (!effectiveMods.join('/').includes('/ACC')) {
 			effectiveMods.push('ACC');
 		}
-	// following different in Apollo and galileo
 	} else if (mod.type === 'segments') {
 		const bundles = mod.parsed.bundles;
 		const grouped = {};
@@ -242,6 +241,9 @@ const processTravelportMod = (effectiveMods, mod, coma, thru) => {
 			}
 			effectiveMods.push('S' + bundleTokens.join(coma));
 		}
+	} else if (mod.raw === 'MIX') {
+		// fake alias modifier
+		effectiveMods.push('MIX');
 	} else {
 		return false;
 	}
@@ -336,6 +338,7 @@ const inSabre = (norm) => {
 	if (effectiveBaseCmd !== 'WP') {
 		effectiveMods.unshift(effectiveBaseCmd.slice('WP'.length));
 	}
+	let postfix = '';
 	for (const mod of norm.pricingModifiers) {
 		if (mod.type === 'namePosition') {
 			pushPaxMod();
@@ -402,12 +405,15 @@ const inSabre = (norm) => {
 			const {units, value} = mod.parsed;
 			const sabreMod = 'K' + (units === 'percent' ? 'P' : '') + value;
 			effectiveMods.push(sabreMod);
+		} else if (mod.raw === 'MIX') {
+			// fake alias modifier
+			postfix += '/MIX';
 		} else {
 			throw Rej.NotImplemented.makeExc('Unsupported modifier ' + mod.type + ' - ' + mod.raw);
 		}
 	}
 	pushPaxMod();
-	return 'WP' + effectiveMods.join('¥');
+	return 'WP' + effectiveMods.join('¥') + postfix;
 };
 
 const inAmadeus = (norm) => {
@@ -458,6 +464,9 @@ const inAmadeus = (norm) => {
 					effectiveMods.push('S' + shortenRanges(segNums, ',', '-'));
 				}
 			}
+		} else if (mod.raw === 'MIX') {
+			// fake alias modifier
+			effectiveMods.push('MIX');
 		} else {
 			throw Rej.NotImplemented.makeExc('Unsupported modifier ' + mod.type + ' - ' + mod.raw);
 		}
