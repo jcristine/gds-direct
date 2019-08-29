@@ -1297,6 +1297,7 @@ const RunCmdRq = ({
 			return Rej.InternalServerError(msg, unwrapped);
 		}
 		const errors = callResult['errors'] || [];
+		const messages = callResult.messages || [];
 
 		let status, calledCommands, userMessages, actions;
 		if (!php.empty(errors)) {
@@ -1310,7 +1311,7 @@ const RunCmdRq = ({
 			userMessages = callResult['userMessages'] || [];
 			actions = callResult['actions'] || [];
 		}
-		return {status, calledCommands, userMessages, actions};
+		return {status, calledCommands, userMessages, messages, actions};
 	};
 
 	return execute();
