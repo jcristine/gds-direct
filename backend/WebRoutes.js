@@ -445,10 +445,10 @@ const routes = {
 	'/gdsDirect/keepAlive': withGdsSession(GdsSessionController.keepAliveCurrent),
 	'/terminal/addMpRemark': withGdsSession(GdsSessionController.addMpRemark),
 	'/terminal/goToPricing': withGdsSession(GdsSessionController.goToPricing),
-	'/api/js/admin/multi-pcc-tariff/list-rules': withDevAuth(MultiPccTariffRules.getAll),
+	'/api/js/admin/multi-pcc-tariff/list-rules': toHandleHttp(MultiPccTariffRules.getAll),
 	'/api/js/data/locations': toHandleHttp(Airports.getAllLocations),
-	'/api/js/admin/multi-pcc-tariff/store-rule': toHandleHttp(MultiPccTariffRules.saveRule),
-	'/api/js/admin/multi-pcc-tariff/delete-rule': toHandleHttp(MultiPccTariffRules.deleteRule),
+	'/api/js/admin/multi-pcc-tariff/store-rule': withDevAuth(MultiPccTariffRules.saveRule),
+	'/api/js/admin/multi-pcc-tariff/delete-rule': withDevAuth(MultiPccTariffRules.deleteRule),
 };
 
 const socketIo = SocketIo.init(routes);

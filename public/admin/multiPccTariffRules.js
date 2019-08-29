@@ -516,11 +516,8 @@ $(function () {
 				});
 			});
 
-			$.ajax({
-				url: '/api/js/admin/multi-pcc-tariff/store-rule',
-				type: 'POST',
-				data: data,
-				success: function (res) {
+			grectApi.storeMultiPccTariffRule(data)
+				.then(res => {
 					if (_.isObject(res) && res.success) {
 						//todo show alert
 						if (_this.data.id) {
@@ -538,13 +535,12 @@ $(function () {
 
 						alert('Changes Saved Successfully');
 					}
-				},
-				error: function (e) {
+				})
+				.catch(e => {
 					$modalError.find('.js-modal-body').html(e.responseText);
 					$modalError.modal('show');
 					console.error(e);
-				},
-			});
+				});
 		};
 
 		_this.open = function (data, $tr) {
@@ -801,24 +797,18 @@ $(function () {
 				var $tr = $this.closest('tr');
 				var id = _.toString($tr.data('recordId'));
 				var index = _.findIndex(records, ['id', id]);
-				$.ajax({
-					url: '/api/js/admin/multi-pcc-tariff/delete-rule',
-					type: 'POST',
-					data: {
-						id: id,
-					},
-					success: function (res) {
+				grectApi.deleteMultiPccTariffRule({id})
+					.then(res => {
 						if (res && res.success) {
 							$tr.remove();
 							records.splice(index, 1);
 						}
-					},
-					error: function (e) {
+					})
+					.catch(e => {
 						$modalError.find('.js-modal-body').html(e.responseText);
 						$modalError.modal('show');
 						console.error(e);
-					},
-				});
+					});
 			})
 			.on('click', '.js-open-modal-multi-pcc-tariff', function () {
 				var $this = $(this);

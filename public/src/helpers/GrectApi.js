@@ -44,16 +44,22 @@ const GrectApi = ({
 		postParams: params,
 	});
 
-	const listMultiPccTariffRules = (params) => fetchJson({
-		url: '/api/js/admin/multi-pcc-tariff/list-rules',
-	});
-
 	return {
 		getPccList: params => fetchJson({url: '/data/getPccList'}),
 		getCmdRqList: getCmdRqList,
 		getCmdList: getCmdList,
 		saveHighlightSampleDump: saveHighlightSampleDump,
-		listMultiPccTariffRules: listMultiPccTariffRules,
+		listMultiPccTariffRules: (params) => fetchJson({
+			url: '/api/js/admin/multi-pcc-tariff/list-rules',
+		}),
+		storeMultiPccTariffRule: params => fetchJson({
+			url: '/api/js/admin/multi-pcc-tariff/store-rule',
+			postParams: params,
+		}),
+		deleteMultiPccTariffRule: params => fetchJson({
+			url: '/api/js/admin/multi-pcc-tariff/delete-rule',
+			postParams: params,
+		}),
 	};
 };
 
