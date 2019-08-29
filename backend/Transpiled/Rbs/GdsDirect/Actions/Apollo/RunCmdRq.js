@@ -844,71 +844,70 @@ const RunCmdRq = ({
 	};
 
 	const prepareMcoMask = async () => {
-		let $getPaxName, $pcc, $pccPointOfSaleCountry, $agent, $pnr, $passengerNames, $mcoMask, $pnrParams,
-			$hasPredefinedPax, $predefinedPax, $mcoParams, $key, $value, $calledCommands, $userMessages, $result;
-		$getPaxName = ($pax) => $pax['lastName'] + '/' + $pax['firstName'];
-		$pcc = getSessionData()['pcc'];
-		$pccPointOfSaleCountry = await stateful.getPccDataProvider()('apollo', $pcc)
+		const getPaxName = $pax => $pax.lastName + '/' + $pax.firstName;
+		const pcc = getSessionData()['pcc'];
+		const pccPointOfSaleCountry = await stateful.getPccDataProvider()('apollo', pcc)
 			.then(r => r.point_of_sale_country).catch(exc => null);
-		if ($pccPointOfSaleCountry !== 'US') {
-			return {'errors': ['You\\\'re emulated to ' + $pcc + '. Split MCO can be issued only in a USA PCC']};
+		if (pccPointOfSaleCountry !== 'US') {
+			return {'errors': ['You\\\'re emulated to ' + pcc + '. Split MCO can be issued only in a USA PCC']};
 		}
-		$agent = stateful.getAgent();
-		if (!$agent.canUseMco()) {
+		const agent = stateful.getAgent();
+		if (!agent.canUseMco()) {
 			return {'errors': ['Not allowed to use HHMCO']};
 		}
-		$pnr = await getCurrentPnr();
-		if (!$pnr.getRecordLocator()) {
+		const pnr = await getCurrentPnr();
+		if (!pnr.getRecordLocator()) {
 			return {'errors': ['Must be in a PNR']};
 		}
-		$passengerNames = Fp.map($getPaxName, php.array_filter($pnr.getPassengers()));
-		$mcoMask = (await runCmd('HHMCO', true)).output;
-		$pnrParams = await MakeMcoApolloAction.getMcoParams($pnr, $mcoMask);
-		if (!php.empty($pnrParams['errors'])) {
-			return {'errors': $pnrParams['errors']};
+		const passengerNames = Fp.map(getPaxName, php.array_filter(pnr.getPassengers()));
+		const mcoMask = (await runCmd('HHMCO', true)).output;
+		const pnrParams = await MakeMcoApolloAction.getMcoParams(pnr, mcoMask);
+		if (!php.empty(pnrParams['errors'])) {
+			return {'errors': pnrParams['errors']};
 		}
-		$hasPredefinedPax = (php.count($passengerNames) === 1);
-		$predefinedPax = $hasPredefinedPax ? ArrayUtil.getFirst($passengerNames) : '';
-		$mcoParams = [
-			['passengerName', $predefinedPax, !$hasPredefinedPax],
+		const hasPredefinedPax = (php.count(passengerNames) === 1);
+		const predefinedPax = hasPredefinedPax ? ArrayUtil.getFirst(passengerNames) : '';
+		let mcoParams = [
+			['passengerName', predefinedPax, !hasPredefinedPax],
 			['amount', '', true],
 
 			['amountCurrency', 'USD', false],
 
-			['validatingCarrier', $pnrParams['validatingCarrier'], false],
-			['to', $pnrParams['validatingCarrier'], false],
-			['at', $pnrParams['hub'], false],
-			['formOfPayment', $pnrParams['fop'], false],
-			['expirationDate', $pnrParams['expirationDate'], false],
-			['approvalCode', $pnrParams['approvalCode'], false],
+			['validatingCarrier', pnrParams['validatingCarrier'], false],
+			['to', pnrParams['validatingCarrier'], false],
+			['at', pnrParams['hub'], false],
+			['formOfPayment', pnrParams['fop'], false],
+			['expirationDate', pnrParams['expirationDate'], false],
+			['approvalCode', pnrParams['approvalCode'], false],
 
 			['issueNow', '', true],
 		];
-		for ([$key, $value] of Object.entries(ApolloMakeMcoAction.getDefaultParams())) {
-			if (!php.in_array($key, ['issueNow'])) {
-				$mcoParams.push([$key, $value, false]);
+		for (const [key, value] of Object.entries(ApolloMakeMcoAction.getDefaultParams())) {
+			if (!php.in_array(key, ['issueNow'])) {
+				mcoParams.push([key, value, false]);
 			}
 		}
-		$mcoParams = Fp.map(($field) => {
-			let $key, $value, $enabled;
-			[$key, $value, $enabled] = $field;
-			return {'key': $key, 'value': $value, 'enabled': $enabled};
-		}, $mcoParams);
-		$calledCommands = [{'cmd': 'HHMCO', 'output': 'SEE MCO FORM BELOW', 'tabCommands': [], 'clearScreen': true}];
-		$userMessages = [];
-		$result = {
-			'calledCommands': $calledCommands, 'userMessages': $userMessages,
-			'actions': [
+		mcoParams = mcoParams.map(field => {
+			const [key, value, enabled] = field;
+			return {key, value, enabled};
+		});
+		const calledCommands = [{
+			cmd: 'HHMCO', output: 'SEE MCO FORM BELOW',
+			tabCommands: [], clearScreen: true,
+		}];
+		const userMessages = [];
+		return {
+			calledCommands, userMessages,
+			actions: [
 				{
-					'type': 'displayMcoMask',
-					'data': {
-						'fields': $mcoParams,
-						'passengers': $passengerNames,
+					type: 'displayMcoMask',
+					data: {
+						fields: mcoParams,
+						passengers: passengerNames,
 					},
 				},
 			],
 		};
-		return $result;
 	};
 
 	/** @param {string} passengerName = 'LONGLONG' || 'BITCA/IU' || 'BITCA/IURI' */
