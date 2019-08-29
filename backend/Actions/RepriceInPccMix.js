@@ -1,13 +1,12 @@
+const MultiPccTariffRules = require('../Repositories/MultiPccTariffRules.js');
 const MarriageItineraryParser = require('../Transpiled/Gds/Parsers/Amadeus/MarriageItineraryParser.js');
 const AmadeusUtils = require('../GdsHelpers/AmadeusUtils.js');
 const SabrePnr = require('../Transpiled/Rbs/TravelDs/SabrePnr.js');
-const GalileoUtils = require('../GdsHelpers/GalileoUtils.js');
 const PtcUtil = require('../Transpiled/Rbs/Process/Common/PtcUtil.js');
 const TranslatePricingCmd = require('./CmdTranslators/TranslatePricingCmd.js');
-const NormalizePricingCmd = require('./CmdTranslators/NormalizePricingCmd.js');
+const NormalizePricingCmd = require('gds-utils/src/CmdTranslators/NormalizePricingCmd.js');
 const RbsUtils = require('../GdsHelpers/RbsUtils.js');
 const RepriceInAnotherPccAction = require('../Transpiled/Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
-const RepricePccRules = require('../Repositories/RepricePccRules.js');
 const GetCurrentPnr = require('./GetCurrentPnr.js');
 const {coverExc, timeout} = require('klesun-node-tools/src/Lang.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
@@ -99,7 +98,7 @@ const RepriceInPccMix = async ({
 	const getPccRecs = async (itinerary) => {
 		const rbsRs = await RbsClient.getMultiPccTariffRules();
 		const rbsRules = rbsRs.result.result.records;
-		const pccRecs = await RepricePccRules.getMatchingPccs({
+		const pccRecs = await MultiPccTariffRules.getMatchingPccs({
 			departureAirport: itinerary[0].departureAirport,
 			destinationAirport: getFirstDestination(itinerary),
 			gds: stateful.gds,

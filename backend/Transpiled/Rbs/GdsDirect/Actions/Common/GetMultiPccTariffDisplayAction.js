@@ -1,4 +1,4 @@
-const RepricePccRules = require('../../../../../Repositories/RepricePccRules.js');
+const MultiPccTariffRules = require('../../../../../Repositories/MultiPccTariffRules.js');
 
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
@@ -46,7 +46,7 @@ class GetMultiPccTariffDisplayAction {
 	}
 
 	async getPccs(cmdData, sessionData) {
-		return RepricePccRules.getMatchingPccs({
+		return MultiPccTariffRules.getMatchingPccs({
 			departureAirport: cmdData.departureAirport,
 			destinationAirport: cmdData.destinationAirport,
 			gds: sessionData.gds,
