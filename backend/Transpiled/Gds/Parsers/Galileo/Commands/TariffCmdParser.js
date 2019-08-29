@@ -1,8 +1,8 @@
 const AtfqParser = require("../../Apollo/Pnr/AtfqParser");
 const ApoCmdParser = require("../../Apollo/CommandParser");
 const CommonParserHelpers = require('../../Apollo/CommonParserHelpers.js');
-const Lexeme = require('../../../../Lib/Lexer/Lexeme.js');
-const Lexer = require('../../../../Lib/Lexer/Lexer.js');
+const Lexeme = require('gds-utils/src/Lexer/Lexeme.js');
+const Lexer = require('gds-utils/src/Lexer/Lexer.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 

@@ -1,8 +1,8 @@
 
-const Lexeme = require('../../../../Lib/Lexer/Lexeme.js');
+const Lexeme = require('gds-utils/src/Lexer/Lexeme.js');
 
 /**
- * Whereas Lexer+php works with cases where single text
+ * Whereas Lexer.js works with cases where single text
  * piece can match only single lexeme, this action provides
  * ability to work with less strict formats where one text
  * piece could match 2 or even 3 lexemes and deciding which

@@ -1,5 +1,5 @@
-const Lexer = require('../../../Lib/Lexer/Lexer.js');
-const Lexeme = require('../../../Lib/Lexer/Lexeme.js');
+const Lexer = require('gds-utils/src/Lexer/Lexer.js');
+const Lexeme = require('gds-utils/src/Lexer/Lexeme.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 // since unlike php's preg_match, js returns just one name from ((?<name1>asd)(?<name2>dsa))*

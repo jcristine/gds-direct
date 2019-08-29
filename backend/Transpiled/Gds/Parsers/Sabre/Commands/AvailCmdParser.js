@@ -1,6 +1,6 @@
 const Str = require('../../../../../Utils/Str.js');
-const Lexeme = require('../../../../Lib/Lexer/Lexeme.js');
-const Lexer = require('../../../../Lib/Lexer/Lexer.js');
+const Lexeme = require('gds-utils/src/Lexer/Lexeme.js');
+const Lexer = require('gds-utils/src/Lexer/Lexer.js');
 const CommonParserHelpers = require('../../Apollo/CommonParserHelpers.js');
 
 const {mkReg} = require('klesun-node-tools/src/Utils/Misc.js');

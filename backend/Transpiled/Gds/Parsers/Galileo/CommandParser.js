@@ -3,8 +3,8 @@
 const ArrayUtil = require('../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
-const Lexeme = require('../../../Lib/Lexer/Lexeme.js');
-const Lexer = require('../../../Lib/Lexer/Lexer.js');
+const Lexeme = require('gds-utils/src/Lexer/Lexeme.js');
+const Lexer = require('gds-utils/src/Lexer/Lexer.js');
 const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const FqCmdParser = require('../../../Gds/Parsers/Galileo/Commands/FqCmdParser.js');
 
