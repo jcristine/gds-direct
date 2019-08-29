@@ -82,6 +82,7 @@ const GoToPricing = ({
 	const {
 		pricingGds, itinerary,
 		pricingPcc, pricingCmd,
+		pricingAction,
 		travelRequestId,
 	} = rqBody;
 
@@ -100,7 +101,7 @@ const GoToPricing = ({
 			pcc: pricingPcc,
 			session: targetSession,
 			startDt: stateful.getStartDt(),
-			bookRealSegments: true,
+			bookRealSegments: pricingAction !== 'lowestFareIgnoringAvailability',
 			itinerary: itinerary.map(seg => ({
 				// even if source itinerary was GK,
 				// should book real segments here

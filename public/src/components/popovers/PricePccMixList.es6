@@ -52,7 +52,7 @@ const PricePccMixList = ({
 	]);
 	const tbodyCmp = Cmp('tbody').attach(processes
 		.sort(comparePccRecs)
-		.map(({gds, pricingPcc, pcc, pricingCmd}) => {
+		.map(({gds, pricingPcc, pcc, pricingCmd, pricingAction}) => {
 			const trCmp = Cmp('tr').attach([
 				Cmp('td.gds', {textContent: gds}),
 				Cmp('td.pcc', {textContent: (!pricingPcc ? '' : pricingPcc + '.') + pcc, title: pricingCmd}),
@@ -60,6 +60,7 @@ const PricePccMixList = ({
 			trCmp.context.setAttribute('data-gds', gds);
 			trCmp.context.setAttribute('data-pcc', pcc);
 			trCmp.context.setAttribute('data-cmd', pricingCmd);
+			trCmp.context.setAttribute('data-pricing-action', pricingAction);
 			return trCmp;
 		}));
 	const rootCmp = Cmp('div.price-pcc-mix-list').attach([
@@ -80,6 +81,7 @@ const PricePccMixList = ({
 		price: tr.getAttribute('data-net-price'),
 		gds: tr.getAttribute('data-gds'),
 		pcc: tr.getAttribute('data-pcc'),
+		pricingAction: tr.getAttribute('data-pricing-action'),
 	});
 
 	const compareRows = (newTr, oldTr) => {
@@ -113,7 +115,7 @@ const PricePccMixList = ({
 
 	const populateRow = (pccResult, trCmp) => {
 		const {gds, pcc, pricingCmd, pricingBlockList = [], calledCommands = [], rebookItinerary = []} = pccResult;
-
+		const processData = trToData(trCmp.context);
 		const ageGroupToBlock = {};
 		for (const ptcBlock of pricingBlockList) {
 			const ageGroup = ptcBlock.ptcInfo.ageGroupRequested || ptcBlock.ptcInfo.ageGroup;
@@ -136,6 +138,7 @@ const PricePccMixList = ({
 				pricingGds: gds,
 				pricingPcc: pcc,
 				pricingCmd: pricingCmd,
+				pricingAction: processData.pricingAction,
 				itinerary: rebookItinerary.length ? rebookItinerary : itinerary,
 			})).then((cmdResult) => {
 				const gdsUnit = CHANGE_GDS(gds);

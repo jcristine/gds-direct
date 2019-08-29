@@ -13,7 +13,7 @@ const {coverExc, timeout} = require('klesun-node-tools/src/Lang.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
 
-const makePricingCmd = async (aliasData, pccRec) => {
+const normalizePricingCmd = async (aliasData, pccRec) => {
 	const dialect = aliasData.dialect || 'apollo';
 	const normalized = NormalizePricingCmd({
 		type: 'priceItinerary',
@@ -66,8 +66,7 @@ const makePricingCmd = async (aliasData, pccRec) => {
 	) {
 		normalized.pricingModifiers.push({type: 'cabinClass', parsed: {parsed: 'sameAsBooked'}});
 	}
-
-	return TranslatePricingCmd.fromData(pccRec.gds, normalized);
+	return normalized;
 };
 
 /**
@@ -178,10 +177,11 @@ const RepriceInPccMix = async ({
 		const messages = [];
 		const processes = [];
 		for (const pccRec of pccRecs) {
-			const pricingCmd = await makePricingCmd(aliasData, pccRec);
+			const normalized = await normalizePricingCmd(aliasData, pccRec);
+			const pricingCmd =  TranslatePricingCmd.fromData(pccRec.gds, normalized);
 			let whenPccResult = processPcc({...pccRec, pricingCmd, itinerary});
 			whenPccResult = timeout(121, whenPccResult);
-			processes.push({...pccRec, pricingCmd, cmdRqId});
+			processes.push({...pccRec, pricingCmd, pricingAction: normalized.action, cmdRqId});
 		}
 		return {
 			messages: messages,
