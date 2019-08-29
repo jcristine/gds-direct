@@ -447,6 +447,8 @@ const routes = {
 	'/terminal/goToPricing': withGdsSession(GdsSessionController.goToPricing),
 	'/api/js/admin/multi-pcc-tariff/list-rules': withDevAuth(MultiPccTariffRules.getAll),
 	'/api/js/data/locations': toHandleHttp(Airports.getAllLocations),
+	'/api/js/admin/multi-pcc-tariff/store-rule': toHandleHttp(MultiPccTariffRules.saveRule),
+	'/api/js/admin/multi-pcc-tariff/delete-rule': toHandleHttp(MultiPccTariffRules.deleteRule),
 };
 
 const socketIo = SocketIo.init(routes);
