@@ -1,3 +1,4 @@
+const MultiLevelMap = require('../Utils/MultiLevelMap.js');
 
 const {getConfig} = require('../Config.js');
 const Db = require('../Utils/Db.js');
@@ -78,4 +79,27 @@ exports.getCountryNames = () => {
 			$rows.map(r => r.country_code),
 			$rows.map(r => r.country_name),
 		));
+};
+
+exports.getAllLocations = async () => {
+	const rows = await Db.fetchAll({table: TABLE});
+
+	const typeToValueToName = MultiLevelMap();
+	for (const row of Object.values(rows)) {
+		typeToValueToName.set(['airport', row.iata_code], row.name);
+		typeToValueToName.set(['city', row.city_code], row.city_name);
+		typeToValueToName.set(['country', row.country_code], row.country_name);
+		typeToValueToName.set(['region', row.region_id], row.region_name);
+	}
+
+	const records = [];
+	for (const [type, valueToName] of Object.entries(typeToValueToName.root)) {
+		for (const [value, name] of Object.entries(valueToName)) {
+			if (value) {
+				records.push({type, value, name});
+			}
+		}
+	}
+
+	return records;
 };

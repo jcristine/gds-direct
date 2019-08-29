@@ -1,4 +1,10 @@
 
+import './../src/actions/initAuthPage.js';
+import GrectApi from './../src/helpers/GrectApi.js';
+
+const whenEmcSessionId = window.GdsDirectPlusPage.whenEmcSessionId;
+const grectApi = GrectApi({whenEmcSessionId});
+
 /**
  * based on the code written by Natalija Kuzmenkova
  */
@@ -95,17 +101,17 @@ $(function () {
 		return new Promise(function(resolve) {
 			$.ajax({
 				url: '/api/js/data/locations',
-				success: function (res) {
+				success: function (records) {
 					var i;
-					for (i = 0; i < res.records.length; i++) {
-						res.records[i].id = res.records[i].value + ',' +
-							res.records[i].type + ',' + res.records[i].name;
-						res.records[i].title = res.records[i].name + res.records[i].value;
-						if (res.records[i].name === 'United States') {
-							res.records[i].title = 'usa' + res.records[i].title;
+					for (i = 0; i < records.length; i++) {
+						records[i].id = records[i].value + ',' +
+							records[i].type + ',' + records[i].name;
+						records[i].title = records[i].name + records[i].value;
+						if (records[i].name === 'United States') {
+							records[i].title = 'usa' + records[i].title;
 						}
 					}
-					resolve(res.records);
+					resolve(records);
 				},
 				error: function (e) {
 					$modalError.find('.js-modal-body').html(e.responseText);
@@ -119,92 +125,81 @@ $(function () {
 	promises.push(fetchLocations());
 
 	function fetchPccs() {
-		return new Promise(function(resolve) {
-			$.ajax({
-				url: '/api/js/data/pccs',
-				success: function (res) {
-					var apolloList = [];
-					var sabreList = [];
-					var galileoList = [];
-					var amadeusList = [];
+		return grectApi.getPccList()
+			.then((res) => {
+				var apolloList = [];
+				var sabreList = [];
+				var galileoList = [];
+				var amadeusList = [];
+				var i;
+				var record;
+				var result = [];
+
+				for (i = 0; i < res.records.length; i++) {
+					record = res.records[i];
+
+					switch (record.gds) {
+					case 'apollo':
+						apolloList.push(record);
+						break;
+					case 'sabre':
+						sabreList.push(record);
+						break;
+					case 'galileo':
+						galileoList.push(record);
+						break;
+					case 'amadeus':
+						amadeusList.push(record);
+						break;
+					}
+				}
+
+				apolloList = _.sortBy(apolloList, ['pcc']);
+				sabreList = _.sortBy(sabreList, ['pcc']);
+				galileoList = _.sortBy(galileoList, ['pcc']);
+				amadeusList = _.sortBy(amadeusList, ['pcc']);
+
+				function setOptgroupFields(list, size) {
+					var chunks = _.chunk(
+						list,
+						_.ceil(list.length/size)
+					);
 					var i;
-					var record;
-					var result = [];
-
-					for (i = 0; i < res.records.length; i++) {
-						record = res.records[i];
-
-						switch (record.gds) {
-						case 'apollo':
-							apolloList.push(record);
-							break;
-						case 'sabre':
-							sabreList.push(record);
-							break;
-						case 'galileo':
-							galileoList.push(record);
-							break;
-						case 'amadeus':
-							amadeusList.push(record);
-							break;
+					var k;
+					for (i = 0; i < chunks.length; i++) {
+						for (k = 0; k < chunks[i].length; k++) {
+							chunks[i][k].make = chunks[i][k].gds + i;
+							chunks[i][k].value = chunks[i][k].pcc + ',' +
+								chunks[i][k].gds + ',' + chunks[i][k].consolidator;
+							result.push(chunks[i][k]);
 						}
 					}
+				}
 
-					apolloList = _.sortBy(apolloList, ['pcc']);
-					sabreList = _.sortBy(sabreList, ['pcc']);
-					galileoList = _.sortBy(galileoList, ['pcc']);
-					amadeusList = _.sortBy(amadeusList, ['pcc']);
+				setOptgroupFields(apolloList,2);
+				setOptgroupFields(sabreList,2);
+				setOptgroupFields(galileoList,1);
+				setOptgroupFields(amadeusList,1);
 
-					function setOptgroupFields(list, size) {
-						var chunks = _.chunk(
-							list,
-							_.ceil(list.length/size)
-						);
-						var i;
-						var k;
-						for (i = 0; i < chunks.length; i++) {
-							for (k = 0; k < chunks[i].length; k++) {
-								chunks[i][k].make = chunks[i][k].gds + i;
-								chunks[i][k].value = chunks[i][k].pcc + ',' +
-									chunks[i][k].gds + ',' + chunks[i][k].consolidator;
-								result.push(chunks[i][k]);
-							}
-						}
-					}
-
-					setOptgroupFields(apolloList,2);
-					setOptgroupFields(sabreList,2);
-					setOptgroupFields(galileoList,1);
-					setOptgroupFields(amadeusList,1);
-
-					resolve(result);
-				},
-				error: function (e) {
-					$modalError.find('.js-modal-body').html(e.responseText);
-					$modalError.modal('show');
-					console.error(e);
-					resolve([]);
-				},
+				return result;
+			})
+			.catch(e => {
+				$modalError.find('.js-modal-body').html(e.responseText);
+				$modalError.modal('show');
+				console.error(e);
+				return [];
 			});
-		});
 	}
 	promises.push(fetchPccs());
 
 	function fetchList() {
-		return new Promise(function(resolve) {
-			$.ajax({
-				url: '/api/js/admin/multi-pcc-tariff/list-rules',
-				success: function (res) {
-					resolve(res.records);
-				},
-				error: function (e) {
-					$modalError.find('.js-modal-body').html(e.responseText);
-					$modalError.modal('show');
-					console.error(e);
-					resolve([]);
-				},
+		return grectApi.listMultiPccTariffRules()
+			.catch(e => {
+				$modalError.find('.js-modal-body').html(e.responseText);
+				$modalError.modal('show');
+				console.error(e);
+				return [];
 			});
-		});
 	}
 	promises.push(fetchList());
 

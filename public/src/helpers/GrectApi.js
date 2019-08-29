@@ -2,9 +2,12 @@
 const GrectApi = ({
 	whenEmcSessionId = Promise.reject('EMC ID not supplied'),
 }) => {
-	const fetchJson = ({url, urlParams = null, postParams = null}) => {
+	const fetchJson = ({url, urlParams = {}, postParams = null}) => {
 		return whenEmcSessionId.then(emcSessionId => {
-			if (urlParams) {
+			if (!postParams) {
+				urlParams.emcSessionId = emcSessionId;
+			}
+			if (Object.keys(urlParams).length > 0) {
 				urlParams.emcSessionId = emcSessionId;
 				const esc = encodeURIComponent;
 				const query = Object.entries(urlParams)
@@ -41,10 +44,16 @@ const GrectApi = ({
 		postParams: params,
 	});
 
+	const listMultiPccTariffRules = (params) => fetchJson({
+		url: '/api/js/admin/multi-pcc-tariff/list-rules',
+	});
+
 	return {
+		getPccList: params => fetchJson({url: '/data/getPccList'}),
 		getCmdRqList: getCmdRqList,
 		getCmdList: getCmdList,
 		saveHighlightSampleDump: saveHighlightSampleDump,
+		listMultiPccTariffRules: listMultiPccTariffRules,
 	};
 };
 
