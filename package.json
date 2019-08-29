@@ -22,7 +22,7 @@
     "express": "^4.16.4",
     "ioredis": "^4.3.0",
     "jsdom": "^13.0.0",
-    "klesun-node-tools": "git+https://github.com/klesun-misc/klesun-node-tools.git#6e9511dcb0f74bec8db09b43b7c26e0398134dd6",
+    "klesun-node-tools": "git+https://github.com/golotenko/gds-utils.git#a04aabd3707fd46ee394f71f0f5443af65a43d31",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.23",
