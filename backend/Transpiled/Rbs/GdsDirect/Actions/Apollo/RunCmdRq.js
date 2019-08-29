@@ -1184,14 +1184,14 @@ const RunCmdRq = ({
 	};
 
 	const processRequestedCommand = async (cmd) => {
-		let $alias, $mdaData, $limit, $cmdReal, $matches, $_, $plus, $seatAmount,
+		let $mdaData, $limit, $cmdReal, $matches, $_, $plus, $seatAmount,
 			$segmentNumbers, $segmentStatus;
 		let reservation;
-		$alias = await ApoAliasParser.parse(cmd, stateful);
+		const alias = await ApoAliasParser.parse(cmd, stateful);
 		const parsed = CommandParser.parse(cmd);
-		if ($mdaData = $alias['moveDownAll'] || null) {
+		if ($mdaData = alias['moveDownAll'] || null) {
 			$limit = $mdaData['limit'] || null;
-			if ($cmdReal = $alias['realCmd']) {
+			if ($cmdReal = alias['realCmd']) {
 				const {cmdRec} = await processRealCommand($cmdReal, false);
 				return {calledCommands: await moveDownAll($limit, [cmdRec])};
 			} else {
@@ -1216,14 +1216,14 @@ const RunCmdRq = ({
 			return EndManualPricing({cmd, stateful: stateful});
 		} else if (php.preg_match(/^SORT$/, cmd, $matches = [])) {
 			return processSortItinerary();
-		} else if ($alias['type'] === 'rebookInPcc') {
-			return processCloneItinerary($alias['data']);
-		} else if ($alias['type'] === 'multiPriceItinerary') {
-			return multiPriceItinerary($alias['data']);
-		} else if ($alias['type'] === 'storePricing') {
-			return storePricing($alias['data']);
-		} else if ($alias['type'] === 'priceAll') {
-			return priceAll($alias['data']);
+		} else if (alias['type'] === 'rebookInPcc') {
+			return processCloneItinerary(alias['data']);
+		} else if (alias['type'] === 'multiPriceItinerary') {
+			return multiPriceItinerary(alias['data']);
+		} else if (alias['type'] === 'storePricing') {
+			return storePricing(alias['data']);
+		} else if (alias['type'] === 'priceAll') {
+			return priceAll(alias['data']);
 		} else if (cmd === '*HA') {
 			return displayHistory();
 		} else if (cmd === '!aliasDoubleIgnore') {
@@ -1234,25 +1234,25 @@ const RunCmdRq = ({
 		} else if (php.preg_match(/^(\||\+)(\d{1})(S[\d\-\|]+)([A-Z]{2}|)$/, cmd, $matches = [])) {
 			[$_, $plus, $seatAmount, $segmentNumbers, $segmentStatus] = $matches;
 			return rebookWithNewSeatAmountSpecificSegments($seatAmount, $segmentNumbers, $segmentStatus);
-		} else if ($alias['type'] === 'rebookAsGk') {
-			return rebookAsGk($alias['data']);
-		} else if ($alias['type'] === 'rebookAsSs') {
-			return rebookAsSs($alias['data']);
-		} else if ($alias['type'] === 'fareSearchMultiPcc') {
-			return getMultiPccTariffDisplay($alias['realCmd']);
-		} else if ($alias['type'] === 'priceInAnotherPcc') {
-			return priceInAnotherPcc($alias['realCmd'], $alias['data']['target'], $alias['data']['dialect']);
-		} else if ($alias['type'] === 'multiDstAvail') {
-			return makeMultipleCityAvailabilitySearch($alias['data']);
+		} else if (alias['type'] === 'rebookAsGk') {
+			return rebookAsGk(alias['data']);
+		} else if (alias['type'] === 'rebookAsSs') {
+			return rebookAsSs(alias['data']);
+		} else if (alias['type'] === 'fareSearchMultiPcc') {
+			return getMultiPccTariffDisplay(alias['realCmd']);
+		} else if (alias['type'] === 'priceInAnotherPcc') {
+			return priceInAnotherPcc(alias['realCmd'], alias['data']['target'], alias['data']['dialect']);
+		} else if (alias['type'] === 'multiDstAvail') {
+			return makeMultipleCityAvailabilitySearch(alias['data']);
 		} else if (php.preg_match(/^SEM\/([\w\d]{3,4})\/AG$/, cmd, $matches = [])) {
 			const {cmdRec} = await emulatePcc($matches[1]);
 			return {calledCommands: [cmdRec]};
 		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr(cmd, stateful))) {
 			return bookPnr(reservation);
-		} else if ($alias.type === 'fareSearchValidatedChangeCity') {
-			return fareSearchValidatedChangeCity($alias.realCmd);
+		} else if (alias.type === 'fareSearchValidatedChangeCity') {
+			return fareSearchValidatedChangeCity(alias.realCmd);
 		} else {
-			cmd = $alias['realCmd'];
+			cmd = alias['realCmd'];
 			const fetchAll = shouldFetchAll(cmd);
 			cmd = await preprocessCommand(cmd);
 			const {cmdRec, userMessages, performanceDebug} = await processRealCommand(cmd, fetchAll);
