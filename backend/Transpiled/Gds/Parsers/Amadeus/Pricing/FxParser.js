@@ -5,28 +5,13 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
 const FareConstructionParser = require('../../../../Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
 const BagAllowanceParser = require('../../../../Gds/Parsers/Sabre/BagAllowanceParser.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
+const {parseSequence} = require('../../../../../Parsers/ParserUtil.js');
 
 /**
  * parses output of FX{modifiers} command which contains pricing with fare
  * calculation if there is just one PTC or just a ptc list if there are many
  */
 class FxParser {
-	static parseSequence($linesLeft, $parse) {
-		$linesLeft = [...$linesLeft];
-		let $parsedLines, $line, $parsedLine;
-
-		$parsedLines = [];
-		while (!php.is_null($line = php.array_shift($linesLeft))) {
-			if ($parsedLine = $parse($line)) {
-				$parsedLines.push($parsedLine);
-			} else {
-				php.array_unshift($linesLeft, $line);
-				break;
-			}
-		}
-		return [$parsedLines, $linesLeft];
-	}
-
 	/**
 	 * this wrapper does not require $names
 	 * handy if you do postprocessing
@@ -303,17 +288,17 @@ class FxParser {
 
 		const departureCity = php.trim(php.array_shift(lines));
 		let segments;
-		[segments, lines] = this.parseSequence(lines, (...args) => this.parseSegmentLine(...args));
+		[segments, lines] = parseSequence(lines, (...args) => this.parseSegmentLine(...args));
 		if (segments.length === 0) {
 			return {error: 'Failed to parse FX segment line - ' + lines[0]};
 		}
-		[emptyLines, lines] = this.parseSequence(lines, (...args) => this.isEmptyLine(...args));
+		[emptyLines, lines] = parseSequence(lines, (...args) => this.isEmptyLine(...args));
 
 		let fcSplit;
-		[fcSplit, lines] = this.parseSequence(lines, (...args) => this.splitValueAndFcLine(...args));
-		[emptyLines, lines] = this.parseSequence(lines, (...args) => this.isEmptyLine(...args)); // infant
+		[fcSplit, lines] = parseSequence(lines, (...args) => this.splitValueAndFcLine(...args));
+		[emptyLines, lines] = parseSequence(lines, (...args) => this.isEmptyLine(...args)); // infant
 		let fcSplit2;
-		[fcSplit2, lines] = this.parseSequence(lines, (...args) => this.splitValueAndFcLine(...args));
+		[fcSplit2, lines] = parseSequence(lines, (...args) => this.splitValueAndFcLine(...args));
 		fcSplit = php.array_merge(fcSplit, fcSplit2);
 
 		let values = php.array_column(fcSplit, 0);
@@ -418,13 +403,13 @@ class FxParser {
 	static parsePtcList(lines) {
 		let passengers, emptyLines;
 
-		[passengers, lines] = this.parseSequence(lines, (...args) => this.parsePassengerLine(...args));
-		[emptyLines, lines] = this.parseSequence(lines, (...args) => this.isEmptyLine(...args));
+		[passengers, lines] = parseSequence(lines, (...args) => this.parsePassengerLine(...args));
+		[emptyLines, lines] = parseSequence(lines, (...args) => this.isEmptyLine(...args));
 		const totals = this.parsePassengerLine(php.array_shift(lines));
 		if (!totals) {
 			throw new Error('Failed to parse FXX TOTALS line - ' + lines[0]);
 		}
-		[emptyLines, lines] = this.parseSequence(lines, (...args) => this.isEmptyLine(...args));
+		[emptyLines, lines] = parseSequence(lines, (...args) => this.isEmptyLine(...args));
 		return {
 			passengers: passengers,
 			totalPassengers: totals.quantity,
