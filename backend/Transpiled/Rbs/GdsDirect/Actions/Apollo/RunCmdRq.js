@@ -1261,40 +1261,34 @@ const RunCmdRq = ({
 	};
 
 	const execute = async () => {
-		let $callResult, $errors, $status, $calledCommands, $userMessages, $actions;
-		const $cmdRequested = cmdRq;
-		$callResult = await processRequestedCommand($cmdRequested)
+		const callResult = await processRequestedCommand(cmdRq)
 			.catch(exc =>
 				Rej.BadRequest.matches(exc.httpStatusCode) ||
 				Rej.Forbidden.matches(exc.httpStatusCode)
 					? ({errors: [exc + '']})
 					: Promise.reject(exc));
 
-		if ($callResult.then) {
+		if (callResult.then) {
 			// way too often I accidentally pass Promise here...
-			const unwrapped = await $callResult.catch(exc => ({error: exc + ''}));
+			const unwrapped = await callResult.catch(exc => ({error: exc + ''}));
 			const msg = 'Code mistake, call result was a promise inside another promise';
 			return Rej.InternalServerError(msg, unwrapped);
 		}
+		const errors = callResult['errors'] || [];
 
-		if (!php.empty($errors = $callResult['errors'] || [])) {
-			$status = GdsDirect.STATUS_FORBIDDEN;
-			$calledCommands = $callResult['calledCommands'] || [];
-			$userMessages = $errors;
-			$actions = $callResult['actions'] || [];
+		let status, calledCommands, userMessages, actions;
+		if (!php.empty(errors)) {
+			status = GdsDirect.STATUS_FORBIDDEN;
+			calledCommands = callResult['calledCommands'] || [];
+			userMessages = errors;
+			actions = callResult['actions'] || [];
 		} else {
-			$status = GdsDirect.STATUS_EXECUTED;
-			$calledCommands = $callResult['calledCommands'] || [];
-			$userMessages = $callResult['userMessages'] || [];
-			$actions = $callResult['actions'] || [];
+			status = GdsDirect.STATUS_EXECUTED;
+			calledCommands = callResult['calledCommands'] || [];
+			userMessages = callResult['userMessages'] || [];
+			actions = callResult['actions'] || [];
 		}
-		return {
-			'status': $status,
-			'calledCommands': $calledCommands.map(a => a),
-			'userMessages': $userMessages,
-			'actions': $actions,
-			'performanceDebug': $callResult.performanceDebug,
-		};
+		return {status, calledCommands, userMessages, actions};
 	};
 
 	return execute();
