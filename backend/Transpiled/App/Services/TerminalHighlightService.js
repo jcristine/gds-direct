@@ -102,7 +102,7 @@ const normalizeRuleForFrontend = (rule) => {
 // 224	0	Pricing Screen	Exceeding maximum permitted Mileage on Pricing screen
 const matchApolloPricingRules = (output) => {
 	const records = [];
-	const fcMatches = Str.matchAll(/(?<=\n(?:\$B[A-Z]*|TKT \d+)-\d+.*\n)([\s\S]+)\nFARE/g, output);
+	const fcMatches = Str.matchAll(/(?<=\n(?:\$B[A-Z]*0?|TKT \d+)-\d+.*\n)([\s\S]+)\nFARE/g, output);
 	for (const fcMatch of fcMatches) {
 		let offset = fcMatch.index;
 		const fcText = fcMatch[1];
