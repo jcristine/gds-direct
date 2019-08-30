@@ -154,6 +154,8 @@ const getRoutePccs = async (depAirport, destAirport, rules, geo) => {
  *     ?ptc: 'JCB',
  *     ?fareType: 'private',
  *     ?accountCode: 'BSAG',
+ *     ?ticketingAgencyPcc: '0GF',
+ *     ?allowedAirlines: ['AA', 'UA'],
  * }[]}
  */
 const getMatchingPccs = async ({

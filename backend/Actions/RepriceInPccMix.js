@@ -10,7 +10,7 @@ const RepriceInAnotherPccAction = require('../Transpiled/Rbs/GdsDirect/Actions/C
 const GetCurrentPnr = require('./GetCurrentPnr.js');
 const {coverExc, timeout} = require('klesun-node-tools/src/Lang.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
-
+const _ = require('lodash');
 
 const normalizePricingCmd = async (aliasData, pccRec) => {
 	const dialect = aliasData.dialect;
@@ -96,12 +96,21 @@ const RepriceInPccMix = async ({
 	};
 
 	const getPccRecs = async (itinerary) => {
-		return MultiPccTariffRules.getMatchingPccs({
+		const airlines = itinerary.map(s => s.airline);
+		const pccRecs = await MultiPccTariffRules.getMatchingPccs({
 			departureAirport: itinerary[0].departureAirport,
 			destinationAirport: getFirstDestination(itinerary),
 			gds: stateful.gds,
 			pcc: stateful.getSessionData().pcc,
 			geoProvider: stateful.getGeoProvider(),
+		});
+		return pccRecs.filter(pccRec => {
+			const allowedAirlines = pccRec.allowedAirlines || [];
+			const matchedAirlines = _.intersection(airlines, allowedAirlines);
+			if (allowedAirlines.length > 0 && matchedAirlines.length === 0) {
+				return false;
+			}
+			return true;
 		});
 	};
 
