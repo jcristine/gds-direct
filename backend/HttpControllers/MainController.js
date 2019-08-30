@@ -56,7 +56,7 @@ const toHandleHttp = (httpAction) => (req, res) => {
 				} else {
 					const msg = 'HTTP request failed';
 					if (process.env.NODE_ENV === 'development') {
-						console.error(msg, errorData);
+						console.error(msg, '\n' + JSON.stringify(errorData));
 					}
 					Diag.logExc(msg, errorData);
 				}

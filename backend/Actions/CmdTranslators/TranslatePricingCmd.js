@@ -130,7 +130,8 @@ const translatePaxes_amadeus = ({ptcs, paxNums, pricingModifiers = []}) => {
 		}
 	}
 	if (accountCodes.length > 0) {
-		throw Rej.NotImplemented.makeExc('Account codes not supported in Amadeus');
+		const msg = 'Account codes not supported in Amadeus: ' + accountCodes.join(',');
+		throw Rej.NotImplemented.makeExc(msg, {ptcs, paxNums, pricingModifiers});
 	}
 	pricingModifiers.splice(0);
 	pricingModifiers.push(...superMods);

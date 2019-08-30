@@ -1,3 +1,4 @@
+const Diag = require('../LibWrappers/Diag.js');
 const MultiPccTariffRules = require('../Repositories/MultiPccTariffRules.js');
 const MarriageItineraryParser = require('../Transpiled/Gds/Parsers/Amadeus/MarriageItineraryParser.js');
 const AmadeusUtils = require('../GdsHelpers/AmadeusUtils.js');
@@ -166,11 +167,18 @@ const RepriceInPccMix = async ({
 		const messages = [];
 		const processes = [];
 		for (const pccRec of pccRecs) {
-			const normalized = await normalizePricingCmd(aliasData, pccRec);
-			const pricingCmd =  TranslatePricingCmd.fromData(pccRec.gds, normalized);
-			let whenPccResult = processPcc({...pccRec, pricingCmd, itinerary});
-			whenPccResult = timeout(121, whenPccResult);
-			processes.push({...pccRec, pricingCmd, pricingAction: normalized.action, cmdRqId});
+			await normalizePricingCmd(aliasData, pccRec)
+				.then(normalized => {
+					const pricingCmd = TranslatePricingCmd.fromData(pccRec.gds, normalized);
+					processes.push({...pccRec, pricingCmd, pricingAction: normalized.action, cmdRqId});
+					processPcc({...pccRec, pricingCmd, itinerary})
+						.catch(coverExc(Rej.list, e => {})); // maybe should log them somewhere...
+				}).catch(coverExc([Rej.NotImplemented], exc => {
+					const msg = 'Failed translate command for ' +
+						pccRec.pcc + ' - ' + exc.message;
+					Diag.logExc(msg + ' - session #' + stateful.getSessionRecord().id, exc);
+					messages.push({type: 'error', text: msg});
+				}));
 		}
 		return {
 			messages: messages,
