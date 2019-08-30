@@ -451,7 +451,7 @@ const mod_amadeus = (mod) => {
 		let fareBases = bundles.map(b => b.fareBasis).filter(fb => fb);
 		fareBases = [...new Set(fareBases)];
 		if (fareBases.length > 1) {
-			throw Rej.NotImplemented.makeExc('Amadeus can only have one fare basis per store');
+			throw Rej.NotImplemented.makeExc('Multiple fare bases not supported in Amadeus');
 		} else if (fareBases.length === 1) {
 			effectiveMods.push('L-' + fareBases[0]);
 		} else {
@@ -492,7 +492,7 @@ const inAmadeus = (norm) => {
 			pushPaxMod();
 		} else if (amadeusMods = mod_amadeus(mod)) {
 			effectiveMods.push(...amadeusMods);
-		} if (mod.raw === 'MIX') {
+		} else if (mod.raw === 'MIX') {
 			// fake alias modifier
 			effectiveMods.push('MIX');
 		} else {

@@ -70,7 +70,7 @@ const isOkXeOutput = ($output) => {
 
 	$parsedPnr = PnrParser.parse($output);
 	return $parsedPnr['success']
-		|| php.preg_match(/^(WARNING: .*\n)*\s*\/\s*ITINERARY CANCELLED\s*$/, $output);
+		|| php.preg_match(/^(\/\s*|)(WARNING: .*\n)*\s*\/\s*ITINERARY CANCELLED\s*$/, $output);
 };
 
 const isOkFxdOutput = ($output) => {
@@ -127,7 +127,14 @@ const transformBuildError = ($result) => {
 	}
 };
 
-const translateGenericMods = (normalized) => {
+const translateGenericMods = (apolloPricingModifiers) => {
+	const normalized = NormalizePricingCmd.inApollo({
+		type: 'storePricing',
+		data: {
+			baseCmd: '$B',
+			pricingModifiers: apolloPricingModifiers,
+		},
+	});
 	const mods = [];
 	const rSubMods = [];
 	for (const mod of normalized.pricingModifiers) {
@@ -580,14 +587,7 @@ const execute = ({
 		if (needsRp && adultPtc === 'ITX') {
 			adultPtc = 'ADT';
 		}
-		const normalized = NormalizePricingCmd.inApollo({
-			type: 'storePricing',
-			data: {
-				baseCmd: '$B',
-				pricingModifiers: aliasData.pricingModifiers,
-			},
-		});
-		const modRec = await translateGenericMods(normalized);
+		const modRec = await translateGenericMods(aliasData.pricingModifiers);
 		const tripEndDate = ((ArrayUtil.getLast(pnr.getItinerary()) || {}).departureDate || {}).parsed;
 		const tripEndDt = tripEndDate ? DateTime.addYear(tripEndDate, stateful.getStartDt()) : null;
 
