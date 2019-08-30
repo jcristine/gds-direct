@@ -417,7 +417,6 @@ $(function () {
 		};
 
 		_this.save = function () {
-			var data = {};
 			var record = {};
 			var pccElemList = _.compact(_this.repricePccElemList);
 			var isValid = !!pccElemList.length;
@@ -429,11 +428,9 @@ $(function () {
 				return;
 			}
 			if (_this.data && !_.isNil(_this.data.id)) {
-				data.id = _this.data.id;
 				record.id = _this.data.id;
 			}
 
-			data.reprice_pcc_records = [];
 			record.reprice_pcc_records = [];
 			_.forEach(pccElemList, function (pccElemStore) {
 				var pccChunks = pccElemStore.pcc.split(',');
@@ -450,67 +447,34 @@ $(function () {
 							var allowedAirlines = !allowedAirlinesStr ? [] : allowedAirlinesStr.split(',');
 							var ptc = elemRow.$ptc[0].selectize.getValue();
 							var fareType = elemRow.$fareType[0].selectize.getValue();
-							var stored = _.find(data.reprice_pcc_records, {
+							var ruleData = {
+								ptc, pcc, gds,
 								account_code: accountCode,
-								ptc: ptc,
+								ta_pcc: taPcc,
+								allowed_airlines: allowedAirlines,
 								fare_type: fareType,
-								pcc: pcc,
-								gds: gds,
-							});
+							};
+							var stored = _.find(record.reprice_pcc_records, ruleData);
 							if (!stored) {
-								data.reprice_pcc_records.push({
-									account_code: accountCode,
-									ta_pcc: taPcc,
-									allowed_airlines: allowedAirlines,
-									ptc: ptc,
-									fare_type: fareType,
-									pcc: pcc,
-									gds: gds,
-								});
-								record.reprice_pcc_records.push({
-									account_code: accountCode,
-									ta_pcc: taPcc,
-									allowed_airlines: allowedAirlines,
-									ptc: ptc,
-									fare_type: fareType,
-									pcc: pcc,
-									gds: gds,
-									consolidator: consolidator,
-								});
+								record.reprice_pcc_records.push({...ruleData, consolidator});
 							}
 						}
 					});
 				} else {
-					data.reprice_pcc_records.push({
-						account_code: '',
-						ta_pcc: '',
-						allowed_airlines: [],
-						ptc: '',
-						fare_type: '',
-						pcc: pcc,
-						gds: gds,
-					});
 					record.reprice_pcc_records.push({
+						pcc, gds, consolidator,
 						account_code: '',
 						ta_pcc: '',
 						allowed_airlines: [],
 						ptc: '',
 						fare_type: '',
-						pcc: pcc,
-						gds: gds,
-						consolidator: consolidator,
 					});
 				}
 			});
 
-			data.departure_items = [];
 			record.departure_items = [];
 			_.forEach(_this.$departure[0].selectize.getValue(), function (val) {
 				var chunks = val.split(',');
-				data.departure_items.push({
-					value: chunks[0],
-					type: chunks[1],
-				});
 				record.departure_items.push({
 					value: chunks[0],
 					type: chunks[1],
@@ -519,14 +483,9 @@ $(function () {
 				});
 			});
 
-			data.destination_items = [];
 			record.destination_items = [];
 			_.forEach(_this.$destination[0].selectize.getValue(), function (val) {
 				var chunks = val.split(',');
-				data.destination_items.push({
-					value: chunks[0],
-					type: chunks[1],
-				});
 				record.destination_items.push({
 					value: chunks[0],
 					type: chunks[1],
@@ -535,7 +494,7 @@ $(function () {
 				});
 			});
 
-			grectApi.storeMultiPccTariffRule(data)
+			grectApi.storeMultiPccTariffRule(record)
 				.then(res => {
 					if (_.isObject(res) && res.success) {
 						//todo show alert
