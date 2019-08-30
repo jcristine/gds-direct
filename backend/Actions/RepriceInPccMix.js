@@ -14,6 +14,7 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 const _ = require('lodash');
 
 const normalizePricingCmd = async (aliasData, pccRec) => {
+	aliasData = JSON.parse(JSON.stringify(aliasData));
 	const dialect = aliasData.dialect;
 	const normalized = NormalizePricingCmd({
 		type: 'priceItinerary',
@@ -174,7 +175,7 @@ const RepriceInPccMix = async ({
 					processPcc({...pccRec, pricingCmd, itinerary})
 						.catch(coverExc(Rej.list, e => {})); // maybe should log them somewhere...
 				}).catch(coverExc([Rej.NotImplemented], exc => {
-					const msg = 'Failed translate command for ' +
+					const msg = 'Failed to translate command for ' +
 						pccRec.pcc + ' - ' + exc.message;
 					Diag.logExc(msg + ' - session #' + stateful.getSessionRecord().id, exc);
 					messages.push({type: 'error', text: msg});
