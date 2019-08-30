@@ -60,6 +60,7 @@ class PricingParser
 		$text = this.preprocessDump($text);
 		$commandLinesEnded = false;
 		while (true) {
+			let match;
 			if ($state == ParserState.DUMP_START) {
 				if ($res = NextToken.matchFlightNotFoundStatement($text)) {
 					return null;
@@ -80,6 +81,9 @@ class PricingParser
 					$text = $res['textLeft'];
 				} else if ($res = NextToken.matchTicketingWithinHoursLine($text)) {
 					$text = $res['textLeft'];
+				} else if (match = $text.match(/^ROUND THE WORLD FARES QUOTED-AGENT MUST VERIFY RULES\s*\n/)) {
+					// ignore
+					$text = $text.slice(match[0].length);
 				} else if ($res = NextToken.matchFareGuaranteedAtTicketIssuanceStatement($text)) {
 					$structureWriter.fareGuaranteedAtTicketIssuanceStatementFound($res);
 					$text = $res['textLeft'];
