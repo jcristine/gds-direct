@@ -1,3 +1,5 @@
+const TranslatePricingCmd = require('../../../../../Actions/CmdTranslators/TranslatePricingCmd.js');
+const NormalizePricingCmd = require('gds-utils/src/cmd_translators/NormalizePricingCmd.js');
 const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
 const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
 const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
@@ -125,19 +127,23 @@ const transformBuildError = ($result) => {
 	}
 };
 
-const translateApolloPricingModifiers = ($apolloMods) => {
-	let $mods, $rSubMods, $apolloMod;
-
-	$mods = [];
-	$rSubMods = [];
-	for ($apolloMod of Object.values($apolloMods)) {
-		if ($apolloMod['type'] === 'validatingCarrier') {
-			$rSubMods.push('VC-' + $apolloMod['parsed']);
+const translateGenericMods = (normalized) => {
+	const mods = [];
+	const rSubMods = [];
+	for (const mod of normalized.pricingModifiers) {
+		const subMod = TranslatePricingCmd.subMod_amadeus(mod);
+		if (subMod) {
+			rSubMods.push(subMod);
 		} else {
-			return Rej.NotImplemented('Unsupported modifier - ' + $apolloMod.raw);
+			const amadeusMods = TranslatePricingCmd.mod_amadeus(mod);
+			if (amadeusMods) {
+				mods.push(...amadeusMods);
+			} else {
+				return Rej.NotImplemented('Unsupported modifier - ' + mod.raw);
+			}
 		}
 	}
-	return {mods: $mods, rSubMods: $rSubMods};
+	return {mods, rSubMods};
 };
 
 /** @param stateful = await require('StatefulSession.js')() */
@@ -574,7 +580,14 @@ const execute = ({
 		if (needsRp && adultPtc === 'ITX') {
 			adultPtc = 'ADT';
 		}
-		const modRec = await translateApolloPricingModifiers(aliasData.pricingModifiers);
+		const normalized = NormalizePricingCmd.inApollo({
+			type: 'storePricing',
+			data: {
+				baseCmd: '$B',
+				pricingModifiers: aliasData.pricingModifiers,
+			},
+		});
+		const modRec = await translateGenericMods(normalized);
 		const tripEndDate = ((ArrayUtil.getLast(pnr.getItinerary()) || {}).departureDate || {}).parsed;
 		const tripEndDt = tripEndDate ? DateTime.addYear(tripEndDate, stateful.getStartDt()) : null;
 
@@ -602,7 +615,7 @@ const execute = ({
 
 	const makePriceAllCmd = async (aliasData) => {
 		const {ptcs, pricingModifiers = []} = aliasData;
-		const {mods, rSubMods} = await translateApolloPricingModifiers(pricingModifiers);
+		const {mods, rSubMods} = await translateGenericMods(pricingModifiers);
 		const rawMods = [];
 		const rMod = 'R' + ptcs.join('*') +
 			rSubMods.map(s => ',' + s).join('');

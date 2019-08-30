@@ -9,7 +9,6 @@
   },
   "rules": {
     "prefer-const": "warn",
-    "quote-props": ["warn", "consistent-as-needed"],
     "keyword-spacing": ["warn", {"after":  true}],
     "indent": ["warn", "tab"],
     "for-direction": "error",

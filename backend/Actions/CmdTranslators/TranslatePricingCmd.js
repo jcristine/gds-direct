@@ -95,6 +95,30 @@ const translatePaxes_sabre = ({ptcs, paxNums}) => {
 	]));
 };
 
+const subMod_amadeus = (mod) => {
+	if (mod.type === 'currency') {
+		return 'FC-' + mod.parsed;
+	} else if (mod.type === 'fareType') {
+		if (mod.parsed === 'public') {
+			return 'P';
+		} else if (PRIVATE_FARE_TYPES.includes(mod.parsed)) {
+			return 'U';
+		} else {
+			throw Rej.NotImplemented.makeExc('Unsupported fare type ' + mod.parsed.parsed + ' - ' + mod.raw);
+		}
+	} else if (mod.type === 'validatingCarrier') {
+		return 'VC-' + mod.parsed;
+	} else if (mod.type === 'overrideCarrier') {
+		return 'OCC-' + mod.parsed;
+	} else if (mod.type === 'ticketingDate') {
+		return mod.parsed.raw;
+	} else if (mod.type === 'forceProperEconomy') {
+		return '*BD';
+	} else {
+		return null;
+	}
+};
+
 const translatePaxes_amadeus = ({ptcs, paxNums, pricingModifiers = []}) => {
 	const normPtc = ($ptc) => $ptc || 'ADT';
 	ptcs = php.array_values(php.array_unique(ptcs));
@@ -107,24 +131,9 @@ const translatePaxes_amadeus = ({ptcs, paxNums, pricingModifiers = []}) => {
 		.filter(c => c);
 	accountCodes = [...new Set(accountCodes)];
 	for (const mod of pricingModifiers) {
-		if (mod.type === 'currency') {
-			subMods.push('FC-' + mod.parsed);
-		} else if (mod.type === 'fareType') {
-			if (mod.parsed === 'public') {
-				subMods.push('P');
-			} else if (PRIVATE_FARE_TYPES.includes(mod.parsed)) {
-				subMods.push('U');
-			} else {
-				throw Rej.NotImplemented.makeExc('Unsupported fare type ' + mod.parsed.parsed + ' - ' + mod.raw);
-			}
-		} else if (mod.type === 'validatingCarrier') {
-			subMods.push('VC-' + mod.parsed);
-		} else if (mod.type === 'overrideCarrier') {
-			subMods.push('OCC-' + mod.parsed);
-		} else if (mod.type === 'ticketingDate') {
-			subMods.push(mod.parsed.raw);
-		} else if (mod.type === 'forceProperEconomy') {
-			subMods.push('*BD');
+		const subMod = subMod_amadeus(mod);
+		if (subMod) {
+			subMods.push(subMod);
 		} else {
 			superMods.push(mod);
 		}
@@ -423,6 +432,40 @@ const inSabre = (norm) => {
 	return 'WP' + effectiveMods.join('¥') + postfix;
 };
 
+/** @return {Array|null} */
+const mod_amadeus = (mod) => {
+	const effectiveMods = [];
+	if (mod.type === 'cabinClass') {
+		const typeToLetter = php.array_flip(AmaPricingCmdParser.getCabinClassMapping());
+		const letter = typeToLetter[mod.parsed.parsed];
+		if (letter || letter === '') {
+			effectiveMods.push('K' + letter);
+		} else {
+			throw Rej.NotImplemented.makeExc('Unsupported cabin class ' + mod.parsed.parsed + ' - ' + mod.raw);
+		}
+		effectiveMods.push();
+	} else if (mod.type === 'accompaniedChild') {
+		// not needed in Amadeus I guess
+	} else if (mod.type === 'segments') {
+		const bundles = mod.parsed.bundles;
+		let fareBases = bundles.map(b => b.fareBasis).filter(fb => fb);
+		fareBases = [...new Set(fareBases)];
+		if (fareBases.length > 1) {
+			throw Rej.NotImplemented.makeExc('Amadeus can only have one fare basis per store');
+		} else if (fareBases.length === 1) {
+			effectiveMods.push('L-' + fareBases[0]);
+		} else {
+			const segNums = bundles.flatMap(b => b.segmentNumbers);
+			if (segNums.length > 0) {
+				effectiveMods.push('S' + shortenRanges(segNums, ',', '-'));
+			}
+		}
+	} else {
+		return null;
+	}
+	return effectiveMods;
+};
+
 const inAmadeus = (norm) => {
 	const baseCmdMapping = NormalizePricingCmd.baseCmdMapping.amadeus;
 	let effectiveBaseCmd = null;
@@ -444,34 +487,12 @@ const inAmadeus = (norm) => {
 		throw Rej.NotImplemented.makeExc('Unsupported action - ' + norm.action);
 	}
 	for (const mod of norm.pricingModifiers) {
+		let amadeusMods;
 		if (mod.type === 'namePosition') {
 			pushPaxMod();
-		} else if (mod.type === 'cabinClass') {
-			const typeToLetter = php.array_flip(AmaPricingCmdParser.getCabinClassMapping());
-			const letter = typeToLetter[mod.parsed.parsed];
-			if (letter || letter === '') {
-				effectiveMods.push('K' + letter);
-			} else {
-				throw Rej.NotImplemented.makeExc('Unsupported cabin class ' + mod.parsed.parsed + ' - ' + mod.raw);
-			}
-			effectiveMods.push();
-		} else if (mod.type === 'accompaniedChild') {
-			// not needed in Amadeus I guess
-		} else if (mod.type === 'segments') {
-			const bundles = mod.parsed.bundles;
-			let fareBases = bundles.map(b => b.fareBasis).filter(fb => fb);
-			fareBases = [...new Set(fareBases)];
-			if (fareBases.length > 1) {
-				throw Rej.NotImplemented.makeExc('Amadeus can only have one fare basis per store');
-			} else if (fareBases.length === 1) {
-				effectiveMods.push('L-' + fareBases[0]);
-			} else {
-				const segNums = bundles.flatMap(b => b.segmentNumbers);
-				if (segNums.length > 0) {
-					effectiveMods.push('S' + shortenRanges(segNums, ',', '-'));
-				}
-			}
-		} else if (mod.raw === 'MIX') {
+		} else if (amadeusMods = mod_amadeus(mod)) {
+			effectiveMods.push(...amadeusMods);
+		} if (mod.raw === 'MIX') {
 			// fake alias modifier
 			effectiveMods.push('MIX');
 		} else {
@@ -513,6 +534,10 @@ const TranslatePricingCmd = ({
 	});
 	return fromData(toGds, normalized);
 };
+
+// ... probably should start splitting GDS-es to separate files...
+TranslatePricingCmd.subMod_amadeus = subMod_amadeus;
+TranslatePricingCmd.mod_amadeus = mod_amadeus;
 
 TranslatePricingCmd.fromData = fromData;
 TranslatePricingCmd.translatePaxes = translatePaxes;
