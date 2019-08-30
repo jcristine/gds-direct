@@ -39,18 +39,18 @@ const BookViaAk_galileo = ({
 }) => {
 	/** replace GK segments with $segments */
 	const rebookGkSegments = async (segments, reservation) => {
+		const records = segments.map(seg => {
+			const pnrItinerary = reservation && reservation.itinerary;
+			const pnrSeg = findSegmentInPnr(seg, pnrItinerary);
+			return {...pnrSeg, bookingClass: seg.desiredBookingClass};
+		});
 		// order is important, so can't store in a {} as it sorts integers
-		const marriageToSegs = Fp.groupMap(seg => seg.marriage, segments);
+		const marriageToSegs = Fp.groupMap(seg => seg.marriage, records);
 		const failedSegments = [];
 		const errors = [];
 		for (const [, marriedSegs] of marriageToSegs) {
 			const clsToSegs = Fp.groupBy(seg => seg.bookingClass, marriedSegs);
 			for (const [cls, clsSegs] of Object.entries(clsToSegs)) {
-				const records = clsSegs.map(seg => {
-					const pnrItinerary = reservation && reservation.itinerary;
-					const pnrSeg = findSegmentInPnr(seg, pnrItinerary);
-					return {...pnrSeg, bookingClass: seg.desiredBookingClass};
-				});
 				const segmentNumbers = records.map(seg => seg.segmentNumber);
 				const cmd = '@' + segmentNumbers.join('.') + '/' + cls;
 				const output = (await TravelportUtils.fetchAll(cmd, session)).output;
@@ -96,7 +96,7 @@ const BookViaAk_galileo = ({
 		});
 		const {failedSegments, messages} = await rebookGkSegments(forRebook, reservation);
 		if (failedSegments.length > 0) {
-			await session.runCmd('X' + failedSegments.map(s => s.segmentNumber).join('|'));
+			await session.runCmd('X' + failedSegments.map(s => s.segmentNumber).join('.'));
 			const built = await bookPassive(failedSegments);
 			reservation = built.reservation;
 		}
