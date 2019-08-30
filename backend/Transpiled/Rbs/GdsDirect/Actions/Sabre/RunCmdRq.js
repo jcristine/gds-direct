@@ -601,14 +601,26 @@ const execute = ({
 		// would be better to use number returned by SabreBuildItineraryAction
 		// as it may be not in same order in case of marriages...
 			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
-			const booked = await bookItinerary(itinerary, true);
+			const booked = await bookItinerary(itinerary, true)
+				.catch(coverExc([Rej.UnprocessableEntity], exc => {
+					if ((exc + '').includes('SYSTEM UNABLE TO PROCESS')) {
+						if (itinerary.some(s => s.airline === 'AA') &&
+							itinerary.every(s => !s.marriage) &&
+							itinerary.length > 2
+						) {
+							const msg = 'No marriages in dump, SYSTEM UNABLE TO PROCESS, need *IMSL';
+							exc = Rej.BadRequest.makeExc(msg);
+						}
+					}
+					return Promise.reject(exc);
+				}));
 			errors.push(...(booked.errors || []));
 			calledCommands.push(...(booked.calledCommands || []));
 		}
 		return {errors, userMessages, calledCommands};
 	};
 
-	const bookItinerary = async  ($desiredSegments, $fallbackToGk) => {
+	const bookItinerary = async ($desiredSegments, $fallbackToGk) => {
 		const built = await BookViaGk_sabre({
 			bookRealSegments: true,
 			withoutRebook: !$fallbackToGk,
