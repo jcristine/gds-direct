@@ -569,39 +569,35 @@ const execute = ({
 		return rbsInfo.isPrivateFare && rbsInfo.isBrokenFare;
 	};
 
-	const makeStorePricingCmd = async ($pnr, $aliasData, $needsRp) => {
-		let $adultPtc, $modRec, $tripEndDate, $tripEndDt, $paxStores, $pax, $paxMods, $error, $rMod,
-			$rSubMod, $mod;
-
-		$adultPtc = $aliasData['ptc'] || 'ADT';
-		if ($needsRp && $adultPtc === 'ITX') {
-			$adultPtc = 'ADT';
+	const makeStorePricingCmd = async (pnr, aliasData, needsRp) => {
+		let adultPtc = aliasData.ptc || 'ADT';
+		if (needsRp && adultPtc === 'ITX') {
+			adultPtc = 'ADT';
 		}
-		$modRec = await translateApolloPricingModifiers($aliasData['pricingModifiers']);
+		const modRec = await translateApolloPricingModifiers(aliasData.pricingModifiers);
+		const tripEndDate = ((ArrayUtil.getLast(pnr.getItinerary()) || {}).departureDate || {}).parsed;
+		const tripEndDt = tripEndDate ? DateTime.addYear(tripEndDate, stateful.getStartDt()) : null;
 
-		$tripEndDate = ((ArrayUtil.getLast($pnr.getItinerary()) || {})['departureDate'] || {})['parsed'];
-		$tripEndDt = $tripEndDate ? DateTime.decodeRelativeDateInFuture($tripEndDate, stateful.getStartDt()) : null;
-
-		$paxStores = [];
-		for ($pax of Object.values($pnr.getPassengers())) {
-			$paxMods = [];
-			$paxMods.push('P' + $pax['nameNumber']['fieldNumber']);
-			$paxMods.push($pax['nameNumber']['isInfant'] ? 'INF' : 'PAX');
-			const ptc = await PtcUtil.convertPtcAgeGroup($adultPtc, $pax, $tripEndDt);
-			$rMod = 'R' + ptc;
-			if ($needsRp) {
-				$rMod += ',P';
+		const paxStores = [];
+		for (const pax of pnr.getPassengers()) {
+			const paxMods = [];
+			paxMods.push('P' + pax.nameNumber.fieldNumber);
+			paxMods.push(pax.nameNumber.isInfant ? 'INF' : 'PAX');
+			const ptc = await PtcUtil.convertPtcAgeGroup(adultPtc, pax, tripEndDt);
+			let rMod = 'R' + ptc;
+			if (needsRp) {
+				rMod += ',P';
 			}
-			for ($rSubMod of Object.values($modRec['rSubMods'])) {
-				$rMod += ',' + $rSubMod;
+			for (const rSubMod of Object.values(modRec.rSubMods)) {
+				rMod += ',' + rSubMod;
 			}
-			$paxMods.push($rMod);
-			for ($mod of Object.values($modRec['mods'])) {
-				$paxMods.push($mod);
+			paxMods.push(rMod);
+			for (const mod of Object.values(modRec.mods)) {
+				paxMods.push(mod);
 			}
-			$paxStores.push(php.implode('/', $paxMods));
+			paxStores.push(php.implode('/', paxMods));
 		}
-		return 'FXP/' + $paxStores.join('//');
+		return 'FXP/' + paxStores.join('//');
 	};
 
 	const makePriceAllCmd = async (aliasData) => {
@@ -617,20 +613,19 @@ const execute = ({
 		return 'FXX' + rawMods.map(m => '/' + m).join('');
 	};
 
-	const storePricing = async ($aliasData) => {
-		let $pnr, $errors;
-
-		$pnr = await getCurrentPnr();
-		if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
-			return Rej.BadRequest('Invalid PNR - ' + $errors.join('; '));
+	const storePricing = async (aliasData) => {
+		const pnr = await getCurrentPnr();
+		const errors = CommonDataHelper.checkSeatCount(pnr);
+		if (!php.empty(errors)) {
+			return Rej.BadRequest('Invalid PNR - ' + errors.join('; '));
 		}
-		let cmd = await makeStorePricingCmd($pnr, $aliasData, false);
+		let cmd = await makeStorePricingCmd(pnr, aliasData, false);
 		let output = (await AmadeusUtils.fetchAllFx(cmd, stateful)).output;
 
-		if (await needsRp(cmd, output, $pnr)) {
+		if (await needsRp(cmd, output, pnr)) {
 			// delete TST we just created, and re-price it with 'P'-ublished mod
 			await runCommand('TTE/ALL');
-			cmd = await makeStorePricingCmd($pnr, $aliasData, true);
+			cmd = await makeStorePricingCmd(pnr, aliasData, true);
 			output = await runCommand(cmd);
 		}
 		return {calledCommands: [{cmd, output}]};
