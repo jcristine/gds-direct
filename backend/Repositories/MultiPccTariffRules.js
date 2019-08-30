@@ -49,13 +49,27 @@ const serializeRule = (rule) => {
 	return JSON.stringify(normalized);
 };
 
+const getSortValue = (rule) => {
+	if (rule.departure_items.length === 0) {
+		return 3.0;
+	} else if (
+		rule.departure_items.length === 0 ||
+		rule.destination_items.length === 0
+	) {
+		return 2.0;
+	} else {
+		// could also count for country > city here at some point...
+		return 1.0;
+	}
+};
+
 const getAll = async () => {
 	const rows = await Db.fetchAll({table: TABLE});
 	return rows.map(row => {
 		const data = unserializeRule(row.data);
 		data.id = row.id;
 		return data;
-	});
+	}).sort((a,b) => getSortValue(a) - getSortValue(b));
 };
 
 const saveRule = async (rqBody) => {
@@ -162,13 +176,12 @@ const getMatchingPccs = async ({
 	}
 	const pccsFromRules = await getRoutePccs(departureAirport, destinationAirport, routeRules, geoProvider);
 	const pccs = pccsFromRules.length > 0 ? pccsFromRules : fallbackPccs;
-	const isCurrent = (pccRec) => {
-		return pccRec.gds === gds
-			&& pccRec.pcc === pcc;
-	};
+
+	const isCurrent = (pccRec) => pccRec.gds === gds && pccRec.pcc === pcc;
 	if (!pccs.some(isCurrent)) {
 		pccs.push({gds, pcc});
 	}
+
 	return _.uniqBy(pccs, r => JSON.stringify(r));
 };
 
