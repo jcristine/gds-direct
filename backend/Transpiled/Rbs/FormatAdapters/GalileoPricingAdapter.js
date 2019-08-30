@@ -144,7 +144,7 @@ const GalileoPricingAdapter = ({
 			const paxNumber = ArrayUtil.getFirst(ptcBlock.passengerNumbers);
 			const modPtcData = getModPtcData(paxNumber);
 			const fullPtc = modPtcData && modPtcData.ptc ? modPtcData.ptc + modPtcData.ptcDescription : 'ADT';
-			const msgs = fullPtcToMsgs[fullPtc] || [];
+			const msgs = fullPtcToMsgs[fullPtc] || fullPtcToMsgs[ptcBlock.ptc] || [];
 			const baggageBlock = (ptcList.bagPtcPricingBlocks || {})[i];
 			const commonBlock = transformPtcBlock(
 				ptcBlock, msgs, baggageBlock, paxNumber,
