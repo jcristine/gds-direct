@@ -8,7 +8,6 @@ const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const DateTime = require('../../../../Lib/Utils/DateTime.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
-const SabreBuildItineraryAction = require('../../../../Rbs/GdsAction/SabreBuildItineraryAction.js');
 const TSabreSavePnr = require('../../../../Rbs/GdsAction/Traits/TSabreSavePnr.js');
 const RepriceInAnotherPccAction = require('../../../../Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
 const GetMultiPccTariffDisplayAction = require('../../../../Rbs/GdsDirect/Actions/Common/GetMultiPccTariffDisplayAction.js');
@@ -598,8 +597,6 @@ const execute = ({
 			calledCommands.push(...(booked.calledCommands || []));
 		}
 		if (itinerary.length > 0) {
-		// would be better to use number returned by SabreBuildItineraryAction
-		// as it may be not in same order in case of marriages...
 			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
 			const booked = await bookItinerary(itinerary, true)
 				.catch(coverExc([Rej.UnprocessableEntity], exc => {

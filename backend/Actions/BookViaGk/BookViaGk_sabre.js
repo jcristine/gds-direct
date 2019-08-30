@@ -11,8 +11,15 @@ const bookSa = async ({sabre, session, baseDate, itinerary}) => {
 	const action = new SabreBuildItineraryAction(params);
 	const built = await action.execute(itinerary);
 	if (built.errorType) {
-		const msg = Errors.getMessage(built.errorType, built.errorData);
-		return Rej.UnprocessableEntity(msg, built);
+		if (built.errorType === Errors.REBUILD_MULTISEGMENT &&
+			(built.errorData.response || '').match('UNABLE 00 AVAILABLE')
+		) {
+			const msg = 'No seats available for flights from ' + itinerary[0].departureAirport;
+			return Rej.InsufficientStorage(msg, {isOk: true});
+		} else {
+			const msg = Errors.getMessage(built.errorType, built.errorData);
+			return Rej.UnprocessableEntity(msg, built);
+		}
 	} else {
 		return Promise.resolve(built);
 	}
