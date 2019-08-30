@@ -14,7 +14,9 @@ const bookSa = async ({sabre, session, baseDate, itinerary}) => {
 		if (built.errorType === Errors.REBUILD_MULTISEGMENT &&
 			(built.errorData.response || '').match('UNABLE 00 AVAILABLE')
 		) {
-			const msg = 'No seats available for flights from ' + itinerary[0].departureAirport;
+			const cls = itinerary[0].bookingClass;
+			const from = itinerary[0].departureAirport;
+			const msg = 'No ' + cls + ' seats available for flights from ' + from;
 			return Rej.InsufficientStorage(msg, {isOk: true});
 		} else {
 			const msg = Errors.getMessage(built.errorType, built.errorData);
