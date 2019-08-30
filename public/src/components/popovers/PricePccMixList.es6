@@ -73,7 +73,15 @@ const PricePccMixList = ({
 			return '';
 		}
 		const netPrice = ptcBlock.fareInfo.totalFare;
-		const sign = netPrice.currency === 'USD' ? '$' : netPrice.currency + ' ';
+		const sign = {
+			'USD': '$',
+			'EUR': '€',
+			'GBP': '£',
+			'CAD': 'C$',
+			'PHP': '₱',
+			'AUD': 'A$',
+		}[netPrice.currency] || netPrice.currency + ' ';
+
 		return sign + netPrice.amount;
 	};
 
