@@ -37,6 +37,18 @@ const normalizeRule = (rule, forClient) => {
 	});
 };
 
+const transformPccRecordFromDb = (pccRec) => {
+	return php.array_filter({
+		gds: pccRec.gds,
+		pcc: pccRec.pcc,
+		ptc: pccRec.ptc || null,
+		accountCode: pccRec.account_code || null,
+		fareType: pccRec.fare_type || null,
+		ticketingAgencyPcc: pccRec.ta_pcc || null,
+		allowedAirlines: pccRec.allowed_airlines || [],
+	});
+};
+
 const unserializeRule = (serialized) => {
 	const rule = serialized
 		? JSON.parse(serialized)
@@ -120,16 +132,6 @@ const matchesLocation = async ($airport, $locationItems, $geo) => {
 		}
 	}
 	return false;
-};
-
-const transformPccRecordFromDb = (pccRec) => {
-	return php.array_filter({
-		gds: pccRec.gds,
-		pcc: pccRec.pcc,
-		ptc: pccRec.ptc || null,
-		accountCode: pccRec.account_code || null,
-		fareType: pccRec.fare_type || null,
-	});
 };
 
 /** @param rules = [MultiPccTariffRuleJsApiController::normalizeRule()] */

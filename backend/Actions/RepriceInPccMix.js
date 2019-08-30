@@ -52,8 +52,8 @@ const normalizePricingCmd = async (aliasData, pccRec) => {
 	if (pccRec.fareType && !normalized.pricingModifiers.some(m => m.type === 'fareType')) {
 		normalized.pricingModifiers.push({type: 'fareType', parsed: pccRec.fareType});
 	}
-	if (pccRec.pricingPcc) {
-		normalized.pricingModifiers.push({type: 'ticketingAgencyPcc', parsed: pccRec.pricingPcc});
+	if (pccRec.ticketingAgencyPcc) {
+		normalized.pricingModifiers.push({type: 'ticketingAgencyPcc', parsed: pccRec.ticketingAgencyPcc});
 	}
 	const bbActions = ['lowestFare', 'lowestFareIgnoringAvailability', 'lowestFareAndRebook'];
 	// it's important that it was in the end apparently
@@ -96,28 +96,12 @@ const RepriceInPccMix = async ({
 	};
 
 	const getPccRecs = async (itinerary) => {
-		const rbsRs = await RbsClient.getMultiPccTariffRules();
-		const rbsRules = rbsRs.result.result.records;
-		const pccRecs = await MultiPccTariffRules.getMatchingPccs({
+		return MultiPccTariffRules.getMatchingPccs({
 			departureAirport: itinerary[0].departureAirport,
 			destinationAirport: getFirstDestination(itinerary),
 			gds: stateful.gds,
 			pcc: stateful.getSessionData().pcc,
-			repricePccRules: rbsRules,
 			geoProvider: stateful.getGeoProvider(),
-		});
-		return pccRecs.flatMap(pccRec => {
-			const linkedPccRecs = [pccRec];
-			if (pccRec.gds === 'galileo') {
-				// temporary solution, will need to hear Jayden's opinion
-				if (['K9P', 'G8T'].includes(pccRec.pcc) && pccRec.accountCode === 'TPACK') {
-					linkedPccRecs.push({...pccRec, pricingPcc: '0GF'});
-				} else if (pccRec.pcc === '3ZV4' && pccRec.accountCode === 'BSAG') {
-					linkedPccRecs.push({...pccRec, pricingPcc: 'C2Y'});
-					linkedPccRecs.push({...pccRec, pricingPcc: '3NH'});
-				}
-			}
-			return linkedPccRecs;
 		});
 	};
 
