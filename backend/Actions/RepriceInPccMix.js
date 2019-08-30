@@ -177,7 +177,6 @@ const RepriceInPccMix = async ({
 				}).catch(coverExc([Rej.NotImplemented], exc => {
 					const msg = 'Failed to translate command for ' +
 						pccRec.pcc + ' - ' + exc.message;
-					Diag.logExc(msg + ' - session #' + stateful.getSessionRecord().id, exc);
 					messages.push({type: 'error', text: msg});
 				}));
 		}
