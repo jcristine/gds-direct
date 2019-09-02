@@ -1,3 +1,4 @@
+const AtfqParser = require('../../Transpiled/Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const ParserUtil = require('../../Parsers/ParserUtil.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const DecodeTravelportError = require('./DecodeTravelportError.js');
@@ -289,7 +290,9 @@ const makeStorePriceMods = (storePricingParams) => {
 			// does not appear in ATFQ cmd copy, but hope it works
 			xmlModGenQuoteInfo.GenQuoteInfo.push({Decontented: 'Y'});
 		} else if (type === 'fareType') {
-			xmlMods.push({DocProdFareType: [{Type: 'N'}]});
+			xmlMods.push({DocProdFareType: [{Type: AtfqParser.encodeFareType(parsed)}]});
+		} else if (type === 'validatingCarrier') {
+			xmlMods.push({PlatingAirVMods: [{PlatingAirV: parsed}]});
 		} else if (type === 'commission') {
 			const commMod = parsed.units === 'percent'
 				? {CommissionMod: [{Amt: parsed.value}]}
@@ -406,22 +409,24 @@ const transformPricedSegment = (segEl) => {
 	};
 };
 
+const transformCurrentPtcBlock = (blockEl, pricingEl) => {
+	const uniqueKey = +blockEl.querySelector(':scope > UniqueKey').textContent;
+	return ({
+		fareInfo: {
+			baseFare: normMoney(blockEl, 'BaseFareCurrency', 'BaseFareAmt', 'BaseDecPos'),
+			totalFare: normMoney(blockEl, 'TotCurrency', 'TotAmt', 'TotDecPos'),
+		},
+		hasPrivateFaresSelectedMessage: [...blockEl.querySelectorAll('PrivFQd')]
+			.some(el => el.textContent === 'Y'),
+		segments: [...pricingEl.querySelectorAll(':scope > SegRelatedInfo')]
+			.filter(el => +el.querySelector('UniqueKey').textContent === uniqueKey)
+			.map(segEl => transformPricedSegment(segEl)),
+	});
+};
+
 const transformCurrentPricing = (pricingEl) => {
 	const ptcBlocks = [...pricingEl.querySelectorAll(':scope > GenQuoteDetails')]
-		.map(blockEl => {
-			const uniqueKey = +blockEl.querySelector(':scope > UniqueKey').textContent;
-			return ({
-				fareInfo: {
-					baseFare: normMoney(blockEl, 'BaseFareCurrency', 'BaseFareAmt', 'BaseDecPos'),
-					totalFare: normMoney(blockEl, 'TotCurrency', 'TotAmt', 'TotDecPos'),
-				},
-				hasPrivateFaresSelectedMessage: [...blockEl.querySelectorAll('PrivFQd')]
-					.some(el => el.textContent === 'Y'),
-				segments: [...pricingEl.querySelectorAll(':scope > SegRelatedInfo')]
-					.filter(el => +el.querySelector('UniqueKey').textContent === uniqueKey)
-					.map(segEl => transformPricedSegment(segEl)),
-			});
-		});
+		.map(blockEl => transformCurrentPtcBlock(blockEl, pricingEl));
 	return {
 		pricingBlockList: ptcBlocks,
 		// there is more data in the XML...
