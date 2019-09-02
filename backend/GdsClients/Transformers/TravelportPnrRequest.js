@@ -1,3 +1,4 @@
+const Rej = require('klesun-node-tools/src/Rej.js');
 const DecodeTravelportError = require('./DecodeTravelportError.js');
 const {parseXml} = require("../../GdsHelpers/CommonUtils.js");
 const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
@@ -12,15 +13,26 @@ module.exports.buildPnrXmlDataObject = params => js2xml([
 	{SessionMods: [
 		{AreaInfoReq: null},
 	]},
-	{AirSegSellMods: (params.addAirSegments || [])
-		.map(transformAirSegmentForSoap)
-		.map(v => ({AirSegSell: v}))},
+	...(!params.addAirSegments ? [] : [
+		{AirSegSellMods: (params.addAirSegments || [])
+			.map(transformAirSegmentForSoap)
+			.map(v => ({AirSegSell: v}))},
+	]),
 	// note, position of <PNRBFRetrieveMods/> element is important: if it were placed before
 	// <AirSegSellMods/>, it would not include the newly added segments with their numbers
 	// the code outside is expecting them to be included, so let's make sure this element is always in the end
 	{PNRBFRetrieveMods: [params.recordLocator ?
 		{PNRAddr: [{RecLoc: params.recordLocator}]} : {CurrentPNR: null},
 	]},
+	// display all stored pricing-s (8 max)
+	// see http://testws.galileo.com/GWSSample/Help/GWSHelp/mergedprojects/XML_Samples/PNRBFManagement_33_s105.xml
+	...[...Array(8).keys()].map(i => ({FareRedisplayMods: [
+		{DisplayAction: {Action: 'D'}}, // 'D' - *LF (detailed) data, 'I' - ATFQ (brief) data
+		{FareNumInfo: [{FareNumAry: [{FareNum: +i + 1}]}]},
+	]})),
+	...(!params.storePricingParams ? [] : [{
+		StorePriceMods: makeStorePriceMods(params.storePricingParams),
+	}]),
 ]);
 
 // parses travelport soap request response body and build corresponding object
@@ -236,4 +248,86 @@ const collectErrors = (dom, sellSegments) => {
 	}
 
 	return errors.length > 0 ? errors.join("; ") : null;
+};
+
+/** @param storePricingParams = require('AtfqParser.js').parsePricingCommand() */
+const makeStorePriceMods = (storePricingParams) => {
+	const {gds, pricingModifiers} = storePricingParams;
+	const xmlMods = [];
+	xmlMods.push({SegSelection: [
+		{ReqAirVPFs: 'Y'},
+		{SegRangeAry: [{SegRange: [
+			{StartSeg: '00'},
+			{EndSeg: '00'},
+			{FareType: 'P'}, // Means "private", but "PublishedFaresInd" allows pub
+			{PFQual: [
+				{CRSInd: {
+					'apollo': '1V',
+					'galileo': '1G',
+				}[gds]},
+				{PublishedFaresInd: 'Y'},
+				{Type: 'A'}, // 'A' - all types, 'V' - validated
+			]},
+		]}]},
+	]});
+	const xmlModGenQuoteInfo = {GenQuoteInfo: [
+		{NetFaresOnly: 'A'}, // both net and pub/private
+	]};
+	const xmlModPassengerType = {PassengerType: [{PsgrAry: []}]};
+
+	for (const mod of pricingModifiers) {
+		const {type, parsed, raw} = mod;
+		if (type === 'forceProperEconomy') {
+			// does not appear in ATFQ cmd copy, but hope it works
+			xmlModGenQuoteInfo.GenQuoteInfo.push({Decontented: 'Y'});
+		} else if (type === 'fareType') {
+			xmlMods.push({DocProdFareType: [{Type: 'N'}]});
+		} else if (type === 'commission') {
+			const commMod = parsed.units === 'percent'
+				? {CommissionMod: [{Amt: parsed.value}]}
+				: {CommissionMod: [{Percent: parsed.value}]};
+			xmlMods.push(commMod);
+		} else if (type === 'passengers') {
+			for (const pax of parsed.passengerProperties) {
+				xmlMods.push({AssocPsgrs: [
+					{PsgrAry: [
+						{Psgr: [
+							{LNameNum: pax.passengerNumber || 1},
+							{PsgrNum: pax.firstNameNumber || 1},
+							{AbsNameNum: pax.passengerNumber || 1},
+						]},
+					]},
+				]});
+				if (pax.ptc) {
+					xmlMods.push({PICOptMod: [{PIC: pax.ptc}]});
+				}
+			}
+			xmlModPassengerType.PassengerType[0].PsgrAry
+				.push(...parsed.passengerProperties.map(pax => {
+					const age = ((pax.ptc || '').match(/^[A-Z](\d{1,2})$/) || [])[1];
+					return ({Psgr: [
+						{LNameNum: pax.passengerNumber || 1},
+						{PsgrNum: pax.firstNameNumber || 1},
+						{AbsNameNum: pax.passengerNumber || 1},
+						{PTC: pax.ptc},
+						...(!age ? [] : [{Age: age}]),
+					]});
+				}));
+		} else if (type === 'accompaniedChild') {
+			// weird, but seems to work. Now /ACC appears in
+			// ATFQ cmd copy, but we do get the child price
+			xmlModPassengerType.PassengerType[0].PsgrAry
+				.push({Psgr: [
+					{LNameNum: '0'},
+					{PsgrNum: '0'},
+					{AbsNameNum: '0'},
+				]});
+		} else {
+			throw Rej.NotImplemented.makeExc('Unsupported T:$B modifier - ' + type + ' - ' + raw);
+		}
+	}
+	xmlMods.push(xmlModPassengerType);
+	xmlMods.push(xmlModGenQuoteInfo);
+
+	return xmlMods;
 };
