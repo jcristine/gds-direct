@@ -1,3 +1,4 @@
+const AtfqParser = require('../../../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
 const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
 const TravelportBuildItineraryActionViaXml = require('../../../GdsAction/TravelportBuildItineraryActionViaXml.js');
@@ -666,44 +667,42 @@ const RunCmdRq = ({
 		return rbsInfo.isPrivateFare && rbsInfo.isBrokenFare;
 	};
 
-	const makeStorePricingCmd = async ($pnr, $aliasData, $needsColonN) => {
-		let $adultPtc, $mods, $errors, $tripEndDate, $tripEndDt, $paxCmdParts, $pax, $nameNumFormat,
-			$cmd, $needsAccompanying, $mod;
-		$adultPtc = $aliasData['ptc'] || 'ADT';
-		$mods = $aliasData['pricingModifiers'];
-		if ($needsColonN && $adultPtc === 'ITX') {
-			$adultPtc = 'ADT';
+	const makeStorePricingCmd = async (pnr, aliasData, needsColonN) => {
+		let adultPtc = aliasData.ptc || 'ADT';
+		const mods = aliasData.pricingModifiers;
+		if (needsColonN && adultPtc === 'ITX') {
+			adultPtc = 'ADT';
 		}
-		if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
-			return Rej.BadRequest('Invalid PNR - ' + $errors.join('; '));
+		const errors = CommonDataHelper.checkSeatCount(pnr);
+		if (!php.empty(errors)) {
+			return Rej.BadRequest('Invalid PNR - ' + errors.join('; '));
 		}
-		const lastSeg = ArrayUtil.getLast($pnr.getItinerary());
-		$tripEndDate = !lastSeg ? null : lastSeg['departureDate']['parsed'];
-		$tripEndDt = $tripEndDate ? DateTime.decodeRelativeDateInFuture($tripEndDate, stateful.getStartDt()) : null;
-		$paxCmdParts = [];
-		for ($pax of Object.values($pnr.getPassengers())) {
-			$nameNumFormat = $pax['nameNumber']['fieldNumber'] +
-				'-' + $pax['nameNumber']['firstNameNumber'];
-			const ptc = await PtcUtil.convertPtcAgeGroup($adultPtc, $pax, $tripEndDt);
-			$paxCmdParts.push($nameNumFormat + '*' + ptc);
+		const lastSeg = ArrayUtil.getLast(pnr.getItinerary());
+		const tripEndDate = !lastSeg ? null : lastSeg.departureDate.parsed;
+		const tripEndDt = tripEndDate ? DateTime.addYear(tripEndDate, stateful.getStartDt()) : null;
+		const paxCmdParts = [];
+		for (const pax of pnr.getPassengers()) {
+			const nameNumFormat = pax.nameNumber.fieldNumber +
+				'-' + pax.nameNumber.firstNameNumber;
+			const ptc = await PtcUtil.convertPtcAgeGroup(adultPtc, pax, tripEndDt);
+			paxCmdParts.push(nameNumFormat + '*' + ptc);
 		}
-		$cmd = 'T:$BN' + php.implode('|', $paxCmdParts);
-		$needsAccompanying = ($pax) => {
-			let $ageGroup;
-			$ageGroup = PtcUtil.getPaxAgeGroup($pax, $tripEndDt);
-			return ['child', 'infant'].includes($ageGroup);
+		let cmd = 'T:$BN' + php.implode('|', paxCmdParts);
+		const needsAccompanying = (pax) => {
+			const ageGroup = PtcUtil.getPaxAgeGroup(pax, tripEndDt);
+			return ['child', 'infant'].includes(ageGroup);
 		};
-		$cmd += '/Z0';
-		if (Fp.all($needsAccompanying, $pnr.getPassengers())) {
-			$cmd += '/ACC';
+		cmd += '/Z0';
+		if (Fp.all(needsAccompanying, pnr.getPassengers())) {
+			cmd += '/ACC';
 		}
-		if ($needsColonN) {
-			$cmd += '/:N';
+		if (needsColonN) {
+			cmd += '/:N';
 		}
-		for ($mod of Object.values($mods)) {
-			$cmd += '/' + $mod['raw'];
+		for (const mod of mods) {
+			cmd += '/' + mod.raw;
 		}
-		return $cmd;
+		return cmd;
 	};
 
 	const makePriceAllCmd = (aliasData) => {
@@ -719,21 +718,33 @@ const RunCmdRq = ({
 		return ['$B', ...rawMods].join('/');
 	};
 
+	/** @param cmd = 'T:$B/N1|2*C05/:N/FXD' */
+	const invokeStorePricingCmd = async (cmd) => {
+		//const cmdData = AtfqParser.parsePricingCommand(cmd.slice('T:'.length));
+		//const result = await travelport.processPnr(stateful.getGdsData(), {
+		//	storePricingParams: {
+		//		gds: 'apollo',
+		//		pricingModifiers: cmdData.pricingModifiers,
+		//	},
+		//});
+		return runCmd(cmd, false);
+	};
+
 	const storePricing = async (aliasData) => {
 		const pnr = await getCurrentPnr();
 		const lastStore = ArrayUtil.getLast(pnr.getStoredPricingList());
-		const prevAtfqNum = lastStore ? lastStore['lineNumber'] : 0;
+		const prevAtfqNum = lastStore ? lastStore.lineNumber : 0;
 		let cmd = await makeStorePricingCmd(pnr, aliasData, false);
-		const cmdRec = await runCmd(cmd);
+		const cmdRec = await invokeStorePricingCmd(cmd);
 		let output = cmdRec.output;
 		if (StringUtil.contains(output, '** PRIVATE FARES SELECTED **')) {
-			output = (await moveDownAll(null, [cmdRec]))[0]['output'] || output;
+			output = (await moveDownAll(null, [cmdRec]))[0].output || output;
 			if (await needsColonN(output, pnr)) {
 				const newAtfqNum = prevAtfqNum + 1;
 				// delete ATFQ we just created and store a correct one, with /:N/ mod
 				await runCommand('XT' + newAtfqNum, false);
 				cmd = await makeStorePricingCmd(pnr, aliasData, true);
-				output = await runCommand(cmd, false);
+				output = (await invokeStorePricingCmd(cmd, false)).output;
 			}
 		}
 		return {calledCommands: [{cmd, output}]};
