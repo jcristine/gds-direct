@@ -26,7 +26,11 @@ const normalizePricingCmd = async (aliasData, pccRec) => {
 		normalized.paxNums = [];
 		normalized.ptcs = aliasData.ptcs || [];
 	}
-	if (pccRec.ptc) {
+	// all custom PTCs we may add are private, so adding them when
+	// agent explicitly asked for a published pricing is illogical
+	const hasColonN = normalized.pricingModifiers
+		.some(m => m.type === 'fareType' && m.parsed === 'published');
+	if (pccRec.ptc && !hasColonN) {
 		if (normalized.ptcs.length === 0) {
 			normalized.paxNums = [];
 			normalized.ptcs.push(pccRec.ptc);
