@@ -719,21 +719,20 @@ const RunCmdRq = ({
 		return ['$B', ...rawMods].join('/');
 	};
 
-	const storePricing = async ($aliasData) => {
-		let $pnr, $prevAtfqNum, $newAtfqNum;
-		$pnr = await getCurrentPnr();
-		const lastStore = ArrayUtil.getLast($pnr.getStoredPricingList());
-		$prevAtfqNum = lastStore ? lastStore['lineNumber'] : 0;
-		let cmd = await makeStorePricingCmd($pnr, $aliasData, false);
+	const storePricing = async (aliasData) => {
+		const pnr = await getCurrentPnr();
+		const lastStore = ArrayUtil.getLast(pnr.getStoredPricingList());
+		const prevAtfqNum = lastStore ? lastStore['lineNumber'] : 0;
+		let cmd = await makeStorePricingCmd(pnr, aliasData, false);
 		const cmdRec = await runCmd(cmd);
 		let output = cmdRec.output;
 		if (StringUtil.contains(output, '** PRIVATE FARES SELECTED **')) {
 			output = (await moveDownAll(null, [cmdRec]))[0]['output'] || output;
-			if (await needsColonN(output, $pnr)) {
-				$newAtfqNum = $prevAtfqNum + 1;
+			if (await needsColonN(output, pnr)) {
+				const newAtfqNum = prevAtfqNum + 1;
 				// delete ATFQ we just created and store a correct one, with /:N/ mod
-				await runCommand('XT' + $newAtfqNum, false);
-				cmd = await makeStorePricingCmd($pnr, $aliasData, true);
+				await runCommand('XT' + newAtfqNum, false);
+				cmd = await makeStorePricingCmd(pnr, aliasData, true);
 				output = await runCommand(cmd, false);
 			}
 		}
