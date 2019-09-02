@@ -15,7 +15,11 @@ const extendGalileoCmd = (cmd) => {
 		const baseCmd = data.baseCmd;
 		const mods = data.pricingModifiers;
 		const rawMods = mods.map(m => m.raw);
-		if (!mods.some(m => m.type === 'passengers')) {
+		const hasColonN = mods.some(m =>
+			m.type === 'fareType' &&
+			m.parsed === 'public');
+
+		if (!mods.some(m => m.type === 'passengers') && !hasColonN) {
 			rawMods.push('*JWZ');
 		}
 		return [baseCmd].concat(rawMods).join('/');

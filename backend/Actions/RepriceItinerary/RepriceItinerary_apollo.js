@@ -12,7 +12,11 @@ const extendApolloCmd = (cmd) => {
 		const baseCmd = data.baseCmd;
 		const mods = data.pricingModifiers;
 		const rawMods = mods.map(m => m.raw);
-		if (!mods.some(m => m.type === 'passengers')) {
+		const hasColonN = mods.some(m =>
+			m.type === 'fareType' &&
+			m.parsed === 'public');
+
+		if (!mods.some(m => m.type === 'passengers') && !hasColonN) {
 			// JWZ is a magical PTC, that results in
 			// the cheapest of JCB, ITX, ADT, etc...
 			rawMods.push('*JWZ');
