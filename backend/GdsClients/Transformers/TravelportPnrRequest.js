@@ -30,6 +30,8 @@ module.exports.buildPnrXmlDataObject = params => js2xml([
 		{DisplayAction: {Action: 'D'}}, // 'D' - *LF (detailed) data, 'I' - ATFQ (brief) data
 		{FareNumInfo: [{FareNumAry: [{FareNum: +i + 1}]}]},
 	]})),
+	// no point in putting it higher, you won't get the
+	// updated <DocProdDisplayStoredQuote/> in same request anyway
 	...(!params.storePricingParams ? [] : [{
 		StorePriceMods: makeStorePriceMods(params.storePricingParams),
 	}]),
@@ -47,6 +49,7 @@ module.exports.parsePnrXmlResponse = async response => {
 
 	const airSegmentElement = respElement.querySelectorAll("AirSeg") || [];
 	const sellSegmentElement = respElement.querySelector("AirSegSell");
+	const storeElements = [...respElement.querySelectorAll("DocProdDisplayStoredQuote")];
 
 	const airSellResult = transformAirSellSegFromSoap(sellSegmentElement);
 
@@ -55,6 +58,7 @@ module.exports.parsePnrXmlResponse = async response => {
 		reservation: {
 			itinerary: _.map(airSegmentElement, transformAirSegmentFromSoap),
 		},
+		fareQuoteInfo: transformFareQuoteInfo(storeElements),
 		newAirSegments: airSellResult.sell,
 	};
 };
@@ -314,8 +318,8 @@ const makeStorePriceMods = (storePricingParams) => {
 					]});
 				}));
 		} else if (type === 'accompaniedChild') {
-			// weird, but seems to work. Now /ACC appears in
-			// ATFQ cmd copy, but we do get the child price
+			// weird, but seems to work. Now, even though /ACC does
+			// not appear in ATFQ cmd copy, we do get the child price
 			xmlModPassengerType.PassengerType[0].PsgrAry
 				.push({Psgr: [
 					{LNameNum: '0'},
@@ -330,4 +334,43 @@ const makeStorePriceMods = (storePricingParams) => {
 	xmlMods.push(xmlModGenQuoteInfo);
 
 	return xmlMods;
+};
+
+/** @param {Element} blockEl */
+const transformPtcBlock = (blockEl, storeEl) => {
+	const uniqueKey = +blockEl.querySelector(':scope > UniqueKey').textContent;
+	/** @see https://ask.travelport.com/index?page=content&id=AN9643&actp=search&viewlocale=en_US&searchid=1527512839140#FSI */
+	const fareTypeCode = [...storeEl.querySelectorAll(':scope > FareGarnteCD')]
+		.filter(guarEl => +(guarEl.querySelector('UniqueKey') || {}).textContent === uniqueKey)
+		.map(guarEl => (guarEl.querySelector('GuaranteeCD') || {}).textContent || null)[0];
+	return {
+		fareTypeCode: fareTypeCode,
+		hasPrivateFaresSelectedMessage: ['B', 'A', 'Z', 'P'].includes(fareTypeCode),
+		// there is more data in XML, but for now I need just few fields
+	};
+};
+
+/** @param {Element} storeEl */
+const transformStore = (storeEl) => {
+	const get = (keys) => [...storeEl.querySelectorAll(':scope > ' + keys.join(' > '))];
+	return {
+		pricingNumber: get(['FareNumInfo', 'FareNumAry', 'FareNum'])
+			.map(el => el.textContent)[0] || null,
+		pricingBlockList: get(['GenQuoteDetails']).map((b, i) => transformPtcBlock(b, storeEl)),
+		// there is more data in XML, but for now I need just few fields
+	};
+};
+
+const transformFareQuoteInfo = (storeElements) => {
+	const pricingList = [];
+	const messages = [];
+	for (const storeEl of storeElements) {
+		const error = storeEl.querySelector(':scope > ErrText > Text');
+		if (error) {
+			messages.push(error.textContent);
+		} else {
+			pricingList.push(transformStore(storeEl));
+		}
+	}
+	return {pricingList, messages};
 };
