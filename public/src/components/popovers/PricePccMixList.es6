@@ -140,7 +140,9 @@ const PricePccMixList = ({
 			.map(({cmd, output}) => '>' + cmd + ';\n' + output)
 			.join('\n');
 
-		const goToPricing = () => {
+		/** @param {MouseEvent} evt */
+		const goToPricing = (evt) => {
+			rootCmp.context.classList.toggle('go-to-pricing-in-progress', true);
 			plugin._withSpinner(() => post('terminal/goToPricing', {
 				gds: plugin.gdsName, useSocket: true,
 				pricingGds: gds,
@@ -152,6 +154,8 @@ const PricePccMixList = ({
 				const gdsUnit = CHANGE_GDS(gds);
 				gdsUnit.getActiveTerminal()
 					.plugin.parseBackEnd(cmdResult, 'GOTOPRICEMIX');
+			}).finally(() => {
+				rootCmp.context.classList.toggle('go-to-pricing-in-progress', false);
 			});
 		};
 
