@@ -74,13 +74,18 @@ class AliasParser {
 		};
 	}
 
-	static parseStore($cmd) {
-		let $matches, $_, $ptc, $modsPart;
-		if (php.preg_match(/^STORE([A-Z0-9]{3}|)\/?(.*)$/, $cmd, $matches = [])) {
-			[$_, $ptc, $modsPart] = $matches;
+	static parseStore(cmd) {
+		let matches;
+		if (php.preg_match(/^STORE([A-Z0-9]{3}|)\/?(.*)$/, cmd, matches = [])) {
+			let [, ptc, modsPart] = matches;
+			if (ptc === 'FXD') {
+				// could probably just check that PTC is in the fare family
+				// whitelist, and treat it as just a modifier if it's not...
+				modsPart = modsPart ? 'FXD/' + modsPart : 'FXD';
+			}
 			return {
-				ptc: $ptc,
-				pricingModifiers: AtfqParser.parsePricingModifiers($modsPart),
+				ptc: ptc,
+				pricingModifiers: AtfqParser.parsePricingModifiers(modsPart),
 			};
 		} else {
 			return null;
