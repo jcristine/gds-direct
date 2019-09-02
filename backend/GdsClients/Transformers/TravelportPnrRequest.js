@@ -1,3 +1,4 @@
+const ParserUtil = require('../../Parsers/ParserUtil.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const DecodeTravelportError = require('./DecodeTravelportError.js');
 const {parseXml} = require("../../GdsHelpers/CommonUtils.js");
@@ -50,6 +51,7 @@ module.exports.parsePnrXmlResponse = async response => {
 	const airSegmentElement = respElement.querySelectorAll("AirSeg") || [];
 	const sellSegmentElement = respElement.querySelector("AirSegSell");
 	const storeElements = [...respElement.querySelectorAll("DocProdDisplayStoredQuote")];
+	const currentPricingEl = respElement.querySelector("FareInfo");
 
 	const airSellResult = transformAirSellSegFromSoap(sellSegmentElement);
 
@@ -58,6 +60,8 @@ module.exports.parsePnrXmlResponse = async response => {
 		reservation: {
 			itinerary: _.map(airSegmentElement, transformAirSegmentFromSoap),
 		},
+		currentPricing: !currentPricingEl ? null : transformCurrentPricing(currentPricingEl),
+		/** stored pricing */
 		fareQuoteInfo: transformFareQuoteInfo(storeElements),
 		newAirSegments: airSellResult.sell,
 	};
@@ -373,4 +377,53 @@ const transformFareQuoteInfo = (storeElements) => {
 		}
 	}
 	return {pricingList, messages};
+};
+
+const normMoney = (el, currencyField, centsField, decPosField) => {
+	const currency = el.querySelector(currencyField).textContent;
+	const cents = el.querySelector(centsField).textContent;
+	const decPos = el.querySelector(decPosField).textContent;
+	return {
+		currency,
+		amount: (cents / Math.pow(10, decPos)).toFixed(decPos),
+	};
+};
+
+const transformPricedSegment = (segEl) => {
+	const bagCode = segEl.querySelector('BagInfo').textContent;
+	const nvb = (segEl.querySelector('NotValidBeforeDt') || {}).textContent;
+	const nva = (segEl.querySelector('NotValidAfterDt') || {}).textContent;
+	return {
+		fareBasis: segEl.querySelector('FIC').textContent,
+		ticketDesignator: (segEl.querySelector('TkDesignator') || {}).textContent,
+		freeBaggageAmount: ParserUtil.parseBagAmountCode(bagCode),
+		notValidBefore: !nvb ? null : {raw: nvb},
+		notValidAfter: !nva ? null : {raw: nva},
+		fare: [...segEl.querySelectorAll('Fare')]
+			.map(el => el.textContent.trim())[0],
+		isStopover: [...segEl.querySelectorAll('Stopover')]
+			.some(el => el.textContent !== 'X'),
+	};
+};
+
+const transformCurrentPricing = (pricingEl) => {
+	const ptcBlocks = [...pricingEl.querySelectorAll(':scope > GenQuoteDetails')]
+		.map(blockEl => {
+			const uniqueKey = +blockEl.querySelector(':scope > UniqueKey').textContent;
+			return ({
+				fareInfo: {
+					baseFare: normMoney(blockEl, 'BaseFareCurrency', 'BaseFareAmt', 'BaseDecPos'),
+					totalFare: normMoney(blockEl, 'TotCurrency', 'TotAmt', 'TotDecPos'),
+				},
+				hasPrivateFaresSelectedMessage: [...blockEl.querySelectorAll('PrivFQd')]
+					.some(el => el.textContent === 'Y'),
+				segments: [...pricingEl.querySelectorAll(':scope > SegRelatedInfo')]
+					.filter(el => +el.querySelector('UniqueKey').textContent === uniqueKey)
+					.map(segEl => transformPricedSegment(segEl)),
+			});
+		});
+	return {
+		pricingBlockList: ptcBlocks,
+		// there is more data in the XML...
+	};
 };
