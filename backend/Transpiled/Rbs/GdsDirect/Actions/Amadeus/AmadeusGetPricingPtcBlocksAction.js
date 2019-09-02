@@ -93,15 +93,18 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 		if (pager.hasMore) {
 			return {error: 'Internal error - pricing has more pages'};
 		}
-
 		const parsed = FxParser.parse(pricingDump);
-		const cmdStores = CommandParser.parse(cmd)['data']['pricingStores'];
+		const cmdParsed = CommandParser.parse(cmd);
+		if (cmdParsed.type !== 'priceItinerary' || !cmdParsed.data) {
+			return {error: 'Failed to parse pricing command - ' + cmd};
+		}
+		const cmdStores = cmdParsed.data.pricingStores;
 		const pricingList = [];
 		const bagPtcBlocks = [];
 		const error = parsed.error;
 		if (error) {
 			return {error: error};
-		} else if (parsed['type'] === 'ptcPricing') {
+		} else if (parsed.type === 'ptcPricing') {
 			// GDS returned single PTC pricing instantly
 			if (php.count(cmdStores) <= 1) {
 				const mods = cmdStores[0] || [];
@@ -122,7 +125,7 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 				parsed.data.passengers, cmdStores, nameRecords
 			);
 			for (const [i, ptcInfo] of Object.entries(ptcGroups)) {
-				const storeNum = ptcInfo['storeNumber'] || 1;
+				const storeNum = ptcInfo.storeNumber || 1;
 				const ptcBlock = await this.fetchPtcBlock(ptcInfo);
 				const error = ptcBlock['error'];
 				if (error) {
