@@ -1,3 +1,4 @@
+const RbsUtils = require('../../../../../GdsHelpers/RbsUtils.js');
 const AtfqParser = require('../../../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
 const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
@@ -662,9 +663,11 @@ const RunCmdRq = ({
 		return {calledCommands: $calledCommands};
 	};
 
-	const needsColonN = async ($pricingDump, $pnr) => {
-		const rbsInfo = await getRbsPqInfo($pnr.getDump(), $pricingDump, 'apollo').catch(exc => ({}));
-		return rbsInfo.isPrivateFare && rbsInfo.isBrokenFare;
+	const needsColonN = (xmlResult, pnr) => {
+		const itinerary = pnr.getReservation(stateful.getStartDt()).itinerary;
+		const isBrokenFare = xmlResult.currentPricing.pricingBlockList
+			.some(ptcBlock => RbsUtils.isBrokenFare({itinerary, ptcBlock}));
+		return isBrokenFare;
 	};
 
 	const makeStorePricingCmd = async (pnr, aliasData, needsColonN) => {
@@ -720,14 +723,13 @@ const RunCmdRq = ({
 
 	/** @param cmd = 'T:$B/N1|2*C05/:N/FXD' */
 	const invokeStorePricingCmd = async (cmd) => {
-		//const cmdData = AtfqParser.parsePricingCommand(cmd.slice('T:'.length));
-		//const result = await travelport.processPnr(stateful.getGdsData(), {
-		//	storePricingParams: {
-		//		gds: 'apollo',
-		//		pricingModifiers: cmdData.pricingModifiers,
-		//	},
-		//});
-		return runCmd(cmd, false);
+		const cmdData = AtfqParser.parsePricingCommand(cmd.slice('T:'.length));
+		return travelport.processPnr(stateful.getGdsData(), {
+			storePricingParams: {
+				gds: 'apollo',
+				pricingModifiers: cmdData.pricingModifiers,
+			},
+		});
 	};
 
 	const storePricing = async (aliasData) => {
@@ -735,19 +737,25 @@ const RunCmdRq = ({
 		const lastStore = ArrayUtil.getLast(pnr.getStoredPricingList());
 		const prevAtfqNum = lastStore ? lastStore.lineNumber : 0;
 		let cmd = await makeStorePricingCmd(pnr, aliasData, false);
-		const cmdRec = await invokeStorePricingCmd(cmd);
-		let output = cmdRec.output;
-		if (StringUtil.contains(output, '** PRIVATE FARES SELECTED **')) {
-			output = (await moveDownAll(null, [cmdRec]))[0].output || output;
-			if (await needsColonN(output, pnr)) {
-				const newAtfqNum = prevAtfqNum + 1;
+		const result = await invokeStorePricingCmd(cmd);
+		if (result.currentPricing.pricingBlockList.some(b => b.hasPrivateFaresSelectedMessage)) {
+			if (needsColonN(result, pnr)) {
+				const newAtfqNum = +prevAtfqNum + 1;
 				// delete ATFQ we just created and store a correct one, with /:N/ mod
 				await runCommand('XT' + newAtfqNum, false);
 				cmd = await makeStorePricingCmd(pnr, aliasData, true);
-				output = (await invokeStorePricingCmd(cmd, false)).output;
+				await invokeStorePricingCmd(cmd, false);
 			}
 		}
-		return {calledCommands: [{cmd, output}]};
+		const calledCommands = [];
+		if (stateful.getSessionData().isPnrStored) {
+			const login = getAgent().getLogin().toUpperCase();
+			const erCmdRec = await runCmd('R:' + login + '|ER');
+			calledCommands.push(erCmdRec);
+		}
+		const lfCmdRec = await runCmd('*LF');
+		calledCommands.push(lfCmdRec);
+		return {calledCommands};
 	};
 
 	const priceAll = async (aliasData) => {

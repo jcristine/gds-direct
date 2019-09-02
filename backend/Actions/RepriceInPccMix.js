@@ -82,27 +82,14 @@ const normalizePricingCmd = async (aliasData, pccRec) => {
  */
 const RepriceInPccMix = async ({
 	stateful, aliasData, gdsClients,
-	RbsClient = require('../IqClients/RbsClient.js'),
 }) => {
 	const gds = stateful.gds;
 	const baseDate = stateful.getStartDt();
 	const cmdRqId = await stateful.getLog().getCmdRqId();
 
-	const dtDiff = (next, curr) => {
-		const nextEpoch = new Date(next.departureDt.full).getTime();
-		const currEpoch = new Date(curr.destinationDt.full).getTime();
-		return nextEpoch - currEpoch;
-	};
-
 	const getFirstDestination = (itin) => {
-		for (let i = 0; i < itin.length; ++i) {
-			const curr = itin[i];
-			const next = itin[i + 1] || null;
-			if (!next || dtDiff(next, curr) > 24 * 60 * 60 * 1000) {
-				return curr.destinationAirport;
-			}
-		}
-		return null;
+		return RbsUtils.getDestinations(itin)
+			[0].slice(-1)[0].destinationAirport;
 	};
 
 	const getPccRecs = async (itinerary) => {
