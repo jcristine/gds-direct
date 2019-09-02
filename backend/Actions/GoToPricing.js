@@ -62,7 +62,7 @@ const getTargetSession = async ({
 				})
 				// restart if session expired on GDS side when we called the >I;
 				.catch(exc => GdsSessionManager.restartIfNeeded(
-					exc, params, newSession => makeStateful(newSession))
+					exc, {...params, session}, newSession => makeStateful(newSession))
 				));
 	}
 	await ensurePcc(targetStateful, pricingPcc);
