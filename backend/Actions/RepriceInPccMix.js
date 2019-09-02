@@ -29,7 +29,7 @@ const normalizePricingCmd = async (aliasData, pccRec) => {
 	// all custom PTCs we may add are private, so adding them when
 	// agent explicitly asked for a published pricing is illogical
 	const hasColonN = normalized.pricingModifiers
-		.some(m => m.type === 'fareType' && m.parsed === 'published');
+		.some(m => m.type === 'fareType' && m.parsed === 'public');
 	if (pccRec.ptc && !hasColonN) {
 		if (normalized.ptcs.length === 0) {
 			normalized.paxNums = [];
@@ -56,7 +56,11 @@ const normalizePricingCmd = async (aliasData, pccRec) => {
 		segMod.parsed.bundles.forEach(b => b.accountCode = pccRec.accountCode);
 	}
 	if (pccRec.fareType && !normalized.pricingModifiers.some(m => m.type === 'fareType')) {
-		normalized.pricingModifiers.push({type: 'fareType', parsed: pccRec.fareType});
+		normalized.pricingModifiers.push({
+			type: 'fareType',
+			parsed: pccRec.fareType === 'published'
+				? 'public' : pccRec.fareType,
+		});
 	}
 	if (pccRec.ticketingAgencyPcc) {
 		normalized.pricingModifiers.push({type: 'ticketingAgencyPcc', parsed: pccRec.ticketingAgencyPcc});
