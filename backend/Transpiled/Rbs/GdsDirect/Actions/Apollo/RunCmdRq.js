@@ -742,11 +742,11 @@ const RunCmdRq = ({
 		const pnr = await getCurrentPnr();
 		const lastStore = ArrayUtil.getLast(pnr.getStoredPricingList());
 		const prevAtfqNum = lastStore ? lastStore.lineNumber : 0;
+		const newAtfqNum = +prevAtfqNum + 1;
 		let cmd = await makeStorePricingCmd(pnr, aliasData, false);
 		let result = await invokeStorePricingCmd(cmd);
 		if (result.currentPricing.pricingBlockList.some(b => b.hasPrivateFaresSelectedMessage)) {
 			if (needsColonN(result, pnr)) {
-				const newAtfqNum = +prevAtfqNum + 1;
 				// delete ATFQ we just created and store a correct one, with /:N/ mod
 				await runCommand('XT' + newAtfqNum, false);
 				cmd = await makeStorePricingCmd(pnr, aliasData, true);
@@ -757,9 +757,10 @@ const RunCmdRq = ({
 			.pricingModifiers.some(mod => mod.type === 'forceProperEconomy');
 
 		const hasBasicEconomy = result.currentPricing.pricingBlockList
-			.some(b => b.segments.some(s => !s.freeBaggageAmount.amount));
+			.some(b => b.segments.some(s => +s.freeBaggageAmount.amount === 0));
 
 		if (hasFxd && hasBasicEconomy) {
+			await runCommand('XT' + newAtfqNum, false);
 			return Rej.ServiceUnavailable('Resulting pricing has no free baggage despite the /FXD');
 		}
 		const calledCommands = [];
