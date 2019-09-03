@@ -32,7 +32,7 @@ const StatefulSession = ({
 	startDt = new Date().toISOString(),
 	Airports = require('../Repositories/Airports.js'),
 }) => {
-	askClient = askClient || ((msgData) => ServiceUnavailable('Client Socket not stored in GRECT session'));
+	askClient = askClient || ((msgData) => ServiceUnavailable('Client Socket not stored in GRECT session', {session, emcUser, msgData}));
 	const gds = session.context.gds;
 	const calledCommands = [];
 	const pnrSaveHandlers = [];
