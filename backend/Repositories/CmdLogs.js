@@ -215,6 +215,40 @@ exports.getLast = async (sessionId) => {
 	return r;
 };
 
+exports.getArchivableCommands = async ({olderThan, limit=1000, afterId = null}) => {
+	const where = [['dt', '<', olderThan]];
+
+	if (afterId) {
+		where.push(['id', '>', afterId]);
+	}
+
+	return Db.with(db => db.fetchAll({
+		table: TABLE,
+		where,
+		limit,
+		orderBy: 'id ASC',
+	}));
+};
+
+exports.getLastNCommands = async ({type, gds, limit = 1000}) => {
+	return Db.with(db => db.fetchAll({
+		table: TABLE,
+		where: [
+			['type', '=', type],
+			['gds', '=', gds],
+		],
+		limit,
+	}));
+};
+
+exports.removeLogs = async ids => {
+	const result = await Db.with(db => db.query(`
+		DELETE FROM ${TABLE}
+		WHERE id IN (?)`, [ids]));
+
+	return result;
+};
+
 exports.isInvalidFormat = isInvalidFormat;
 
 exports.ramDebug = {
