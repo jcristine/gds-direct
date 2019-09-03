@@ -1,3 +1,4 @@
+const BuilderUtil = require('gds-utils/src/text_format_processing/agnostic/BuilderUtil.js');
 const AtfqParser = require('../../Transpiled/Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
@@ -263,22 +264,18 @@ const collectErrors = (dom, sellSegments) => {
 const makeStorePriceMods = (storePricingParams) => {
 	const {gds, pricingModifiers} = storePricingParams;
 	const xmlMods = [];
-	xmlMods.push({SegSelection: [
+	const xmlModSegSelection = {SegSelection: [
 		{ReqAirVPFs: 'Y'},
-		{SegRangeAry: [{SegRange: [
-			{StartSeg: '00'},
-			{EndSeg: '00'},
-			{FareType: 'P'}, // Means "private", but "PublishedFaresInd" allows pub
-			{PFQual: [
-				{CRSInd: {
-					'apollo': '1V',
-					'galileo': '1G',
-				}[gds]},
-				{PublishedFaresInd: 'Y'},
-				{Type: 'A'}, // 'A' - all types, 'V' - validated
-			]},
-		]}]},
-	]});
+		{SegRangeAry: []},
+	]};
+	const xmlPFQual = {PFQual: [
+		{CRSInd: {
+			'apollo': '1V',
+			'galileo': '1G',
+		}[gds]},
+		{PublishedFaresInd: 'Y'},
+		{Type: 'A'}, // 'A' - all types, 'V' - validated
+	]};
 	const xmlModGenQuoteInfo = {GenQuoteInfo: [
 		{NetFaresOnly: 'A'}, // both net and pub/private
 	]};
@@ -333,12 +330,38 @@ const makeStorePriceMods = (storePricingParams) => {
 					{PsgrNum: '0'},
 					{AbsNameNum: '0'},
 				]});
-		} else if (type === 'segments' && parsed.bundles[0].fareBasis) {
-			throw Rej.NotImplemented.makeExc('Consider using STORE/FXD, Fare Basis override is not yet implemented - ' + raw);
+		} else if (type === 'segments') {
+			for (const b of parsed.bundles) {
+				const segNums = b.segmentNumbers;
+				const ranges = segNums.length > 0
+					? BuilderUtil.shortenRanges(segNums)
+					: [{from: 0, to: 0}];
+				if (b.accountCode || b.pcc || b.bookingClass) {
+					const msg = 'Unsupported segment modifier for #' +
+						segNums.join(',') + ' - ' + raw;
+					return Rej.NotImplemented(msg, b);
+				}
+				for (const {from, to} of ranges) {
+					xmlModSegSelection.SegSelection[1].SegRangeAry
+						.push({SegRange: [
+							{StartSeg: from},
+							{EndSeg: to},
+							{FareType: !b.fareBasis ? 'P' : 'B'},
+							...(!b.fareBasis ? [] : [{FIC: b.fareBasis}]),
+							xmlPFQual,
+						]});
+				}
+			}
 		} else {
 			throw Rej.NotImplemented.makeExc('Unsupported T:$B modifier - ' + type + ' - ' + raw);
 		}
 	}
+	if (xmlModSegSelection.SegSelection[1].SegRangeAry.length === 0) {
+		xmlModSegSelection.SegSelection[1].SegRangeAry.push({SegRange: [
+			{StartSeg: '00'}, {EndSeg: '00'}, {FareType: 'P'}, xmlPFQual,
+		]});
+	}
+	xmlMods.push(xmlModSegSelection);
 	xmlMods.push(xmlModPassengerType);
 	xmlMods.push(xmlModGenQuoteInfo);
 

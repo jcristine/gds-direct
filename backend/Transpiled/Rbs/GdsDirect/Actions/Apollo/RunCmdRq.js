@@ -736,6 +736,7 @@ const RunCmdRq = ({
 	};
 
 	const storePricing = async (aliasData) => {
+		const messages = [];
 		const pnr = await getCurrentPnr();
 		const lastStore = ArrayUtil.getLast(pnr.getStoredPricingList());
 		const prevAtfqNum = lastStore ? lastStore.lineNumber : 0;
@@ -756,9 +757,13 @@ const RunCmdRq = ({
 		const hasBasicEconomy = result.currentPricing.pricingBlockList
 			.some(b => b.segments.some(s => +s.freeBaggageAmount.amount === 0));
 
-		if (hasFxd && hasBasicEconomy) {
-			await runCommand('XT' + newAtfqNum, false);
-			return Rej.ServiceUnavailable('Resulting pricing has no free baggage despite the /FXD');
+		if (hasBasicEconomy) {
+			if (hasFxd) {
+				await runCommand('XT' + newAtfqNum, false);
+				return Rej.ServiceUnavailable('Resulting pricing has no free baggage despite the /FXD');
+			} else {
+				messages.push({type: 'info', text: 'Some segments have no free bags'});
+			}
 		}
 		const calledCommands = [];
 		if (stateful.getSessionData().isPnrStored) {
@@ -769,7 +774,7 @@ const RunCmdRq = ({
 		}
 		const lfCmdRec = await runCmd('*LF');
 		calledCommands.push(lfCmdRec);
-		return {calledCommands};
+		return {calledCommands, messages};
 	};
 
 	const priceAll = async (aliasData) => {

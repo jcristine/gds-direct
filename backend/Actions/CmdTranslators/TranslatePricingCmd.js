@@ -1,3 +1,4 @@
+const BuilderUtil = require('gds-utils/src/text_format_processing/agnostic/BuilderUtil.js');
 const DateTime = require('../../Transpiled/Lib/Utils/DateTime.js');
 const CommonParserHelpers = require('../../Transpiled/Gds/Parsers/Apollo/CommonParserHelpers.js');
 const FqCmdParser = require('../../Transpiled/Gds/Parsers/Galileo/Commands/FqCmdParser.js');
@@ -12,25 +13,7 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 const PRIVATE_FARE_TYPES = ['private', 'agencyPrivate', 'airlinePrivate', 'netAirlinePrivate'];
 
-const shortenRangesRec = (numbers) => {
-	numbers = numbers.map(n => +n);
-	const ranges = [];
-	let from = -1;
-	let to = -1;
-	for (const num of Object.values(numbers)) {
-		if (from > -1 && num == +to + 1) {
-			to = num;
-		} else {
-			if (from > -1) {
-				ranges.push({from, to});
-			}
-			from = num;
-			to = num;
-		}
-	}
-	ranges.push({from, to});
-	return ranges;
-};
+const shortenRangesRec = BuilderUtil.shortenRanges;
 
 const makeRangeStr = (range, coma, thru) => {
 	if (range.from == range.to) {
