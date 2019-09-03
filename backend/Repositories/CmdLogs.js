@@ -241,6 +241,14 @@ exports.getLastNCommands = async ({type, gds, limit = 1000}) => {
 	}));
 };
 
+exports.removeLogs = async ids => {
+	const result = await Db.with(db => db.query(`
+		DELETE FROM ${TABLE}
+		WHERE id IN (?)`, [ids]));
+
+	return result;
+};
+
 exports.isInvalidFormat = isInvalidFormat;
 
 exports.ramDebug = {
