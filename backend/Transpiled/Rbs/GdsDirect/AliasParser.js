@@ -82,6 +82,7 @@ class AliasParser {
 				// could probably just check that PTC is in the fare family
 				// whitelist, and treat it as just a modifier if it's not...
 				modsPart = modsPart ? 'FXD/' + modsPart : 'FXD';
+				ptc = '';
 			}
 			return {
 				ptc: ptc,
