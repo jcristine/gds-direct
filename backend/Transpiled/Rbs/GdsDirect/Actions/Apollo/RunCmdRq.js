@@ -724,12 +724,18 @@ const RunCmdRq = ({
 	/** @param cmd = 'T:$B/N1|2*C05/:N/FXD' */
 	const invokeStorePricingCmd = async (cmd) => {
 		const cmdData = AtfqParser.parsePricingCommand(cmd.slice('T:'.length));
-		return travelport.processPnr(stateful.getGdsData(), {
+		const result = await travelport.processPnr(stateful.getGdsData(), {
 			storePricingParams: {
 				gds: 'apollo',
 				pricingModifiers: cmdData.pricingModifiers,
 			},
 		});
+		const error = result.currentPricing.error;
+		if (error) {
+			return Rej.UnprocessableEntity('Failed to >' + cmd + '; - ' + error);
+		} else {
+			return Promise.resolve(result);
+		}
 	};
 
 	const storePricing = async (aliasData) => {
@@ -737,15 +743,24 @@ const RunCmdRq = ({
 		const lastStore = ArrayUtil.getLast(pnr.getStoredPricingList());
 		const prevAtfqNum = lastStore ? lastStore.lineNumber : 0;
 		let cmd = await makeStorePricingCmd(pnr, aliasData, false);
-		const result = await invokeStorePricingCmd(cmd);
+		let result = await invokeStorePricingCmd(cmd);
 		if (result.currentPricing.pricingBlockList.some(b => b.hasPrivateFaresSelectedMessage)) {
 			if (needsColonN(result, pnr)) {
 				const newAtfqNum = +prevAtfqNum + 1;
 				// delete ATFQ we just created and store a correct one, with /:N/ mod
 				await runCommand('XT' + newAtfqNum, false);
 				cmd = await makeStorePricingCmd(pnr, aliasData, true);
-				await invokeStorePricingCmd(cmd, false);
+				result = await invokeStorePricingCmd(cmd, false);
 			}
+		}
+		const hasFxd = AtfqParser.parsePricingCommand(cmd.slice('T:'.length))
+			.pricingModifiers.some(mod => mod.type === 'forceProperEconomy');
+
+		const hasBasicEconomy = result.currentPricing.pricingBlockList
+			.some(b => b.segments.some(s => !s.freeBaggageAmount.amount));
+
+		if (hasFxd && hasBasicEconomy) {
+			return Rej.ServiceUnavailable('Resulting pricing has no free baggage despite the /FXD');
 		}
 		const calledCommands = [];
 		if (stateful.getSessionData().isPnrStored) {
