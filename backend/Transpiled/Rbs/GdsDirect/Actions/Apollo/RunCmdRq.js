@@ -754,13 +754,12 @@ const RunCmdRq = ({
 		const hasFxd = AtfqParser.parsePricingCommand(cmd.slice('T:'.length))
 			.pricingModifiers.some(mod => mod.type === 'forceProperEconomy');
 
-		const hasBasicEconomy = result.currentPricing.pricingBlockList
+		const lacksBaggages = result.currentPricing.pricingBlockList
 			.some(b => b.segments.some(s => +s.freeBaggageAmount.amount === 0));
 
-		if (hasBasicEconomy) {
+		if (lacksBaggages) {
 			if (hasFxd) {
-				await runCommand('XT' + newAtfqNum, false);
-				return Rej.ServiceUnavailable('Resulting pricing has no free baggage despite the /FXD');
+				messages.push({type: 'error', text: 'Some segments have no free bags despite the /FXD'});
 			} else {
 				messages.push({type: 'info', text: 'Some segments have no free bags'});
 			}
