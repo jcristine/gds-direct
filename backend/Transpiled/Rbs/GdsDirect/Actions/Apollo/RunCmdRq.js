@@ -46,7 +46,6 @@ const CommandParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js')
 const TApolloSavePnr = require('../../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
 const AliasParser = require('../../../../Rbs/GdsDirect/AliasParser.js');
 const ApoAliasParser = require('../../../../../Parsers/Apollo/AliasParser.js');
-const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const PnrHistoryParser = require('../../../../Gds/Parsers/Apollo/PnrHistoryParser.js');
 const McoListParser = require("../../../../Gds/Parsers/Apollo/Mco/McoListParser");
 const McoMaskParser = require("../../../../Gds/Parsers/Apollo/Mco/McoMaskParser");
@@ -63,56 +62,52 @@ const isSuccessXiOutput = ($output) => {
 		|| php.preg_match(/^\s*CNLD FROM\s*\d+\s*(><)?$/, $output);
 };
 
-const isScrollingAvailable = ($dumpPage) => {
-	let $exc;
+const isScrollingAvailable = (dumpPage) => {
 	try {
-		return extractPager($dumpPage)[1] === ')><';
-	} catch ($exc) {
+		return extractPager(dumpPage)[1] === ')><';
+	} catch (exc) {
 		return false;
 	}
 };
 
-const isSuccessRebookOutput = ($dump) => {
-	let $isSegmentLine;
-	$isSegmentLine = ($line) => ItineraryParser.parseSegmentLine('0 ' + $line);
-	return Fp.any($isSegmentLine, StringUtil.lines($dump));
+const isSuccessRebookOutput = (dump) => {
+	const isSegmentLine = ($line) => ItineraryParser.parseSegmentLine('0 ' + $line);
+	return StringUtil.lines(dump).some(isSegmentLine);
 };
 
-const transformBuildError = ($result) => {
-	if (!$result['success']) {
-		return Errors.getMessage($result['errorType'], $result['errorData']);
+const transformBuildError = (result) => {
+	if (!result.success) {
+		return Errors.getMessage(result.errorType, result.errorData);
 	} else {
 		return null;
 	}
 };
 
 // Parse strings like '1,2,4-7,9'
-const parseStringNumbersList = ($numberString) => {
-	let $list, $key, $number, $diapason, $i;
-	$list = php.explode('|', $numberString).map(a => +a);
-	for ([$key, $number] of Object.entries($list)) {
-		$diapason = php.explode('-', $number);
-		if (php.isset($diapason[1])) {
-			$list[$key] = $diapason[0];
-			for ($i = $diapason[0]; $i < $diapason[1]; $i++) {
-				php.array_push($list, $i + 1);
+const parseStringNumbersList = (numberString) => {
+	const list = php.explode('|', numberString).map(a => +a);
+	for (const [key, number] of Object.entries(list)) {
+		const diapason = php.explode('-', number);
+		if (php.isset(diapason[1])) {
+			list[key] = diapason[0];
+			for (const i = diapason[0]; i < diapason[1]; i++) {
+				php.array_push(list, i + 1);
 			}
 		}
 	}
-	return php.array_values(php.array_unique($list.sort()));
+	return php.array_values(php.array_unique(list.sort()));
 };
 
-const findLastCommandIn = ($cmdTypes, $calledCommands) => {
-	let $mrs, $cmdRecord, $logCmdType;
-	$mrs = [];
-	for ($cmdRecord of php.array_reverse($calledCommands)) {
-		php.array_unshift($mrs, $cmdRecord['output']);
-		$logCmdType = CommandParser.parse($cmdRecord['cmd'])['type'];
-		if (php.in_array($logCmdType, $cmdTypes)) {
-			$cmdRecord['output'] = TravelportUtils.joinFullOutput($mrs);
-			return $cmdRecord;
-		} else if ($logCmdType !== 'moveRest') {
-			$mrs = [];
+const findLastCommandIn = (cmdTypes, calledCommands) => {
+	let mrs = [];
+	for (const cmdRecord of php.array_reverse(calledCommands)) {
+		php.array_unshift(mrs, cmdRecord['output']);
+		const logCmdType = CommandParser.parse(cmdRecord.cmd).type;
+		if (php.in_array(logCmdType, cmdTypes)) {
+			cmdRecord.output = TravelportUtils.joinFullOutput(mrs);
+			return cmdRecord;
+		} else if (logCmdType !== 'moveRest') {
+			mrs = [];
 		}
 	}
 	return null;
