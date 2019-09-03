@@ -759,9 +759,9 @@ const RunCmdRq = ({
 
 		if (lacksBaggages) {
 			if (hasFxd) {
-				messages.push({type: 'error', text: 'Some segments have no free bags despite the /FXD'});
+				messages.push({type: 'error', text: 'The stored non-basic economy fare does NOT include free luggage. Double check if the FXD modifier is really needed.'});
 			} else {
-				messages.push({type: 'info', text: 'Some segments have no free bags'});
+				messages.push({type: 'info', text: 'The stored fare does NOT include free luggage'});
 			}
 		}
 		const calledCommands = [];
