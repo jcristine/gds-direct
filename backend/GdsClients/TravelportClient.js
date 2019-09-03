@@ -1,6 +1,7 @@
 const {LoginTimeOut, BadGateway} = require("klesun-node-tools/src/Rej");
 const {escapeXml, parseXml} = require("../GdsHelpers/CommonUtils.js");
-const Conflict = require("klesun-node-tools/src/Rej").Conflict;
+const Rej = require('klesun-node-tools/src/Rej.js');
+const {Conflict} = Rej;
 const TravelportPnrRequestTransformer = require('./Transformers/TravelportPnrRequest');
 const TravelportFareRuleTransformer = require('./Transformers/TravelportFareRules');
 
@@ -19,7 +20,7 @@ const endpoint = 'https://americas.webservices.travelport.com/B2BGateway/service
 //let endpoint = 'https://apac.webservices.travelport.com/B2BGateway/service/XMLSelect';
 
 const buildSoapBody = (gdsData, requestType, reqXml) => (
-		`<?xml version="1.0" encoding="UTF-8"?>
+	`<?xml version="1.0" encoding="UTF-8"?>
 		<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://webservices.galileo.com">
 			<SOAP-ENV:Body>
 				<ns1:SubmitXmlOnSession>
@@ -117,6 +118,13 @@ const TravelportClient = ({
 				'To restart session use _⚙ (Gear) -> Default PCC_.\n' +
 				'Note, reloading page does not reduce waiting time on hanging availability (60 s.).';
 			return Conflict(error, {isOk: true});
+		} else if ((exc + '').indexOf('XTS Translation of Data Failed when converting the SingleXML request into a Host Format') > -1) {
+			let msg = 'Format of XML request did not match Travelport expectations';
+			const match = body.match(/Invalid date\s*<\/(?:\w+:|)(\w+)/);
+			if (match) {
+				msg += ' (Invalid date passed to moment js around ' + match[1] + ')';
+			}
+			return Rej.InternalServerError(msg, {rqBody: body});
 		} else {
 			const obj = typeof exc === 'string' ? new Error(exc) : exc;
 			// for debug, be careful not to include credentials here

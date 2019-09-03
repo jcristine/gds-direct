@@ -23,7 +23,7 @@ const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHel
  * 'TRC  TEXT',
  * 'A    ABVPHC NO BOARDING THIS CITY                               ><',
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class TtParser {
 	static parseHeaderLine($line) {
@@ -36,10 +36,10 @@ class TtParser {
 		$names = php.array_combine($symbols, $symbols);
 		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
 		$result = {
-			'airline': $split['Y'],
-			'flightNumber': $split['F'],
-			'dayOfWeek': {'raw': $split['W']},
-			'departureDate': CommonParserHelpers.parseCurrentCenturyFullDate(php.str_replace(' ', '', $split['D'])),
+			airline: $split['Y'],
+			flightNumber: $split['F'],
+			dayOfWeek: {raw: $split['W']},
+			departureDate: CommonParserHelpers.parseCurrentCenturyFullDate(php.str_replace(' ', '', $split['D'])),
 		};
 		if ($split[' '] === '' && $result['departureDate']['parsed']) {
 			return $result;
@@ -79,27 +79,27 @@ class TtParser {
 		$names = php.array_combine($symbols, $symbols);
 		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
 		$result = {
-			'departureAirport': $split['A'],
-			'departureTime': {
-				'raw': $split['T'],
-				'parsed': CommonParserHelpers.decodeApolloTime($split['T']),
+			departureAirport: $split['A'],
+			departureTime: {
+				raw: $split['T'],
+				parsed: CommonParserHelpers.decodeApolloTime($split['T']),
 			},
 			// the offset seems to be from the first departure, not from the last time
-			'departureDayOffset': this.decodeDayOffset($split['O']),
-			'departureTerminal': $split['M'],
-			'departureDi': $split['I'], // is it domestic/international?
-			'destinationAirport': $split['a'],
-			'destinationTime': {
-				'raw': $split['t'],
-				'parsed': CommonParserHelpers.decodeApolloTime($split['t']),
+			departureDayOffset: this.decodeDayOffset($split['O']),
+			departureTerminal: $split['M'],
+			departureDi: $split['I'], // is it domestic/international?
+			destinationAirport: $split['a'],
+			destinationTime: {
+				raw: $split['t'],
+				parsed: CommonParserHelpers.decodeApolloTime($split['t']),
 			},
-			'destinationDayOffset': this.decodeDayOffset($split['o']),
-			'destinationTerminal': $split['m'],
-			'destinationDi': $split['i'],
-			'flightDuration': $split['F'],
-			'groundDuration': $split['G'],
-			'aircraft': $split['Q'],
-			'hasEMark': $split['E'] === 'E',
+			destinationDayOffset: this.decodeDayOffset($split['o']),
+			destinationTerminal: $split['m'],
+			destinationDi: $split['i'],
+			flightDuration: $split['F'],
+			groundDuration: $split['G'],
+			aircraft: $split['Q'],
+			hasEMark: $split['E'] === 'E',
 		};
 		if ($split[' '] === '' && $result['aircraft'] &&
 			$result['departureTime']['parsed'] &&
@@ -117,13 +117,13 @@ class TtParser {
 		$lines = StringUtil.lines($section);
 		$headersLine = php.array_shift($lines);
 		if (!php.preg_match(/BRD.*TIME.*OFF.*EQP/, $headersLine)) {
-			return {'error': 'Unexpected start of legs section - ' + php.trim($headersLine)};
+			return {error: 'Unexpected start of legs section - ' + php.trim($headersLine)};
 		}
 		$legs = php.array_map((...args) => this.parseLegLine(...args), $lines);
 		if (!php.empty($unparsed = Fp.filter('is_null', $legs))) {
-			return {'error': 'Failed to parse ' + php.implode(',', php.array_keys($unparsed)) + '-th leg'};
+			return {error: 'Failed to parse ' + php.implode(',', php.array_keys($unparsed)) + '-th leg'};
 		} else {
-			return {'legs': $legs};
+			return {legs: $legs};
 		}
 	}
 
@@ -147,10 +147,10 @@ class TtParser {
 			}
 		}
 		return {
-			'totalFlightDuration': $labelToValue['TOTAL FLYING TIME'],
-			'totalGroundDuration': $labelToValue['TOTAL GROUND TIME'],
-			'totalTravelDuration': $labelToValue['TOTAL JOURNEY TIME'],
-			'unparsed': $unparsed,
+			totalFlightDuration: $labelToValue['TOTAL FLYING TIME'],
+			totalGroundDuration: $labelToValue['TOTAL GROUND TIME'],
+			totalTravelDuration: $labelToValue['TOTAL JOURNEY TIME'],
+			unparsed: $unparsed,
 		};
 	}
 
@@ -164,9 +164,9 @@ class TtParser {
 		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
 		if ($split[' '] === '' && $split['-'] === '-') {
 			return {
-				'departureAirport': $split['P'],
-				'destinationAirport': $split['T'],
-				'bookingClasses': $split['C'] ? php.preg_split(/\s+/, $split['C']) : [],
+				departureAirport: $split['P'],
+				destinationAirport: $split['T'],
+				bookingClasses: $split['C'] ? php.preg_split(/\s+/, $split['C']) : [],
 			};
 		} else {
 			return null;
@@ -182,7 +182,7 @@ class TtParser {
 			return null;
 		}
 		$legs = php.array_map((...args) => this.parseClassesLine(...args), $lines);
-		return {'legs': $legs};
+		return {legs: $legs};
 	}
 
 	static parse($dump) {
@@ -194,11 +194,11 @@ class TtParser {
 		$legSection = php.array_shift($sections);
 
 		if (!($segment = this.parseHeaderLine($headerLine))) {
-			return {'error': 'Failed to parse header line - ' + php.trim($headerLine)};
+			return {error: 'Failed to parse header line - ' + php.trim($headerLine)};
 		}
 		$legData = this.parseLegSection($legSection);
 		if ($error = $legData['error']) {
-			return {'error': 'Failed to parse leg section - ' + $error};
+			return {error: 'Failed to parse leg section - ' + $error};
 		}
 		$legs = $legData['legs'];
 		$totalSection = php.array_shift($sections);

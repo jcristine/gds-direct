@@ -10,7 +10,7 @@ const GdsPassengerBlockParser = require("../../Common/GdsPassengerBlockParser");
 const FopParser = require("./FopParser");
 const TktgParser = require("./TktgParser");
 const SsrBlockParser = require("./SsrBlockParser");
-const php = require("../../../../phpDeprecated");
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const TicketHistoryParser = require("../TicketHistoryParser");
 
 class PnrParser {
@@ -90,19 +90,19 @@ class PnrParser {
 			}
 		}, $lines);
 		return {
-			'dividedBookingExists': php.in_array('*DV', $markers),
-			'frequentFlyerDataExists': php.in_array('*MP', $markers),
-			'globalInformationExists': php.in_array('*GI', $markers),
-			'itineraryRemarksExist': php.in_array('RM*', $markers),
-			'linearFareDataExists': php.in_array('*LF', $markers),
-			'miscDocumentDataExists': php.in_array('*MPD', $markers),
-			'profileAssociationsExist': php.in_array('*PA', $markers),
-			'seatDataExists': php.in_array('9D', $markers),
-			'tinRemarksExist': php.in_array('*T', $markers),
-			'nmePricingRecordsExist': php.in_array('PRICING RECORDS EXISTS - SUBSCRIBER - $NME', Fp.map(($line) => {
+			dividedBookingExists: php.in_array('*DV', $markers),
+			frequentFlyerDataExists: php.in_array('*MP', $markers),
+			globalInformationExists: php.in_array('*GI', $markers),
+			itineraryRemarksExist: php.in_array('RM*', $markers),
+			linearFareDataExists: php.in_array('*LF', $markers),
+			miscDocumentDataExists: php.in_array('*MPD', $markers),
+			profileAssociationsExist: php.in_array('*PA', $markers),
+			seatDataExists: php.in_array('9D', $markers),
+			tinRemarksExist: php.in_array('*T', $markers),
+			nmePricingRecordsExist: php.in_array('PRICING RECORDS EXISTS - SUBSCRIBER - $NME', Fp.map(($line) => {
 				return php.trim($line);
 			}, $lines)),
-			'eTicketDataExists': $tktgLine && StringUtil.contains($tktgLine, '**ELECTRONIC DATA EXISTS** >*HTE'),
+			eTicketDataExists: $tktgLine && StringUtil.contains($tktgLine, '**ELECTRONIC DATA EXISTS** >*HTE'),
 		};
 	}
 
@@ -130,11 +130,11 @@ class PnrParser {
 			}
 
 			return {
-				'name': $name,
-				'addressLine1': $addressLine1,
-				'addressLine2': $addressLine2,
-				'addressLine3': $addressLine3,
-				'zipCode': $zipCode,
+				name: $name,
+				addressLine1: $addressLine1,
+				addressLine2: $addressLine2,
+				addressLine3: $addressLine3,
+				zipCode: $zipCode,
 			};
 		} else {
 			return null;
@@ -147,10 +147,10 @@ class PnrParser {
 		$result = [];
 		$splitStr = 'NNNNNAA_CCCCCC___DDDDD_XXXX';
 		$names = {
-			'N': 'number',
-			'A': 'airline',
-			'C': 'confirmationNumber',
-			'D': 'date',
+			N: 'number',
+			A: 'airline',
+			C: 'confirmationNumber',
+			D: 'date',
 		};
 		for ($line of $lines) {
 			$parsedLine = StringUtil.splitByPosition($line, $splitStr, $names, true);
@@ -163,12 +163,12 @@ class PnrParser {
 			if (matchesExpectations) {
 				$number = $parsedLine['number'] == 'ACKN-' ? 1 : php.intval($parsedLine['number']);
 				$result.push({
-					'number': $number,
-					'airline': $parsedLine['airline'],
-					'confirmationNumber': $parsedLine['confirmationNumber'],
-					'date': {
-						'raw': $parsedLine['date'],
-						'parsed': CommonParserHelpers.parsePartialDate($parsedLine['date']),
+					number: $number,
+					airline: $parsedLine['airline'],
+					confirmationNumber: $parsedLine['confirmationNumber'],
+					date: {
+						raw: $parsedLine['date'],
+						parsed: CommonParserHelpers.parsePartialDate($parsedLine['date']),
 					},
 				});
 			}
@@ -186,18 +186,18 @@ class PnrParser {
 			$line = php.substr($line, 5);
 			if (php.preg_match(/MADE FOR (AGENT )?(?<name>[A-Z]+)\b/, $line, $tokens = [])) {
 				$result.push({
-					'lineNumber': $remarkNumber,
-					'remarkType': 'MADE_FOR_REMARK',
-					'data': {
-						'name': $tokens['name'],
+					lineNumber: $remarkNumber,
+					remarkType: 'MADE_FOR_REMARK',
+					data: {
+						name: $tokens['name'],
 					},
 				});
 			} else {
 				$record = GenericRemarkParser.parse($line);
 				$result.push({
-					'lineNumber': $remarkNumber,
-					'remarkType': $record['remarkType'],
-					'data': $record['data'],
+					lineNumber: $remarkNumber,
+					remarkType: $record['remarkType'],
+					data: $record['data'],
 				});
 			}
 		}
@@ -207,20 +207,20 @@ class PnrParser {
 	static parse($dump) {
 		let $result, $desiredSections, $sections, $parsedResult;
 		$result = {
-			'dataExistsInfo': null,
-			'headerData': null,
-			'passengers': null,
-			'itineraryData': null,
-			'foneData': null,
-			'adrsData': null,
-			'dlvrData': null,
-			'formOfPaymentData': null,
-			'tktgData': null,
-			'atfqData': null,
-			'ticketListData': null,
-			'ssrData': null,
-			'remarks': null,
-			'acknData': null,
+			dataExistsInfo: null,
+			headerData: null,
+			passengers: null,
+			itineraryData: null,
+			foneData: null,
+			adrsData: null,
+			dlvrData: null,
+			formOfPaymentData: null,
+			tktgData: null,
+			atfqData: null,
+			ticketListData: null,
+			ssrData: null,
+			remarks: null,
+			acknData: null,
 		};
 		$desiredSections = php.array_keys($result);
 		$sections = this.splitToSections($dump);

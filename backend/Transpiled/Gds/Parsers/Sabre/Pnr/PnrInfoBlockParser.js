@@ -2,7 +2,7 @@
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class PnrInfoBlockParser
 {
 	static parse($dump)  {
@@ -10,13 +10,13 @@ class PnrInfoBlockParser
 
 		$lines = StringUtil.lines($dump);
 		$result = {
-			'receivedFrom': null,
-			'pcc': null,
-			'homePcc': null,
-			'agentInitials': null,
-			'time': null,
-			'date': null,
-			'recordLocator': null,
+			receivedFrom: null,
+			pcc: null,
+			homePcc: null,
+			agentInitials: null,
+			time: null,
+			date: null,
+			recordLocator: null,
 		};
 
 		for ($line of Object.values($lines)) {
@@ -40,7 +40,7 @@ class PnrInfoBlockParser
 
 		if (StringUtil.startsWith($line, 'RECEIVED FROM - ')) {
 			return {
-				'name': php.trim(php.substr($line, php.strlen('RECEIVED FROM - '))),
+				name: php.trim(php.substr($line, php.strlen('RECEIVED FROM - '))),
 			};
 		} else {
 			return null;
@@ -65,19 +65,19 @@ class PnrInfoBlockParser
 			$initials = $match['agentInitials'];
 			$initials = StringUtil.startsWith($initials, 'A') ? php.substr($initials, 1) : null;
 			return {
-				'pcc': $match['pcc'],
-				'homePcc': $match['homePcc'],
-				'agentInitials': $initials,
-				'time': $match['time'],
-				'time': {
-					'raw': $match['time'],
-					'parsed': this.parseReservationTime($match['time']),
+				pcc: $match['pcc'],
+				homePcc: $match['homePcc'],
+				agentInitials: $initials,
+				time: $match['time'],
+				time: {
+					raw: $match['time'],
+					parsed: this.parseReservationTime($match['time']),
 				},
-				'date': {
-					'raw': $match['date'],
-					'parsed': this.parseReservationDate($match['date']),
+				date: {
+					raw: $match['date'],
+					parsed: this.parseReservationDate($match['date']),
 				},
-				'recordLocator': $match['recordLocator'],
+				recordLocator: $match['recordLocator'],
 			};
 		} else {
 			return null;

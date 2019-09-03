@@ -1,2 +1,2 @@
 
-module.exports = require('../../../backend/Transpiled/phpDeprecated.js');
+module.exports = require('klesun-node-tools/src/Transpiled/php.js');

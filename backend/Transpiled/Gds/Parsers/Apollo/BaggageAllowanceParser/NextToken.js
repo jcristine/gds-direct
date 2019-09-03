@@ -3,7 +3,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const BagLineParser = require('../../../../Gds/Parsers/Apollo/BaggageAllowanceParser/BagLineParser/BagLineParser.js');
 const BagLineStructureWriter = require('../../../../Gds/Parsers/Apollo/BaggageAllowanceParser/BagLineParser/BagLineStructureWriter.js');
-const php = require('../../../../phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class NextToken
 {
@@ -13,7 +13,7 @@ class NextToken
 		$firstLine = php.array_shift($lines);
 		if (php.trim($firstLine) == 'BAGGAGE ALLOWANCE') {
 			return {
-				'textLeft': php.implode(php.PHP_EOL, $lines),
+				textLeft: php.implode(php.PHP_EOL, $lines),
 			};
 		} else {
 			return false;
@@ -27,8 +27,8 @@ class NextToken
 		$paxType = php.trim($firstLine);
 		if (php.preg_match(/^[A-Z][A-Z0-9]{1,2}$/, $paxType)) {
 			return {
-				'paxTypeCode': $paxType,
-				'textLeft': php.implode(php.PHP_EOL, $lines),
+				paxTypeCode: $paxType,
+				textLeft: php.implode(php.PHP_EOL, $lines),
 			};
 		} else {
 			return false;
@@ -38,9 +38,9 @@ class NextToken
 	static decodeAmountUnits($code)  {
 		let $map;
 		$map = {
-			'PC': 'pieces',
-			'K': 'kilograms',
-			'L': 'pounds',
+			PC: 'pieces',
+			K: 'kilograms',
+			L: 'pounds',
 		};
 		return $map[$code] || null;
 	}
@@ -70,20 +70,20 @@ class NextToken
 		if (php.preg_match($regex, $trimmedLine, $tokens = [])) {
 			$error = $tokens['error'] || null;
 			return {
-				'airline': $tokens['airline'],
-				'departureAirport': $tokens['departureAirport'],
-				'destinationAirport': $tokens['destinationAirport'],
-				'freeBaggageAmount': !$error ? {
-					'raw': $tokens['amount']+$tokens['units'],
-					'parsed': {
-						'amount': $tokens['amount'],
-						'units': this.decodeAmountUnits($tokens['units']),
+				airline: $tokens['airline'],
+				departureAirport: $tokens['departureAirport'],
+				destinationAirport: $tokens['destinationAirport'],
+				freeBaggageAmount: !$error ? {
+					raw: $tokens['amount']+$tokens['units'],
+					parsed: {
+						amount: $tokens['amount'],
+						units: this.decodeAmountUnits($tokens['units']),
 					},
 				} : null,
-				'isAvailable': !$error,
-				'error': $error ? php.trim($error) : null,
+				isAvailable: !$error,
+				error: $error ? php.trim($error) : null,
 
-				'textLeft': php.implode(php.PHP_EOL, $lines),
+				textLeft: php.implode(php.PHP_EOL, $lines),
 			};
 		} else {
 			return false;
@@ -105,8 +105,8 @@ class NextToken
 		$trimmedLine = php.trim($firstLine);
 		if (StringUtil.startsWith($trimmedLine, 'MYTRIPANDMORE.COM') || StringUtil.startsWith($trimmedLine, 'VIEWTRIP.TRAVELPORT.COM')) {
 			return {
-				'myTripAndMoreUrl': $trimmedLine,
-				'textLeft': php.implode(php.PHP_EOL, $lines),
+				myTripAndMoreUrl: $trimmedLine,
+				textLeft: php.implode(php.PHP_EOL, $lines),
 			};
 		} else {
 			return false;
@@ -123,7 +123,7 @@ class NextToken
 		if (StringUtil.startsWith($trimmedLine, 'CARRYON-')) {
 			return {
 				//'myTripAndMoreUrl' => $trimmedLine,
-				'textLeft': php.implode(php.PHP_EOL, $lines),
+				textLeft: php.implode(php.PHP_EOL, $lines),
 			};
 		} else {
 			return false;
@@ -136,7 +136,7 @@ class NextToken
 		$firstLine = php.array_shift($lines);
 		if (php.trim($firstLine) == 'CARRY ON ALLOWANCE') {
 			return {
-				'textLeft': php.implode(php.PHP_EOL, $lines),
+				textLeft: php.implode(php.PHP_EOL, $lines),
 			};
 		} else {
 			return false;
@@ -155,7 +155,7 @@ class NextToken
 		if (StringUtil.startsWith($trimmedLine, 'BAG ')) {
 			try {
 				return php.array_merge(this.parseBagLine($firstLine), {
-					'textLeft': php.implode(php.PHP_EOL, $lines),
+					textLeft: php.implode(php.PHP_EOL, $lines),
 				});
 			} catch ($ex) {
 				return false;
@@ -181,7 +181,7 @@ class NextToken
 		if (php.trim($firstLine+$secondLine) ==
                 'BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS\/ONLINE CHECKIN\/FORM OF PAYMENT\/MILITARY\/ETC.') {
 			return {
-				'textLeft': php.implode(php.PHP_EOL, $lines),
+				textLeft: php.implode(php.PHP_EOL, $lines),
 			};
 		} else {
 			return false;
@@ -196,7 +196,7 @@ class NextToken
 		$firstLine = php.array_shift($lines);
 		if (StringUtil.startsWith($firstLine, 'EMBARGO - FOR BAGGAGE LIMITATIONS SEE')) {
 			return {
-				'textLeft': php.implode(php.PHP_EOL, $lines),
+				textLeft: php.implode(php.PHP_EOL, $lines),
 			};
 		} else {
 			return false;
@@ -217,14 +217,14 @@ class NextToken
 			$destinationAirport = $tokens[3];
 			$myTripAndMoreUrl = $tokens[4];
 			return {
-				'airline': $airline,
-				'departureAirport': $departureAirport,
-				'destinationAirport': $destinationAirport,
+				airline: $airline,
+				departureAirport: $departureAirport,
+				destinationAirport: $destinationAirport,
 				//                'link' => $myTripAndMoreUrl,
-				'myTripAndMoreUrl': php.preg_match(/^(MYTRIPANDMORE\.COM\/BAGGAGEDETAILS[A-Z\d]{2}\.BAGG)$/, $myTripAndMoreUrl)
+				myTripAndMoreUrl: php.preg_match(/^(MYTRIPANDMORE\.COM\/BAGGAGEDETAILS[A-Z\d]{2}\.BAGG)$/, $myTripAndMoreUrl)
 					? $myTripAndMoreUrl
 					: null,
-				'textLeft': php.implode(php.PHP_EOL, $lines),
+				textLeft: php.implode(php.PHP_EOL, $lines),
 			};
 		} else {
 			return false;
@@ -242,7 +242,7 @@ class NextToken
 		];
 		if (php.in_array(php.trim($firstLine), $possibleTokens)) {
 			return {
-				'textLeft': php.implode(php.PHP_EOL, $lines),
+				textLeft: php.implode(php.PHP_EOL, $lines),
 			};
 		} else {
 			return false;
@@ -260,7 +260,7 @@ class NextToken
 		$trimmedLine = php.trim($firstLine);
 		if (!$trimmedLine) {
 			return {
-				'textLeft': php.implode(php.PHP_EOL, $lines),
+				textLeft: php.implode(php.PHP_EOL, $lines),
 			};
 		} else {
 			return false;

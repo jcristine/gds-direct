@@ -1,6 +1,6 @@
 
 
-const php = require("../../../../phpDeprecated");
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class FqLineParser
 {
@@ -11,9 +11,9 @@ class FqLineParser
 	static parseFqLine($line)  {
 		let $result, $priceConstructionPart, $miscInfoPart, $priceConstructionPartTokens, $state, $token, $price;
 		$result = {
-			'fare': null,
-			'taxList': [],
-			'netPrice': null,
+			fare: null,
+			taxList: [],
+			netPrice: null,
 		};
 		$line = php.substr($line, 3);
 		[$priceConstructionPart, $miscInfoPart] = php.array_pad(php.explode(' - ', $line), 2, '');
@@ -28,8 +28,8 @@ class FqLineParser
 					throw new Error('First price construction token expected to be fare, tax found: ['+$token+']');
 				} else {
 					$result['fare'] = {
-						'currency': $price['currency'],
-						'amount': $price['amount'],
+						currency: $price['currency'],
+						amount: $price['amount'],
 					};
 
 					$state = this.FQ_LINE_PARSER_STATE_WAITING_FOR_TAX_OR_NET_PRICE;
@@ -40,14 +40,14 @@ class FqLineParser
 					throw new Error('Tax or net price expected, something else found: ['+$token+']');
 				} else if ($price['taxType']) {
 					$result['taxList'].push({
-						'currency': $price['currency'],
-						'amount': $price['amount'],
-						'taxType': $price['taxType'],
+						currency: $price['currency'],
+						amount: $price['amount'],
+						taxType: $price['taxType'],
 					});
 				} else {
 					$result['netPrice'] = {
-						'currency': $price['currency'],
-						'amount': $price['amount'],
+						currency: $price['currency'],
+						amount: $price['amount'],
 					};
 				}
 			}}
@@ -60,9 +60,9 @@ class FqLineParser
 		php.preg_match_all(/([A-Z]{3}) (\d+(\.\d{2})?)([A-Z]{2})?/, $token, $matches);
 		if (php.count($matches[1]) > 0 && php.count($matches[2]) > 0) {
 			return {
-				'currency': $matches[1][0],
-				'amount': $matches[2][0],
-				'taxType': $matches[4][0] ? $matches[4][0] : null,
+				currency: $matches[1][0],
+				amount: $matches[2][0],
+				taxType: $matches[4][0] ? $matches[4][0] : null,
 			};
 		} else {
 			return false;

@@ -2,7 +2,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class ItineraryParser {
 	static preprocessDump($dump) {
@@ -45,13 +45,13 @@ class ItineraryParser {
 	static parseDayOfWeek($token) {
 		let $dayOfWeekIndex;
 		$dayOfWeekIndex = {
-			'M': 1,
-			'T': 2,
-			'W': 3,
-			'Q': 4,
-			'F': 5,
-			'J': 6,
-			'S': 7,
+			M: 1,
+			T: 2,
+			W: 3,
+			Q: 4,
+			F: 5,
+			J: 6,
+			S: 7,
 		};
 		if ($token && php.preg_match(/^\d$/, $token)) {
 			return $token;
@@ -64,8 +64,8 @@ class ItineraryParser {
 
 	static parseDate($raw) {
 		return {
-			'raw': $raw,
-			'parsed': CommonParserHelpers.parsePartialDate($raw),
+			raw: $raw,
+			parsed: CommonParserHelpers.parsePartialDate($raw),
 		};
 	}
 
@@ -120,7 +120,7 @@ class ItineraryParser {
 			'(?<destinationAirport>[A-Z]{3})' +
 			'(?<marriageAfterDestination>\\*)?' +
 			'\\s*' +
-			'(?:(?<marriageNumber>\\d{1,})\\\/(?<marriageOrder>\\d{1,})|)' +
+			'(?:(?<marriage>\\d{1,})\\\/(?<marriageOrder>\\d{1,})|)' +
 			// Row added to use itinerary parser to parse IMSL dump segments, these keys will be empty for usual dump
 			'\\s*' +
 			'(?<segmentStatus>[A-Z]{2})' +
@@ -134,49 +134,49 @@ class ItineraryParser {
 		if (php.preg_match($regex, $line, $tokens = [])) {
 			$optional = this.parseOptionalTokens($tokens['textLeft']);
 			return {
-				'segmentNumber': php.intval($tokens['segmentNumber']),
-				'airline': $tokens['airline'],
-				'flightNumber': $tokens['flightNumber'],
-				'bookingClass': $tokens['bookingClass'] || '',
-				'departureDate': {
-					'raw': $tokens['departureDate'],
-					'parsed': this.parsePartialDate($tokens['departureDate'] || null),
+				segmentNumber: php.intval($tokens['segmentNumber']),
+				airline: $tokens['airline'],
+				flightNumber: $tokens['flightNumber'],
+				bookingClass: $tokens['bookingClass'] || '',
+				departureDate: {
+					raw: $tokens['departureDate'],
+					parsed: this.parsePartialDate($tokens['departureDate'] || null),
 				},
-				'departureDayOfWeek': {
-					'raw': $tokens['departureDayOfWeek'] || null,
-					'parsed': this.parseDayOfWeek($tokens['departureDayOfWeek'] || null),
+				departureDayOfWeek: {
+					raw: $tokens['departureDayOfWeek'] || null,
+					parsed: this.parseDayOfWeek($tokens['departureDayOfWeek'] || null),
 				},
-				'departureAirport': $tokens['departureAirport'],
-				'destinationAirport': $tokens['destinationAirport'],
-				'marriageBeforeDeparture': php.trim($tokens['marriageBeforeDeparture']) === '*',
-				'marriageAfterDestination': php.trim($tokens['marriageAfterDestination']) === '*',
-				'marriageNumber': $tokens['marriageNumber'] || null,
-				'marriageOrder': $tokens['marriageOrder'] || null,
-				'segmentStatus': $tokens['segmentStatus'],
-				'seatCount': $tokens['seatCount'],
-				'departureTime': {
-					'raw': $tokens['departureTime'] || null,
-					'parsed': this.parseTime($tokens['departureTime'] || null),
+				departureAirport: $tokens['departureAirport'],
+				destinationAirport: $tokens['destinationAirport'],
+				marriageBeforeDeparture: php.trim($tokens['marriageBeforeDeparture']) === '*',
+				marriageAfterDestination: php.trim($tokens['marriageAfterDestination']) === '*',
+				marriage: $tokens['marriage'] || null,
+				marriageOrder: $tokens['marriageOrder'] || null,
+				segmentStatus: $tokens['segmentStatus'],
+				seatCount: $tokens['seatCount'],
+				departureTime: {
+					raw: $tokens['departureTime'] || null,
+					parsed: this.parseTime($tokens['departureTime'] || null),
 				},
-				'destinationTime': {
-					'raw': $tokens['destinationTime'] || null,
-					'parsed': this.parseTime($tokens['destinationTime'] || null),
+				destinationTime: {
+					raw: $tokens['destinationTime'] || null,
+					parsed: this.parseTime($tokens['destinationTime'] || null),
 				},
-				'destinationDate': {
-					'raw': $optional['destinationDate'] || null,
-					'parsed': this.parsePartialDate($optional['destinationDate'] || null),
+				destinationDate: {
+					raw: $optional['destinationDate'] || null,
+					parsed: this.parsePartialDate($optional['destinationDate'] || null),
 				},
-				'destinationDayOfWeek': {
-					'raw': $optional['destinationDayOfWeek'] || null,
-					'parsed': this.parseDayOfWeek($optional['destinationDayOfWeek'] || null),
+				destinationDayOfWeek: {
+					raw: $optional['destinationDayOfWeek'] || null,
+					parsed: this.parseDayOfWeek($optional['destinationDayOfWeek'] || null),
 				},
-				'confirmationAirline': $optional['confirmationAirline'] || null,
-				'confirmationNumber': $optional['confirmationNumber'] || null || null,
-				'unparsed': $optional['unparsed'] || [],
-				'eticket': $optional['isEticket'] || false,
-				'operatedBy': '',
-				'segmentType': this.SEGMENT_TYPE_ITINERARY_SEGMENT,
-				'raw': $line,
+				confirmationAirline: $optional['confirmationAirline'] || null,
+				confirmationNumber: $optional['confirmationNumber'] || null || null,
+				unparsed: $optional['unparsed'] || [],
+				eticket: $optional['isEticket'] || false,
+				operatedBy: '',
+				segmentType: this.SEGMENT_TYPE_ITINERARY_SEGMENT,
+				raw: $line,
 			};
 		} else {
 			return null;
@@ -187,7 +187,7 @@ class ItineraryParser {
 		let $tokens;
 		if (php.preg_match(/^OPERATED BY (?<operator>.*)$/, $line, $tokens = [])) {
 			return {
-				'operator': php.trim($tokens['operator']),
+				operator: php.trim($tokens['operator']),
 			};
 		} else {
 			return null;
@@ -198,10 +198,10 @@ class ItineraryParser {
 		let $tokens;
 		if (php.preg_match(/^\s*(?<segmentNumber>\d+)\s+OTH\s+(?<text>.*)$/, $line, $tokens = [])) {
 			return {
-				'segmentNumber': php.intval($tokens['segmentNumber']),
-				'segmentType': this.SEGMENT_TYPE_OTH,
-				'text': $tokens['text'],
-				'raw': $line,
+				segmentNumber: php.intval($tokens['segmentNumber']),
+				segmentType: this.SEGMENT_TYPE_OTH,
+				text: $tokens['text'],
+				raw: $line,
 			};
 		} else {
 			return null;
@@ -219,7 +219,7 @@ class ItineraryParser {
 			if (php.preg_match(/^OUT(\d{1,2}[A-Z]{3})$/, $outToken, $matches = [])) {
 				$parsedLine['endDate'] = this.parseDate($matches[1]);
 				$parsedLine['hotelName'] = php.array_shift($tokens);
-				$parsedLine['roomType'] = {'raw': php.array_shift($tokens)};
+				$parsedLine['roomType'] = {raw: php.array_shift($tokens)};
 				$parsedLine['rateCode'] = php.array_shift($tokens);
 				$taToken = php.array_shift($tokens);
 				if (php.preg_match(/^TA(\d{8})$/, $taToken, $matches = [])) {
@@ -254,14 +254,14 @@ class ItineraryParser {
 			'$/';
 		if (php.preg_match($regex, $line, $tokens = [])) {
 			return {
-				'segmentNumber': $tokens['segmentNumber'],
-				'hotelType': $tokens['hotelType'],
-				'hotel': $tokens['hotel'],
-				'startDate': this.parseDate($tokens['startDate']),
-				'dayOfWeek': $tokens['dayOfWeek'],
-				'segmentStatus': $tokens['segmentStatus'],
-				'roomCount': $tokens['roomCount'],
-				'wrappedText': $tokens['wrappedText'],
+				segmentNumber: $tokens['segmentNumber'],
+				hotelType: $tokens['hotelType'],
+				hotel: $tokens['hotel'],
+				startDate: this.parseDate($tokens['startDate']),
+				dayOfWeek: $tokens['dayOfWeek'],
+				segmentStatus: $tokens['segmentStatus'],
+				roomCount: $tokens['roomCount'],
+				wrappedText: $tokens['wrappedText'],
 			};
 		} else {
 			return null;
@@ -274,9 +274,9 @@ class ItineraryParser {
 		let $tokens;
 		if (php.preg_match(/^\s*(?<segmentNumber>\d+)\s+ARNK\s*$/, $line, $tokens = [])) {
 			return {
-				'segmentNumber': php.intval($tokens['segmentNumber']),
-				'segmentType': this.SEGMENT_TYPE_ARNK,
-				'raw': $line,
+				segmentNumber: php.intval($tokens['segmentNumber']),
+				segmentType: this.SEGMENT_TYPE_ARNK,
+				raw: $line,
 			};
 		} else {
 			return null;

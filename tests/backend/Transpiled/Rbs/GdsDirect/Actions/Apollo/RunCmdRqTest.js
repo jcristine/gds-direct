@@ -581,6 +581,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
+		// disabled, cause switched to xml
+		/*
 		$list.push({
 			'input': {
 				'title': '>PNR; should not fail with "SNGL ITEM FLD/NOT ENT" when >R:...; (received from) was already set',
@@ -647,6 +649,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				],
 			},
 		});
+		*/
 
 		$list.push({
 			'input': {
@@ -1352,6 +1355,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
+		// disabled, cause switched to xml
+		/*
 		$list.push({
 			'input': {'cmdRequested': 'STORE', 'title': 'STORE alias example'},
 			'output': {
@@ -1520,6 +1525,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				],
 			},
 		});
+		*/
 
 		// at last we have fixed base date and can add a test with >PNR; command that writes current date in TAW
 		$list.push({
@@ -1587,6 +1593,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
+		// disabled, cause switched to xml
+		/*
 		$list.push({
 			'input': {
 				'title': 'STORE alias, PRIVATE FARES SELECTED on output, should fetch whole pricing to check if it is actually private, or has it published ticket designators in this particular case it should stop at that, since SPL08PI0M7 is published td',
@@ -1800,6 +1808,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				],
 			},
 		});
+		*/
 
 		$list.push({
 			'input': {
@@ -2496,6 +2505,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
+		// disabled, cause switched to xml
+		/*
 		$list.push({
 			'input': {
 				'cmdRequested': 'STORE/CUA',
@@ -2546,6 +2557,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				],
 			},
 		});
+		*/
 
 		// multi-pricing alias
 		$list.push({
@@ -4345,6 +4357,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
+		// disabled, cause switched to xml
+		/*
 		$list.push({
 			'input': {
 				'title': 'STORE example with children and infants - should add /ACC even though not all paxes are clean "child"',
@@ -4552,6 +4566,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				],
 			},
 		});
+		*/
 
 		$list.push({
 			'input': {

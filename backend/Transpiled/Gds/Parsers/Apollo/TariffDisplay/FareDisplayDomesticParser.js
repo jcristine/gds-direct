@@ -2,7 +2,7 @@
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const FareDisplayCommonParser = require("./FareDisplayCommonParser");
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class FareDisplayDomesticParser extends FareDisplayCommonParser
 {
@@ -22,7 +22,7 @@ class FareDisplayDomesticParser extends FareDisplayCommonParser
 		} else {
 			$type = null;
 		}
-		return {'raw': $raw, 'type': $type, 'value': $value};
+		return {raw: $raw, type: $type, value: $value};
 	}
 
 	static parseFareLine($line)  {
@@ -52,20 +52,20 @@ class FareDisplayDomesticParser extends FareDisplayCommonParser
 			$parsed['whitespace'].trim() === ''
 		) {
 			return {
-				'lineNumber': php.intval($parsed['lineNumber']),
-				'isPrivateFare': ($parsed['privateFareToken'] === '-'),
-				'fareType': FareDisplayCommonParser.decodeFareType($parsed['privateFareToken']),
-				'isRoundTrip': ($parsed['roundTripToken'] === 'R'),
-				'airline': $parsed['airline'],
-				'fare': $parsed['fare'],
-				'seasonStart': {'raw': '', 'parsed': null}, // Exists only for international flights
-				'seasonEnd': {'raw': '', 'parsed': null},   // Exists only for international flights
-				'fareBasis': $parsed['fareBasis'],
-				'advancePurchase': this.parseAdvancePurchase($parsed['advancePurchase']),
-				'minStay': FareDisplayCommonParser.parseStayLimit($parsed['minStay']),
-				'maxStay': FareDisplayCommonParser.parseStayLimit($parsed['maxStay']),
-				'penalties': this.parsePenalties($parsed['penalties']),
-				'isInvalid': ($parsed['privateFareToken'] === 'X'),
+				lineNumber: php.intval($parsed['lineNumber']),
+				isPrivateFare: ($parsed['privateFareToken'] === '-'),
+				fareType: FareDisplayCommonParser.decodeFareType($parsed['privateFareToken']),
+				isRoundTrip: ($parsed['roundTripToken'] === 'R'),
+				airline: $parsed['airline'],
+				fare: $parsed['fare'],
+				seasonStart: {raw: '', parsed: null}, // Exists only for international flights
+				seasonEnd: {raw: '', parsed: null},   // Exists only for international flights
+				fareBasis: $parsed['fareBasis'],
+				advancePurchase: this.parseAdvancePurchase($parsed['advancePurchase']),
+				minStay: FareDisplayCommonParser.parseStayLimit($parsed['minStay']),
+				maxStay: FareDisplayCommonParser.parseStayLimit($parsed['maxStay']),
+				penalties: this.parsePenalties($parsed['penalties']),
+				isInvalid: ($parsed['privateFareToken'] === 'X'),
 			};
 		} else {
 			return null;

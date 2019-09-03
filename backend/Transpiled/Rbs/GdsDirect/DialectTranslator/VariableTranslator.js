@@ -3,7 +3,7 @@
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const SabCmdParser = require('../../../Gds/Parsers/Sabre/CommandParser.js');
 
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class VariableTranslator
 {
 	/**
@@ -12,63 +12,63 @@ class VariableTranslator
 	static getLegendData()  {
 
 		return {
-			'calculation': '[\\d\\.\\+\\-\\/\\*]+',
-			'single_char': '[A-Z]',
-			'free_text': '.*?',
-			'free_text_no_at': '[^@]*?',
-			'free_text_but_not_5_chars': '(.{0,4}|.{6}.*?)',
-			'free_text_but_not_2_letters': '([A-Z]{2}.+|[A-Z].{2,}|.[A-Z].+|.|[^A-Z]{2}.*|)',
-			'int_num': '\\d{1,3}',
-			'flt_num': '\\d{1,4}',
-			'number': '\\d',
-			'range': '\\d*',
+			calculation: '[\\d\\.\\+\\-\\/\\*]+',
+			single_char: '[A-Z]',
+			free_text: '.*?',
+			free_text_no_at: '[^@]*?',
+			free_text_but_not_5_chars: '(.{0,4}|.{6}.*?)',
+			free_text_but_not_2_letters: '([A-Z]{2}.+|[A-Z].{2,}|.[A-Z].+|.|[^A-Z]{2}.*|)',
+			int_num: '\\d{1,3}',
+			flt_num: '\\d{1,4}',
+			number: '\\d',
+			range: '\\d*',
 
-			'date': '\\d{1,2}[A-Z]{3}',
-			'time_short': '\\d{1,4}[APMN]',
-			'time': '\\d{1,4}[AP]|\\d{3,4}|12(00|)[MN]',
-			'num_time': '\\d{3,4}',
+			date: '\\d{1,2}[A-Z]{3}',
+			time_short: '\\d{1,4}[APMN]',
+			time: '\\d{1,4}[AP]|\\d{3,4}|12(00|)[MN]',
+			num_time: '\\d{3,4}',
 
-			'al': '[A-Z0-9]{2}',
-			'air_alliance': '[A,S,O]',
-			'country': '[A-Z]{2}',
-			'city': '[A-Z]{3}',
-			'currency': '[A-Z]{3}',
-			'city_pair': '[A-Z]{6}',
-			'pnr': '[A-Z\\d]{6}',
-			'fare_base': '[A-Z0-9]+(?:\\/[A-Z0-9]+)?',
-			'alphanum': '[A-Z0-9]+',
-			'seg_num': '\\d+',
-			'flight_num': '\\s{0,3}\\d{1,4}',
-			'flt_type': '[A-Z0-9]{3}',
-			'class': '[A-Z]{1}',
-			'class_list': '(?:[A-Z]\\d)+',
-			'ss': '[A-Z]{2}',
-			'pcc': '[A-Z0-9]{3,9}',
-			'text': '[A-Z\\d\\.\\s\\-]+',
-			'star': '[\\*\\s]?',
+			al: '[A-Z0-9]{2}',
+			air_alliance: '[A,S,O]',
+			country: '[A-Z]{2}',
+			city: '[A-Z]{3}',
+			currency: '[A-Z]{3}',
+			city_pair: '[A-Z]{6}',
+			pnr: '[A-Z\\d]{6}',
+			fare_base: '[A-Z0-9]+(?:\\/[A-Z0-9]+)?',
+			alphanum: '[A-Z0-9]+',
+			seg_num: '\\d+',
+			flight_num: '\\s{0,3}\\d{1,4}',
+			flt_type: '[A-Z0-9]{3}',
+			class: '[A-Z]{1}',
+			class_list: '(?:[A-Z]\\d)+',
+			ss: '[A-Z]{2}',
+			pcc: '[A-Z0-9]{3,9}',
+			text: '[A-Z\\d\\.\\s\\-]+',
+			star: '[\\*\\s]?',
 
-			'ptc': '[A-Z][A-Z0-9]{2}',
-			'pax_pricing_type': '(ITX|JCB)',
-			'pax_type': '[A-Z][A-Z0-9]{1,2}',
-			'pax_num': '\\d{1,9}',
-			'pax_dob': '\\d{1,2}[A-Z]{3}\\d{2}',
-			'pax_gender': '[A-Z]?I?',
-			'pax_last': '\\w{1,}(\\s\\w{1,})?',
-			'pax_first': '\\w{1,}(\\s\\w{1,})?',
-			'pax_middle': '\\w{1,}(\\s\\w{1,})?',
-			'pax_status': '(?:MR|MRS|MS)',
-			'pax_order': '\\d{1,9}',
-			'pax_age': '\\d{1,9}',
-			'pnr_list': '\\d+',
+			ptc: '[A-Z][A-Z0-9]{2}',
+			pax_pricing_type: '(ITX|JCB)',
+			pax_type: '[A-Z][A-Z0-9]{1,2}',
+			pax_num: '\\d{1,9}',
+			pax_dob: '\\d{1,2}[A-Z]{3}\\d{2}',
+			pax_gender: '[A-Z]?I?',
+			pax_last: '\\w{1,}(\\s\\w{1,})?',
+			pax_first: '\\w{1,}(\\s\\w{1,})?',
+			pax_middle: '\\w{1,}(\\s\\w{1,})?',
+			pax_status: '(?:MR|MRS|MS)',
+			pax_order: '\\d{1,9}',
+			pax_age: '\\d{1,9}',
+			pnr_list: '\\d+',
 
-			'agent_name': '\\S+',
-			'sell_price': '\\d+(?:\\.\\d+|)',
-			'net_price': '\\d+(?:\\.\\d+|)',
-			'fare_amount': '\\d+(:?\\.\\d+|)',
-			'agency_phone': '\\d{2,}[\\d-]*',
-			'tsa_order': '\\d+',
-			'fare_num': '\\d+',
-			'space': '\\s*',
+			agent_name: '\\S+',
+			sell_price: '\\d+(?:\\.\\d+|)',
+			net_price: '\\d+(?:\\.\\d+|)',
+			fare_amount: '\\d+(:?\\.\\d+|)',
+			agency_phone: '\\d{2,}[\\d-]*',
+			tsa_order: '\\d+',
+			fare_num: '\\d+',
+			space: '\\s*',
 		};
 	}
 
@@ -83,70 +83,70 @@ class VariableTranslator
 
 		$name = this.cleanNumberInVariableName($name);
 		$types = {
-			'list_airlines': {
-				'apollo': {
-					'regex': '[+.]{al}',
-					'start': '+',
-					'between': '.',
+			list_airlines: {
+				apollo: {
+					regex: '[+.]{al}',
+					start: '+',
+					between: '.',
 				},
-				'galileo': {
-					'regex': '\\/{al}',
-					'start': '/',
-					'between': '/',
+				galileo: {
+					regex: '\\/{al}',
+					start: '/',
+					between: '/',
 				},
-				'sabre': {
-					'regex': '(:?¥)?{al}',
-					'start': '¥',
-					'between': '',
+				sabre: {
+					regex: '(:?¥)?{al}',
+					start: '¥',
+					between: '',
 				},
-				'amadeus': {
-					'regex': '(\\/A|,){al}',
-					'start': '/A',
-					'between': ',',
-				},
-			},
-			'list_airlines_fs': {
-				'apollo': {
-					'regex': '[+.]{al}',
-					'start': '+',
-					'between': '.',
-				},
-				'galileo': {
-					'regex': '\\/{al}',
-					'start': '/',
-					'between': '/',
-				},
-				'sabre': {
-					'regex': '{al}',
-					'start': '',
-					'between': '',
-				},
-				'amadeus': {
-					'regex': '(\\/A|,){al}',
-					'start': '/A',
-					'between': ',',
+				amadeus: {
+					regex: '(\\/A|,){al}',
+					start: '/A',
+					between: ',',
 				},
 			},
-			'list_not_in_airlines': {
-				'apollo': {
-					'regex': '[-.]{al}',
-					'start': '-',
-					'between': '.',
+			list_airlines_fs: {
+				apollo: {
+					regex: '[+.]{al}',
+					start: '+',
+					between: '.',
 				},
-				'galileo': {
-					'regex': '\\/{al}-?',
-					'start': '/',
-					'between': '-/',
+				galileo: {
+					regex: '\\/{al}',
+					start: '/',
+					between: '/',
 				},
-				'sabre': {
-					'regex': '(:?¥\\*)?{al}',
-					'start': '¥*',
-					'between': '',
+				sabre: {
+					regex: '{al}',
+					start: '',
+					between: '',
 				},
-				'amadeus': {
-					'regex': '(\\/A-|,){al}',
-					'start': '/A-',
-					'between': ',',
+				amadeus: {
+					regex: '(\\/A|,){al}',
+					start: '/A',
+					between: ',',
+				},
+			},
+			list_not_in_airlines: {
+				apollo: {
+					regex: '[-.]{al}',
+					start: '-',
+					between: '.',
+				},
+				galileo: {
+					regex: '\\/{al}-?',
+					start: '/',
+					between: '-/',
+				},
+				sabre: {
+					regex: '(:?¥\\*)?{al}',
+					start: '¥*',
+					between: '',
+				},
+				amadeus: {
+					regex: '(\\/A-|,){al}',
+					start: '/A-',
+					between: ',',
 				},
 			},
 		};
@@ -158,228 +158,228 @@ class VariableTranslator
 
 		$name = this.cleanNumberInVariableName($name);
 		$types = {
-			'special_calculation': {
-				'apollo': {
-					'getFull': '[\\d\\.\\+\\|\\-\\/\\*]+',
-					'get_types': '([\\d\\.\\+\\-\\/\\*]+)',
+			special_calculation: {
+				apollo: {
+					getFull: '[\\d\\.\\+\\|\\-\\/\\*]+',
+					get_types: '([\\d\\.\\+\\-\\/\\*]+)',
 				},
-				'galileo': {
-					'getFull': '[\\d\\.\\+\\|\\-\\/\\*]+',
-					'get_types': '([\\d\\.\\+\\-\\/\\*]+)',
+				galileo: {
+					getFull: '[\\d\\.\\+\\|\\-\\/\\*]+',
+					get_types: '([\\d\\.\\+\\-\\/\\*]+)',
 				},
-				'sabre': {
-					'getFull': '[\\d\\.\\+\\-\\/\\*]+',
-					'get_types': '([\\d\\.\\+\\-\\/\\*]+)',
+				sabre: {
+					getFull: '[\\d\\.\\+\\-\\/\\*]+',
+					get_types: '([\\d\\.\\+\\-\\/\\*]+)',
 				},
-				'amadeus': {
-					'getFull': '[\\d\\.\\+\\-\\/\\*\\;]+',
-					'get_types': '([\\d\\.\\+\\-\\/\\*\\;]+)',
-				},
-			},
-			'special_segment_move_numbers': {
-				'apollo': {
-					'getFull': '(\\d+)([-\\+\\/]\\d+)*',
-					'get_types': '(\\d+)([-\\+\\/]\\d+)*',
-				},
-				'galileo': {
-					'getFull': '(\\d+)S(\\d+[-.\\d]*)*',
-					'get_types': '(\\d+)S(\\d+[-.\\d]*)*',
-				},
-				'sabre': {
-					'getFull': '(\\d+)([-\\+\\/]\\d+)*',
-					'get_types': '(\\d+)([-\\+\\/]\\d+)*',
-				},
-				'amadeus': {
-					'getFull': '(\\d+)([-,\\+]\\d+)*',
-					'get_types': '(\\d+)([-,\\+]\\d+)*',
+				amadeus: {
+					getFull: '[\\d\\.\\+\\-\\/\\*\\;]+',
+					get_types: '([\\d\\.\\+\\-\\/\\*\\;]+)',
 				},
 			},
-			'special_rebook_segment_numbers': {
-				'apollo': {
-					'getFull': '(\\d+)([-+|]\\d+)*',
-					'get_types': '(\\d+)([-+|]\\d+)*',
+			special_segment_move_numbers: {
+				apollo: {
+					getFull: '(\\d+)([-\\+\\/]\\d+)*',
+					get_types: '(\\d+)([-\\+\\/]\\d+)*',
 				},
-				'galileo': {
-					'getFull': '(\\d+)([-.]\\d+)*',
-					'get_types': '(\\d+)([-+|]\\d+)*',
+				galileo: {
+					getFull: '(\\d+)S(\\d+[-.\\d]*)*',
+					get_types: '(\\d+)S(\\d+[-.\\d]*)*',
 				},
-				'sabre': {
-					'getFull': '(\\d+)([-\\/]\\d+)*',
-					'get_types': '(\\d+)([-\\/]\\d+)*',
+				sabre: {
+					getFull: '(\\d+)([-\\+\\/]\\d+)*',
+					get_types: '(\\d+)([-\\+\\/]\\d+)*',
 				},
-				'amadeus': {
-					'getFull': '(\\d+)([-,]\\d+)*',
-					'get_types': '(\\d+)([-,]\\d+)*',
-				},
-			},
-			'special_rebook_one_class': {
-				'apollo': {
-					'getFull': '(\\d+)([-\\+\\/\\d]*)\\/0[A-Z]',
-					'get_types': '(?<numbers>(\\d+)([-\\+\\/\\d]*))\\/0(?<class>[A-Z])',
-				},
-				'galileo': {
-					'getFull': '(\\d+)([-.]\\d+)*\\/[A-Z]',
-					'get_types': '(?<numbers>(\\d+)([-.\\d]*))\\/(?<class>[A-Z])',
-				},
-				'sabre': {
-					'getFull': '(\\d+(-\\d+)?(?<letter>[A-Z])(\\/\\d+(-\\d+)?[A-Z]\\/?)*)',
-					'get_types': '(?<numbers>((\\d+)(-\\d+)*[A-Z]\\/?)+)',
-				},
-				'amadeus': {
-					'getFull': '(?<class>[A-Z])(?<numbers>(\\d+)([-,\\/]\\d+)*)',
-					'get_types': '(?<class>[A-Z])(?<numbers>(\\d+)([-,\\/]\\d+)*)',
+				amadeus: {
+					getFull: '(\\d+)([-,\\+]\\d+)*',
+					get_types: '(\\d+)([-,\\+]\\d+)*',
 				},
 			},
-			'special_only_apollo_digit': {
-				'apollo': {
-					'getFull': '(\\d{1,2}|)',
-					'get_types': '(\\d{1,2}|)',
+			special_rebook_segment_numbers: {
+				apollo: {
+					getFull: '(\\d+)([-+|]\\d+)*',
+					get_types: '(\\d+)([-+|]\\d+)*',
 				},
-				'sabre': {
-					'getFull': '(\\d{1,2}|)',
-					'get_types': '(\\d{1,2}|)',
+				galileo: {
+					getFull: '(\\d+)([-.]\\d+)*',
+					get_types: '(\\d+)([-+|]\\d+)*',
 				},
-				'amadeus': {
-					'getFull': '(\\d{1,2}|)',
-					'get_types': '(\\d{1,2}|)',
+				sabre: {
+					getFull: '(\\d+)([-\\/]\\d+)*',
+					get_types: '(\\d+)([-\\/]\\d+)*',
 				},
-			},
-			'special_ticket_num': {
-				'apollo': {
-					'getFull': '(\\d{3}\\d{10})',
-					'get_types': '(\\d{3}\\d{10})',
-				},
-				'galileo': {
-					'getFull': '(\\d{3}\\d{10})',
-					'get_types': '(\\d{3}\\d{10})',
-				},
-				'sabre': {
-					'getFull': '(\\d{3}\\d{10})',
-					'get_types': '(\\d{3}\\d{10})',
-				},
-				'amadeus': {
-					'getFull': '(\\d{3}-\\d{10})',
-					'get_types': '(\\d{3}-\\d{10})',
+				amadeus: {
+					getFull: '(\\d+)([-,]\\d+)*',
+					get_types: '(\\d+)([-,]\\d+)*',
 				},
 			},
-			'special_pax_order': {
-				'apollo': {
-					'getFull': '\\d{1,2}(-\\d)?',
-					'get_types': '((?<first_num>\\d{1,2})-?(?<second_num>\\d?))',
+			special_rebook_one_class: {
+				apollo: {
+					getFull: '(\\d+)([-\\+\\/\\d]*)\\/0[A-Z]',
+					get_types: '(?<numbers>(\\d+)([-\\+\\/\\d]*))\\/0(?<class>[A-Z])',
 				},
-				'galileo': {
-					'getFull': '\\d{1,2}',
-					'get_types': '(?<first_num>\\d{1,2})',
+				galileo: {
+					getFull: '(\\d+)([-.]\\d+)*\\/[A-Z]',
+					get_types: '(?<numbers>(\\d+)([-.\\d]*))\\/(?<class>[A-Z])',
 				},
-				'sabre': {
-					'getFull': '\\d{1,2}.\\d',
-					'get_types': '((?<first_num>\\d{1,2})\\.(?<second_num>\\d))',
+				sabre: {
+					getFull: '(\\d+(-\\d+)?(?<letter>[A-Z])(\\/\\d+(-\\d+)?[A-Z]\\/?)*)',
+					get_types: '(?<numbers>((\\d+)(-\\d+)*[A-Z]\\/?)+)',
 				},
-				'amadeus': {
-					'getFull': '\\d{1,2}',
-					'get_types': '(?<first_num>\\d{1,2})',
-				},
-			},
-			'special_agency_location': {
-				'apollo': {
-					'getFull': '[A-Z]{3}',
-					'get_types': '([A-Z]{3})',
-				},
-				'galileo': {
-					'getFull': '[A-Z]{3}',
-					'get_types': '([A-Z]{3})',
-				},
-				'sabre': {
-					'getFull': '',
-					'get_types': '()',
-				},
-				'amadeus': {
-					'getFull': '[A-Z]{3}',
-					'get_types': '([A-Z]{3})',
+				amadeus: {
+					getFull: '(?<class>[A-Z])(?<numbers>(\\d+)([-,\\/]\\d+)*)',
+					get_types: '(?<class>[A-Z])(?<numbers>(\\d+)([-,\\/]\\d+)*)',
 				},
 			},
-			'special_agency_free_text': {
-				'apollo': {
-					'getFull': '(\\s|).*',
-					'get_types': '((\\s|).*)',
+			special_only_apollo_digit: {
+				apollo: {
+					getFull: '(\\d{1,2}|)',
+					get_types: '(\\d{1,2}|)',
 				},
-				'sabre': {
-					'getFull': '',
-					'get_types': '()',
+				sabre: {
+					getFull: '(\\d{1,2}|)',
+					get_types: '(\\d{1,2}|)',
 				},
-				'amadeus': {
-					'getFull': '',
-					'get_types': '()',
-				},
-			},
-			'special_classes': {
-				'apollo': {
-					'getFull': '((?:[A-Z]\\d)+)',
-					'get_types': '((?:[A-Z]\\d)+)',
-				},
-				'galileo': {
-					'getFull': '((?:[A-Z]\\d)+)',
-					'get_types': '((?:[A-Z]\\d)+)',
-				},
-				'sabre': {
-					'getFull': '((?:[A-Z]\\d)+)',
-					'get_types': '((?:[A-Z]\\d)+)',
-				},
-				'amadeus': {
-					'getFull': '([A-Z]+\\d+)',
-					'get_types': '([A-Z]+\\d+)',
+				amadeus: {
+					getFull: '(\\d{1,2}|)',
+					get_types: '(\\d{1,2}|)',
 				},
 			},
-			'special_classes_rebook': {
-				'apollo': {
-					'getFull': '([\\d\\+\\-]+\\/0((\\d[A-Z]\\+?)+|[A-Z]))',
-					'get_types': '(?<number_list>[\\d\\+\\-]+)\\/0(?:(?<class_list>(\\d[A-Z]\\+?)+)|(?<class>[A-Z]))',
+			special_ticket_num: {
+				apollo: {
+					getFull: '(\\d{3}\\d{10})',
+					get_types: '(\\d{3}\\d{10})',
 				},
-				'sabre': {
-					'getFull': '((\\d+[A-Z]\\/?)+)',
-					'get_types': '(?<class_list>(?:\\d+[A-Z]\\/?)+)',
+				galileo: {
+					getFull: '(\\d{3}\\d{10})',
+					get_types: '(\\d{3}\\d{10})',
 				},
-				'amadeus': {
-					'getFull': '(([A-Z]\\d+\\/?)+)',
-					'get_types': '(?<class_list>(?:[A-Z]\\d+\\/?)+)',
+				sabre: {
+					getFull: '(\\d{3}\\d{10})',
+					get_types: '(\\d{3}\\d{10})',
 				},
-			},
-			'special_ss_pax_comment': {
-				'apollo': {
-					'getFull': '([A-Z]{2}\\d?)',
-					'get_types': '(?<segment_status>[A-Z]{2}|)(?<pax_num>\\d?)',
-				},
-				'galileo': {
-					'getFull': '([A-Z]{2}\\d?)',
-					'get_types': '(?<segment_status>[A-Z]{2}|)(?<pax_num>\\d?)',
-				},
-				'sabre': {
-					'getFull': '([A-Z]{2}\\d?)',
-					'get_types': '(?<segment_status>[A-Z]{2}|)(?<pax_num>\\d?)',
-				},
-				'amadeus': {
-					'getFull': '(([A-Z]{2}|)\\d?(\\/.+?)?)',
-					'get_types': '(?<segment_status>[A-Z]{2}|)(?<pax_num>\\d?)(?:\\/.+?|)',
+				amadeus: {
+					getFull: '(\\d{3}-\\d{10})',
+					get_types: '(\\d{3}-\\d{10})',
 				},
 			},
-			'special_class_types_lib': {
-				'apollo': {
-					'getFull': '(//@[A-Z])',
-					'get_types': '(//@[A-Z])',
+			special_pax_order: {
+				apollo: {
+					getFull: '\\d{1,2}(-\\d)?',
+					get_types: '((?<first_num>\\d{1,2})-?(?<second_num>\\d?))',
 				},
-				'sabre': {
-					'getFull': '(¥TC-[A-Z]B)',
-					'get_types': '(¥TC-[A-Z]B)',
+				galileo: {
+					getFull: '\\d{1,2}',
+					get_types: '(?<first_num>\\d{1,2})',
+				},
+				sabre: {
+					getFull: '\\d{1,2}.\\d',
+					get_types: '((?<first_num>\\d{1,2})\\.(?<second_num>\\d))',
+				},
+				amadeus: {
+					getFull: '\\d{1,2}',
+					get_types: '(?<first_num>\\d{1,2})',
 				},
 			},
-			'special_fare_num': {
-				'apollo': {
-					'getFull': '\\d{2}',
-					'get_types': '(//@[A-Z])',
+			special_agency_location: {
+				apollo: {
+					getFull: '[A-Z]{3}',
+					get_types: '([A-Z]{3})',
 				},
-				'sabre': {
-					'getFull': '(¥TC-[A-Z]B)',
-					'get_types': '(¥TC-[A-Z]B)',
+				galileo: {
+					getFull: '[A-Z]{3}',
+					get_types: '([A-Z]{3})',
+				},
+				sabre: {
+					getFull: '',
+					get_types: '()',
+				},
+				amadeus: {
+					getFull: '[A-Z]{3}',
+					get_types: '([A-Z]{3})',
+				},
+			},
+			special_agency_free_text: {
+				apollo: {
+					getFull: '(\\s|).*',
+					get_types: '((\\s|).*)',
+				},
+				sabre: {
+					getFull: '',
+					get_types: '()',
+				},
+				amadeus: {
+					getFull: '',
+					get_types: '()',
+				},
+			},
+			special_classes: {
+				apollo: {
+					getFull: '((?:[A-Z]\\d)+)',
+					get_types: '((?:[A-Z]\\d)+)',
+				},
+				galileo: {
+					getFull: '((?:[A-Z]\\d)+)',
+					get_types: '((?:[A-Z]\\d)+)',
+				},
+				sabre: {
+					getFull: '((?:[A-Z]\\d)+)',
+					get_types: '((?:[A-Z]\\d)+)',
+				},
+				amadeus: {
+					getFull: '([A-Z]+\\d+)',
+					get_types: '([A-Z]+\\d+)',
+				},
+			},
+			special_classes_rebook: {
+				apollo: {
+					getFull: '([\\d\\+\\-]+\\/0((\\d[A-Z]\\+?)+|[A-Z]))',
+					get_types: '(?<number_list>[\\d\\+\\-]+)\\/0(?:(?<class_list>(\\d[A-Z]\\+?)+)|(?<class>[A-Z]))',
+				},
+				sabre: {
+					getFull: '((\\d+[A-Z]\\/?)+)',
+					get_types: '(?<class_list>(?:\\d+[A-Z]\\/?)+)',
+				},
+				amadeus: {
+					getFull: '(([A-Z]\\d+\\/?)+)',
+					get_types: '(?<class_list>(?:[A-Z]\\d+\\/?)+)',
+				},
+			},
+			special_ss_pax_comment: {
+				apollo: {
+					getFull: '([A-Z]{2}\\d?)',
+					get_types: '(?<segment_status>[A-Z]{2}|)(?<pax_num>\\d?)',
+				},
+				galileo: {
+					getFull: '([A-Z]{2}\\d?)',
+					get_types: '(?<segment_status>[A-Z]{2}|)(?<pax_num>\\d?)',
+				},
+				sabre: {
+					getFull: '([A-Z]{2}\\d?)',
+					get_types: '(?<segment_status>[A-Z]{2}|)(?<pax_num>\\d?)',
+				},
+				amadeus: {
+					getFull: '(([A-Z]{2}|)\\d?(\\/.+?)?)',
+					get_types: '(?<segment_status>[A-Z]{2}|)(?<pax_num>\\d?)(?:\\/.+?|)',
+				},
+			},
+			special_class_types_lib: {
+				apollo: {
+					getFull: '(//@[A-Z])',
+					get_types: '(//@[A-Z])',
+				},
+				sabre: {
+					getFull: '(¥TC-[A-Z]B)',
+					get_types: '(¥TC-[A-Z]B)',
+				},
+			},
+			special_fare_num: {
+				apollo: {
+					getFull: '\\d{2}',
+					get_types: '(//@[A-Z])',
+				},
+				sabre: {
+					getFull: '(¥TC-[A-Z]B)',
+					get_types: '(¥TC-[A-Z]B)',
 				},
 			},
 		};
@@ -390,30 +390,30 @@ class VariableTranslator
 		let $lib;
 
 		$lib = {
-			'cmd': {
-				'apollo': '$B',
-				'sabre': 'WP',
-				'amadeus': 'FX',
+			cmd: {
+				apollo: '$B',
+				sabre: 'WP',
+				amadeus: 'FX',
 			},
-			'mod': {
-				'apollo': ['',  'B',   'BA',   'B0'],
-				'sabre': ['',  'NC', 'NCS', 'NCB'],
-				'amadeus': ['X', 'A',   'L',    'R'],
+			mod: {
+				apollo: ['',  'B',   'BA',   'B0'],
+				sabre: ['',  'NC', 'NCS', 'NCB'],
+				amadeus: ['X', 'A',   'L',    'R'],
 			},
-			'type': {
-				'apollo': ['', 'S',  'N',  '@'],
-				'sabre': ['', 'S',  'P',  'Q'],
-				'amadeus': ['', '/S', '/R', '/L'],
+			type: {
+				apollo: ['', 'S',  'N',  '@'],
+				sabre: ['', 'S',  'P',  'Q'],
+				amadeus: ['', '/S', '/R', '/L'],
 			},
-			'special_rebook_segment_numbers': {
-				'apollo': ['', '-', '+', '|'],
-				'galileo': ['', '-', '.', '.'],
-				'sabre': ['', '-', '/', '/'],
-				'amadeus': ['', '-', ',', ','],
+			special_rebook_segment_numbers: {
+				apollo: ['', '-', '+', '|'],
+				galileo: ['', '-', '.', '.'],
+				sabre: ['', '-', '/', '/'],
+				amadeus: ['', '-', ',', ','],
 			},
-			'special_class_types_lib': {
-				'apollo': ['', '//@C',   '//@F',   '//@Y',   '//@W',   '//@P'],
-				'sabre': ['', '¥TC-BB', '¥TC-FB', '¥TC-YB', '¥TC-SB', '¥TC-PB'],
+			special_class_types_lib: {
+				apollo: ['', '//@C',   '//@F',   '//@Y',   '//@W',   '//@P'],
+				sabre: ['', '¥TC-BB', '¥TC-FB', '¥TC-YB', '¥TC-SB', '¥TC-PB'],
 			},
 		};
 		return ($lib[$type] || {})[$dialect] || [];
@@ -428,8 +428,8 @@ class VariableTranslator
 		$variable = php.preg_replace('/\\'+$fromLib[1]+'/', $destLib[1], $variable);
 		$variable = php.preg_replace('/\\'+$fromLib[2]+'/', $destLib[2], $variable);
 		return {
-			'variable': $variable,
-			'status': 'OK',
+			variable: $variable,
+			status: 'OK',
 		};
 	}
 
@@ -454,8 +454,8 @@ class VariableTranslator
 			$numbers = this.stringSegmentNumbersToArray(($matches['number_list'] || {})[0] || '');
 			if (php.count($numbers) != php.count($matchesRebook['classes'])) {
 				return {
-					'variable': '',
-					'status': 'fail',
+					variable: '',
+					status: 'fail',
 				};
 			}
 		}
@@ -476,8 +476,8 @@ class VariableTranslator
 			$variable = php.implode('/', $temp);
 		}
 		return {
-			'variable': $variable,
-			'status': 'OK',
+			variable: $variable,
+			status: 'OK',
 		};
 	}
 
@@ -518,8 +518,8 @@ class VariableTranslator
 			$variable = php.isset($matches['seg_num'][0]) ? $variable+$matches['seg_num'][0] : '';
 		}
 		return {
-			'variable': $variable,
-			'status': 'OK',
+			variable: $variable,
+			status: 'OK',
 		};
 	}
 
@@ -537,8 +537,8 @@ class VariableTranslator
 			$variable = php.preg_replace(/\//, 'S', $variable);
 		}
 		return {
-			'variable': $variable,
-			'status': 'OK',
+			variable: $variable,
+			status: 'OK',
 		};
 	}
 
@@ -578,8 +578,8 @@ class VariableTranslator
 			$variable = ($matches[0] || {})[0] || '';
 		}
 		return {
-			'variable': $variable,
-			'status': 'OK',
+			variable: $variable,
+			status: 'OK',
 		};
 	}
 
@@ -590,8 +590,8 @@ class VariableTranslator
 			$variable = '¥'+php.trim($variable, '¥');
 		}
 		return {
-			'variable': this.translateVariableWithPartLibrary($key, $variable, $fromGds, $toGds),
-			'status': 'OK',
+			variable: this.translateVariableWithPartLibrary($key, $variable, $fromGds, $toGds),
+			status: 'OK',
 		};
 	}
 
@@ -604,8 +604,8 @@ class VariableTranslator
 			$variable = 'ACC';
 		}
 		return {
-			'variable': $variable,
-			'status': 'OK',
+			variable: $variable,
+			status: 'OK',
 		};
 	}
 
@@ -622,8 +622,8 @@ class VariableTranslator
 		}
 
 		return {
-			'variable': $variable,
-			'status': 'OK',
+			variable: $variable,
+			status: 'OK',
 		};
 	}
 
@@ -636,8 +636,8 @@ class VariableTranslator
 			$variable = php.substr_replace($variable, '-', 3, 0);
 		}
 		return {
-			'variable': $variable,
-			'status': 'OK',
+			variable: $variable,
+			status: 'OK',
 		};
 	}
 
@@ -653,8 +653,8 @@ class VariableTranslator
 			$variable = php.str_replace('+', ';', $variable);
 		}
 		return {
-			'variable': $variable,
-			'status': 'OK',
+			variable: $variable,
+			status: 'OK',
 		};
 	}
 
@@ -663,22 +663,22 @@ class VariableTranslator
 
 		$statusTypes = [
 			{
-				'apollo': 'SS',
-				'galileo': 'SS',
-				'sabre': 'NN',
-				'amadeus': '',
+				apollo: 'SS',
+				galileo: 'SS',
+				sabre: 'NN',
+				amadeus: '',
 			},
 			{
-				'apollo': 'LL',
-				'galileo': 'LL',
-				'sabre': 'LL',
-				'amadeus': 'PE',
+				apollo: 'LL',
+				galileo: 'LL',
+				sabre: 'LL',
+				amadeus: 'PE',
 			},
 			{
-				'apollo': 'GK',
-				'galileo': 'AK',
-				'sabre': 'GK',
-				'amadeus': 'GK',
+				apollo: 'GK',
+				galileo: 'AK',
+				sabre: 'GK',
+				amadeus: 'GK',
 			},
 		];
 		for ($statusType of Object.values($statusTypes)) {
@@ -701,8 +701,8 @@ class VariableTranslator
 		}
 
 		return {
-			'variable': $segmentStatus+$paxNumber+$comment,
-			'status': 'OK',
+			variable: $segmentStatus+$paxNumber+$comment,
+			status: 'OK',
 		};
 	}
 
@@ -716,8 +716,8 @@ class VariableTranslator
 		}
 
 		return {
-			'variable': $variable,
-			'status': 'OK',
+			variable: $variable,
+			status: 'OK',
 		};
 	}
 
@@ -730,8 +730,8 @@ class VariableTranslator
 			$variable = 'SFO';
 		}
 		return {
-			'variable': $variable,
-			'status': 'OK',
+			variable: $variable,
+			status: 'OK',
 		};
 	}
 
@@ -744,8 +744,8 @@ class VariableTranslator
 			$variable = '';
 		}
 		return {
-			'variable': $variable,
-			'status': 'OK',
+			variable: $variable,
+			status: 'OK',
 		};
 	}
 
@@ -757,7 +757,7 @@ class VariableTranslator
 		const varData = this.specialVariableData($fromGds, $key);
 		if (!varData) {
 			// no such format
-			return {'variable': $variable, 'status': 'OK'};
+			return {variable: $variable, status: 'OK'};
 		}
 		$typeFilter = varData['get_types'];
 		php.preg_match_all('#'+$typeFilter+'#', $variable, $matches = []);
@@ -790,8 +790,8 @@ class VariableTranslator
 			return this.translateSpecialCalculation($variable, $fromGds, $toGds);
 		}
 		return {
-			'variable': $variable,
-			'status': 'OK',
+			variable: $variable,
+			status: 'OK',
 		};
 	}
 
@@ -850,20 +850,20 @@ class VariableTranslator
 
 		if ($from == $to) {
 			return {
-				'variable': $variableMatches[0],
-				'status': 'OK',
+				variable: $variableMatches[0],
+				status: 'OK',
 			};
 		} else if (StringUtil.startsWith($key, 'list_')) {
 			return {
-				'variable': this.combineListVariable($variableMatches, $key, $to),
-				'status': 'OK',
+				variable: this.combineListVariable($variableMatches, $key, $to),
+				status: 'OK',
 			};
 		} else if (StringUtil.startsWith($key, 'special_')) {
 			return this.combineSpecialVariable($variableMatches, $key, $from, $to);
 		} else {
 			return {
-				'variable': $variableMatches[0],
-				'status': 'OK',
+				variable: $variableMatches[0],
+				status: 'OK',
 			};
 		}
 	}

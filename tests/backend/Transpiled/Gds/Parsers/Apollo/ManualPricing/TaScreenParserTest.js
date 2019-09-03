@@ -40,11 +40,11 @@ class TaScreenParserTest extends require('../../../../Lib/TestCase.js') {
 					{'taxCode': 'WQ', 'amount': '5.30'},
 					{'taxCode': 'YR', 'amount': '200.00'},
 				],
-//				'facilityCharges' => [
-//					['airport' => 'STL', 'amount' => '4.50'],
-//					['airport' => 'MSP', 'amount' => '4.50'],
-//					['airport' => 'ATL', 'amount' => '4.50'],
-//				],
+				//				'facilityCharges' => [
+				//					['airport' => 'STL', 'amount' => '4.50'],
+				//					['airport' => 'MSP', 'amount' => '4.50'],
+				//					['airport' => 'ATL', 'amount' => '4.50'],
+				//				],
 			},
 		]);
 

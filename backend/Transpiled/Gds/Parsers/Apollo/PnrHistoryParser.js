@@ -4,7 +4,7 @@ const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('./CommonParserHelpers.js');
 
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * parse >*H command and all it's derivatives: *HA, *H$, *HQ, ...
@@ -25,14 +25,14 @@ class PnrHistoryParser {
 		let $result, $originTypes;
 		$result = this.postProcessGroupMatches($matches);
 		$result['receivedDt'] = {
-			'raw': $matches['receivedDtRaw'],
-			'date': CommonParserHelpers.parsePartialDate($matches['receivedDate']),
-			'time': CommonParserHelpers.decodeApolloTime($matches['receivedTime']),
-			'timeZone': $matches['receivedTimezone'] === 'Z' ? 'UTC' : null,
+			raw: $matches['receivedDtRaw'],
+			date: CommonParserHelpers.parsePartialDate($matches['receivedDate']),
+			time: CommonParserHelpers.decodeApolloTime($matches['receivedTime']),
+			timeZone: $matches['receivedTimezone'] === 'Z' ? 'UTC' : null,
 		};
 		$originTypes = {
-			'AG': 'agency',
-			'RM': 'airline',
+			AG: 'agency',
+			RM: 'airline',
 		};
 		$result['originType'] = $originTypes[$matches['originType']] || null;
 		delete ($result['receivedDate']);
@@ -73,16 +73,16 @@ class PnrHistoryParser {
 		if (php.preg_match($regex, $content, $matches = {})) {
 			$result = this.postProcessGroupMatches($matches);
 			$result['departureDate'] = {
-				'raw': $result['departureDate'],
-				'parsed': CommonParserHelpers.parsePartialDate($result['departureDate']),
+				raw: $result['departureDate'],
+				parsed: CommonParserHelpers.parsePartialDate($result['departureDate']),
 			};
 			$result['departureTime'] = php.empty($result['departureTime']) ? null : {
-				'raw': $result['departureTime'],
-				'parsed': CommonParserHelpers.decodeApolloTime($result['departureTime']),
+				raw: $result['departureTime'],
+				parsed: CommonParserHelpers.decodeApolloTime($result['departureTime']),
 			};
 			$result['destinationTime'] = php.empty($result['destinationTime']) ? null : {
-				'raw': $result['destinationTime'],
-				'parsed': CommonParserHelpers.decodeApolloTime($result['destinationTime']),
+				raw: $result['destinationTime'],
+				parsed: CommonParserHelpers.decodeApolloTime($result['destinationTime']),
 			};
 			return $result;
 		} else {
@@ -111,14 +111,14 @@ class PnrHistoryParser {
 				}
 
 				$action = {
-					'lineType': this.LINE_ACTION,
-					'code': {
-						'raw': $eventCode,
-						'parsed': $eventType,
+					lineType: this.LINE_ACTION,
+					code: {
+						raw: $eventCode,
+						parsed: $eventType,
 					},
-					'content': {
-						'raw': $content,
-						'parsed': $parsed,
+					content: {
+						raw: $content,
+						parsed: $parsed,
 					},
 				};
 				return [$action];
@@ -175,10 +175,10 @@ class PnrHistoryParser {
 
 			if (php.preg_match($regex, $text, $matches = {})) {
 				return {
-					'receivedFrom': $matches['receivedFrom'],
-					'agentSign': {
-						'raw': $matches['agencySignAndInitials'],
-						'parsed': this.parseAgentSign($matches['agencySignAndInitials']),
+					receivedFrom: $matches['receivedFrom'],
+					agentSign: {
+						raw: $matches['agencySignAndInitials'],
+						parsed: this.parseAgentSign($matches['agencySignAndInitials']),
 					},
 				};
 			}
@@ -218,8 +218,8 @@ class PnrHistoryParser {
 			return $actions;
 		}
 		return [{
-			'lineType': this.LINE_UNKNOWN,
-			'text': $line,
+			lineType: this.LINE_UNKNOWN,
+			text: $line,
 		}];
 	}
 
@@ -230,8 +230,8 @@ class PnrHistoryParser {
 		let $matches;
 		if (php.preg_match(/^\s+\*{2,}\s*(.+?)\s*\*+\s*$/, $line, $matches = [])) {
 			return {
-				'lineType': this.LINE_HEAD,
-				'header': $matches[1],
+				lineType: this.LINE_HEAD,
+				header: $matches[1],
 			};
 		} else {
 			return null;
@@ -251,18 +251,18 @@ class PnrHistoryParser {
 		if (php.count($tokens) === 2) {
 			[$homePcc, $agentInitials] = $tokens;
 			return {
-				'homePcc': $homePcc,
-				'agentInitials': $agentInitials,
+				homePcc: $homePcc,
+				agentInitials: $agentInitials,
 			};
 		} else if (php.mb_strlen($agentSign) === 7) {
 			return {
-				'homePcc': php.substr($agentSign, 0, 4),
-				'agentInitials': php.substr($agentSign, 0, 3),
+				homePcc: php.substr($agentSign, 0, 4),
+				agentInitials: php.substr($agentSign, 0, 3),
 			};
 		} else {
 			return {
-				'homePcc': php.substr($agentSign, 0, 3),
-				'agentInitials': php.substr($agentSign, 3),
+				homePcc: php.substr($agentSign, 0, 3),
+				agentInitials: php.substr($agentSign, 3),
 			};
 		}
 	}
@@ -291,8 +291,8 @@ class PnrHistoryParser {
 			}
 
 			return {
-				'lineType': this.LINE_RCVD,
-				'raw': $line,
+				lineType: this.LINE_RCVD,
+				raw: $line,
 			};
 		}
 		return null;
@@ -322,14 +322,14 @@ class PnrHistoryParser {
 		if (php.preg_match(/^A\$\s(.+)$/, $line, $matches = [])) {
 			[$line, $content] = $matches;
 			return [{
-				'lineType': this.LINE_ACTION,
-				'code': {
-					'raw': 'A$',
-					'parsed': this.HISTORY_EVENT_CODES['A$'],
+				lineType: this.LINE_ACTION,
+				code: {
+					raw: 'A$',
+					parsed: this.HISTORY_EVENT_CODES['A$'],
 				},
-				'content': {
-					'raw': $content,
-					'parsed': this.parsePricingAction($content),
+				content: {
+					raw: $content,
+					parsed: this.parsePricingAction($content),
 				},
 			}];
 		}
@@ -350,17 +350,17 @@ class PnrHistoryParser {
 			'/';
 		if (php.preg_match($regex, $content, $tokens = [])) {
 			return {
-				'atfqLineType': 'paxBundle',
-				'status': php.trim($tokens['status'], ' -'),
-				'passengerNumbers': {
-					'raw': $tokens['passengerNumbers'],
+				atfqLineType: 'paxBundle',
+				status: php.trim($tokens['status'], ' -'),
+				passengerNumbers: {
+					raw: $tokens['passengerNumbers'],
 				},
-				'fareTypeCode': $tokens['fareTypeCode'],
-				'date': {'raw': $tokens['date']},
+				fareTypeCode: $tokens['fareTypeCode'],
+				date: {raw: $tokens['date']},
 			};
 		} else {
 			return {
-				'atfqLineType': 'unknown',
+				atfqLineType: 'unknown',
 			};
 		}
 	}
@@ -389,10 +389,10 @@ class PnrHistoryParser {
 					if (php.preg_match($standardLineRegex, $line, $matches = {})) {
 						$result = this.postProcessRcvdStandardPartMatches($matches);
 						$result['originData'] = {
-							'receivedFrom': $agentName,
-							'agentSign': {
-								'raw': $agencySignAndInitials,
-								'parsed': this.parseAgentSign($agencySignAndInitials),
+							receivedFrom: $agentName,
+							agentSign: {
+								raw: $agencySignAndInitials,
+								parsed: this.parseAgentSign($agencySignAndInitials),
 							},
 						};
 						return [$result, $lines];
@@ -407,7 +407,7 @@ class PnrHistoryParser {
 		let $lines, $firstRcvdCopy, $header, $line, $rcvdList, $rcvd, $unexpected, $parsedLine, $lineType;
 		$lines = StringUtil.lines($dump);
 		if (php.count($lines) < 4 && php.trim(ArrayUtil.getLast($lines)) === 'NO HISTORY') {
-			return {'rcvdList': []};
+			return {rcvdList: []};
 		}
 		[$firstRcvdCopy, $lines] = this.parseFirstRcvdCopy($lines);
 		if (!($header = this.parseHistoryHeaderLine($line = php.array_shift($lines)))) {
@@ -421,13 +421,13 @@ class PnrHistoryParser {
 			delete ($parsedLine['lineType']);
 			if ($lineType === this.LINE_RCVD) {
 				$rcvd && $rcvdList.push($rcvd);
-				$rcvd = {'rcvd': $parsedLine, 'actions': []};
+				$rcvd = {rcvd: $parsedLine, actions: []};
 			} else if ($lineType === this.LINE_ACTION) {
 				$rcvd = $rcvd || {};
 				$rcvd['actions'] = $rcvd['actions'] || [];
 				$rcvd['actions'].push({
-					'code': $parsedLine['code'],
-					'content': $parsedLine['content'],
+					code: $parsedLine['code'],
+					content: $parsedLine['content'],
 				});
 			} else {
 				$unexpected.push($parsedLine);
@@ -437,10 +437,10 @@ class PnrHistoryParser {
 			$rcvdList.push($rcvd);
 		}
 		return {
-			'header': $header ? $header['header'] : null,
-			'firstRcvdCopyHeader': $firstRcvdCopy,
-			'rcvdList': $rcvdList,
-			'unexpected': $unexpected,
+			header: $header ? $header['header'] : null,
+			firstRcvdCopyHeader: $firstRcvdCopy,
+			rcvdList: $rcvdList,
+			unexpected: $unexpected,
 		};
 	}
 

@@ -82,11 +82,11 @@ class CommonDataHelper {
 		const $agent = stateful.getAgent();
 		let $maxLen, $leadPart, $pattern, $minLen;
 		$maxLen = {
-			'apollo': 87 - php.strlen('@:5'),
-			'galileo': 87,
+			apollo: 87 - php.strlen('@:5'),
+			galileo: 87,
 			// 71 is limit for whole remark command: >5MSG LIMIT IS 70; >53¤MSG LIMIT IS 68;
-			'sabre': 71 - php.strlen('5'),
-			'amadeus': 126 - php.strlen('RM'),
+			sabre: 71 - php.strlen('5'),
+			amadeus: 126 - php.strlen('RM'),
 		}[stateful.gds];
 		$leadPart = php.empty($leadData) ? '' : (
 			($agent.canSavePnrWithoutLead() ? '' : /FOR {leadAgent}/ + ($leadData['leadOwnerId'] || '')) +
@@ -102,11 +102,11 @@ class CommonDataHelper {
 			' IN ' + stateful.getSessionData().pcc,
 		]);
 		$minLen = php.mb_strlen(StringUtil.format($pattern, {
-			'pnrAgent': '', 'leadAgent': '',
+			pnrAgent: '', leadAgent: '',
 		}));
 		return php.strtoupper(StringUtil.format($pattern, {
-			'pnrAgent': php.mb_substr($agent.getLogin(), 0, php.floor(($maxLen - $minLen) / 2)),
-			'leadAgent': php.mb_substr(!$leadData ? '' : $leadData.leadOwnerLogin, 0, php.floor(($maxLen - $minLen) / 2)),
+			pnrAgent: php.mb_substr($agent.getLogin(), 0, php.floor(($maxLen - $minLen) / 2)),
+			leadAgent: php.mb_substr(!$leadData ? '' : $leadData.leadOwnerLogin, 0, php.floor(($maxLen - $minLen) / 2)),
 		}));
 	}
 
@@ -127,8 +127,8 @@ class CommonDataHelper {
 			for ($segment of Object.values($itinerary)) {
 				if ($segment['seatCount'] != $passengerCount) {
 					$errors.push(Errors.getMessage(Errors.WRONG_SEAT_COUNT, {
-						'seatCount': $segment['seatCount'],
-						'nameCount': $passengerCount,
+						seatCount: $segment['seatCount'],
+						nameCount: $passengerCount,
 					}));
 					break;
 				}

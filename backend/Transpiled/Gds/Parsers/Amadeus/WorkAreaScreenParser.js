@@ -6,7 +6,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
  * parses >OP/W*;
  * it is screen that displays work areas' state - PCC, PNR, etc...
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class WorkAreaScreenParser
 {
 	static parseAreaLine($line)  {
@@ -24,19 +24,19 @@ class WorkAreaScreenParser
 		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
 
 		$result = {
-			'areaLetter': $split['A'],
-			'isCurrentArea': $split['C'] === 'IN',
-			'mode': $split['M'],
-			'initials': $split['I'],
-			'dutyCode': $split['D'],
-			'language': $split['L'],
-			'timeFormat': $split['F'],
-			'activeQueue': $split['Q'],
-			'status': $split['S'],
-			'name': $split['N'],
+			areaLetter: $split['A'],
+			isCurrentArea: $split['C'] === 'IN',
+			mode: $split['M'],
+			initials: $split['I'],
+			dutyCode: $split['D'],
+			language: $split['L'],
+			timeFormat: $split['F'],
+			activeQueue: $split['Q'],
+			status: $split['S'],
+			name: $split['N'],
 
-			'isSignedIn': php.trim($split['S']) !== 'NOT SIGNED',
-			'hasPnr': !php.in_array(php.trim($split['S']), ['NOT SIGNED', 'SIGNED']),
+			isSignedIn: php.trim($split['S']) !== 'NOT SIGNED',
+			hasPnr: !php.in_array(php.trim($split['S']), ['NOT SIGNED', 'SIGNED']),
 		};
 
 		if (php.in_array($result['areaLetter'], ['A','B','C','D','E','F']) &&
@@ -67,12 +67,12 @@ class WorkAreaScreenParser
 		$records = php.array_values(php.array_filter(php.array_map(l => this.parseAreaLine(l), $lines)));
 		$parsedLetters = php.array_column($records, 'areaLetter');
 		if (!php.equals($parsedLetters, ['A','B','C','D','E','F'])) {
-			return {'error': 'Failed to parse all areas, got only '+php.implode(',', $parsedLetters)};
+			return {error: 'Failed to parse all areas, got only '+php.implode(',', $parsedLetters)};
 		}
 
 		return {
-			'pcc': $pcc,
-			'records': $records,
+			pcc: $pcc,
+			records: $records,
 		};
 	}
 }

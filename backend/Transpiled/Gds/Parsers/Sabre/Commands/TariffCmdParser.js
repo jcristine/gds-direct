@@ -1,6 +1,6 @@
 const Fp = require('../../../../Lib/Utils/Fp.js');
-const Lexeme = require('../../../../Lib/Lexer/Lexeme.js');
-const Lexer = require('../../../../Lib/Lexer/Lexer.js');
+const Lexeme = require('gds-utils/src/lexer/Lexeme.js');
+const Lexer = require('gds-utils/src/lexer/Lexer.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 
 /**
@@ -8,26 +8,26 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * >FQ07JUN18MEMLAS10AUG18¥PADT-AA¥PL¥BG;
  * cmd type 'fareSearch'
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class TariffCmdParser {
 	static getCabinClasses() {
 		return {
-			'premium_first': 'PB',
-			'premium_business': 'JB',
-			'premium_economy': 'SB',
-			'first': 'FB',
-			'business': 'BB',
-			'economy': 'YB',
-			'upper': 'FBBB',
+			premium_first: 'PB',
+			premium_business: 'JB',
+			premium_economy: 'SB',
+			first: 'FB',
+			business: 'BB',
+			economy: 'YB',
+			upper: 'FBBB',
 		};
 	}
 
 	static parseDate($raw) {
 		return !$raw ? null : {
-			'raw': $raw,
-			'partial': CommonParserHelpers.parsePartialDate($raw),
-			'full': CommonParserHelpers.parseCurrentCenturyFullDate($raw)['parsed'],
+			raw: $raw,
+			partial: CommonParserHelpers.parsePartialDate($raw),
+			full: CommonParserHelpers.parseCurrentCenturyFullDate($raw)['parsed'],
 		};
 	}
 
@@ -45,7 +45,7 @@ class TariffCmdParser {
 			}),
 			(new Lexeme('fareType', '/^¥(PV|PL)' + $end + '/')).preprocessData(($matches) => {
 				return {
-					'PV': 'private', 'PL': 'public',
+					PV: 'private', PL: 'public',
 				}[$matches[1]];
 			}),
 			(new Lexeme('accountCode', '/^¥RR\\*([A-Z0-9]+)' + $end + '/')).preprocessData($getFirst),
@@ -70,16 +70,16 @@ class TariffCmdParser {
 		}
 		$lexed = this.parseMods($modsPart);
 		return {
-			'departureDate': this.parseDate($departureDate),
-			'ticketingDate': this.parseDate($issueDate),
-			'departureAirport': $departureAirport,
-			'destinationAirport': $destinationAirport,
-			'modifiers': $lexed['lexemes'].map(($rec) => ({
-				'type': $rec['lexeme'],
-				'raw': $rec['raw'],
-				'parsed': $rec['data'],
+			departureDate: this.parseDate($departureDate),
+			ticketingDate: this.parseDate($issueDate),
+			departureAirport: $departureAirport,
+			destinationAirport: $destinationAirport,
+			modifiers: $lexed['lexemes'].map(($rec) => ({
+				type: $rec['lexeme'],
+				raw: $rec['raw'],
+				parsed: $rec['data'],
 			})),
-			'unparsed': $lexed['text'],
+			unparsed: $lexed['text'],
 		};
 	}
 }

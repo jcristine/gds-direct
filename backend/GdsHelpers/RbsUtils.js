@@ -250,3 +250,34 @@ exports.getRbsPqInfo = async (pnrDump, pricingDump, gds) => {
 		itinerary: pnrFields.reservation.itinerary,
 	});
 };
+
+const dtDiff = (next, curr) => {
+	const nextEpoch = new Date(next.departureDt.full).getTime();
+	const currEpoch = new Date(curr.destinationDt.full).getTime();
+	return nextEpoch - currEpoch;
+};
+
+/** @param {Array} itin - itinerary with destinationDt */
+const getDestinations = (itin) => {
+	const destinations = [];
+	let sliceStart = 0;
+	for (let i = 0; i < itin.length; ++i) {
+		const curr = itin[i];
+		const next = itin[i + 1] || null;
+		if (!next || dtDiff(next, curr) > 24 * 60 * 60 * 1000) {
+			const sliceEnd = i + 1;
+			destinations.push(itin.slice(sliceStart, sliceEnd));
+			sliceStart = sliceEnd;
+		}
+	}
+	return destinations;
+};
+
+exports.getDestinations = getDestinations;
+
+/** @param {Object} ptcBlock = at('TravelportPnrRequest.js').transformCurrentPtcBlock() */
+exports.isBrokenFare = ({itinerary, ptcBlock}) => {
+	const destinations = getDestinations(itinerary);
+	const fares = ptcBlock.segments.filter(s => +s.fare > 0);
+	return fares.length > destinations.length;
+};

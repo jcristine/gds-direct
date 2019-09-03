@@ -6,7 +6,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 /**
  * parse output of RT{parameters} that results in PNR list
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class PnrSearchParser
 {
 	static parseSequence($linesLeft, $parse)  {
@@ -72,10 +72,10 @@ class PnrSearchParser
 		$cmdCopy = php.trim(php.array_shift($lines));
 		[$entries, $lines] = this.parseSequence($lines, (...args) => this.parsePnrListEntry(...args));
 		return {
-			'commandCopy': $cmdCopy,
-			'success': php.count($entries) >= 2,
-			'entries': $entries,
-			'linesLeft': $lines,
+			commandCopy: $cmdCopy,
+			success: php.count($entries) >= 2,
+			entries: $entries,
+			linesLeft: $lines,
 		};
 	}
 }

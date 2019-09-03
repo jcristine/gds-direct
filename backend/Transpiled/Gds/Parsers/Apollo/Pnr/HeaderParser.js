@@ -3,7 +3,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const ItineraryParser = require("./ItineraryParser");
-const php = require("../../../../phpDeprecated");
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const GdsPassengerBlockParser = require("../../Common/GdsPassengerBlockParser");
 
 class HeaderParser
@@ -11,10 +11,10 @@ class HeaderParser
 	static parse($dump)  {
 		let $parsedData, $skippedLines, $lines, $line, $result;
 		$parsedData = {
-			'pnrIsCurrentlyInUse': false,
-			'reservationInfo': null,
-			'shopInfo': null,
-			'agentName': null,
+			pnrIsCurrentlyInUse: false,
+			reservationInfo: null,
+			shopInfo: null,
+			agentName: null,
 		};
 		$skippedLines = [];
 		$lines = StringUtil.lines($dump);
@@ -37,9 +37,9 @@ class HeaderParser
 			}
 		}
 		return {
-			'parsedData': $parsedData,
-			'skippedLines': $skippedLines,
-			'textLeft': php.implode(php.PHP_EOL, $lines),
+			parsedData: $parsedData,
+			skippedLines: $skippedLines,
+			textLeft: php.implode(php.PHP_EOL, $lines),
 		};
 	}
 
@@ -93,40 +93,40 @@ class HeaderParser
 				$agentToken = php.substr($creatorToken, 3);
 			}
 			return {
-				'recordLocator': $tokens['recordLocator'],
-				'focalPointInitials': $tokens['focalPointInitials'],
-				'agencyId': $tokens['agencyId'],
-				'pnrCreatorToken': $creatorToken,
-				'agencyToken': $agencyToken,
-				'agentToken': $agentToken,
-				'arcNumber': $tokens['arcNumber'],
-				'reservationDate': {
-					'raw': $tokens['reservationDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($tokens['reservationDate']),
+				recordLocator: $tokens['recordLocator'],
+				focalPointInitials: $tokens['focalPointInitials'],
+				agencyId: $tokens['agencyId'],
+				pnrCreatorToken: $creatorToken,
+				agencyToken: $agencyToken,
+				agentToken: $agentToken,
+				arcNumber: $tokens['arcNumber'],
+				reservationDate: {
+					raw: $tokens['reservationDate'],
+					parsed: CommonParserHelpers.parsePartialDate($tokens['reservationDate']),
 				},
 			};
 		} else if (php.preg_match($pattern2, php.trim($line), $tokens = [])) {
 			return {
-				'recordLocator': $tokens['recordLocator'],
-				'focalPointInitials': $tokens['focalPointInitials'],
-				'agencyId': $tokens['agencyId'],
-				'pnrCreatorToken': '',
-				'arcNumber': null,
-				'reservationDate': {
-					'raw': $tokens['reservationDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($tokens['reservationDate']),
+				recordLocator: $tokens['recordLocator'],
+				focalPointInitials: $tokens['focalPointInitials'],
+				agencyId: $tokens['agencyId'],
+				pnrCreatorToken: '',
+				arcNumber: null,
+				reservationDate: {
+					raw: $tokens['reservationDate'],
+					parsed: CommonParserHelpers.parsePartialDate($tokens['reservationDate']),
 				},
 			};
 		} else if (php.preg_match($pattern3, php.trim($line), $tokens = [])) {
 			return {
-				'recordLocator': $tokens['recordLocator'],
-				'focalPointInitials': $tokens['focalPointInitials'],
-				'agencyId': $tokens['agencyId'],
-				'pnrCreatorToken': $tokens['pnrCreatorToken'],
-				'arcNumber': null,
-				'reservationDate': {
-					'raw': $tokens['reservationDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($tokens['reservationDate']),
+				recordLocator: $tokens['recordLocator'],
+				focalPointInitials: $tokens['focalPointInitials'],
+				agencyId: $tokens['agencyId'],
+				pnrCreatorToken: $tokens['pnrCreatorToken'],
+				arcNumber: null,
+				reservationDate: {
+					raw: $tokens['reservationDate'],
+					parsed: CommonParserHelpers.parsePartialDate($tokens['reservationDate']),
 				},
 			};
 		} else {
@@ -137,7 +137,7 @@ class HeaderParser
 	static parseAgentLine($line)  {
 		let $tokens;
 		if (php.preg_match(/^(?<agentName>[A-Z]+)$/, php.trim($line), $tokens = [])) {
-			return {'agentName': $tokens['agentName']};
+			return {agentName: $tokens['agentName']};
 		} else {
 			return false;
 		}
@@ -147,8 +147,8 @@ class HeaderParser
 		let $tokens;
 		if (php.preg_match(/^(?<pcc>[A-Z0-9]{4}) - (?<restText>.*)$/, php.trim($line), $tokens = [])) {
 			return {
-				'pcc': $tokens['pcc'],
-				'restText': $tokens['restText'],
+				pcc: $tokens['pcc'],
+				restText: $tokens['restText'],
 			};
 		} else {
 			return false;

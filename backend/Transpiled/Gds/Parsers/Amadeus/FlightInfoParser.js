@@ -9,7 +9,7 @@ const GdsConstants = require('../../../Gds/Parsers/Common/GdsConstants.js');
  * parses output of DO{fromSegNum}-{toSegNum}
  * hidden stops/meals/flight duration/etc...
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class FlightInfoParser {
 	static parseSequence($linesLeft, $parse) {
@@ -47,17 +47,17 @@ class FlightInfoParser {
 			'/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'label': $matches['label'],
-				'airline': $matches['airline'],
-				'flightNumber': $matches['flightNumber'],
-				'unparsedToken1': $matches['unparsedToken1'],
-				'dayOfWeek': {
-					'raw': $matches['dayOfWeek'],
-					'parsed': CommonParserHelpers.apolloDayOfWeekToNumber($matches['dayOfWeek']),
+				label: $matches['label'],
+				airline: $matches['airline'],
+				flightNumber: $matches['flightNumber'],
+				unparsedToken1: $matches['unparsedToken1'],
+				dayOfWeek: {
+					raw: $matches['dayOfWeek'],
+					parsed: CommonParserHelpers.apolloDayOfWeekToNumber($matches['dayOfWeek']),
 				},
-				'departureDate': {
-					'raw': $matches['departureDate'],
-					'parsed': '20' + CommonParserHelpers.parseApolloFullDate($matches['departureDate']),
+				departureDate: {
+					raw: $matches['departureDate'],
+					parsed: '20' + CommonParserHelpers.parseApolloFullDate($matches['departureDate']),
 				},
 			};
 		} else {
@@ -124,9 +124,9 @@ class FlightInfoParser {
 		if (php.preg_match(/^([A-Z]+)\/([A-Z\-]+)$/, $text, $matches = [])) {
 			[$_, $classes, $raw] = $matches;
 			return {
-				'bookingClasses': php.str_split($classes, 1),
-				'raw': $raw,
-				'parsed': php.array_map((...args) => this.decodeMeal(...args), php.str_split($raw, 1)),
+				bookingClasses: php.str_split($classes, 1),
+				raw: $raw,
+				parsed: php.array_map((...args) => this.decodeMeal(...args), php.str_split($raw, 1)),
 			};
 		} else {
 			return null;
@@ -150,28 +150,28 @@ class FlightInfoParser {
 
 		$meals = php.array_map(t => this.parseMeal(t), php.preg_split(/\s+/, $split['M']));
 		$result = {
-			'departureAirport': $split['A'],
-			'destinationTime': $split['T'] ? {
-				'raw': $split['T'],
-				'parsed': CommonParserHelpers.decodeApolloTime($split['T']),
+			departureAirport: $split['A'],
+			destinationTime: $split['T'] ? {
+				raw: $split['T'],
+				parsed: CommonParserHelpers.decodeApolloTime($split['T']),
 			} : null,
-			'destinationDayOfWeek': $split['W'] ? {
-				'raw': $split['W'],
-				'parsed': CommonParserHelpers.apolloDayOfWeekToNumber($split['W']),
+			destinationDayOfWeek: $split['W'] ? {
+				raw: $split['W'],
+				parsed: CommonParserHelpers.apolloDayOfWeekToNumber($split['W']),
 			} : null,
-			'departureTime': $split['t'] ? {
-				'raw': $split['t'],
-				'parsed': CommonParserHelpers.decodeApolloTime($split['t']),
+			departureTime: $split['t'] ? {
+				raw: $split['t'],
+				parsed: CommonParserHelpers.decodeApolloTime($split['t']),
 			} : null,
-			'departureDayOfWeek': $split['w'] ? {
-				'raw': $split['w'],
-				'parsed': CommonParserHelpers.apolloDayOfWeekToNumber($split['w']),
+			departureDayOfWeek: $split['w'] ? {
+				raw: $split['w'],
+				parsed: CommonParserHelpers.apolloDayOfWeekToNumber($split['w']),
 			} : null,
-			'meals': $meals,
-			'aircraft': $split['E'],
-			'groundDuration': $split['G'],
-			'flightDuration': $split['F'],
-			'travelDuration': $split['V'],
+			meals: $meals,
+			aircraft: $split['E'],
+			groundDuration: $split['G'],
+			flightDuration: $split['F'],
+			travelDuration: $split['V'],
 		};
 		$hasMainPart = $meals.every(m => m)
 			|| php.preg_match(/^\d*:\d{2}$/, $result['travelDuration']);
@@ -195,7 +195,7 @@ class FlightInfoParser {
 
 		if (php.trim($split['D'] + $split['.'] + $split['C'] + $split['-'] + $split[' ']) === '' && php.trim($split['T']) !== '') {
 			// continuation of the comment on previous line
-			return {'raw': php.rtrim($split['T'])};
+			return {raw: php.rtrim($split['T'])};
 		}
 
 		$coverage = $split['C'];
@@ -209,12 +209,12 @@ class FlightInfoParser {
 			return null;
 		}
 		$result = {
-			'type': 'comment',
-			'lineNumber': php.intval($split['D']),
-			'from': $from,
-			'to': $to,
-			'entireSegment': $entireSegment,
-			'raw': php.rtrim($split['T']),
+			type: 'comment',
+			lineNumber: php.intval($split['D']),
+			from: $from,
+			to: $to,
+			entireSegment: $entireSegment,
+			raw: php.rtrim($split['T']),
 		};
 		if ($split['.'] === '.' && $result['lineNumber'] &&
 			$split['-'] === '-' && $result['raw'] !== '' &&
@@ -289,7 +289,7 @@ class FlightInfoParser {
 				$departureStarted = $startsDeparture;
 				$currentTz = $tz;
 			}
-			$transformed = {'message': $operation['message'], 'time': $operation['time']};
+			$transformed = {message: $operation['message'], time: $operation['time']};
 			if ($departureStarted) {
 				$currentLeg['departureAirport'] = $currentTz;
 				$currentLeg['departureOperations'].push($transformed);
@@ -334,9 +334,9 @@ class FlightInfoParser {
 		}
 
 		return {
-			'comments': $comments,
-			'configurations': $configurations,
-			'linesLeft': $lines,
+			comments: $comments,
+			configurations: $configurations,
+			linesLeft: $lines,
 		};
 	}
 
@@ -360,17 +360,17 @@ class FlightInfoParser {
 
 		const legs = this.locationsToLegs($locations);
 		return {
-			'type': 'planned',
-			'airline': $headerData['airline'],
-			'flightNumber': $headerData['flightNumber'],
-			'dayOfWeek': $headerData['dayOfWeek'],
-			'unparsedToken1': $headerData['unparsedToken1'],
-			'departureDate': $headerData['departureDate'],
-			'legs': legs,
-			'travelDuration': ArrayUtil.getLast($locations)['travelDuration'],
-			'comments': $additionalInfo['comments'],
-			'configurations': $additionalInfo['configurations'],
-			'linesLeft': $additionalInfo['linesLeft'],
+			type: 'planned',
+			airline: $headerData['airline'],
+			flightNumber: $headerData['flightNumber'],
+			dayOfWeek: $headerData['dayOfWeek'],
+			unparsedToken1: $headerData['unparsedToken1'],
+			departureDate: $headerData['departureDate'],
+			legs: legs,
+			travelDuration: ArrayUtil.getLast($locations)['travelDuration'],
+			comments: $additionalInfo['comments'],
+			configurations: $additionalInfo['configurations'],
+			linesLeft: $additionalInfo['linesLeft'],
 		};
 	}
 
@@ -387,13 +387,13 @@ class FlightInfoParser {
 		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
 		$time = CommonParserHelpers.decodeApolloTime($split['T']);
 		$result = {
-			'departureAirport': $split['P'],
-			'message': $split['M'],
-			'time': !php.is_null($time) ? {
-				'raw': $split['T'],
-				'parsed': $time,
+			departureAirport: $split['P'],
+			message: $split['M'],
+			time: !php.is_null($time) ? {
+				raw: $split['T'],
+				parsed: $time,
 			} : null,
-			'destinationAirport': $split['N'],
+			destinationAirport: $split['N'],
 		};
 
 		if ($result['message'] && php.trim($split[' ']) === '') {
@@ -425,14 +425,14 @@ class FlightInfoParser {
 		[$emptyLines, $lines] = this.parseSequence($lines, (...args) => this.isEmptyLine(...args));
 
 		return {
-			'type': 'operational',
-			'airline': $headerData['airline'],
-			'flightNumber': $headerData['flightNumber'],
-			'dayOfWeek': $headerData['dayOfWeek'],
-			'unparsedToken1': $headerData['unparsedToken1'],
-			'departureDate': $headerData['departureDate'],
-			'legs': this.operationsToLegs($operations),
-			'linesLeft': $lines,
+			type: 'operational',
+			airline: $headerData['airline'],
+			flightNumber: $headerData['flightNumber'],
+			dayOfWeek: $headerData['dayOfWeek'],
+			unparsedToken1: $headerData['unparsedToken1'],
+			departureDate: $headerData['departureDate'],
+			legs: this.operationsToLegs($operations),
+			linesLeft: $lines,
 		};
 	}
 
@@ -451,11 +451,11 @@ class FlightInfoParser {
 		if (php.preg_match($regex, line, $matches = [])) {
 			[$_, $lines] = this.parseSequence($lines, (...args) => this.isEmptyLine(...args));
 			return {
-				'type': 'notOperational',
-				'airline': $matches['airline'],
-				'flightNumber': $matches['flightNumber'],
-				'departureDate': CommonParserHelpers.parseCurrentCenturyFullDate($matches['departureDate']),
-				'linesLeft': $lines,
+				type: 'notOperational',
+				airline: $matches['airline'],
+				flightNumber: $matches['flightNumber'],
+				departureDate: CommonParserHelpers.parseCurrentCenturyFullDate($matches['departureDate']),
+				linesLeft: $lines,
 			};
 		} else {
 			return null;
@@ -476,11 +476,11 @@ class FlightInfoParser {
 		if (php.preg_match($regex, php.array_shift($lines), $matches = [])) {
 			[$_, $lines] = this.parseSequence($lines, (...args) => this.isEmptyLine(...args));
 			return {
-				'type': 'flown',
-				'airline': $matches['airline'],
-				'flightNumber': $matches['flightNumber'],
-				'departureDate': CommonParserHelpers.parseCurrentCenturyFullDate($matches['departureDate']),
-				'linesLeft': $lines,
+				type: 'flown',
+				airline: $matches['airline'],
+				flightNumber: $matches['flightNumber'],
+				departureDate: CommonParserHelpers.parseCurrentCenturyFullDate($matches['departureDate']),
+				linesLeft: $lines,
 			};
 		} else {
 			return null;
@@ -494,7 +494,7 @@ class FlightInfoParser {
 		$linesLeft = StringUtil.lines($dump);
 		$cmdCopy = php.rtrim(php.array_shift($linesLeft));
 		if (!php.preg_match(/^(\/\$)?DO/, $cmdCopy)) {
-			return {'error': 'Invalid start of dump - ' + $cmdCopy};
+			return {error: 'Invalid start of dump - ' + $cmdCopy};
 		}
 		$firstLine = php.array_shift($linesLeft);
 		if (php.trim($firstLine) === 'FLIGHT NOT OPERATING ON DATE SPECIFIED / SEE ALTERNATE DISPLAY') {
@@ -514,14 +514,14 @@ class FlightInfoParser {
 				$linesLeft = php.array_splice($segment['linesLeft'], 0);
 				$segments.push($segment);
 			} else {
-				return {'error': 'Failed to parse ' + php.count($segments) + '-th segment on line - ' + php.trim($linesLeft[0])};
+				return {error: 'Failed to parse ' + php.count($segments) + '-th segment on line - ' + php.trim($linesLeft[0])};
 			}
 		}
 
 		return {
-			'commandCopy': $cmdCopy,
-			'isAlternateDateDisplay': $isAlternateDateDisplay,
-			'segments': $segments,
+			commandCopy: $cmdCopy,
+			isAlternateDateDisplay: $isAlternateDateDisplay,
+			segments: $segments,
 		};
 	}
 }

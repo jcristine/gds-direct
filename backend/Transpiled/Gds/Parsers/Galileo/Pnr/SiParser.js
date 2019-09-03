@@ -29,7 +29,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * '  2. SSRCHLDDL HK  1 /-1SMITH/JOHN',
  * '  3. SSRCHLDDL NO  1 /-1SMITH/JOHN.INVLD FORMAT',
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class SiParser
 {
 	static parseSegmentLine($line)  {
@@ -43,16 +43,16 @@ class SiParser
 		$names = php.array_combine($symbols, $symbols);
 		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
 		$result = {
-			'segmentNumber': php.trim($split['N'], ' .'),
-			'airline': $split['Y'],
-			'flightNumber': $split['F'],
-			'bookingClass': $split['B'],
-			'departureDate': {
-				'raw': $split['D'],
-				'parsed': CommonParserHelpers.parsePartialDate($split['D']),
+			segmentNumber: php.trim($split['N'], ' .'),
+			airline: $split['Y'],
+			flightNumber: $split['F'],
+			bookingClass: $split['B'],
+			departureDate: {
+				raw: $split['D'],
+				parsed: CommonParserHelpers.parsePartialDate($split['D']),
 			},
-			'departureAirport': $split['P'],
-			'destinationAirport': $split['T'],
+			departureAirport: $split['P'],
+			destinationAirport: $split['T'],
 		};
 		if ($split['S'] === 'S' && $split[' '] === '' && $split['.'] === '.' &&
             php.intval($result['segmentNumber']) && $result['departureDate']['parsed']
@@ -73,10 +73,10 @@ class SiParser
 		$names = php.array_combine($symbols, $symbols);
 		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
 		$result = {
-			'ssrCode': $split['C'],
-			'status': $split['S'],
-			'statusNumber': $split['Q'],
-			'comment': $split['M'],
+			ssrCode: $split['C'],
+			status: $split['S'],
+			statusNumber: $split['Q'],
+			comment: $split['M'],
 		};
 		if (php.trim($split[' ']) === '' &&
             php.preg_match(/^[A-Z]{4}$/, $result['ssrCode'])
@@ -128,10 +128,10 @@ class SiParser
 		$names = php.array_combine($symbols, $symbols);
 		$split = StringUtil.splitByPosition($line, $paxPattern, $names, true);
 		$result = {
-			'passengerNumber': $split['N'],
-			'passengerName': $split['F'],
-			'isNameTruncated': $split['|'] === '|',
-			'ssrs': [$ssr],
+			passengerNumber: $split['N'],
+			passengerName: $split['F'],
+			isNameTruncated: $split['|'] === '|',
+			ssrs: [$ssr],
 		};
 		if ($split['P'] === 'P' && $split[' '] === ''  &&
             $split['.'] === '.' && php.intval($result['passengerNumber'])
@@ -191,19 +191,19 @@ class SiParser
 		[$_, $travelDocType, $issuingCountry, $travelDocNumber, $nationality, $dob, $genderAndI, $expirationDate, $lastName, $firstName, $middleName, $primaryPassportHolderToken] = php.array_pad(php.explode('/', $content), 12, '');
 
 		return {
-			'travelDocType': $travelDocType,
-			'issuingCountry': $issuingCountry,
-			'travelDocNumber': $travelDocNumber,
-			'nationality': $nationality,
-			'dob': CommonParserHelpers.parsePastFullDate($dob),
-			'gender': $genderAndI[0],
-			'expirationDate': CommonParserHelpers.parseCurrentCenturyFullDate($expirationDate),
-			'lastName': $lastName,
-			'firstName': $firstName,
-			'middleName': $middleName,
-			'primaryPassportHolderToken': $primaryPassportHolderToken,  // Optional
-			'paxIsInfant': ($genderAndI[1]) === 'I',
-			'message': $message,
+			travelDocType: $travelDocType,
+			issuingCountry: $issuingCountry,
+			travelDocNumber: $travelDocNumber,
+			nationality: $nationality,
+			dob: CommonParserHelpers.parsePastFullDate($dob),
+			gender: $genderAndI[0],
+			expirationDate: CommonParserHelpers.parseCurrentCenturyFullDate($expirationDate),
+			lastName: $lastName,
+			firstName: $firstName,
+			middleName: $middleName,
+			primaryPassportHolderToken: $primaryPassportHolderToken,  // Optional
+			paxIsInfant: ($genderAndI[1]) === 'I',
+			message: $message,
 		};
 	}
 
@@ -221,9 +221,9 @@ class SiParser
 			$data = null;
 		}
 		return {
-			'content': $content,
-			'paxName': $paxName,
-			'data': $data,
+			content: $content,
+			paxName: $paxName,
+			data: $data,
 		};
 	}
 
@@ -241,10 +241,10 @@ class SiParser
             '\\s*$/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'lineNumber': $matches['lineNumber'],
-				'ssrCode': 'OSI',
-				'airline': $matches['airline'],
-				'content': $matches['content'],
+				lineNumber: $matches['lineNumber'],
+				ssrCode: 'OSI',
+				airline: $matches['airline'],
+				content: $matches['content'],
 			};
 		} else {
 			return null;
@@ -269,12 +269,12 @@ class SiParser
             '\\s*$/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'lineNumber': $matches['lineNumber'],
-				'ssrCode': $matches['ssrCode'],
-				'airline': $matches['airline'],
-				'status': $matches['status'],
-				'statusNumber': $matches['statusNumber'],
-				'content': $matches['content'],
+				lineNumber: $matches['lineNumber'],
+				ssrCode: $matches['ssrCode'],
+				airline: $matches['airline'],
+				status: $matches['status'],
+				statusNumber: $matches['statusNumber'],
+				content: $matches['content'],
 			};
 		} else {
 			return null;
@@ -347,9 +347,9 @@ class SiParser
 			php.array_unshift($linesLeft, $headerLine);
 		}
 		return {
-			'ssrSegments': $ssrSegments,
-			'otherSsrs': $otherSsrs,
-			'linesLeft': $linesLeft,
+			ssrSegments: $ssrSegments,
+			otherSsrs: $otherSsrs,
+			linesLeft: $linesLeft,
 		};
 	}
 }

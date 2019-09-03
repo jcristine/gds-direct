@@ -2,7 +2,7 @@
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const CommandParser = require('../../../Gds/Parsers/Galileo/CommandParser.js');
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 var require = require('../../../translib.js').stubRequire;
 
@@ -34,9 +34,9 @@ class CmsGalileoTerminal {
 			$pMod = (php.array_combine(php.array_column($parsed['data']['pricingModifiers'], 'type'),
 				php.array_column($parsed['data']['pricingModifiers'], 'parsed')) || {})['passengers'];
 			$ptcs = !$pMod ? [] : php.array_column($pMod['ptcGroups'], 'ptc');
-			return {'ptcs': $ptcs};
+			return {ptcs: $ptcs};
 		} else {
-			return {'errors': ['Failed to parse pricing command - ' + $cmd]};
+			return {errors: ['Failed to parse pricing command - ' + $cmd]};
 		}
 	}
 
@@ -49,7 +49,7 @@ class CmsGalileoTerminal {
 		$typeToMod = php.array_combine(php.array_column($mods, 'type'), $mods);
 
 		if ($cmdData['baseCmd'] === 'FQBA') {
-			$errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {'modifier': '/' + $cmdData['baseCmd'] + '/'}));
+			$errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {modifier: '/' + $cmdData['baseCmd'] + '/'}));
 		} else if ($cmdData.baseCmd === 'FQBBK') {
 			$errors.push('PQ from >FQBBK; not allowed, please run clean >FQ;');
 		}
@@ -68,10 +68,10 @@ class CmsGalileoTerminal {
 			}
 		}
 		if (!php.empty(fareBases)) {
-			$errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {'modifier': '/@' + fareBases.join('@') + '/'}));
+			$errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {modifier: '/@' + fareBases.join('@') + '/'}));
 		}
 		if (!php.empty(bookingClasses)) {
-			$errors.push(Errors.getMessage(Errors.BAD_MOD_BOKING_CLASS_OVERRIDE, {'modifier': '/.' + bookingClasses.join('.') + '/'}));
+			$errors.push(Errors.getMessage(Errors.BAD_MOD_BOKING_CLASS_OVERRIDE, {modifier: '/.' + bookingClasses.join('.') + '/'}));
 		}
 		return $errors;
 	}
@@ -119,10 +119,10 @@ class CmsGalileoTerminal {
 	transformCalledCommand($cmdRecord) {
 
 		return {
-			'cmd': $cmdRecord['cmd'],
-			'output': this.sanitizeOutput($cmdRecord['output'], $cmdRecord['noWrap'] || false),
-			'tabCommands': [],
-			'clearScreen': this.constructor.isScreenCleaningCommand($cmdRecord['cmd']),
+			cmd: $cmdRecord['cmd'],
+			output: this.sanitizeOutput($cmdRecord['output'], $cmdRecord['noWrap'] || false),
+			tabCommands: [],
+			clearScreen: this.constructor.isScreenCleaningCommand($cmdRecord['cmd']),
 		};
 	}
 }

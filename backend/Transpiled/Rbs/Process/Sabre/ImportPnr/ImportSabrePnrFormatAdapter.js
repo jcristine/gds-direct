@@ -6,7 +6,7 @@ const ItineraryParser = require('../../../../Gds/Parsers/Sabre/Pnr/PnrParser.js'
 const ImportPnrAction = require('../../../../Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
 const ImportPnrCommonFormatAdapter = require('../../../../Rbs/Process/Common/ImportPnr/ImportPnrCommonFormatAdapter.js');
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const FareRuleOrSegmentsParser = require('../../../../Gds/Parsers/Sabre/FareRuleOrSegmentsParser.js');
 
 /**
@@ -52,15 +52,15 @@ class ImportSabrePnrFormatAdapter {
 		$reservation['confirmationNumbers'] = ImportPnrCommonFormatAdapter.collectConfirmationNumbers(($parsedData['parsedData'] || {})['itinerary'] || []);
 
 		$reservation['dataExistsInfo'] = {
-			'mileageProgramsExist': $parsedData['parsedData']['misc']['ffDataExists'],
-			'fareQuoteExists': $parsedData['parsedData']['misc']['priceQuoteRecordExists'],
-			'dividedBookingExists': php.in_array('DIVIDED_REMARK', php.array_column(($parsedData['parsedData'] || {})['remarks'] || [], 'remarkType')),
-			'isInvoicedExists': $parsedData['parsedData']['misc']['isInvoiced'],
-			'formOfPaymentExists': $parsedData['parsedData']['misc']['fopDataExists'],
-			'passengerEmailDataExists': $parsedData['parsedData']['misc']['passengerEmailDataExists'],
-			'pctcDataExists': $parsedData['parsedData']['misc']['pctcDataExists'],
-			'pqfDataExists': $parsedData['parsedData']['misc']['pqfDataExists'],
-			'securityInfoExists': $parsedData['parsedData']['misc']['securityInfoExists'],
+			mileageProgramsExist: $parsedData['parsedData']['misc']['ffDataExists'],
+			fareQuoteExists: $parsedData['parsedData']['misc']['priceQuoteRecordExists'],
+			dividedBookingExists: php.in_array('DIVIDED_REMARK', php.array_column(($parsedData['parsedData'] || {})['remarks'] || [], 'remarkType')),
+			isInvoicedExists: $parsedData['parsedData']['misc']['isInvoiced'],
+			formOfPaymentExists: $parsedData['parsedData']['misc']['fopDataExists'],
+			passengerEmailDataExists: $parsedData['parsedData']['misc']['passengerEmailDataExists'],
+			pctcDataExists: $parsedData['parsedData']['misc']['pctcDataExists'],
+			pqfDataExists: $parsedData['parsedData']['misc']['pqfDataExists'],
+			securityInfoExists: $parsedData['parsedData']['misc']['securityInfoExists'],
 		};
 
 		$reservation['dumpNumbers'] = $parsedData['dumpNumbers'];
@@ -88,22 +88,22 @@ class ImportSabrePnrFormatAdapter {
 	static transformFlightServiceInfo($parsedData, $baseDate) {
 
 		return !php.isset($parsedData['error']) ? {
-			'segments': Fp.map(($segment) => {
+			segments: Fp.map(($segment) => {
 				let $firstLeg;
 
 				$firstLeg = ArrayUtil.getFirst($segment['legs']);
 				return {
-					'segmentNumber': $segment['segmentNumber'],
-					'airline': $segment['airline'],
-					'flightNumber': $segment['flightNumber'],
-					'legs': Fp.map(($legData) => {
+					segmentNumber: $segment['segmentNumber'],
+					airline: $segment['airline'],
+					flightNumber: $segment['flightNumber'],
+					legs: Fp.map(($legData) => {
 
 						$legData = this.fillHiddenStopLeg($firstLeg, $legData);
 						return this.transformFlightServiceInfoLeg($legData, $baseDate);
 					}, $segment['legs']),
 				};
 			}, $parsedData['segments']),
-			'dumpNumbers': $parsedData['dumpNumbers'],
+			dumpNumbers: $parsedData['dumpNumbers'],
 		} : $parsedData;
 	}
 
@@ -113,19 +113,19 @@ class ImportSabrePnrFormatAdapter {
 		$leg = {};
 
 		$leg['departureTerminal'] = ($legData['departureTerminal'] || {})['raw'] ? {
-			'raw': $legData['departureTerminal']['raw'],
-			'parsed': $legData['departureTerminal']['parsed'],
+			raw: $legData['departureTerminal']['raw'],
+			parsed: $legData['departureTerminal']['parsed'],
 		} : null;
 		$leg['destinationTerminal'] = ($legData['destinationTerminal'] || {})['raw'] ? {
-			'raw': $legData['destinationTerminal']['raw'],
-			'parsed': $legData['destinationTerminal']['parsed'],
+			raw: $legData['destinationTerminal']['raw'],
+			parsed: $legData['destinationTerminal']['parsed'],
 		} : null;
 
 		$leg['departureAirport'] = $legData['departureAirport'];
 		$leg['destinationAirport'] = $legData['destinationAirport'];
 		$leg['meals'] = {
-			'raw': $legData['meals']['raw'],
-			'parsed': $legData['meals']['parsed'],
+			raw: $legData['meals']['raw'],
+			parsed: $legData['meals']['parsed'],
 		};
 		$leg['smoking'] = $legData['smoking'];
 		$leg['aircraft'] = $legData['aircraft'];
@@ -141,15 +141,15 @@ class ImportSabrePnrFormatAdapter {
 
 		$leg['departureDt'] = {
 			//            'raw' => $legData['departureDate']['raw'].' '.$legData['departureTime']['raw'],
-			'parsed': $legData['departureDate']['parsed'] + ' ' + $legData['departureTime']['parsed'],
-			'full': $fullDepartureDate
+			parsed: $legData['departureDate']['parsed'] + ' ' + $legData['departureTime']['parsed'],
+			full: $fullDepartureDate
 				? $fullDepartureDate + ' ' + $legData['departureTime']['parsed'] + ':00'
 				: null,
 		};
 		$leg['destinationDt'] = {
 			//            'raw' => $legData['departureDate']['raw'].' '.'+ '.$legData['offset'].' '.$legData['destinationTime']['raw'],
-			'parsed': php.date('m-d', php.strtotime($fullDestinationDate)) + ' ' + $legData['destinationTime']['parsed'],
-			'full': $fullDestinationDate
+			parsed: php.date('m-d', php.strtotime($fullDestinationDate)) + ' ' + $legData['destinationTime']['parsed'],
+			full: $fullDestinationDate
 				? $fullDestinationDate + ' ' + $legData['destinationTime']['parsed'] + ':00'
 				: null,
 		};
@@ -184,11 +184,11 @@ class ImportSabrePnrFormatAdapter {
 	static transformTicketInfo($parsedData, $reservationDate) {
 
 		return !php.isset($parsedData['error']) ? {
-			'tickets': Fp.map(($ticket) => {
+			tickets: Fp.map(($ticket) => {
 
 				return this.transformTicket($ticket, $reservationDate);
 			}, $parsedData['tickets']),
-			'dumpNumbers': $parsedData['dumpNumbers'],
+			dumpNumbers: $parsedData['dumpNumbers'],
 		} : $parsedData;
 	}
 
@@ -205,9 +205,9 @@ class ImportSabrePnrFormatAdapter {
 		$ticket['dumpNumber'] = $ticketData['dumpNumber'];
 		$ticket['passengerName'] = ($ticketData['header'] || {})['passengerName'];
 		$ticket['issueDate'] = php.isset($ticketData['header']['issueDate']) ? {
-			'raw': $ticketData['header']['issueDate']['raw'],
-			'parsed': $ticketData['header']['issueDate']['parsed'],
-			'full': $ticketData['header']['issueDate']['parsed'],
+			raw: $ticketData['header']['issueDate']['raw'],
+			parsed: $ticketData['header']['issueDate']['parsed'],
+			full: $ticketData['header']['issueDate']['parsed'],
 		} : null;
 		$ticket['pcc'] = ($ticketData['header'] || {})['pcc'];
 		$ticket['tourCode'] = ($ticketData['header'] || {})['tourId'];
@@ -230,12 +230,12 @@ class ImportSabrePnrFormatAdapter {
 		}
 
 		return !php.isset($ticketListInfo['error']) ? {
-			'agentInitials': ($ticketListInfo['ticketingInfo'] || {})['agentInitials'],
-			'ticketingDate': $ticketingDate,
-			'agencyInfo': php.isset($ticketListInfo['ticketingInfo']['pcc']) ? {
-				'pcc': $ticketListInfo['ticketingInfo']['pcc'],
+			agentInitials: ($ticketListInfo['ticketingInfo'] || {})['agentInitials'],
+			ticketingDate: $ticketingDate,
+			agencyInfo: php.isset($ticketListInfo['ticketingInfo']['pcc']) ? {
+				pcc: $ticketListInfo['ticketingInfo']['pcc'],
 			} : null,
-			'dumpNumbers': $ticketListInfo['dumpNumbers'],
+			dumpNumbers: $ticketListInfo['dumpNumbers'],
 		} : $ticketListInfo;
 	}
 
@@ -261,14 +261,14 @@ class ImportSabrePnrFormatAdapter {
 							$isVoided = php.count($trans) > 1;
 							$ticket = php.array_shift($trans);
 							$records.push({
-								'ticketNumber': $ticket['ticketNumber'],
-								'invoiceNumber': $parsed['invoiceNumber'],
-								'netPrice': {
-									'currency': null, // should we determine it from PCC?
-									'amount': php.sprintf('%.02f', $parsed['baseAmount'] + $parsed['taxAmount']),
+								ticketNumber: $ticket['ticketNumber'],
+								invoiceNumber: $parsed['invoiceNumber'],
+								netPrice: {
+									currency: null, // should we determine it from PCC?
+									amount: php.sprintf('%.02f', $parsed['baseAmount'] + $parsed['taxAmount']),
 								},
-								'dt': this.makeFutureDate($reservationDt, $ticket['issueDate'], $ticket['issueTime']),
-								'isVoided': $isVoided,
+								dt: this.makeFutureDate($reservationDt, $ticket['issueDate'], $ticket['issueTime']),
+								isVoided: $isVoided,
 							});
 						} else {
 							$error = 'Got a ticket in history that actually does not exist - ' + $ticketNum;
@@ -279,9 +279,9 @@ class ImportSabrePnrFormatAdapter {
 			}
 		}
 		return {
-			'records': $records,
-			'error': $error,
-			'dumpNumbers': php.array_merge($ticketList['dumpNumbers'] || [], $history['dumpNumbers'] || []),
+			records: $records,
+			error: $error,
+			dumpNumbers: php.array_merge($ticketList['dumpNumbers'] || [], $history['dumpNumbers'] || []),
 		};
 	}
 
@@ -307,18 +307,18 @@ class ImportSabrePnrFormatAdapter {
 				}
 			}
 
-			return {'seats': $seats, 'dumpNumbers': $parsedData['dumpNumbers']};
+			return {seats: $seats, dumpNumbers: $parsedData['dumpNumbers']};
 		}
 	}
 
 	static transformFrequentFlyerInfo($parsedData, $passengers) {
 
 		return {
-			'mileagePrograms': Fp.map(($mp) => {
+			mileagePrograms: Fp.map(($mp) => {
 
 				return this.transformMileageProgram($mp, $passengers);
 			}, $parsedData['mileagePrograms'] || []),
-			'dumpNumbers': $parsedData['dumpNumbers'],
+			dumpNumbers: $parsedData['dumpNumbers'],
 		};
 	}
 
@@ -335,15 +335,15 @@ class ImportSabrePnrFormatAdapter {
 		$program['operatingAirline'] = $mileageProgramEl['operatingAirline'];
 		$program['remark'] = $mileageProgramEl['remark'];
 		$program['segment'] = php.isset($mileageProgramEl['segment']) ? {
-			'airline': $mileageProgramEl['segment']['airline'],
-			'flightNumber': $mileageProgramEl['segment']['flightNumber'],
-			'bookingClass': $mileageProgramEl['segment']['bookingClass'],
-			'departureDate': {
-				'raw': $mileageProgramEl['segment']['departureDate']['raw'],
-				'parsed': $mileageProgramEl['segment']['departureDate']['parsed'],
+			airline: $mileageProgramEl['segment']['airline'],
+			flightNumber: $mileageProgramEl['segment']['flightNumber'],
+			bookingClass: $mileageProgramEl['segment']['bookingClass'],
+			departureDate: {
+				raw: $mileageProgramEl['segment']['departureDate']['raw'],
+				parsed: $mileageProgramEl['segment']['departureDate']['parsed'],
 			},
-			'departureAirport': $mileageProgramEl['segment']['departureAirport'],
-			'destinationAirport': $mileageProgramEl['segment']['destinationAirport'],
+			departureAirport: $mileageProgramEl['segment']['departureAirport'],
+			destinationAirport: $mileageProgramEl['segment']['destinationAirport'],
 		} : null;
 
 		return $program;
@@ -356,7 +356,7 @@ class ImportSabrePnrFormatAdapter {
 		let $common;
 
 		$common = {
-			'rcvdList': Fp.map(($rcvdRecord) => {
+			rcvdList: Fp.map(($rcvdRecord) => {
 				let $rcvd;
 
 				$rcvd = $rcvdRecord['rcvd'];
@@ -366,8 +366,8 @@ class ImportSabrePnrFormatAdapter {
 				delete ($rcvd['originData']['pcc'], $rcvd['originData']['airline']);
 
 				return {
-					'rcvd': $rcvd,
-					'actions': $rcvdRecord['actions'],
+					rcvd: $rcvd,
+					actions: $rcvdRecord['actions'],
 				};
 			}, $parsedData['rcvdList']),
 		};
@@ -377,11 +377,11 @@ class ImportSabrePnrFormatAdapter {
 	static transformRepeatedItineraryInfo($parsedData, $baseDate) {
 
 		return !php.isset($parsedData['error']) ? {
-			'dumpNumber': $parsedData['dumpNumber'],
-			'isSameAsOriginal': $parsedData['isSameAsOriginal'],
-			'isReadyToSell': $parsedData['isReadyToSell'],
-			'itinerary': FormatAdapter.adaptSabreItineraryParseForClient($parsedData['itinerary'] || [], $baseDate),
-			'dumpNumbers': $parsedData['dumpNumbers'],
+			dumpNumber: $parsedData['dumpNumber'],
+			isSameAsOriginal: $parsedData['isSameAsOriginal'],
+			isReadyToSell: $parsedData['isReadyToSell'],
+			itinerary: FormatAdapter.adaptSabreItineraryParseForClient($parsedData['itinerary'] || [], $baseDate),
+			dumpNumbers: $parsedData['dumpNumbers'],
 		} : $parsedData;
 	}
 
@@ -432,12 +432,12 @@ class ImportSabrePnrFormatAdapter {
 		for ($i = 0; $i < php.count($pqSegments) - 1; ++$i) {
 			if ($pqSegments[$i]['type'] !== 'void') {
 				$rSegments.push({
-					'segmentNumber': $segmentNumber++,
-					'airline': $pqSegments[$i]['airline'],
-					'departureAirport': $pqSegments[$i]['airport'],
-					'destinationAirport': $pqSegments[$i + 1]['airport'],
-					'fareBasis': $pqSegments[$i]['fareBasis'],
-					'ticketDesignator': $pqSegments[$i]['ticketDesignator'],
+					segmentNumber: $segmentNumber++,
+					airline: $pqSegments[$i]['airline'],
+					departureAirport: $pqSegments[$i]['airport'],
+					destinationAirport: $pqSegments[$i + 1]['airport'],
+					fareBasis: $pqSegments[$i]['fareBasis'],
+					ticketDesignator: $pqSegments[$i]['ticketDesignator'],
 				});
 			}
 		}
@@ -463,11 +463,11 @@ class ImportSabrePnrFormatAdapter {
 				$chunkSize = $destinations[$i] - ($destinations[$i - 1] || 0);
 				$chunk = php.array_slice($rSegments, ($destinations[$i - 1] || 0), $chunkSize);
 				$result.push({
-					'componentNumber': $i + 1,
-					'segmentNumbers': php.array_column($chunk, 'segmentNumber'),
-					'departureAirport': ($chunk[0] || {})['departureAirport'],
-					'destinationAirport': ($chunk[php.count($chunk) - 1] || {})['destinationAirport'],
-					'fareBasis': php.isset($chunk[0]['fareBasis'])
+					componentNumber: $i + 1,
+					segmentNumbers: php.array_column($chunk, 'segmentNumber'),
+					departureAirport: ($chunk[0] || {})['departureAirport'],
+					destinationAirport: ($chunk[php.count($chunk) - 1] || {})['destinationAirport'],
+					fareBasis: php.isset($chunk[0]['fareBasis'])
 						? php.explode('\/', $chunk[0]['fareBasis'])[0]
 						: null,
 				});
@@ -527,11 +527,11 @@ class ImportSabrePnrFormatAdapter {
 
 			if (!php.empty($next['isStopover']) || $next['type'] === 'lastAirport') {
 				$fareList.push({
-					'componentNumber': ++$componentNumber,
-					'segmentNumbers': php.array_splice($rSegNums, 0),
-					'departureAirport': $departureAirport,
-					'destinationAirport': $destinationAirport || $next['airport'],
-					'fareBasis': (php.explode('\/', $fareBasis) || {})[0],
+					componentNumber: ++$componentNumber,
+					segmentNumbers: php.array_splice($rSegNums, 0),
+					departureAirport: $departureAirport,
+					destinationAirport: $destinationAirport || $next['airport'],
+					fareBasis: (php.explode('\/', $fareBasis) || {})[0],
 				});
 				$fareBasis = null;
 				$departureAirport = null;
@@ -557,16 +557,16 @@ class ImportSabrePnrFormatAdapter {
 			$fares = this.collectFcFares($pricing['priceInfo']['fareConstruction'],
 				$pricing['priceInfo']['segments'], $geo) || this.collectPqFares($pricing['priceInfo']['segments']);
 			$fareListRecords.push({
-				'pricingNumber': $pricing['pqNumber'],
-				'subPricingNumber': 1,
-				'dumpNumber': ($priceQuoteInfo['dumpNumbers'] || {})[$pricing['pqNumber'] - 1],
-				'fareList': $fares,
+				pricingNumber: $pricing['pqNumber'],
+				subPricingNumber: 1,
+				dumpNumber: ($priceQuoteInfo['dumpNumbers'] || {})[$pricing['pqNumber'] - 1],
+				fareList: $fares,
 			});
 		}
 
 		return {
-			'data': $fareListRecords,
-			'dumpNumbers': $priceQuoteInfo['dumpNumbers'] || [],
+			data: $fareListRecords,
+			dumpNumbers: $priceQuoteInfo['dumpNumbers'] || [],
 		};
 	}
 
@@ -574,12 +574,12 @@ class ImportSabrePnrFormatAdapter {
 		let $error, $fcSegments, $fareList, $segNumChunk, $fareNum, $departureAirport, $i, $wprdSeg, $fcSeg;
 
 		[$error, $fcSegments] = ImportPnrAction.getLfSegments([$pricing]);
-		if ($error) return {'error': $error};
-		if (!$fcSegments) return {'error': 'Empty fare construction'};
+		if ($error) return {error: $error};
+		if (!$fcSegments) return {error: 'Empty fare construction'};
 		if (php.count($fcSegments) !== php.count($wprdSegments)) {
 			$error = 'Count of WPRD* segments ' + php.count($wprdSegments)
 				+ ' does not match FC segments - ' + php.count($fcSegments);
-			return {'error': $error};
+			return {error: $error};
 		}
 
 		$fareList = [];
@@ -593,18 +593,18 @@ class ImportSabrePnrFormatAdapter {
 			$segNumChunk.push($wprdSeg['segmentNumber']);
 			if ($fcSeg['fare'] || false) {
 				$fareList.push({
-					'componentNumber': $fareNum++,
-					'segmentNumbers': $segNumChunk,
-					'fareBasis': $wprdSeg['fareBasis'],
-					'departureAirport': $departureAirport,
-					'destinationAirport': $wprdSeg['destinationAirport'],
+					componentNumber: $fareNum++,
+					segmentNumbers: $segNumChunk,
+					fareBasis: $wprdSeg['fareBasis'],
+					departureAirport: $departureAirport,
+					destinationAirport: $wprdSeg['destinationAirport'],
 				});
 				$segNumChunk = [];
 				$departureAirport = null;
 			}
 		}
 
-		return {'data': $fareList};
+		return {data: $fareList};
 	}
 
 	/**
@@ -616,7 +616,7 @@ class ImportSabrePnrFormatAdapter {
 		let $error, $dumpNumbers, $ruleRecords, $fareRules, $wprdSegments, $fareListRecord;
 
 		$error = $wprdRecord['error'] || $pricing['error'];
-		if ($error) return {'error': $error};
+		if ($error) return {error: $error};
 
 		$dumpNumbers = [];
 		$ruleRecords = [];
@@ -626,10 +626,10 @@ class ImportSabrePnrFormatAdapter {
 				return php.array_merge($rSeg, $fareRules['fareComponent'], $fareRules['header']);
 			});
 			$ruleRecords.push({
-				'componentNumber': 1,
-				'dumpNumber': $wprdRecord['dumpNumber'],
-				'sections': $fareRules['sections'],
-				'fareComponent': $fareRules['fareComponent'],
+				componentNumber: 1,
+				dumpNumber: $wprdRecord['dumpNumber'],
+				sections: $fareRules['sections'],
+				fareComponent: $fareRules['fareComponent'],
 			});
 		} else {
 			$dumpNumbers.push($wprdRecord['dumpNumber']);
@@ -637,13 +637,13 @@ class ImportSabrePnrFormatAdapter {
 		}
 		$fareListRecord = this.collectWprdFares($wprdSegments, $pricing);
 		if ($error = $fareListRecord['error']) {
-			return {'error': $error};
+			return {error: $error};
 		}
 
 		return {
-			'fareList': $fareListRecord['data'],
-			'ruleRecords': $ruleRecords,
-			'dumpNumbers': $dumpNumbers,
+			fareList: $fareListRecord['data'],
+			ruleRecords: $ruleRecords,
+			dumpNumbers: $dumpNumbers,
 		};
 	}
 
@@ -657,17 +657,17 @@ class ImportSabrePnrFormatAdapter {
 		$parsedDate = ($pnrInfoData['date'] || {})['parsed'];
 
 		return {
-			'recordLocator': $pnrInfoData['recordLocator'],
-			'agentInitials': $pnrInfoData['agentInitials'],
-			'receivedFrom': $pnrInfoData['receivedFrom'],
-			'reservationDate': {
-				'raw': $pnrInfoData['date']['raw'],
-				'parsed': $parsedDate,
-				'full': $parsedDate + ' ' + $pnrInfoData['time']['parsed'] + ':00',
+			recordLocator: $pnrInfoData['recordLocator'],
+			agentInitials: $pnrInfoData['agentInitials'],
+			receivedFrom: $pnrInfoData['receivedFrom'],
+			reservationDate: {
+				raw: $pnrInfoData['date']['raw'],
+				parsed: $parsedDate,
+				full: $parsedDate + ' ' + $pnrInfoData['time']['parsed'] + ':00',
 			},
-			'agencyInfo': {
-				'pcc': $pnrInfoData['pcc'],
-				'homePcc': $pnrInfoData['homePcc'],
+			agencyInfo: {
+				pcc: $pnrInfoData['pcc'],
+				homePcc: $pnrInfoData['homePcc'],
 			},
 		};
 	}
@@ -691,9 +691,9 @@ class ImportSabrePnrFormatAdapter {
 			$segment['flightNumber'] = $segmentData['flightNumber'];
 			$segment['bookingClass'] = $segmentData['bookingClass'];
 			$segment['departureDate'] = {
-				'raw': $segmentData['departureDate']['raw'],
-				'parsed': $segmentData['departureDate']['parsed'],
-				'full': $fullDate,
+				raw: $segmentData['departureDate']['raw'],
+				parsed: $segmentData['departureDate']['parsed'],
+				full: $fullDate,
 			};
 			$segment['departureAirport'] = $segmentData['departureAirport'];
 			$segment['destinationAirport'] = $segmentData['destinationAirport'];
@@ -715,22 +715,22 @@ class ImportSabrePnrFormatAdapter {
 
 		$result = {};
 		$result['baseFare'] = {
-			'currency': $fareInfo['totals']['baseFare']['currency'],
-			'amount': $fareInfo['totals']['baseFare']['amount'],
+			currency: $fareInfo['totals']['baseFare']['currency'],
+			amount: $fareInfo['totals']['baseFare']['amount'],
 		};
 		$result['fareEquivalent'] = php.isset($fareInfo['totals']['inDefaultCurrency']) ? {
-			'currency': $fareInfo['totals']['inDefaultCurrency']['currency'],
-			'amount': $fareInfo['totals']['inDefaultCurrency']['amount'],
+			currency: $fareInfo['totals']['inDefaultCurrency']['currency'],
+			amount: $fareInfo['totals']['inDefaultCurrency']['amount'],
 		} : null;
 		$result['totalFare'] = {
-			'currency': $fareInfo['totals']['total']['currency'],
-			'amount': $fareInfo['totals']['total']['amount'],
+			currency: $fareInfo['totals']['total']['currency'],
+			amount: $fareInfo['totals']['total']['amount'],
 		};
 		$result['taxList'] = Fp.map(($tax) => {
 
 			return {
-				'taxCode': $tax['taxCode'],
-				'amount': $tax['amount'],
+				taxCode: $tax['taxCode'],
+				amount: $tax['amount'],
 			};
 		}, $fareInfo['taxList']);
 
@@ -740,7 +740,7 @@ class ImportSabrePnrFormatAdapter {
 			}
 		} else {
 			$fc = {
-				'error': ($pqInfo['fareConstruction'] || {})['error'] || 'failed to parse fare construction',
+				error: ($pqInfo['fareConstruction'] || {})['error'] || 'failed to parse fare construction',
 			};
 		}
 		$result['fareConstruction'] = $fc;
@@ -751,48 +751,48 @@ class ImportSabrePnrFormatAdapter {
 	static transformBaggageInfo($baggageData, $ptc) {
 
 		return {
-			'baggageAllowanceBlocks': [
+			baggageAllowanceBlocks: [
 				{
-					'ptc': $ptc,
-					'segments': php.array_map(
+					ptc: $ptc,
+					segments: php.array_map(
 						seg => this.transformBagAllowanceSegment(seg),
 						$baggageData['baggageAllowanceBlock']['segments']
 					),
 				},
 			],
-			'carryOnAllowanceBlock': {
-				'segments': Fp.flatten(Fp.map(($carryOnInfo) => {
+			carryOnAllowanceBlock: {
+				segments: Fp.flatten(Fp.map(($carryOnInfo) => {
 					let $segments, $cityPair;
 
 					$segments = [];
 					for ($cityPair of Object.values(($carryOnInfo['bundle'] || {})['cityPairs'] || [])) {
 						$segments.push({
-							'segmentDetails': {
-								'airline': $carryOnInfo['bundle']['airline'],
-								'departureAirport': $cityPair['departureAirport'],
-								'destinationAirport': $cityPair['destinationAirport'],
-								'bagWithoutFeeNumber': php.isset($carryOnInfo['bundle']['amount'])
+							segmentDetails: {
+								airline: $carryOnInfo['bundle']['airline'],
+								departureAirport: $cityPair['departureAirport'],
+								destinationAirport: $cityPair['destinationAirport'],
+								bagWithoutFeeNumber: php.isset($carryOnInfo['bundle']['amount'])
 									? $carryOnInfo['bundle']['amount']['amount'] + $carryOnInfo['bundle']['amount']['unitsCode']
 									: null,
-								'bagWithoutFeeNumberParsed': ($carryOnInfo['bundle'] || {})['amount'],
-								'isAvailable': $carryOnInfo['bundle']['isAvailable'],
-								'error': ($carryOnInfo['bundle'] || {})['error'],
+								bagWithoutFeeNumberParsed: ($carryOnInfo['bundle'] || {})['amount'],
+								isAvailable: $carryOnInfo['bundle']['isAvailable'],
+								error: ($carryOnInfo['bundle'] || {})['error'],
 							},
-							'bags': php.array_map(($piece, $i) => {
+							bags: php.array_map(($piece, $i) => {
 
 								return {
-									'flags': [],
-									'bagNumber': $i + 1,
-									'weightInLb': ($piece['data'] || {})['weightInLb'],
-									'weightInKg': ($piece['data'] || {})['weightInKg'],
-									'sizeInInches': ($piece['data'] || {})['sizeInInches'],
-									'sizeInCm': ($piece['data'] || {})['sizeInCm'],
-									'pieceType': $piece['pieceType'],
+									flags: [],
+									bagNumber: $i + 1,
+									weightInLb: ($piece['data'] || {})['weightInLb'],
+									weightInKg: ($piece['data'] || {})['weightInKg'],
+									sizeInInches: ($piece['data'] || {})['sizeInInches'],
+									sizeInCm: ($piece['data'] || {})['sizeInCm'],
+									pieceType: $piece['pieceType'],
 									// a'm not very sure. there is this "carryOnChargesBlock" which almost always
 									// says "CARRY ON FEES UNKNOWN-CONTACT CARRIER" and i have not enough dumps to parse it ok
-									'feeAmount': null,
-									'feeCurrency': null,
-									'bagDescription': $piece['text'],
+									feeAmount: null,
+									feeCurrency: null,
+									bagDescription: $piece['text'],
 								};
 							}, $carryOnInfo['pieces'], php.array_keys($carryOnInfo['pieces'])),
 						});
@@ -801,8 +801,8 @@ class ImportSabrePnrFormatAdapter {
 					return $segments;
 				}, $baggageData['carryOnAllowanceBlock'])),
 			},
-			'misc': {
-				'additionalInfo': $baggageData['additionalInfo'],
+			misc: {
+				additionalInfo: $baggageData['additionalInfo'],
 			},
 		};
 	}
@@ -814,54 +814,54 @@ class ImportSabrePnrFormatAdapter {
 	static transformBagAllowanceSegment($segment) {
 		const parsedCode = $segment['free']['amount'] || {};
 		return {
-			'segmentDetails': {
-				'airline': $segment['free']['airline'],
-				'departureAirport': $segment['free']['departureStopover'],
-				'destinationAirport': $segment['free']['destinationStopover'],
-				'bagWithoutFeeNumber': php.isset($segment['free']['amount'])
+			segmentDetails: {
+				airline: $segment['free']['airline'],
+				departureAirport: $segment['free']['departureStopover'],
+				destinationAirport: $segment['free']['destinationStopover'],
+				bagWithoutFeeNumber: php.isset($segment['free']['amount'])
 					? $segment['free']['amount']['amount'] + $segment['free']['amount']['unitsCode']
 					: null,
-				'bagWithoutFeeNumberParsed': ($segment['free'] || {})['amount'],
-				'isAvailable': parsedCode['unitsCode'] ? true : false,
-				'error': null,
+				bagWithoutFeeNumberParsed: ($segment['free'] || {})['amount'],
+				isAvailable: parsedCode['unitsCode'] ? true : false,
+				error: null,
 			},
-			'bags': php.array_merge(parsedCode['units'] === 'pieces'
+			bags: php.array_merge(parsedCode['units'] === 'pieces'
 				? Fp.map(($i) => ({
-					'flags': ['noFeeFlag'],
-					'bagNumber': +$i + 1,
-					'bagDescription': ($segment['free'] || {})['sizeInfoRaw'],
-					'weightInLb': (($segment['free'] || {})['sizeInfo'] || {})['weightInLb'],
-					'weightInKg': (($segment['free'] || {})['sizeInfo'] || {})['weightInKg'],
-					'sizeInInches': (($segment['free'] || {})['sizeInfo'] || {})['sizeInInches'],
-					'sizeInCm': (($segment['free'] || {})['sizeInfo'] || {})['sizeInCm'],
-					'feeAmount': null,
-					'feeCurrency': null,
+					flags: ['noFeeFlag'],
+					bagNumber: +$i + 1,
+					bagDescription: ($segment['free'] || {})['sizeInfoRaw'],
+					weightInLb: (($segment['free'] || {})['sizeInfo'] || {})['weightInLb'],
+					weightInKg: (($segment['free'] || {})['sizeInfo'] || {})['weightInKg'],
+					sizeInInches: (($segment['free'] || {})['sizeInfo'] || {})['sizeInInches'],
+					sizeInCm: (($segment['free'] || {})['sizeInfo'] || {})['sizeInCm'],
+					feeAmount: null,
+					feeCurrency: null,
 				}), +parsedCode['amount'] > 0
 					? php.range(0, parsedCode['amount'] - 1)
 					: [])
 				: (parsedCode['units']
 					? [{
-						'flags': ['noFeeFlag'],
-						'bagNumber': 1,
-						'bagDescription': ($segment['free'] || {})['sizeInfoRaw'],
-						'weightInLb': (($segment['free'] || {})['sizeInfo'] || {})['weightInLb'],
-						'weightInKg': (($segment['free'] || {})['sizeInfo'] || {})['weightInKg'],
-						'sizeInInches': (($segment['free'] || {})['sizeInfo'] || {})['sizeInInches'],
-						'sizeInCm': (($segment['free'] || {})['sizeInfo'] || {})['sizeInCm'],
-						'feeAmount': null,
-						'feeCurrency': null,
+						flags: ['noFeeFlag'],
+						bagNumber: 1,
+						bagDescription: ($segment['free'] || {})['sizeInfoRaw'],
+						weightInLb: (($segment['free'] || {})['sizeInfo'] || {})['weightInLb'],
+						weightInKg: (($segment['free'] || {})['sizeInfo'] || {})['weightInKg'],
+						sizeInInches: (($segment['free'] || {})['sizeInfo'] || {})['sizeInInches'],
+						sizeInCm: (($segment['free'] || {})['sizeInfo'] || {})['sizeInCm'],
+						feeAmount: null,
+						feeCurrency: null,
 					}] : []
 				),
 			Fp.map(($fee) => ({
-				'flags': [],
-				'bagNumber': $fee['feeNumber'],
-				'bagDescription': $fee['sizeInfoRaw'],
-				'weightInLb': ($fee['sizeInfo'] || {})['weightInLb'],
-				'weightInKg': ($fee['sizeInfo'] || {})['weightInKg'],
-				'sizeInInches': ($fee['sizeInfo'] || {})['sizeInInches'],
-				'sizeInCm': ($fee['sizeInfo'] || {})['sizeInCm'],
-				'feeAmount': $fee['amount'],
-				'feeCurrency': $fee['currency'],
+				flags: [],
+				bagNumber: $fee['feeNumber'],
+				bagDescription: $fee['sizeInfoRaw'],
+				weightInLb: ($fee['sizeInfo'] || {})['weightInLb'],
+				weightInKg: ($fee['sizeInfo'] || {})['weightInKg'],
+				sizeInInches: ($fee['sizeInfo'] || {})['sizeInInches'],
+				sizeInCm: ($fee['sizeInfo'] || {})['sizeInCm'],
+				feeAmount: $fee['amount'],
+				feeCurrency: $fee['currency'],
 			}), $segment['fees'])),
 		};
 	}
@@ -893,9 +893,9 @@ class ImportSabrePnrFormatAdapter {
 			$full = $tm ? $full + ' ' + $tm + ':00' : null;
 		}
 		return {
-			'raw': $dateRecord['raw'] + ' ' + $timeRecord['raw'],
-			'parsed': $dateRecord['parsed'] + ' ' + $timeRecord['parsed'],
-			'full': $full,
+			raw: $dateRecord['raw'] + ' ' + $timeRecord['raw'],
+			parsed: $dateRecord['parsed'] + ' ' + $timeRecord['parsed'],
+			full: $full,
 		};
 	}
 }

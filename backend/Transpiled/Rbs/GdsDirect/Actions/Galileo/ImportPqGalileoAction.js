@@ -61,7 +61,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 
 		$output = this.$cmdToFullOutput[$cmd] || (await fetchAll($cmd, this)).output;
 		this.$cmdToFullOutput[$cmd] = $output;
-		this.$allCommands.push({'cmd': $cmd, 'output': $output});
+		this.$allCommands.push({cmd: $cmd, output: $output});
 		return $output;
 	}
 
@@ -71,7 +71,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		$raw = await this.runOrReuse('*R');
 		$parsed = PnrParser.parse($raw);
 		$common = GalileoPnrCommonFormatAdapter.transform($parsed, this.getBaseDate());
-		$result = {'raw': $raw};
+		$result = {raw: $raw};
 		if ($result['error'] = $common['error']) {
 			return $result;
 		} else {
@@ -86,45 +86,43 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 
 	static transformBagPtcBlock($ptcBlock, $i) {
 		return {
-			'subPricingNumber': +$i + 1,
-			'passengerNameNumbers': $ptcBlock['passengerNameNumbers'],
-			'ptcInfo': $ptcBlock['ptcInfo'],
-			'raw': $ptcBlock['baggageInfo']['raw'],
-			'parsed': $ptcBlock['baggageInfo']['parsed'],
+			subPricingNumber: +$i + 1,
+			passengerNameNumbers: $ptcBlock['passengerNameNumbers'],
+			ptcInfo: $ptcBlock['ptcInfo'],
+			raw: $ptcBlock['baggageInfo']['raw'],
+			parsed: $ptcBlock['baggageInfo']['parsed'],
 		};
 	}
 
 	processPricingOutput(cmdRec) {
-		let $ptcList, $error, $linearFareDump, $linearFare, $common, $bagPtcPricingBlocks, $i, $ptcBlock, $wrapped,
-			$currentPricing;
-		$ptcList = FqParser.parse(cmdRec.output);
-		if ($error = $ptcList['error']) {
-			return {'error': 'Failed to parse pricing PTC list - ' + $error};
+		let error;
+		const ptcList = FqParser.parse(cmdRec.output);
+		if (error = ptcList.error) {
+			return {error: 'Failed to parse pricing PTC list - ' + error};
 		}
-		$linearFare = LinearFareParser.parse(cmdRec.linearOutput);
-		if ($error = $linearFare['error']) {
-			return {'error': 'Failed to parse pricing Linear Fare - ' + $error};
+		const linearFare = LinearFareParser.parse(cmdRec.linearOutput);
+		if (error = linearFare.error) {
+			return {error: 'Failed to parse pricing Linear Fare - ' + error};
 		}
-		$common = (new GalileoPricingAdapter())
-			.setPricingCommand(cmdRec.cmd)
-			.transform($ptcList, $linearFare);
+		const store = GalileoPricingAdapter({
+			ptcList, linearFare, pricingCommand: cmdRec.cmd,
+		});
 
 		// separate baggage blocks from pricing, since
 		// they take very much space on the screen
-		$bagPtcPricingBlocks = [];
-		for ([$i, $ptcBlock] of Object.entries($common['pricingBlockList'] || [])) {
-			$bagPtcPricingBlocks.push(this.constructor.transformBagPtcBlock($ptcBlock, $i));
-			delete ($ptcBlock['baggageInfo']);
-			$common['pricingBlockList'][$i] = $ptcBlock;
+		const bagPtcPricingBlocks = [];
+		for (const [i, ptcBlock] of Object.entries(store.pricingBlockList || [])) {
+			bagPtcPricingBlocks.push(this.constructor.transformBagPtcBlock(ptcBlock, i));
+			delete ptcBlock.baggageInfo;
+			store.pricingBlockList[i] = ptcBlock;
 		}
 
-		$wrapped = {'pricingList': [$common]};
-		$currentPricing = {'raw': cmdRec.output, 'parsed': $wrapped, 'cmd': cmdRec.cmd};
-		$linearFare = {'raw': $linearFareDump, 'parsed': $linearFare, 'cmd': 'F*Q'};
+		const wrapped = {pricingList: [store]};
+		const currentPricing = {raw: cmdRec.output, parsed: wrapped, cmd: cmdRec.cmd};
 		return {
-			'currentPricing': $currentPricing,
-			'bagPtcPricingBlocks': $bagPtcPricingBlocks,
-			'linearFare': $linearFare,
+			currentPricing: currentPricing,
+			bagPtcPricingBlocks: bagPtcPricingBlocks,
+			linearFare: {raw: cmdRec.linearOutput, parsed: linearFare, cmd: 'F*Q'},
 		};
 	}
 
@@ -273,7 +271,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 			}
 		}
 
-		$result = {'raw': $raw, 'parsed': $common};
+		$result = {raw: $raw, parsed: $common};
 		if ($result['error'] = $common['error']) {
 			return $result;
 		} else {
@@ -285,14 +283,14 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 	async getFareRules(pricingList, $itinerary) {
 		let $result, $error;
 		if (pricingList.length > 1) {
-			return {'error': 'Fare rules are not supported in multi-pricing PQ'};
+			return {error: 'Fare rules are not supported in multi-pricing PQ'};
 		}
 
 		$result = await (new ImportFareComponentsAction())
 			.useXml(this.useXml)
 			.setTravelportClient(this.travelport)
 			.setSession(this.session).execute([16], 1);
-		if ($error = $result['error']) return {'error': $error};
+		if ($error = $result['error']) return {error: $error};
 
 		this.$allCommands.push($result.cmdRec);
 		for (const $fareData of Object.values($result['fareList'])) {
@@ -300,8 +298,8 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		}
 		return {
 			// could parse them, but nah for now
-			'fareListRecords': [],
-			'ruleRecords': [],
+			fareListRecords: [],
+			ruleRecords: [],
 		};
 	}
 
@@ -311,7 +309,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		$isPrivateFare = pricingList
 			.some(store => store.pricingBlockList
 				.some(b => b.hasPrivateFaresSelectedMessage));
-		$result = {'isRequired': $isPrivateFare, 'raw': null, 'parsed': null};
+		$result = {isRequired: $isPrivateFare, raw: null, parsed: null};
 		if (!$isPrivateFare) return $result;
 
 		$cmd = 'FQ/:N';
@@ -320,7 +318,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		$result['cmd'] = $cmd;
 		$result['raw'] = $raw;
 		if ($error = $processed['error']) {
-			return {'error': 'Failed to fetch published pricing - ' + $error};
+			return {error: 'Failed to fetch published pricing - ' + $error};
 		}
 		$result['parsed'] = $processed['currentPricing']['parsed'];
 		return $result;
@@ -329,14 +327,14 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 	static transformCmdType($parsedCmdType) {
 
 		return ({
-			'redisplayPnr': 'redisplayPnr',
-			'priceItinerary': 'priceItinerary',
-			'redisplayPriceItinerary': 'priceItinerary',
-			'pricingLinearFare': 'priceItinerary',
-			'flightServiceInfo': 'flightServiceInfo',
-			'timeTable': 'flightRoutingAndTimes',
-			'fareList': 'fareList',
-			'fareRules': 'fareRules',
+			redisplayPnr: 'redisplayPnr',
+			priceItinerary: 'priceItinerary',
+			redisplayPriceItinerary: 'priceItinerary',
+			pricingLinearFare: 'priceItinerary',
+			flightServiceInfo: 'flightServiceInfo',
+			timeTable: 'flightRoutingAndTimes',
+			fareList: 'fareList',
+			fareRules: 'fareRules',
 		} || {})[$parsedCmdType];
 	}
 
@@ -344,7 +342,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		let $result, $reservationRecord, $nameRecords, $pricingRecord, $flightServiceRecord,
 			$fareRuleData, $publishedPricingRecord;
 
-		$result = {'pnrData': {}};
+		$result = {pnrData: {}};
 
 		$reservationRecord = await this.getReservation();
 		if ($result['error'] = $reservationRecord['error']) return $result;

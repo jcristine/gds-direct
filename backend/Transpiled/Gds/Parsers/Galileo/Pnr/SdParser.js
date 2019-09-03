@@ -12,7 +12,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * ' 2+ ET 0921 M  22MAR ADDACC',
  * '     1+ VELIKOV/IGOR      HK  25A            NW            AIR',
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class SdParser
 {
 	static parseSegmentLine($line)  {
@@ -25,17 +25,17 @@ class SdParser
 		$names = php.array_combine($symbols, $symbols);
 		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
 		$result = {
-			'segmentNumber': $split['S'],
-			'airline': $split['Y'],
-			'flightNumber': $split['F'],
-			'bookingClass': $split['B'],
-			'departureDate': {
-				'raw': $split['D'],
-				'parsed': CommonParserHelpers.parsePartialDate($split['D']),
+			segmentNumber: $split['S'],
+			airline: $split['Y'],
+			flightNumber: $split['F'],
+			bookingClass: $split['B'],
+			departureDate: {
+				raw: $split['D'],
+				parsed: CommonParserHelpers.parsePartialDate($split['D']),
 			},
-			'departureAirport': $split['P'],
-			'destinationAirport': $split['T'],
-			'passengers': [],
+			departureAirport: $split['P'],
+			destinationAirport: $split['T'],
+			passengers: [],
 		};
 		if ($split['.'] === '.' && php.trim($split[' ']) === '' &&
             $result['departureDate']['parsed']
@@ -56,19 +56,19 @@ class SdParser
 		$names = php.array_combine($symbols, $symbols);
 		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
 		$result = {
-			'passengerNumber': $split['P'],
-			'passengerName': $split['F'],
-			'requestStatus': $split['S'],
-			'seatCode': $split['C'],
-			'smoking': $split['N'] !== 'N',
-			'location': !$split['L'] ? null : {
-				'raw': $split['L'],
-				'parsed': ({
-					'A': 'aisle',
-					'W': 'window',
+			passengerNumber: $split['P'],
+			passengerName: $split['F'],
+			requestStatus: $split['S'],
+			seatCode: $split['C'],
+			smoking: $split['N'] !== 'N',
+			location: !$split['L'] ? null : {
+				raw: $split['L'],
+				parsed: ({
+					A: 'aisle',
+					W: 'window',
 				} || {})[$split['L']],
 			},
-			'segmentType': $split['T'],
+			segmentType: $split['T'],
 		};
 		if ($split['.'] === '.' && php.trim($split[' ']) === '' &&
             php.preg_match(/^\d+$/, $result['passengerNumber']) &&
@@ -86,9 +86,9 @@ class SdParser
 		$lines = StringUtil.lines(php.rtrim($dump));
 		$headerLine = php.array_shift($lines);
 		if (php.trim($headerLine) === 'NO SEATING DATA EXISTS') {
-			return {'segments': []};
+			return {segments: []};
 		} else if (php.trim($headerLine) !== '** SEAT DATA **') {
-			return {'error': 'Unexpected start of dump - '+php.trim($headerLine)};
+			return {error: 'Unexpected start of dump - '+php.trim($headerLine)};
 		}
 		$segments = [];
 		while ($line = php.array_shift($lines)) {
@@ -102,8 +102,8 @@ class SdParser
 			}
 		}
 		return {
-			'segments': $segments,
-			'linesLeft': $lines,
+			segments: $segments,
+			linesLeft: $lines,
 		};
 	}
 }

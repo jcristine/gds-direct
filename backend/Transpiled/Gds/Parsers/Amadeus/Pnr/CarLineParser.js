@@ -3,7 +3,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class CarLineParser
 {
 	static isCarLine($line)  {
@@ -26,8 +26,8 @@ class CarLineParser
 	static parseDate($date)  {
 
 		return {
-			'raw': $date,
-			'parsed': CommonParserHelpers.parsePartialDate($date),
+			raw: $date,
+			parsed: CommonParserHelpers.parsePartialDate($date),
 		};
 	}
 
@@ -48,9 +48,9 @@ class CarLineParser
 			}}
 
 		return {
-			'carTypeCode': $carTypeCode,
-			'unparsedCodes': php.array_values($data),
-			'parsedCodes': $parsedData,
+			carTypeCode: $carTypeCode,
+			unparsedCodes: php.array_values($data),
+			parsedCodes: $parsedData,
 		};
 	}
 
@@ -114,7 +114,7 @@ class CarLineParser
 
 		if (php.empty($result)) {
 			$msg = 'ERROR: Exist unparsed ccr(car) lines';
-			return {'error': $msg};
+			return {error: $msg};
 		}
 		return $result;
 	}

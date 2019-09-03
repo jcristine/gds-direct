@@ -5,7 +5,7 @@ const GalPnrParser = require("../../Gds/Parsers/Galileo/Pnr/PnrParser");
 const AmaPnrParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const FormatAdapter = require("./FormatAdapter");
 
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const GalileoPnrCommonFormatAdapter = require("../FormatAdapters/GalileoPnrCommonFormatAdapter");
 const AmadeusPnrCommonFormatAdapter = require("../FormatAdapters/AmadeusPnrCommonFormatAdapter");
 
@@ -67,8 +67,8 @@ class ParsersController {
 		$dump = php.strtoupper($params['dump']);
 		$result = this.tryParseAs($dump, $params['creationDate'] || null);
 		return $result
-			? {'response_code': 1, 'result': $result, 'errors': []}
-			: {'response_code': 3, 'result': {'type': 'unknown', 'data': null}, 'errors': []};
+			? {response_code: 1, result: $result, errors: []}
+			: {response_code: 3, result: {type: 'unknown', data: null}, errors: []};
 	}
 }
 ParsersController.PNR_DUMP_TYPES = PNR_DUMP_TYPES;

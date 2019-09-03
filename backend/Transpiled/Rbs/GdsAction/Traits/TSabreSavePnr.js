@@ -4,7 +4,7 @@ const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const SavePnrAction = require('../../../Rbs/MultiGdsAction/SavePnrAction.js');
 
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class TSabreSavePnr
 {
 	static isSaveConfirmationRequired($dump)  {
@@ -41,18 +41,18 @@ class TSabreSavePnr
 		if (php.preg_match(/^OK ([A-Z0-9]{4}) ([A-Z]{6})\s*(.*)$/, php.trim($dump), $matches = [])) {
 			[$_, $transactionNumber, $recordLocator, $warningMessage] = $matches;
 			return {
-				'success': true,
-				'status': SavePnrAction.STATUS_EXECUTED,
-				'transactionNumber': $transactionNumber,
-				'recordLocator': $recordLocator,
-				'warningMessage': $warningMessage,
-				'raw': $dump,
+				success: true,
+				status: SavePnrAction.STATUS_EXECUTED,
+				transactionNumber: $transactionNumber,
+				recordLocator: $recordLocator,
+				warningMessage: $warningMessage,
+				raw: $dump,
 			};
 		} else {
 			return {
-				'success': false,
-				'status': this.parseErrorType($dump) || SavePnrAction.STATUS_GDS_ERROR,
-				'raw': $dump,
+				success: false,
+				status: this.parseErrorType($dump) || SavePnrAction.STATUS_GDS_ERROR,
+				raw: $dump,
 			};
 		}
 	}

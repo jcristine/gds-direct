@@ -1,7 +1,7 @@
 
 
 const SavePnrAction = require('../../../Rbs/MultiGdsAction/SavePnrAction.js');
-const php = require('../../../phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class TApolloSavePnr
 {
@@ -23,17 +23,17 @@ class TApolloSavePnr
 		if (php.preg_match(/^OK - (?<recordLocator>[A-Z0-9]{6})-/, $dump, $matches = [])) {
 			$recordLocator = $matches['recordLocator'];
 			return {
-				'success': true,
-				'status': SavePnrAction.STATUS_EXECUTED,
-				'recordLocator': $recordLocator,
-				'raw': $dump,
+				success: true,
+				status: SavePnrAction.STATUS_EXECUTED,
+				recordLocator: $recordLocator,
+				raw: $dump,
 			};
 		} else {
 			return {
-				'success': false,
-				'status': this.parseErrorType($dump),
-				'recordLocator': null,
-				'raw': $dump,
+				success: false,
+				status: this.parseErrorType($dump),
+				recordLocator: null,
+				raw: $dump,
 			};
 		}
 	}

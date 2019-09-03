@@ -8,7 +8,7 @@ const TariffCmdParser = require('../../../Gds/Parsers/Sabre/Commands/TariffCmdPa
  * takes terminal command typed by a user and returns it's type
  * when we need, it also could return data to, for example, convert it to Apollo command
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const PricingCmdParser = require("./Commands/PricingCmdParser");
 
 class CommandParser {
@@ -143,7 +143,7 @@ class CommandParser {
 	// 'E', 'ER', 'EM¥N2.1¥RR¥PH', 'EWR', 'ER*N*T*FF', 'ECR'
 	static parseStorePnr($cmd) {
 		let $result, $textLeft, $rawModifiers, $emailCode, $actionData;
-		$result = {'keepPnr': false, 'sendEmail': false, 'cloneItinerary': false};
+		$result = {keepPnr: false, sendEmail: false, cloneItinerary: false};
 		if (!StringUtil.startsWith($cmd, 'E')) {
 			return null;
 		}
@@ -166,7 +166,7 @@ class CommandParser {
 				$result['keepPnr'] = true;
 				$textLeft = php.substr($textLeft, 1);
 			}
-			$result['actionParams'] = {'raw': $textLeft};
+			$result['actionParams'] = {raw: $textLeft};
 		} else if (StringUtil.startsWith($textLeft, 'M')) {
 			$result['sendEmail'] = true;
 			$textLeft = php.substr($textLeft, 1);
@@ -177,9 +177,9 @@ class CommandParser {
 				$emailCode = php.substr($emailCode, 0, -1);
 			}
 			$actionData = {
-				'type': {
-					'raw': $emailCode,
-					'parsed': ({
+				type: {
+					raw: $emailCode,
+					parsed: ({
 						'': 'general',
 						'I': 'invoice',
 						'T': 'tickets',
@@ -187,8 +187,8 @@ class CommandParser {
 						'XP': 'pnrDumpPdf',
 					} || {})[$emailCode],
 				},
-				'modifiers': Fp.map(($mod) => {
-					return {'raw': $mod};
+				modifiers: Fp.map(($mod) => {
+					return {raw: $mod};
 				}, $rawModifiers),
 			};
 			// $result['actionData'] = $actionData;
@@ -243,7 +243,7 @@ class CommandParser {
 		if ($command === 'WPRD*') {
 			$modsStr = php.substr($cmd, 5);
 			$rawData = $modsStr ? php.explode('¥', $modsStr) : [];
-			return {'rawModifiers': $rawData};
+			return {rawModifiers: $rawData};
 		} else {
 			return null;
 		}
@@ -253,12 +253,12 @@ class CommandParser {
 	static parseRemarkRanges($expr) {
 		let $parseRange;
 		if ($expr === '') {
-			return [{'from': 1, 'to': 1}];
+			return [{from: 1, to: 1}];
 		}
 		$parseRange = ($text) => {
 			let $pair;
 			$pair = php.explode('-', $text);
-			return {'from': $pair[0], 'to': $pair[1] || $pair[0]};
+			return {from: $pair[0], to: $pair[1] || $pair[0]};
 		};
 		return Fp.map($parseRange, php.explode(',', php.trim($expr)));
 	}
@@ -272,8 +272,8 @@ class CommandParser {
 			[$from, $fromFNum] = php.explode('.', $pair[0]);
 			[$to, $toFNum] = php.explode('.', $pair[1] || $pair[0]);
 			return {
-				'from': $from, 'fromMinor': $fromFNum,
-				'to': $to, 'toMinor': $toFNum,
+				from: $from, fromMinor: $fromFNum,
+				to: $to, toMinor: $toFNum,
 			};
 		};
 		return Fp.map($parseRange, php.explode(',', php.trim($expr)));
@@ -306,15 +306,15 @@ class CommandParser {
 				[$_, $rangesRaw, $newText] = $matches;
 				$type = 'changePnrRemarks';
 				$data = {
-					'ranges': this.parseRemarkRanges($rangesRaw),
-					'newText': $newText,
+					ranges: this.parseRemarkRanges($rangesRaw),
+					newText: $newText,
 				};
 			} else {
 				// '5ELDAR/ID20744/CREATED FOR VANCE/ID8122/REQ. ID-4777760'
 				$type = 'addRemark';
 				$data = $content;
 			}
-			return {'type': $type, 'data': $data};
+			return {type: $type, data: $data};
 		} else {
 			return null;
 		}
@@ -351,19 +351,19 @@ class CommandParser {
 			'$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			return {
-				'type': php.empty($matches['pillow'])
+				type: php.empty($matches['pillow'])
 					? 'addFrequentFlyerNumber'
 					: 'changeFrequentFlyerNumber',
-				'data': {
-					'lineNums': this.flattenRange($matches['lineNums'] || ''),
-					'airline': $matches['airline'] || '',
-					'code': $matches['code'] || '',
-					'partners': php.empty($matches['partners']) ? [] :
+				data: {
+					lineNums: this.flattenRange($matches['lineNums'] || ''),
+					airline: $matches['airline'] || '',
+					code: $matches['code'] || '',
+					partners: php.empty($matches['partners']) ? [] :
 						php.explode(',', $matches['partners']),
-					'segNums': this.flattenRange($matches['segNums'] || ''),
-					'majorPaxNum': $matches['majorPaxNum'] || '',
-					'minorPaxNum': $matches['minorPaxNum'] || '',
-					'paxName': $matches['paxName'] || '',
+					segNums: this.flattenRange($matches['segNums'] || ''),
+					majorPaxNum: $matches['majorPaxNum'] || '',
+					minorPaxNum: $matches['minorPaxNum'] || '',
+					paxName: $matches['paxName'] || '',
 				},
 			};
 		} else {
@@ -397,18 +397,18 @@ class CommandParser {
 				$segNums = this.flattenRange($matches['segNums']);
 			}
 			return {
-				'type': php.empty($matches['cancelMark'])
+				type: php.empty($matches['cancelMark'])
 					? 'requestSeats' : 'cancelSeats',
-				'data': {
-					'paxRanges': php.empty($matches['paxNums']) ? [] :
+				data: {
+					paxRanges: php.empty($matches['paxNums']) ? [] :
 						this.parsePaxRanges($matches['paxNums']),
-					'segNums': $segNums,
-					'location': php.empty($matches['location']) ? null : {
-						'raw': $matches['location'],
-						'parsed': ({'A': 'aisle', 'W': 'window', 'X': 'bulkhead'} || {})[$matches['location']],
+					segNums: $segNums,
+					location: php.empty($matches['location']) ? null : {
+						raw: $matches['location'],
+						parsed: ({A: 'aisle', W: 'window', X: 'bulkhead'} || {})[$matches['location']],
 					},
-					'zone': null,
-					'seatCodes': $seatCodes,
+					zone: null,
+					seatCodes: $seatCodes,
 				},
 			};
 		} else {
@@ -453,13 +453,13 @@ class CommandParser {
 		$exploded = php.explode('\u00A7', $strCmd);
 		for ([$key, $command] of Object.entries($exploded)) {
 			$parsed = this.parseSingleCommand($command) || {
-				'type': null,
-				'data': null,
+				type: null,
+				data: null,
 			};
 			$parsed['cmd'] = $command;
 			$parsedCommands.push($parsed);
 		}
-		$firstCmd = php.array_shift($parsedCommands) || {'type': null, 'data': null};
+		$firstCmd = php.array_shift($parsedCommands) || {type: null, data: null};
 		$firstCmd['followingCommands'] = $parsedCommands;
 		return $firstCmd;
 	}
@@ -490,9 +490,9 @@ class CommandParser {
 			$data = $parsed['data'];
 		} else if ($data = this.parseStorePnr($cmd)) {
 			$type = (php.array_keys(php.array_filter({
-				'storePnrSendEmail': $data['sendEmail'],
-				'storeKeepPnr': $data['keepPnr'],
-				'storeAndCopyPnr': $data['cloneItinerary'],
+				storePnrSendEmail: $data['sendEmail'],
+				storeKeepPnr: $data['keepPnr'],
+				storeAndCopyPnr: $data['cloneItinerary'],
 			})) || {})[0] || 'storePnr';
 		} else if ($parsed = this.parseFfChange($cmd)) {
 			$type = $parsed['type'];
@@ -516,9 +516,9 @@ class CommandParser {
 			return null;
 		}
 		return {
-			'cmd': $cmd,
-			'type': $type,
-			'data': $data,
+			cmd: $cmd,
+			type: $type,
+			data: $data,
 		};
 	}
 }

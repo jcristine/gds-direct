@@ -2036,17 +2036,17 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        " 14 SSR DOCS QF HK1 ////05NOV79/M//STITT/MICHAEL ANDREW/",
 					        " 15 RM GD-GINA STEVENS/2185/FOR MELINDA GATES/22502/LEAD-1137097",
 					        "       8 IN LAXGO3106",
-					        ") "
+					        ") ",
 					    ].join("\n"),
 					    "duration": "0.364907276",
 					    "type": "openPnr",
 					    "scrolledCmd": "RTWVCGJW",
-					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"openPnr","gdsData":null,"scrolledCmd":"RTWVCGJW","cmdCnt":7}
+					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"openPnr","gdsData":null,"scrolledCmd":"RTWVCGJW","cmdCnt":7},
 					},
 				],
 				'performedCommands': [
 					{
-					    "cmd": "RT",
+					    "cmd": 'RT',
 					    "output": [
 					        "/$--- TST RLR SFP ---",
 					        "RP/LAXGO3106/LAXGO3106            WS/SU   7MAY19/1814Z   WVCGJW",
@@ -2070,12 +2070,12 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        " 14 SSR DOCS QF HK1 ////05NOV79/M//STITT/MICHAEL ANDREW/",
 					        " 15 RM GD-GINA STEVENS/2185/FOR MELINDA GATES/22502/LEAD-1137097",
 					        "       8 IN LAXGO3106",
-					        ") "
+					        ") ",
 					    ].join("\n"),
 					    "duration": "0.509869062",
 					    "type": "redisplayPnr",
-					    "scrolledCmd": "RT",
-					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"redisplayPnr","gdsData":null,"scrolledCmd":"RT","cmdCnt":8}
+					    "scrolledCmd": 'RT',
+					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"redisplayPnr","gdsData":null,"scrolledCmd":'RT',"cmdCnt":8},
 					},
 					{
 					    "cmd": "MDR",
@@ -2102,12 +2102,12 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        " 33 RX RESTRICTED",
 					        " 34 FA PAX 081-7318750793/ETQF/27APR19/LAXGO3100/05669893/S2-4",
 					        " 35 FB PAX 0000000000 TTP/INV/ET/RT OK ETICKET OFFER ITR*ADVISE",
-					        ") "
+					        ") ",
 					    ].join("\n"),
 					    "duration": "0.127277902",
 					    "type": "moveRest",
-					    "scrolledCmd": "RT",
-					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"moveRest","gdsData":null,"scrolledCmd":"RT","cmdCnt":9}
+					    "scrolledCmd": 'RT',
+					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"moveRest","gdsData":null,"scrolledCmd":'RT',"cmdCnt":9},
 					},
 					{
 					    "cmd": "MDR",
@@ -2121,23 +2121,23 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        " 40 FS 82",
 					        " 41 FT *1104030",
 					        " 42 FV PAX QF/S2-4",
-					        " "
+					        " ",
 					    ].join("\n"),
 					    "duration": "0.130019081",
 					    "type": "moveRest",
-					    "scrolledCmd": "RT",
-					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"moveRest","gdsData":null,"scrolledCmd":"RT","cmdCnt":10}
+					    "scrolledCmd": 'RT',
+					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"moveRest","gdsData":null,"scrolledCmd":'RT',"cmdCnt":10},
 					},
 					{
 					    "cmd": "TWD/L34",
 					    "output": [
 					        "SECURED ETKT RECORD(S)",
-					        " "
+					        " ",
 					    ].join("\n"),
 					    "duration": "0.459972817",
 					    "type": "ticketMask",
 					    "scrolledCmd": "TWD/L34",
-					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"ticketMask","gdsData":null,"scrolledCmd":"TWD/L34","cmdCnt":11}
+					    "state": {"canCreatePq":false,"pricingCmd":null,"area":"A","recordLocator":"WVCGJW","pcc":"SFO1S2195","hasPnr":true,"isPnrStored":true,"cmdType":"ticketMask","gdsData":null,"scrolledCmd":"TWD/L34","cmdCnt":11},
 					},
 				],
 			},
@@ -2176,7 +2176,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "1-2 LAST TKT DTE 10MAY20 - DATE OF ORIGIN",
 					        "1-2 250.00 USD PENALTY APPLIES",
 					        "                                                  PAGE  2/ 2",
-					        " "
+					        " ",
 					    ].join("\n"),
 					},
 					{
@@ -2204,7 +2204,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "PRICED VC PR - OTHER VC AVAILABLE GP HR",
 					        "250.00 USD PENALTY APPLIES",
 					        "                                                  PAGE  3/ 4",
-					        " "
+					        " ",
 					    ].join("\n"),
 					},
 					{
@@ -2213,7 +2213,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "ENDOS PREMIUM ECONOMY FARE RULES APPLY -BG:PR",
 					        "29MAY19 PER GAF REQUIREMENTS FARE NOT VALID UNTIL TICKETED",
 					        "                                                  PAGE  4/ 4",
-					        " "
+					        " ",
 					    ].join("\n"),
 					},
 					{
@@ -2241,7 +2241,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "PRICED VC PR - OTHER VC AVAILABLE GP HR",
 					        "250.00 USD PENALTY APPLIES",
 					        "                                                  PAGE  3/ 4",
-					        " "
+					        " ",
 					    ].join("\n"),
 					},
 					{
@@ -2250,7 +2250,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					        "ENDOS PREMIUM ECONOMY FARE RULES APPLY -BG:PR",
 					        "29MAY19 PER GAF REQUIREMENTS FARE NOT VALID UNTIL TICKETED",
 					        "                                                  PAGE  4/ 4",
-					        " "
+					        " ",
 					    ].join("\n"),
 					},
 				],
@@ -2729,7 +2729,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			output: {
 				calledCommands: [
 					{
-						"cmd": "RT",
+						"cmd": 'RT',
 						"output": [
 							"/$--- SFP ---",
 							"RP/SFO1S2195/",
@@ -3071,7 +3071,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							seqNumber: '2',
 							sessionId: '0Q2Q7L4H6A',
 						},
-						output: '/$\n00000000         SOMETHING                                     \n\nAREA  TM  MOD SG/DT.LG TIME      ACT.Q   STATUS     NAME \nA-IN      PRD WS/SU.EN  24             SIGNED       \nB                                      NOT SIGNED   \nC                                      NOT SIGNED   \nD                                      NOT SIGNED   \nE                                      NOT SIGNED   \nF                                      NOT SIGNED   \n '
+						output: '/$\n00000000         SOMETHING                                     \n\nAREA  TM  MOD SG/DT.LG TIME      ACT.Q   STATUS     NAME \nA-IN      PRD WS/SU.EN  24             SIGNED       \nB                                      NOT SIGNED   \nC                                      NOT SIGNED   \nD                                      NOT SIGNED   \nE                                      NOT SIGNED   \nF                                      NOT SIGNED   \n ',
 					}),
 				],
 				closeSession: [() => Promise.resolve({status: 'executed'})],
@@ -3143,7 +3143,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		const stateful = GdsDirectDefaults.makeStatefulSession('amadeus', input, sessionInfo);
 
 		let actualOutput = await RunCmdRq({
-			stateful, cmdRq: input.cmdRequested, amadeus,
+			stateful, cmdRq: input.cmdRequested, gdsClients: {amadeus},
 		}).catch(exc => ({error: exc + '', stack: (exc || {}).stack}));
 
 		this.assertArrayElementsSubset(output, actualOutput);

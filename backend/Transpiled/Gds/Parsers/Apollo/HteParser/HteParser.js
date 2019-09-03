@@ -2,7 +2,7 @@
 
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const TicketListParser = require("./TicketListParser");
 const TicketParser = require("./TicketParser");
 
@@ -26,9 +26,9 @@ class HteParser
 			$result = TicketParser.parse($dump);
 		}
 		if (php.empty($result['error'])) {
-			return {'type': $type, 'result': $result};
+			return {type: $type, result: $result};
 		} else {
-			return {'error': $result['error'], 'errorType': $result['errorType']};
+			return {error: $result['error'], errorType: $result['errorType']};
 		}
 	}
 }

@@ -6,6 +6,7 @@ import {notify} from '../helpers/debug.es6';
 
 import DataTable from '../abstract/dataTables.js';
 import Dom from './../abstract/dom_builder.js';
+import GrectApi from './../../src/helpers/GrectApi.js';
 
 let chunk = (arr, size) => {
 	let chunks = [];
@@ -20,6 +21,24 @@ let HtmlEl = (html) => {
 	html = html.trim(); // Never return a text node of whitespace as the result
 	template.innerHTML = html;
 	return template.content.firstChild;
+};
+
+const matchAll = (pattern, str) => {
+	let reg = new RegExp(pattern);
+	if (!reg.flags.includes('g')) {
+		reg = new RegExp(reg.source, reg.flags + 'g');
+	}
+	const records = [];
+	let lastIndex = -1;
+	let matches;
+	while((matches = reg.exec(str)) !== null) {
+		if (lastIndex === reg.lastIndex) {
+			throw new Error('Infinite regex due to empty string match at ' + lastIndex + ' - ' + reg + ' - ' + str);
+		}
+		lastIndex = reg.lastIndex;
+		records.push(matches);
+	}
+	return records;
 };
 
 const msgLang = {
@@ -241,9 +260,10 @@ params.columns.push(
 	}
 );
 
+const normReg = value => value.replace(/\(\?P</g, '(?<');
+
 let validateRegexSyntax = (input) => {
-	let normReg = value => value.replace(/\(\?P</g, '(?<');
-	input.oninput = (e) => {
+	input.addEventListener('input', (e) => {
 		try {
 			let regex = new RegExp(normReg(input.value));
 			'some random text'.match(regex);
@@ -254,8 +274,8 @@ let validateRegexSyntax = (input) => {
 			input.setCustomValidity(error); // invalid
 			input.title = error;
 		}
-	};
-	input.onblur = () => input.value = normReg(input.value);
+	});
+	input.addEventListener('blur', () => input.value = normReg(input.value));
 };
 
 gdses.forEach( lang => {
@@ -295,6 +315,93 @@ params.columns.push(
 	}
 );
 
+const getGrectApi = () => {
+	const emcSessionId = window.GdsDirectPlusParams.emcSessionId;
+	return GrectApi({
+		whenEmcSessionId: Promise.resolve(emcSessionId),
+	});
+};
+
+/**
+ * @param {HTMLInputElement} input
+ */
+const addSampleControl = (patternRec, input, span) => {
+	const outputPatternId = patternRec.id;
+	if (outputPatternId) {
+		const dumpRecs = patternRec.dumpRecs;
+		const sampleCont = document.createElement('div');
+
+		if (dumpRecs.length > 0) {
+			const hideBtn = document.createElement('button');
+			hideBtn.type = 'button';
+			hideBtn.textContent = 'Show/Hide Samples';
+			hideBtn.onclick = () => sampleCont.classList.toggle('hidden-control');
+			span.appendChild(hideBtn);
+		}
+
+		const addBtn = document.createElement('button');
+		addBtn.type = 'button';
+		addBtn.textContent = 'Add Sample';
+		span.appendChild(addBtn);
+
+		const addSampleInput = (id, value) => {
+			sampleCont.classList.toggle('hidden-control', false);
+			const panel = document.createElement('div');
+			panel.classList.toggle('sample-dump-panel', true);
+
+			const textarea = document.createElement('textarea');
+			textarea.cols = 64;
+			textarea.rows = 10;
+			textarea.value = value;
+			panel.appendChild(textarea);
+
+			const resultDiv = document.createElement('div');
+			resultDiv.classList.toggle('match-result', true);
+			panel.appendChild(resultDiv);
+
+			textarea.onblur = () => getGrectApi().saveHighlightSampleDump({
+				id: id || null,
+				outputPatternId: outputPatternId,
+				comment: '',
+				dump: textarea.value,
+			}).then(result => {
+				id = result.id; // if new record
+			});
+			const checkRegex = () => {
+				let error = null, matches = [];
+				try {
+					const regex = new RegExp(normReg(input.value), 'm');
+					matches = matchAll(regex, textarea.value);
+					if (matches.length === 0) {
+						error = 'Pattern did not match';
+					}
+				} catch (exc) {
+					error = exc + '';
+				}
+				if (error) {
+					resultDiv.classList.toggle('error', true);
+					resultDiv.textContent = error;
+				} else {
+					resultDiv.classList.toggle('error', false);
+					resultDiv.textContent = JSON.stringify(matches.map(match => {
+						return match.groups ? match.groups : match.slice(1);
+					}));
+				}
+			};
+			input.addEventListener('input', checkRegex);
+			textarea.addEventListener('input', checkRegex);
+			checkRegex();
+
+			sampleCont.appendChild(panel);
+		};
+		addBtn.onclick = () => addSampleInput(null, '');
+		for (const dumpRec of dumpRecs) {
+			addSampleInput(dumpRec.id, dumpRec.dump);
+		}
+		span.appendChild(sampleCont);
+	}
+};
+
 gdses.forEach( gds => {
 	params.columns.push({
 		visible: false,
@@ -302,13 +409,19 @@ gdses.forEach( gds => {
 		width: 200,
 		title: gds,
 		editable: (d, row) => {
+			const patternRec = row.gds[gds];
 			const val     = row['gds'] ? (row['gds'][gds]['pattern'] != null ? row['gds'][gds]['pattern'] : '') : '';
 			const isError = row['gds'] ? (row['gds'][gds]['regexError'] ? 'text-danger' : '') : '';
 
 			let html = `<input class="regex-syntax form-control input-sm ${isError}" name="gds[${gds}][pattern]" value="${val}" autocomplete="off">`;
 			let input = HtmlEl(html);
 			validateRegexSyntax(input);
-			return input;
+
+			const span = document.createElement('span');
+			span.appendChild(input);
+			addSampleControl(patternRec, input, span);
+
+			return span;
 		},
 	});
 });

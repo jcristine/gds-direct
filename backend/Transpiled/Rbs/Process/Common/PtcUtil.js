@@ -34,50 +34,48 @@ const PtcUtil = ({
 	 * this function decodes PTC-s very approximately+ Age group for
 	 * ambiguous PTC-s like seniors, patients, students etc..+ will be 'adult'
 	 */
-	const parsePtc = ($ptc) => {
-		let $infantPtcs, $childPtcs, $adultPtcs, $ageGroup, $matches, $age;
-		if (!$ptc) {
-			return {'ageGroup': null};
+	const parsePtc = (ptc) => {
+		if (!ptc) {
+			return {ageGroup: null};
 		}
-		$infantPtcs = [
+		const infantPtcs = [
 			'INF', 'INS', 'JNF', 'JNS', /* rare -> */
 			'FBI', 'LIF', 'LNS', 'API', 'APS', 'CNF', 'ENF', 'ENS', 'FGI',
 			'FIP', 'FIS', 'FNF', 'FSP', 'GIF', 'GIS', 'GRI', 'GRS', 'ICF', 'INR', 'INX', 'INY', 'ISR', 'MEI', 'MIF',
 			'MNF', 'MNS', 'MSS', 'NBI', 'NBS', 'PEI', 'PES', 'SNF', 'SNS', 'TIF', 'TNF', 'VFF', 'WBI', 'ZEI', 'ZUI',
 			'ITS', 'ITF',
 		];
-		$childPtcs = [
-			'CNN', 'JNN', 'CHD', /* rare -> */
+		const childPtcs = [
+			'CNN', 'JNN', 'CHD', 'JWB', 'MIC', /* rare -> */
 			'APC', 'CCA', 'CHR', 'CSB', 'CVN', 'DCD', 'DNN', 'ECH', 'EMN', 'ENN',
-			'FBC', 'FCP', 'FCU', 'FGC', 'FHC', 'FNN', 'FNP', 'GNN', 'ICN', 'INN', 'LNN', 'LUN', 'MDP', 'MEC', 'MIC',
+			'FBC', 'FCP', 'FCU', 'FGC', 'FHC', 'FNN', 'FNP', 'GNN', 'ICN', 'INN', 'LNN', 'LUN', 'MDP', 'MEC',
 			'MNN', 'NBC', 'NBU', 'PEC', 'PNN', 'SAC', 'SUC', 'TIN', 'TNN', 'UNN', 'UNR', 'VFN', 'VNN', 'WBC', 'WNN',
-			'XNN', 'YNN', 'ZCO', 'ZCU', 'ZEC', 'ZNN', 'JWB',
+			'XNN', 'YNN', 'ZCO', 'ZCU', 'ZEC', 'ZNN',
 		];
-		$adultPtcs = [
-			'ADT', 'JCB', /* rare -> */
+		const adultPtcs = [
+			'ADT', 'JCB', 'JWZ', /* rare -> */
 			'ADD', 'ADR', 'APA', 'BNN', 'CMA', 'CMR', 'EDT', 'FBA', 'FGA', 'FHA', 'GLR',
-			'NBA', 'PCR', 'PEA', 'VAC', 'VAG', 'ZEA', 'ZMA', 'ZPA', 'ZSA', 'ZWA', 'JWZ',
+			'NBA', 'PCR', 'PEA', 'VAC', 'VAG', 'ZEA', 'ZMA', 'ZPA', 'ZSA', 'ZWA',
 		];
-		if (php.in_array($ptc, $infantPtcs)) {
-			$ageGroup = 'infant';
-		} else if (php.in_array($ptc, $childPtcs)) {
-			$ageGroup = 'child';
-		} else if (php.preg_match(/^[A-Z](\d{1,2})$/, $ptc, $matches = [])) {
-			$age = $matches[1];
-			if (php.intval($age) <= CHILD_MAX_AGE) {
-				$ageGroup = 'child';
+		let ageGroup, age = null, matches;
+		if (php.in_array(ptc, infantPtcs)) {
+			ageGroup = 'infant';
+		} else if (php.in_array(ptc, childPtcs)) {
+			ageGroup = 'child';
+		} else if (php.preg_match(/^[A-Z](\d{1,2})$/, ptc, matches = [])) {
+			age = matches[1];
+			if (php.intval(age) <= CHILD_MAX_AGE) {
+				ageGroup = 'child';
 			} else {
-				$ageGroup = 'adult';
+				ageGroup = 'adult';
 			}
-		} else if (php.in_array($ptc, $adultPtcs)) {
-			$ageGroup = 'adult';
+		} else if (php.in_array(ptc, adultPtcs)) {
+			ageGroup = 'adult';
 		} else {
 			// very rare PTC-s for military, staff, government...
-			$ageGroup = 'adult';
+			ageGroup = 'adult';
 		}
-		return {
-			'ageGroup': $ageGroup,
-		};
+		return {ageGroup, age};
 	};
 
 	/**

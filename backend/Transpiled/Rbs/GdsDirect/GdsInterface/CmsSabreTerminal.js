@@ -3,7 +3,7 @@
 const TSabreSavePnr = require('../../../Rbs/GdsAction/Traits/TSabreSavePnr.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const CommandParser = require('../../../Gds/Parsers/Sabre/CommandParser.js');
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 var require = require('../../../translib.js').stubRequire;
 
@@ -28,8 +28,8 @@ class CmsSabreTerminal
 			? require('../../../Rbs/TravelDs/SabrePnr.js').makeFromDump($dump).getRecordLocator()
 			: (TSabreSavePnr.parseSavePnrOutput($dump) || {})['recordLocator'];
 		return {
-			'success': $recordLocator ? true : false,
-			'recordLocator': $recordLocator,
+			success: $recordLocator ? true : false,
+			recordLocator: $recordLocator,
 		};
 	}
 
@@ -68,9 +68,9 @@ class CmsSabreTerminal
 			$ptcMod = (php.array_combine(php.array_column($parsed['data']['pricingModifiers'], 'type'),
 				php.array_column($parsed['data']['pricingModifiers'], 'parsed')) || {})['ptc'];
 			$ptcs = php.array_column($ptcMod || [], 'ptc');
-			return {'ptcs': $ptcs};
+			return {ptcs: $ptcs};
 		} else {
-			return {'errors': ['Failed to parse pricing command - '+$cmd]};
+			return {errors: ['Failed to parse pricing command - '+$cmd]};
 		}
 	}
 
@@ -84,11 +84,11 @@ class CmsSabreTerminal
 
 		// >WPNCS;
 		if ($ncsMod = $typeToMod['lowestFareIgnoringAvailability']) {
-			$errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {'modifier': '/'+$ncsMod['raw']+'/'}));
+			$errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {modifier: '/'+$ncsMod['raw']+'/'}));
 		}
 		// >WPQVK4S9EU;
 		if ($qMod = $typeToMod['fareBasis']) {
-			$errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {'modifier': '/'+$qMod['raw']+'/'}));
+			$errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {modifier: '/'+$qMod['raw']+'/'}));
 		}
 		return $errors;
 	}
@@ -123,10 +123,10 @@ class CmsSabreTerminal
 	transformCalledCommand($cmdRecord)  {
 
 		return {
-			'cmd': $cmdRecord['cmd'],
-			'output': this.sanitizeOutput($cmdRecord['output']),
-			'tabCommands': this.constructor.extractTabCommands($cmdRecord['output']),
-			'clearScreen': this.constructor.isScreenCleaningCommand($cmdRecord['cmd']),
+			cmd: $cmdRecord['cmd'],
+			output: this.sanitizeOutput($cmdRecord['output']),
+			tabCommands: this.constructor.extractTabCommands($cmdRecord['output']),
+			clearScreen: this.constructor.isScreenCleaningCommand($cmdRecord['cmd']),
 		};
 	}
 }

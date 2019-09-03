@@ -9,7 +9,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
  *
  * TODO: take into account "MULT PSGR TYPES - MUST ADD P FOLLOWED BY PTC AFTER WPRD*"
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const FareRuleParser = require("./FareRuleParser");
 class FareRuleOrSegmentsParser
 {
@@ -55,12 +55,12 @@ class FareRuleOrSegmentsParser
 			php.array_shift($lines);// "SEG  CTYPAIR  FQ       RULE   CXR  PU   FARE      FAREBASIS "
 			php.array_pop($lines); // "."
 			return {
-				'type': this.SEGMENT_LIST,
-				'data': php.array_filter(php.array_map(l => this.parseComponentLine(l), $lines)),
+				type: this.SEGMENT_LIST,
+				data: php.array_filter(php.array_map(l => this.parseComponentLine(l), $lines)),
 			};
 		} else {
 			$data = FareRuleParser.parse($dump);
-			$result = {'type': this.SINGLE_RULE};
+			$result = {type: this.SINGLE_RULE};
 			if ($error = $data['error']) {
 				$result['error'] = $error;
 			} else {

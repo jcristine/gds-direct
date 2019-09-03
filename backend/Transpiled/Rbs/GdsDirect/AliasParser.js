@@ -24,10 +24,10 @@ class AliasParser {
 			'$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			return {
-				'pcc': $matches['pcc'],
-				'segmentStatus': $matches['status'] || '',
-				'seatCount': $matches['seatCount'] || '',
-				'keepOriginal': !php.empty($matches['keepOriginalMark']),
+				pcc: $matches['pcc'],
+				segmentStatus: $matches['status'] || '',
+				seatCount: $matches['seatCount'] || '',
+				keepOriginal: !php.empty($matches['keepOriginalMark']),
 			};
 		} else {
 			return null;
@@ -69,18 +69,23 @@ class AliasParser {
 			return null;
 		}
 		return {
-			'realCmd': $realCmd,
-			'limit': $limit,
+			realCmd: $realCmd,
+			limit: $limit,
 		};
 	}
 
-	static parseStore($cmd) {
-		let $matches, $_, $ptc, $modsPart;
-		if (php.preg_match(/^STORE([A-Z0-9]{3}|)\/?(.*)$/, $cmd, $matches = [])) {
-			[$_, $ptc, $modsPart] = $matches;
+	static parseStore(cmd) {
+		let matches;
+		if (php.preg_match(/^STORE([A-Z0-9]{3}|)\/?(.*)$/, cmd, matches = [])) {
+			let [, ptc, modsPart] = matches;
+			if (ptc === 'FXD') {
+				// could probably just check that PTC is in the fare family
+				// whitelist, and treat it as just a modifier if it's not...
+				modsPart = modsPart ? 'FXD/' + modsPart : 'FXD';
+			}
 			return {
-				ptc: $ptc,
-				pricingModifiers: AtfqParser.parsePricingModifiers($modsPart),
+				ptc: ptc,
+				pricingModifiers: AtfqParser.parsePricingModifiers(modsPart),
 			};
 		} else {
 			return null;
@@ -105,7 +110,8 @@ class AliasParser {
 				{ageGroup: 'infant', quantity: 1},
 			];
 		}
-		if (!$ptc || $ptc === 'ALL') {
+		const isAll = $ptc === 'ALL';
+		if (!$ptc || isAll) {
 			$ptc = 'ADT';
 		}
 		const ptcs = [];
@@ -118,7 +124,7 @@ class AliasParser {
 		return {
 			ptc: $ptc,
 			isMix: mix ? true : false,
-			isAll: $ptc === 'ALL',
+			isAll: isAll,
 			requestedAgeGroups: requestedAgeGroups,
 			ptcs: ptcs,
 			pricingModifiers: AtfqParser.parsePricingModifiers($modsPart),
@@ -148,8 +154,8 @@ class AliasParser {
 			return null;
 		}
 		$guess = (new ParsersController()).guessDumpType({
-			'dump': $cmd,
-			'creationDate': $session.getStartDt(),
+			dump: $cmd,
+			creationDate: $session.getStartDt(),
 		})['result'] || null;
 
 		const passengers = ($guess.data || {}).passengers || [];

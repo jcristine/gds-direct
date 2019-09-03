@@ -5,7 +5,7 @@ const CommandParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js'
 const FxParser = require('../../../../Gds/Parsers/Amadeus/Pricing/FxParser.js');
 const PagingHelper = require('../../../../../GdsHelpers/AmadeusUtils.js');
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const AmadeusUtil = require("../../../../../GdsHelpers/AmadeusUtils");
 
 /**
@@ -38,12 +38,12 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 	static makeBagPtcBlock($ptcPricing, $storeNum, $ptcNum)  {
 
 		return {
-			'quoteNumber': $storeNum,
-			'subPricingNumber': $ptcNum,
-			'passengerNameNumbers': $ptcPricing['passengerNameNumbers'],
-			'ptcInfo': $ptcPricing['ptcInfo'],
-			'raw': $ptcPricing['baggageInfo']['raw'],
-			'parsed': $ptcPricing['baggageInfo']['parsed'],
+			quoteNumber: $storeNum,
+			subPricingNumber: $ptcNum,
+			passengerNameNumbers: $ptcPricing['passengerNameNumbers'],
+			ptcInfo: $ptcPricing['ptcInfo'],
+			raw: $ptcPricing['baggageInfo']['raw'],
+			parsed: $ptcPricing['baggageInfo']['parsed'],
 		};
 	}
 
@@ -58,13 +58,13 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 		$discount = (($mods['generic'] || {})['ptcs'] || {})[0] || 'ADT';
 		$ageGroup = AmadeusPricingCommonFormatAdapter.parsePtc($discount)['ageGroup'];
 		return {
-			'ptc': $discount,
-			'ptcRequested': (($mods['generic'] || {})['ptcs'] || {})[0],
-			'quantity': !php.empty($nameRecords) ? php.count($nameRecords) : 1,
-			'pricingPaxNums': !php.empty($nameRecords) ? php.range(1, php.count($nameRecords)) : [1],
-			'ageGroup': $ageGroup,
-			'ageGroupRequested': $ageGroup,
-			'nameNumbers': php.array_column($nameRecords, 'nameNumber'),
+			ptc: $discount,
+			ptcRequested: (($mods['generic'] || {})['ptcs'] || {})[0],
+			quantity: !php.empty($nameRecords) ? php.count($nameRecords) : 1,
+			pricingPaxNums: !php.empty($nameRecords) ? php.range(1, php.count($nameRecords)) : [1],
+			ageGroup: $ageGroup,
+			ageGroupRequested: $ageGroup,
+			nameNumbers: php.array_column($nameRecords, 'nameNumber'),
 		};
 	}
 
@@ -78,9 +78,9 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 		$output = await this.runOrReuseFx($cmd);
 		$parsed = FxParser.parse($output);
 		if ($error = $parsed['error']) {
-			return {'error': $error};
+			return {error: $error};
 		} else if ($parsed['type'] !== 'ptcPricing') {
-			return {'error': 'Failed to fetch particular PTC pricing because GDS returned '+$parsed['type']};
+			return {error: 'Failed to fetch particular PTC pricing because GDS returned '+$parsed['type']};
 		} else {
 			$ptcBlock = AmadeusPricingCommonFormatAdapter.transformPtcBlock($parsed, $ptcInfo);
 			return $ptcBlock;
@@ -88,60 +88,65 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 	}
 
 	/** @param string $pricingDump - full clean pricing dump */
-	async execute($cmd, $pricingDump, $nameRecords = [])  {
-		let $pager, $parsed, $cmdStores, $pricingList, $bagPtcBlocks, $error, $mods, $ptcInfo, $ptcBlock, $ptcGroups, $i, $storeNum;
-
-		$pager = PagingHelper.parseFxPager($pricingDump);
-		if ($pager['hasMore']) {
-			return {'error': 'Internal error - pricing has more pages'};
+	async execute(cmd, pricingDump, nameRecords = [])  {
+		const pager = PagingHelper.parseFxPager(pricingDump);
+		if (pager.hasMore) {
+			return {error: 'Internal error - pricing has more pages'};
 		}
-
-		$parsed = FxParser.parse($pricingDump);
-		$cmdStores = CommandParser.parse($cmd)['data']['pricingStores'];
-		$pricingList = [];
-		$bagPtcBlocks = [];
-		if ($error = $parsed['error']) {
-			return {'error': $error};
-		} else if ($parsed['type'] === 'ptcPricing') {
+		const parsed = FxParser.parse(pricingDump);
+		const cmdParsed = CommandParser.parse(cmd);
+		if (cmdParsed.type !== 'priceItinerary' || !cmdParsed.data) {
+			return {error: 'Failed to parse pricing command - ' + cmd};
+		}
+		const cmdStores = cmdParsed.data.pricingStores;
+		const pricingList = [];
+		const bagPtcBlocks = [];
+		const error = parsed.error;
+		if (error) {
+			return {error: error};
+		} else if (parsed.type === 'ptcPricing') {
 			// GDS returned single PTC pricing instantly
-			if (php.count($cmdStores) <= 1) {
-				$mods = $cmdStores[0] || [];
-				$ptcInfo = this.constructor.getSinglePtcInfo($mods, $nameRecords);
-				$ptcBlock = AmadeusPricingCommonFormatAdapter.transformPtcBlock($parsed, $ptcInfo);
-				$ptcBlock['fetchedDumpNumber'] = null;
-				$bagPtcBlocks.push(this.constructor.makeBagPtcBlock($ptcBlock, 1, 1));
-				delete($ptcBlock['baggageInfo']);
-				$pricingList.push({'quoteNumber': 1, 'pricingModifiers': $mods, 'pricingBlockList': [$ptcBlock]});
+			if (php.count(cmdStores) <= 1) {
+				const mods = cmdStores[0] || [];
+				const ptcInfo = this.constructor.getSinglePtcInfo(mods, nameRecords);
+				const ptcBlock = AmadeusPricingCommonFormatAdapter.transformPtcBlock(parsed, ptcInfo);
+				ptcBlock.fetchedDumpNumber = null;
+				bagPtcBlocks.push(this.constructor.makeBagPtcBlock(ptcBlock, 1, 1));
+				delete ptcBlock.baggageInfo;
+				pricingList.push({quoteNumber: 1, pricingModifiers: mods, pricingBlockList: [ptcBlock]});
 
 			} else {
-				return {'error': 'GDS returned output for single PTC even though there were multiple pricing stores in command'};
+				return {error: 'GDS returned output for single PTC even though there were multiple pricing stores in command'};
 			}
-		} else if ($parsed['type'] === 'ptcList') {
+		} else if (parsed.type === 'ptcList') {
 			// pricing summary with partial data - no FC, carrier, taxes...
 			// need to call a separate command for each PTC
-			$ptcGroups = AmadeusPricingCommonFormatAdapter.groupPtcList($parsed['data']['passengers'], $cmdStores, $nameRecords);
-			for ([$i, $ptcInfo] of Object.entries($ptcGroups)) {
-				$storeNum = $ptcInfo['storeNumber'] || 1;
-				$ptcBlock = await this.fetchPtcBlock($ptcInfo);
-				if ($error = $ptcBlock['error']) {
-					return {'error': 'Failed to fetch '+$ptcInfo['ptc']+' PTC block - '+$error};
+			const ptcGroups = AmadeusPricingCommonFormatAdapter.groupPtcList(
+				parsed.data.passengers, cmdStores, nameRecords
+			);
+			for (const [i, ptcInfo] of Object.entries(ptcGroups)) {
+				const storeNum = ptcInfo.storeNumber || 1;
+				const ptcBlock = await this.fetchPtcBlock(ptcInfo);
+				const error = ptcBlock['error'];
+				if (error) {
+					return {error: 'Failed to fetch ' + ptcInfo.ptc + ' PTC block - ' + error};
 				} else {
-					$bagPtcBlocks.push(this.constructor.makeBagPtcBlock($ptcBlock, $storeNum, +$i + 1));
-					delete($ptcBlock['baggageInfo']);
-					$pricingList[$storeNum - 1] = $pricingList[$storeNum - 1] || {};
-					$pricingList[$storeNum - 1]['quoteNumber'] = $storeNum;
-					$pricingList[$storeNum - 1]['pricingPcc'] = null; // current PCC, Amadeus does not show it in pricing
-					$pricingList[$storeNum - 1]['pricingModifiers'] = $cmdStores[$storeNum - 1] || [];
-					$pricingList[$storeNum - 1]['pricingBlockList'] = $pricingList[$storeNum - 1]['pricingBlockList'] || [];
-					$pricingList[$storeNum - 1]['pricingBlockList'].push($ptcBlock);
+					bagPtcBlocks.push(this.constructor.makeBagPtcBlock(ptcBlock, storeNum, +i + 1));
+					delete ptcBlock.baggageInfo;
+					pricingList[storeNum - 1] = pricingList[storeNum - 1] || {};
+					pricingList[storeNum - 1].quoteNumber = storeNum;
+					pricingList[storeNum - 1].pricingPcc = null; // current PCC, Amadeus does not show it in pricing
+					pricingList[storeNum - 1].pricingModifiers = cmdStores[storeNum - 1] || [];
+					pricingList[storeNum - 1].pricingBlockList = pricingList[storeNum - 1].pricingBlockList || [];
+					pricingList[storeNum - 1].pricingBlockList.push(ptcBlock);
 				}}
 		} else {
-			return {'error': 'Unexpected pricing type - '+$parsed['type']};
+			return {error: 'Unexpected pricing type - ' + parsed.type};
 		}
 
 		return {
-			'pricingList': $pricingList,
-			'bagPtcPricingBlocks': $bagPtcBlocks,
+			pricingList: pricingList,
+			bagPtcPricingBlocks: bagPtcBlocks,
 		};
 	}
 }

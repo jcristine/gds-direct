@@ -6,7 +6,7 @@ const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHel
 /**
  * parses output of >*FF
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class FrequentFlyerParser
 {
 	static removeIndexKeys($dict)  {
@@ -31,8 +31,8 @@ class FrequentFlyerParser
 
 		if (php.preg_match($regex, $line, $matches = [])) {
 			$matches['departureDate'] = {
-				'raw': $matches['departureDate'],
-				'parsed': CommonParserHelpers.parsePartialDate($matches['departureDate']),
+				raw: $matches['departureDate'],
+				parsed: CommonParserHelpers.parsePartialDate($matches['departureDate']),
 			};
 			return this.removeIndexKeys($matches);
 		} else {
@@ -102,7 +102,7 @@ class FrequentFlyerParser
 		$lines = StringUtil.lines($dump);
 
 		if (php.trim($line = php.array_shift($lines)) !== 'FREQUENT TRAVELER') {
-			return {'error': 'unexpected start of dump', 'line': $line};
+			return {error: 'unexpected start of dump', line: $line};
 		}
 
 		[$entry, $lines] = this.parseEntry($lines);
@@ -112,10 +112,10 @@ class FrequentFlyerParser
 		};
 
 		if ($unexpectedLine = php.array_shift($lines)) {
-			return {'error': 'unexpected line', 'line': $unexpectedLine};
+			return {error: 'unexpected line', line: $unexpectedLine};
 		}
 
-		return {'mileagePrograms': $mileagePrograms};
+		return {mileagePrograms: $mileagePrograms};
 	}
 }
 module.exports = FrequentFlyerParser;

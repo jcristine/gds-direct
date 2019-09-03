@@ -201,18 +201,17 @@ const ProcessTerminalInput = async ({
 	}),
 }) => {
 	const runByGds = async (cmdRqData) => {
-		cmdRqData = {...cmdRqData, stateful, AreaSettings};
+		cmdRqData = {...cmdRqData, stateful, AreaSettings, gdsClients};
 		let gdsResult;
 		const gds = cmdRqData.stateful.gds;
-		const {travelport, sabre, amadeus} = gdsClients;
 		if (gds === 'apollo') {
-			gdsResult = await ApoRunCmdRq({...cmdRqData, travelport});
+			gdsResult = await ApoRunCmdRq(cmdRqData);
 		} else if (gds === 'sabre') {
-			gdsResult = await SabRunCmdRq({...cmdRqData, sabre});
+			gdsResult = await SabRunCmdRq(cmdRqData);
 		} else if (gds === 'amadeus') {
-			gdsResult = await AmaRunCmdRq({...cmdRqData, amadeus});
+			gdsResult = await AmaRunCmdRq(cmdRqData);
 		} else if (gds === 'galileo') {
-			gdsResult = await GalRunCmdRq({...cmdRqData, travelport});
+			gdsResult = await GalRunCmdRq(cmdRqData);
 		} else {
 			return NotImplemented('Unsupported GDS for runCmdRq() - ' + gds);
 		}
@@ -229,7 +228,8 @@ const ProcessTerminalInput = async ({
 		if (parsedAlias.type === 'addMpRemark') {
 			return AddMpRemark({stateful, airline: parsedAlias.data.airline});
 		} else if (parsedAlias.type === 'priceAll' && parsedAlias.data.isMix) {
-			return RepriceInPccMix({stateful, aliasData: parsedAlias.data, gdsClients});
+			const aliasData = {...parsedAlias.data, dialect: 'apollo', baseCmd: '$BB'};
+			return RepriceInPccMix({stateful, aliasData, gdsClients});
 		}
 
 		const bulkCmdRecs = parsedAlias.type !== 'bulkCmds'
@@ -251,6 +251,7 @@ const ProcessTerminalInput = async ({
 			}
 			const gdsResult = await running;
 			const isSuccess = gdsResult.status === GdsDirect.STATUS_EXECUTED;
+			messages.push(...(gdsResult.messages || []));
 			messages.push(...(gdsResult.userMessages || [])
 				.map(msg => ({type: isSuccess ? 'info' : 'error', text: msg})));
 			actions.push(...(gdsResult.actions || []));

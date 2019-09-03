@@ -18,50 +18,53 @@ const {jsExport} = require('klesun-node-tools/src/Debug.js');
 /** @param {String} rqBody */
 const makeHttpRqBriefing = (rqBody, gds) => {
 	let match;
-	if (['apollo', 'galileo'].includes(gds)) {
-		if (match = rqBody.match(/:Request>\s*<(\w+)>/)) {
-			return '<' + match[1] + '/>';
-		} else if (match = rqBody.match(/:BeginSession>/)) {
-			return '<BeginSession/>';
-		} else if (match = rqBody.match(/:EndSession>/)) {
-			return '<EndSession/>';
-		} else if (match = rqBody.match(/:Request>\s*(.+?)\s*<\//)) {
-			return '>' + match[1] + ';';
-		}
-	} else if (gds === 'amadeus') {
-		if (match = rqBody.match(/:textStringDetails>\s*(.+?)\s*<\//)) {
-			let briefing = '>' + match[1] + ';';
-			if (rqBody.includes('TransactionStatusCode="Start"')) {
-				if (match = rqBody.match(/ PseudoCityCode="(\w+?)"/)) {
-					briefing += ' start ' + match[1];
-				}
-			}
-			return briefing;
-		} else if (match = rqBody.match(/:Body>\s*<\w+:(\w+)/)) {
-			return '<' + match[1] + '>';
-		}
-	} else if (gds === 'sabre') {
-		if (match = rqBody.match(/:HostCommand>\s*(.+?)\s*<\//)) {
-			return '>' + match[1] + ';';
-		} else if (match = rqBody.match(/:SessionCreateRQ>/)) {
-			return '<SessionCreateRQ/>';
-		} else if (match = rqBody.match(/:SessionCloseRQ>/)) {
-			return '<SessionCloseRQ/>';
-		} else if (match = rqBody.match(/:Body><\w+:(\w+)/)) {
-			return '<' + match[1] + '/>';
-		}
+	//if (['apollo', 'galileo'].includes(gds)) {
+	if (match = rqBody.match(/:Request>\s*<(\w+)>/)) {
+		return '<' + match[1] + '/>';
+	} else if (match = rqBody.match(/:BeginSession>/)) {
+		return '<BeginSession/>';
+	} else if (match = rqBody.match(/:EndSession>/)) {
+		return '<EndSession/>';
 	}
+	//} else if (gds === 'amadeus') {
+	if (match = rqBody.match(/:textStringDetails>\s*(.+?)\s*<\//)) {
+		let briefing = '>' + match[1] + ';';
+		if (rqBody.includes('TransactionStatusCode="Start"')) {
+			if (match = rqBody.match(/ PseudoCityCode="(\w+?)"/)) {
+				briefing += ' start ' + match[1];
+			}
+		}
+		return briefing;
+	}
+	//} else if (gds === 'sabre') {
+	if (match = rqBody.match(/:HostCommand>\s*(.+?)\s*<\//)) {
+		return '>' + match[1] + ';';
+	} else if (match = rqBody.match(/:SessionCreateRQ>/)) {
+		return '<SessionCreateRQ/>';
+	} else if (match = rqBody.match(/:SessionCloseRQ>/)) {
+		return '<SessionCloseRQ/>';
+	}
+	if (match = rqBody.match(/:Request>\s*(.+?)\s*<\//)) {
+		return '>' + match[1] + ';';
+	}
+	if (match = rqBody.match(/:Body><\w+:(\w+)/)) {
+		return '<' + match[1] + '/>';
+	}
+	//}
 	return '';
 };
 
 const maskRqBody = (rqBody, gds) => {
-	if (gds === 'amadeus') {
-		rqBody = rqBody.replace(/(<\w+:Username\b[^>]*>)[^<]+(<\/\w+:Username>)/g, '$1GRECTMASKED$2');
-		rqBody = rqBody.replace(/(<\w+:Password\b[^>]*>)[^<]+(<\/\w+:Password>)/g, '$1GRECTMASKED$2');
-	} else if (gds === 'sabre') {
-		rqBody = rqBody.replace(/(<\w+:Username>)[^<]+(<\/\w+:Username>)/g, '$1GRECTMASKED$2');
-		rqBody = rqBody.replace(/(<\w+:Password>)[^<]+(<\/\w+:Password>)/g, '$1GRECTMASKED$2');
-	}
+	// not checking GDS anymore, as same HTTP client instance can be used for different
+	// GDS-es. Could wrap it into another function, separate for each GDS at some point...
+
+	//if (gds === 'amadeus') {
+	rqBody = rqBody.replace(/(<\w+:Username\b[^>]*>)[^<]+(<\/\w+:Username>)/g, '$1GRECTMASKED$2');
+	rqBody = rqBody.replace(/(<\w+:Password\b[^>]*>)[^<]+(<\/\w+:Password>)/g, '$1GRECTMASKED$2');
+	//} else if (gds === 'sabre') {
+	rqBody = rqBody.replace(/(<\w+:Username>)[^<]+(<\/\w+:Username>)/g, '$1GRECTMASKED$2');
+	rqBody = rqBody.replace(/(<\w+:Password>)[^<]+(<\/\w+:Password>)/g, '$1GRECTMASKED$2');
+	//}
 	return rqBody;
 };
 
@@ -93,7 +96,7 @@ const initHttpRqFor = ({
 		.catch(coverExc([Rej.BadGateway], (exc) => {
 			const body = (exc.data || {}).body;
 			if (body) {
-				logit('ERROR: (XML RS)', body);
+				logit('ERROR: (XML RS) ' + refNum, body);
 			}
 			return Promise.reject(exc);
 		}));

@@ -29,14 +29,14 @@ const makeDirectSellCmd = ($segment) => {
 	$date = $segment['departureDate']['raw'];
 	$pattern = '0{airline}{flightNumber}{bookingClass}{departureDate}{departureAirport}{destinationAirport}{segmentStatus}{seatCount}';
 	return StringUtil.format($pattern, {
-		'airline': $segment['airline'],
-		'flightNumber': $segment['flightNumber'],
-		'bookingClass': $segment['bookingClass'],
-		'departureDate': $date,
-		'departureAirport': $segment['departureAirport'],
-		'destinationAirport': $segment['destinationAirport'],
-		'segmentStatus': $segment['segmentStatus'],
-		'seatCount': $segment['seatCount'],
+		airline: $segment['airline'],
+		flightNumber: $segment['flightNumber'],
+		bookingClass: $segment['bookingClass'],
+		departureDate: $date,
+		departureAirport: $segment['departureAirport'],
+		destinationAirport: $segment['destinationAirport'],
+		segmentStatus: $segment['segmentStatus'],
+		seatCount: $segment['seatCount'],
 	});
 };
 
@@ -66,21 +66,21 @@ const ApolloBuildItinerary = ({
 					$errorType = REBUILD_GDS_ERROR;
 				}
 				$tplData = {
-					'segmentNumber': +$i + 1,
-					'from': $segment['departureAirport'],
-					'to': $segment['destinationAirport'],
-					'response': php.trim($output),
+					segmentNumber: +$i + 1,
+					from: $segment['departureAirport'],
+					to: $segment['destinationAirport'],
+					response: php.trim($output),
 				};
 				return {
-					'success': false,
-					'segmentsSold': $segmentsSold,
-					'errorType': $errorType,
-					'errorData': $tplData,
+					success: false,
+					segmentsSold: $segmentsSold,
+					errorType: $errorType,
+					errorData: $tplData,
 				};
 			}
 			++$segmentsSold;
 		}
-		return {'success': true, 'segmentsSold': $segmentsSold};
+		return {success: true, segmentsSold: $segmentsSold};
 	};
 
 	const executeViaXml = async itinerary => {
@@ -122,4 +122,5 @@ const ApolloBuildItinerary = ({
 
 ApolloBuildItinerary.isOutputValid = isOutputValid;
 
+/** @deprecated I guess, should use TravelportBuildItineraryActionViaXml.js (and rename it maybe to be a lit less verbose) */
 module.exports = ApolloBuildItinerary;

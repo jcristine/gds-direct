@@ -2,7 +2,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const ApolloVitParserDataStructureWriter = require("./ApolloVitParserDataStructureWriter");
 
 class ApolloVitParser {
@@ -10,8 +10,8 @@ class ApolloVitParser {
 		let $result, $dataWriter, $lines, $line, $res;
 
 		$result = {
-			'parsedData': null,
-			'skippedLines': [],
+			parsedData: null,
+			skippedLines: [],
 		};
 		$dataWriter = ApolloVitParserDataStructureWriter.make();
 
@@ -68,15 +68,15 @@ class ApolloVitParser {
 		$airline = $result['airline'];
 		$flightNumber = $result['flightNumber'].trim();
 		const result = {
-			'airline': $airline ? $airline : null,
-			'flightNumber': $flightNumber ? +$flightNumber : null,
-			'date': {
-				'raw': $result['day'] + $result['month'],
-				'parsed': CommonParserHelpers.parsePartialDate($result['day'] + $result['month']),
+			airline: $airline ? $airline : null,
+			flightNumber: $flightNumber ? +$flightNumber : null,
+			date: {
+				raw: $result['day'] + $result['month'],
+				parsed: CommonParserHelpers.parsePartialDate($result['day'] + $result['month']),
 			},
-			'dayOfWeek': {
-				'raw': $result['dayOfWeek'],
-				'parsed': CommonParserHelpers.apolloDayOfWeekToNumber($result['dayOfWeek']),
+			dayOfWeek: {
+				raw: $result['dayOfWeek'],
+				parsed: CommonParserHelpers.apolloDayOfWeekToNumber($result['dayOfWeek']),
 			},
 		};
 		if (result.date.parsed && result.dayOfWeek.parsed) {
@@ -90,7 +90,7 @@ class ApolloVitParser {
 		let $parsed;
 
 		$parsed = CommonParserHelpers.decodeApolloTime($time);
-		return $parsed ? {'raw': $time, 'parsed': $parsed} : null;
+		return $parsed ? {raw: $time, parsed: $parsed} : null;
 	}
 
 	static formatFlightDuration($duration) {
@@ -124,10 +124,10 @@ class ApolloVitParser {
 		}
 
 		return {
-			'airport': $result['airport'],
-			'arrivalTime': this.parseTimeOfDayOrNull($result['arrivalTime']),
-			'departureTime': this.parseTimeOfDayOrNull($result['departureTime']),
-			'flightDuration': this.formatFlightDuration($result['flightDuration']),
+			airport: $result['airport'],
+			arrivalTime: this.parseTimeOfDayOrNull($result['arrivalTime']),
+			departureTime: this.parseTimeOfDayOrNull($result['departureTime']),
+			flightDuration: this.formatFlightDuration($result['flightDuration']),
 		};
 	}
 
@@ -149,7 +149,7 @@ class ApolloVitParser {
 
 		try {
 			return {
-				'flightDuration': this.formatFlightDuration($result['flightDuration']),
+				flightDuration: this.formatFlightDuration($result['flightDuration']),
 			};
 		} catch ($e) {
 			return false;

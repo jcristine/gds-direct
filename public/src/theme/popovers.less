@@ -433,6 +433,9 @@
   tbody {
     color: white;
   }
+  th {
+    text-align: center;
+  }
   th, td {
     padding-left: 4px;
     padding-right: 4px;
@@ -449,6 +452,7 @@
   }
   td.net-price {
     color: #00ff00;
+    white-space: nowrap;
   }
   td.net-price span {
     cursor: pointer;
@@ -456,4 +460,15 @@
   td.net-price span:hover {
       background-color: #bcffbc;
   }
+  .error {
+    color: #928357;
+    white-space: nowrap;
+    font-size: 8px;
+  }
+}
+.go-to-pricing-in-progress td.net-price {
+  cursor: wait;
+}
+.go-to-pricing-in-progress td.net-price span {
+  pointer-events: none;
 }

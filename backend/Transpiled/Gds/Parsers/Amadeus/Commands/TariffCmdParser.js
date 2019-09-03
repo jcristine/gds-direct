@@ -8,7 +8,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * >FQDMCOSCL/15JUL18/R,06JUL18,P/ALA/IR/CL;
  * cmd type 'fareSearch'
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class TariffCmdParser
 {
 	static parseDate($raw)  {
@@ -17,7 +17,7 @@ class TariffCmdParser
 		$partial = CommonParserHelpers.parsePartialDate($raw);
 		$full = CommonParserHelpers.parseCurrentCenturyFullDate($raw)['parsed'];
 		if ($partial || $full) {
-			return {'raw': $raw, 'partial': $partial, 'full': $full};
+			return {raw: $raw, partial: $partial, full: $full};
 		} else {
 			return null;
 		}
@@ -32,8 +32,8 @@ class TariffCmdParser
 			return null;
 		} else {
 			return {
-				'departureDate': $dates[0],
-				'returnDate': $dates[1],
+				departureDate: $dates[0],
+				returnDate: $dates[1],
 			};
 		}
 	}
@@ -57,7 +57,7 @@ class TariffCmdParser
 			$parsed = null;
 		}
 		return {
-			'raw': $rSubMod, 'type': $type, 'parsed': $parsed,
+			raw: $rSubMod, type: $type, parsed: $parsed,
 		};
 	}
 
@@ -70,29 +70,29 @@ class TariffCmdParser
 			$type = 'generic';
 			$rMods = php.array_map(s => this.parseRSubModifier(s),
 				php.explode(',', $matches[1]));
-			$parsed = {'rSubModifiers': $rMods};
+			$parsed = {rSubModifiers: $rMods};
 		} else if (php.preg_match(/^A([A-Z0-9]{2}(,[A-Z0-9]{2})*)$/, $rawMod, $matches = [])) {
 			$type = 'airlines';
 			$parsed = php.explode(',', $matches[1]);
 		} else if (php.preg_match(/^I([OR])$/, $rawMod, $matches = [])) {
 			$type = 'tripType';
-			$parsed = {'O': 'OW', 'R': 'RT'}[$matches[1]];
+			$parsed = {O: 'OW', R: 'RT'}[$matches[1]];
 		} else if (php.preg_match(/^C([A-Z])$/, $rawMod, $matches = [])) {
 			$type = 'bookingClass';
 			$parsed = $matches[1];
 		} else if (php.preg_match(/^K(W|F|C|M)$/, $rawMod, $matches = [])) {
 			$type = 'cabinClass';
 			$parsed = ({
-				'W': 'premium_economy',
-				'F': 'first',
-				'C': 'business',
-				'M': 'economy',
+				W: 'premium_economy',
+				F: 'first',
+				C: 'business',
+				M: 'economy',
 			} || {})[$matches[1]];
 		} else {
 			$type = null;
 			$parsed = null;
 		}
-		return {'raw': $rawMod, 'type': $type, 'parsed': $parsed};
+		return {raw: $rawMod, type: $type, parsed: $parsed};
 	}
 
 	static parse($cmd)  {
@@ -106,9 +106,9 @@ class TariffCmdParser
 			return null;
 		}
 		return {
-			'departureAirport': $departureAirport,
-			'destinationAirport': $destinationAirport,
-			'modifiers': php.array_map(m => this.parseMods(m), $rawMods),
+			departureAirport: $departureAirport,
+			destinationAirport: $destinationAirport,
+			modifiers: php.array_map(m => this.parseMods(m), $rawMods),
 		};
 	}
 }

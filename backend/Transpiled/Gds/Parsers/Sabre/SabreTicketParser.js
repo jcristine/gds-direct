@@ -9,7 +9,7 @@ const ItineraryParser = require('../../../Gds/Parsers/Sabre/Pnr/ItineraryParser.
 /**
  * parses output of >WETR*2 (where 2 is an index of ticket in >*T output)
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class SabreTicketParser
 {
 	static removeIndexKeys($dict)  {
@@ -32,7 +32,7 @@ class SabreTicketParser
 		$error = $errorType
 			? 'GDS returned error of type '+$errorType
 			: 'Unexpected start of dump - '+php.trim($dump);
-		return {'error': $error, 'errorType': $errorType};
+		return {error: $error, errorType: $errorType};
 	}
 
 	/** @param $line = '0557931853228   06JAN17FLL' */
@@ -48,10 +48,10 @@ class SabreTicketParser
 			'\\s*$/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'airlineNumber': $matches['airlineNumber'],
-				'documentNumber': $matches['documentNumber'],
-				'date': CommonParserHelpers.parseCurrentCenturyFullDate($matches['date']),
-				'location': $matches['location'],
+				airlineNumber: $matches['airlineNumber'],
+				documentNumber: $matches['documentNumber'],
+				date: CommonParserHelpers.parseCurrentCenturyFullDate($matches['date']),
+				location: $matches['location'],
 			};
 		} else {
 			return null;
@@ -65,8 +65,8 @@ class SabreTicketParser
 		if (php.preg_match(/^\s*(\d{3})(\d{10})/, $line, $matches = [])) {
 			[$_, $airlineNumber, $documentNumber] = $matches;
 			return {
-				'airlineNumber': $airlineNumber,
-				'documentNumber': $documentNumber,
+				airlineNumber: $airlineNumber,
+				documentNumber: $documentNumber,
 			};
 		} else {
 			return null;
@@ -90,10 +90,10 @@ class SabreTicketParser
 			}
 		}
 		$extraFields = {
-			'originalIssue': this.parseOriginalIssue($labelToValue['ORIGINAL ISSUE'] || ''),
-			'originalFop': !php.isset($labelToValue['ORIGINAL FOP']) ? null :
-				{'raw': $labelToValue['ORIGINAL FOP']},
-			'exchangedFor': this.parseExchangedFor($labelToValue['EXCHANGE TKT'] || ''),
+			originalIssue: this.parseOriginalIssue($labelToValue['ORIGINAL ISSUE'] || ''),
+			originalFop: !php.isset($labelToValue['ORIGINAL FOP']) ? null :
+				{raw: $labelToValue['ORIGINAL FOP']},
+			exchangedFor: this.parseExchangedFor($labelToValue['EXCHANGE TKT'] || ''),
 		};
 		return [$extraFields, $lines];
 	}
@@ -117,8 +117,8 @@ class SabreTicketParser
 			$result = $fcRecord['parsed'];
 		} else {
 			$result = {
-				'warning': 'failed to parse fare construction',
-				'line': $fullLine,
+				warning: 'failed to parse fare construction',
+				line: $fullLine,
 			};
 		}
 
@@ -188,22 +188,22 @@ class SabreTicketParser
 		if (php.preg_match($totalLineRegex, $line, $matches = [])) {
 			$matches = php.array_filter($matches);
 			return [{
-				'fare': $fare,
-				'total': php.array_filter({
-					'currency': $matches['totalCurrency'],
-					'amount': $matches['totalAmount'],
-					'amountIndicator': $matches['totalAmountIndicator'],
+				fare: $fare,
+				total: php.array_filter({
+					currency: $matches['totalCurrency'],
+					amount: $matches['totalAmount'],
+					amountIndicator: $matches['totalAmountIndicator'],
 				}),
-				'equivalentFarePaid': php.array_filter({
-					'currency': $matches['equivFareCurrency'],
-					'amount': $matches['equivFareAmount'],
-					'amountIndicator': $matches['equivFareAmountIndicator'],
+				equivalentFarePaid: php.array_filter({
+					currency: $matches['equivFareCurrency'],
+					amount: $matches['equivFareAmount'],
+					amountIndicator: $matches['equivFareAmountIndicator'],
 				}),
 			}, $lines];
 		} else {
 			return [{
-				'error': 'line does not match pattern: '+$totalLineRegex,
-				'line': $line,
+				error: 'line does not match pattern: '+$totalLineRegex,
+				line: $line,
 			}, $lines];
 		}
 	}
@@ -230,31 +230,31 @@ class SabreTicketParser
 
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'couponNumber': $matches['couponNumber'],
-				'airline': $matches['airline'],
-				'flightNumber': $matches['flightNumber'],
-				'bookingClass': $matches['bookingClass'],
-				'departureDate': {
-					'raw': $matches['departureDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['departureDate']),
+				couponNumber: $matches['couponNumber'],
+				airline: $matches['airline'],
+				flightNumber: $matches['flightNumber'],
+				bookingClass: $matches['bookingClass'],
+				departureDate: {
+					raw: $matches['departureDate'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['departureDate']),
 				},
-				'departureAirport': $matches['departureAirport'],
-				'destinationAirport': $matches['destinationAirport'],
-				'departureTime': {
-					'raw': $matches['departureTime'],
-					'parsed': CommonParserHelpers.decodeApolloTime($matches['departureTime']),
+				departureAirport: $matches['departureAirport'],
+				destinationAirport: $matches['destinationAirport'],
+				departureTime: {
+					raw: $matches['departureTime'],
+					parsed: CommonParserHelpers.decodeApolloTime($matches['departureTime']),
 				},
-				'bookingStatus': $matches['bookingStatus'],
-				'fareBasis': $matches['fareBasis'],
-				'ticketDesignator': $matches['ticketDesignator'],
-				'couponStatus': $matches['couponStatus'],
-				'segmentType': ItineraryParser.SEGMENT_TYPE_ITINERARY_SEGMENT,
+				bookingStatus: $matches['bookingStatus'],
+				fareBasis: $matches['fareBasis'],
+				ticketDesignator: $matches['ticketDesignator'],
+				couponStatus: $matches['couponStatus'],
+				segmentType: ItineraryParser.SEGMENT_TYPE_ITINERARY_SEGMENT,
 			};
 		} else if (php.preg_match(/^(\d+)\s+ARUNK\s*$/, $line, $matches = [])) {
 			[$_, $couponNumber] = $matches;
 			return {
-				'couponNumber': $couponNumber,
-				'segmentType': ItineraryParser.SEGMENT_TYPE_ARNK,
+				couponNumber: $couponNumber,
+				segmentType: ItineraryParser.SEGMENT_TYPE_ARNK,
 			};
 		} else {
 			return null;
@@ -283,25 +283,25 @@ class SabreTicketParser
 		let $approvalSources, $pattern, $matches, $_, $paymentNetwork, $creditCardNumber, $expirationDate, $approvalCode, $approvalSource;
 
 		$approvalSources = {
-			'L': 'link',
-			'S': 'sabre',
-			'M': 'manualForAgencies',
-			'Z': 'manual',
-			'C': 'reused',
+			L: 'link',
+			S: 'sabre',
+			M: 'manualForAgencies',
+			Z: 'manual',
+			C: 'reused',
 		};
 
 		$pattern = /^FOP:\s+([A-Z]{2})([\dX]{15,16})\*([\dX]{4})\s+\/([\dA-Z]+)\s+([LSMZC]|)\s*$/;
 		if (php.preg_match($pattern, $line, $matches = [])) {
 			[$_, $paymentNetwork, $creditCardNumber, $expirationDate, $approvalCode, $approvalSource] = $matches;
 			return {
-				'paymentNetwork': $paymentNetwork,
-				'creditCardNumber': $creditCardNumber,
-				'expirationDate': {
-					'raw': $expirationDate,
-					'parsed': '20'+php.substr($expirationDate, 0, 2)+'-'+php.substr($expirationDate, 2),
+				paymentNetwork: $paymentNetwork,
+				creditCardNumber: $creditCardNumber,
+				expirationDate: {
+					raw: $expirationDate,
+					parsed: '20'+php.substr($expirationDate, 0, 2)+'-'+php.substr($expirationDate, 2),
 				},
-				'approvalCode': $approvalCode,
-				'approvalSource': $approvalSource ? $approvalSources[$approvalSource] : null,
+				approvalCode: $approvalCode,
+				approvalSource: $approvalSource ? $approvalSources[$approvalSource] : null,
 			};
 		} else {
 			return null;
@@ -359,8 +359,8 @@ class SabreTicketParser
 					php.array_unshift($lines, $line);
 				} else {
 					Object.assign($result, {
-						'error': 'line does not match pattern: /'+$pattern+'/',
-						'line': $line,
+						error: 'line does not match pattern: /'+$pattern+'/',
+						line: $line,
 					});
 					return [$result, $lines];
 				}
@@ -368,8 +368,8 @@ class SabreTicketParser
 
 		$issueDateParsed = CommonParserHelpers.parseApolloFullDate($result['issueDate']);
 		$result['issueDate'] = {
-			'raw': $result['issueDate'],
-			'parsed': $issueDateParsed ? '20'+$issueDateParsed : null,
+			raw: $result['issueDate'],
+			parsed: $issueDateParsed ? '20'+$issueDateParsed : null,
 		};
 
 		$fopLine = php.array_shift($lines);
@@ -388,8 +388,8 @@ class SabreTicketParser
 			}
 		} else {
 			return [$result + {
-				'error': 'failed to parse FOP line',
-				'line': $fopLine,
+				error: 'failed to parse FOP line',
+				line: $fopLine,
 			}, $lines];
 		}
 
@@ -403,7 +403,7 @@ class SabreTicketParser
 			let $result, $line;
 
 			$result = php.trim($line = php.array_shift($lines)) !== ''
-				? {'error': 'unexpected non-empty line', 'line': $line}
+				? {error: 'unexpected non-empty line', line: $line}
 				: [];
 			return [$result, $lines];
 		};
@@ -412,7 +412,7 @@ class SabreTicketParser
 				let $result, $line;
 
 				$result = !php.preg_match(/ELECTRONIC TICKET RECORD/, $line = php.array_shift($lines))
-					? {'error': 'unexpectedStartOfDump', 'line': $line}
+					? {error: 'unexpectedStartOfDump', line: $line}
 					: [];
 				return [$result, $lines];
 			}],

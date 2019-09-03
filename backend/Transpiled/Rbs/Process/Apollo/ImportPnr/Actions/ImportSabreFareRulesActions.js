@@ -4,7 +4,7 @@ const FareRuleParser = require('../../../../../Gds/Parsers/Sabre/FareRuleParser.
 const ImportSabrePnrFormatAdapter = require('../../../../../Rbs/Process/Sabre/ImportPnr/ImportSabrePnrFormatAdapter.js');
 const AbstractGdsAction = require('../../../../GdsAction/AbstractGdsAction.js');
 
-const php = require('../../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class ImportSabreFareRulesActions extends AbstractGdsAction {
 	static makeCmd($sections, $ptc, $segmentNumber) {

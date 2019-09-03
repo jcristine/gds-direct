@@ -5,9 +5,10 @@ const Rej = require("klesun-node-tools/src/Rej");
 const SessionStateHelper = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateHelper");
 const selectFromArray = require("klesun-node-tools/src/Utils/SqlUtil").selectFromArray;
 const NotFound = require("klesun-node-tools/src/Rej").NotFound;
-const makeRow = require("../Repositories/CmdLogs").makeRow;
+const {makeRow} = require("../Repositories/CmdLogs");
 const hrtimeToDecimal = require("klesun-node-tools/src/Utils/Misc.js").hrtimeToDecimal;
 const {ignoreExc} = require('../Utils/TmpLib.js');
+const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
 
 const CmdLog = ({
 	session, whenCmdRqId, fullState,
@@ -142,6 +143,7 @@ const CmdLog = ({
 
 	return {
 		gds: gds,
+		getCmdRqId: () => whenCmdRqId.then(nonEmpty),
 		logCommand: logCommand,
 		getFullState: () => fullState,
 		updateFullState: (newFullState) => {
@@ -153,6 +155,7 @@ const CmdLog = ({
 			const prevState = fullState.areas[fullState.area];
 			const cmdRec = {
 				type, cmd: '', output: '', duration: '0.000000000',
+				state: {scrolledCmd: ''},
 			};
 			whenCmdRqId.then(cmdRqId => {
 				const row = makeRow(cmdRec, session, cmdRqId, prevState);

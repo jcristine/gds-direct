@@ -4,6 +4,7 @@ import {CHANGE_ACTIVE_TERMINAL} from "../actions/settings";
 
 require('../../node_modules/jquery.terminal/js/unix_formatting');
 
+/** element of GDS_UNIT class */
 export default class Terminal
 {
 	constructor( params )
@@ -54,7 +55,7 @@ export default class Terminal
 					${output}`;
 		}).join('');
 
-		this.bufferDiv 				= Dom('article.terminal-wrapper');
+		this.bufferDiv 				= Dom('article.terminal-wrapper cmd-history-from-db-buffer');
 		this.bufferDiv.innerHTML 	= `<div class="terminal-output"> ${buffered} </div>`;
 
 		this.context.appendChild( this.bufferDiv );

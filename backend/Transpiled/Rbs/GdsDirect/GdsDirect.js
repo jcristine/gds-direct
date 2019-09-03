@@ -10,9 +10,9 @@ class GdsDirect {
 
 	static success($result) {
 		return {
-			'response_code': 1,
-			'result': $result,
-			'errors': [],
+			response_code: 1,
+			result: $result,
+			errors: [],
 		};
 	}
 }

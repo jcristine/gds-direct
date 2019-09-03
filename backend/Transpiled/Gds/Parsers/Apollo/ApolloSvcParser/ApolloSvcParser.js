@@ -2,7 +2,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const GdsConstants = require('../../../../Gds/Parsers/Common/GdsConstants.js');
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const ApolloSvcParserDataWriter = require("./ApolloSvcParserDataWriter");
 
 class ApolloSvcParser {
@@ -67,15 +67,15 @@ class ApolloSvcParser {
 			//         ' 1 DL 2464  V TPAJFK  717  REFRESH AT COST                 2:44'
 			$pattern = 'NN AAFFFFF  B DDDSSS CCCC  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMTTTTTT';
 			$names = {
-				'N': 'segmentNumber',
-				'A': 'airline',
-				'F': 'flightNumber',
-				'B': 'bookingClass',
-				'D': 'departureAirport',
-				'S': 'destinationAirport',
-				'C': 'aircraft',
-				'M': 'mealOptions',
-				'T': 'flightDuration',
+				N: 'segmentNumber',
+				A: 'airline',
+				F: 'flightNumber',
+				B: 'bookingClass',
+				D: 'departureAirport',
+				S: 'destinationAirport',
+				C: 'aircraft',
+				M: 'mealOptions',
+				T: 'flightDuration',
 			};
 			$result = StringUtil.splitByPosition($line, $pattern, $names, true);
 
@@ -94,7 +94,7 @@ class ApolloSvcParser {
 	static parseOperatedByLine($line) {
 
 		if (php.preg_match(/^[\s]{11}OPERATED\sBY\s/, $line)) {
-			return {'text': php.trim($line)};
+			return {text: php.trim($line)};
 		} else {
 			return false;
 		}
@@ -106,23 +106,23 @@ class ApolloSvcParser {
 		//         '           DEPARTS JFK TERMINAL 4  - ARRIVES MNL TERMINAL 3    '
 		$pattern = '           DDDDDDD EEE TTTTTTTT NN   AAAAAAA BBB SSSSSSSS MM';
 		$names = {
-			'D': 'departsToken',
-			'E': 'departureAirport',
-			'N': 'departureTerminal',
+			D: 'departsToken',
+			E: 'departureAirport',
+			N: 'departureTerminal',
 
-			'A': 'arrivesToken',
-			'B': 'arrivalAirport',
-			'M': 'arrivalTerminal',
+			A: 'arrivesToken',
+			B: 'arrivalAirport',
+			M: 'arrivalTerminal',
 		};
 		$parsed = StringUtil.splitByPosition($line, $pattern, $names, true);
 
 		if ($parsed['departsToken'] == 'DEPARTS' || $parsed['arrivesToken'] == 'ARRIVES') {
 			return {
-				'departureAirport': $parsed['departureAirport'],
-				'departureTerminal': $parsed['departureTerminal'],
+				departureAirport: $parsed['departureAirport'],
+				departureTerminal: $parsed['departureTerminal'],
 
-				'arrivalAirport': $parsed['arrivalAirport'],
-				'arrivalTerminal': $parsed['arrivalTerminal'],
+				arrivalAirport: $parsed['arrivalAirport'],
+				arrivalTerminal: $parsed['arrivalTerminal'],
 			};
 		} else {
 			return false;
@@ -132,7 +132,7 @@ class ApolloSvcParser {
 	static parseInFlightServicesLine($line) {
 
 		if (php.preg_match(/^[\s]{22}.*$/, $line) && php.trim($line)) {
-			return {'text': php.trim($line)};
+			return {text: php.trim($line)};
 		} else {
 			false;
 		}
@@ -141,7 +141,7 @@ class ApolloSvcParser {
 	static parseMiscInfoLine($line) {
 
 		if (php.preg_match(/^[\s]{11}.*$/, $line) && php.trim($line)) {
-			return {'text': php.trim($line)};
+			return {text: php.trim($line)};
 		} else {
 			false;
 		}

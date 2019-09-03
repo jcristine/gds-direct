@@ -4,7 +4,7 @@ const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const LocationGeographyProvider = require('../../../../Rbs/DataProviders/LocationGeographyProvider.js');
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class MakeMultiPccTariffDumpAction {
 	static makeHeaderDump($finishedJobs, $currentPcc) {
@@ -76,36 +76,35 @@ class MakeMultiPccTariffDumpAction {
 		}
 	}
 
-	static chooseFareToShow($sameFares, $sessionData, $cmdData) {
-		let $gdsToPccToFare, $firstGds, $geo, $departureCountry, $notChosen, $otherFares;
-		$gdsToPccToFare = {};
-		for (const $fare of Object.values($sameFares)) {
-			$gdsToPccToFare[$fare['gds']] = $gdsToPccToFare[$fare['gds']] || {};
-			$gdsToPccToFare[$fare['gds']][$fare['pcc']] = $fare;
+	static chooseFareToShow(sameFares, sessionData, cmdData) {
+		const gdsToPccToFare = {};
+		for (const fare of Object.values(sameFares)) {
+			gdsToPccToFare[fare.gds] = gdsToPccToFare[fare.gds] || {};
+			gdsToPccToFare[fare.gds][fare.pcc] = fare;
 		}
-		let $fare;
-		if (($gdsToPccToFare[$sessionData['gds']] || {})[$sessionData['pcc']]) {
-			$fare = $gdsToPccToFare[$sessionData['gds']][$sessionData['pcc']];
-			delete ($gdsToPccToFare[$sessionData['gds']][$sessionData['pcc']]);
-		} else if (!php.empty($gdsToPccToFare[$sessionData['gds']])) {
-			$fare = ArrayUtil.getFirst($gdsToPccToFare[$sessionData['gds']]);
+		let fare;
+		if ((gdsToPccToFare[sessionData.gds] || {})[sessionData.pcc]) {
+			fare = gdsToPccToFare[sessionData.gds][sessionData.pcc];
+			delete gdsToPccToFare[sessionData.gds][sessionData.pcc];
+		} else if (!php.empty(gdsToPccToFare[sessionData.gds])) {
+			fare = ArrayUtil.getFirst(gdsToPccToFare[sessionData.gds]);
 		} else {
-			$firstGds = ArrayUtil.getFirst(php.array_keys($gdsToPccToFare));
-			$fare = ArrayUtil.getFirst($gdsToPccToFare[$firstGds]);
+			const firstGds = Object.keys(gdsToPccToFare)[0];
+			fare = ArrayUtil.getFirst(gdsToPccToFare[firstGds]);
 		}
-		if ($fare && $fare['gds'] === 'sabre' && !php.empty($gdsToPccToFare['galileo'])) {
-			$geo = new LocationGeographyProvider();
-			$departureCountry = $geo.getCountryCode($cmdData['departureAirport'] || '');
-			if ($departureCountry === 'GB') {
-				$fare = ArrayUtil.getFirst($gdsToPccToFare['galileo']);
+		if (fare && fare.gds === 'sabre' && !php.empty(gdsToPccToFare['galileo'])) {
+			const geo = new LocationGeographyProvider();
+			const departureCountry = geo.getCountryCode(cmdData.departureAirport || '');
+			if (departureCountry === 'GB') {
+				fare = ArrayUtil.getFirst(gdsToPccToFare['galileo']);
 			}
 		}
-		$notChosen = ($fare1) => {
-			return $fare1['gds'] === $fare['gds']
-				|| $fare1['pcc'] === $fare['pcc'];
-		};
-		$otherFares = php.array_values(Fp.filter($notChosen, $sameFares));
-		return {'mainFare': $fare, 'otherFares': $otherFares};
+		const otherFares = sameFares
+			.filter(f =>
+				f.gds !== fare.gds &&
+				f.pcc !== fare.pcc);
+
+		return {mainFare: fare, otherFares: otherFares};
 	}
 
 	static makeFareBlock($i, $sameFares, $sessionData, $summary) {
@@ -121,16 +120,16 @@ class MakeMultiPccTariffDumpAction {
 		$fare = $chooseResult['mainFare'];
 		$others = $chooseResult['otherFares'];
 		$gdsCodes = {
-			'apollo': '1V',
-			'sabre': '1S',
-			'galileo': '1G',
-			'amadeus': '1A',
+			apollo: '1V',
+			sabre: '1S',
+			galileo: '1G',
+			amadeus: '1A',
 		};
 		$fareTypeMark = {
-			'public': '',
-			'airlinePrivate': '-',
-			'agencyPrivate': '/',
-			'accountPrivate': '*',
+			public: '',
+			airlinePrivate: '-',
+			agencyPrivate: '/',
+			accountPrivate: '*',
 		}[$fare['fareType'] || null];
 		$fareTypeMark = $fareTypeMark === undefined ? '?' : $fareTypeMark;
 		$getPccField = ($fare) => {
@@ -218,10 +217,10 @@ class MakeMultiPccTariffDumpAction {
 		$destinations = php.array_values(php.array_unique(php.array_filter($destinations)));
 		$destination = php.count($destinations) === 1 ? $destinations[0] : null;
 		return {
-			'mainDeparture': $departure,
-			'mainDestination': $destination,
-			'mainCurrency': $currency,
-			'cmdData': $cmdData,
+			mainDeparture: $departure,
+			mainDestination: $destination,
+			mainCurrency: $currency,
+			cmdData: $cmdData,
 		};
 	}
 
@@ -234,7 +233,7 @@ class MakeMultiPccTariffDumpAction {
 			$summary = this.makeSummary($mergedFares, $sessionData, $cmdData);
 			$lines.push('     CX    FARE   FARE     C  AP MIN\/    FE SEASONS..... MR GI');
 			$lines.push(StringUtil.formatLine('           $$$    BASIS            MAX                        ',
-				{'$': [$summary['mainCurrency'], 'left']}));
+				{$: [$summary['mainCurrency'], 'left']}));
 			//  '  1 -SQ   279.00R NSFV           SU/165 P50 01JAN -31DEC MR PA 1A YTOGO310E'
 			//  'LLLL/YYFFFFFFFFFR BBBBBBBB   PPP NN/XXX AAA SSSSS -sssss MM OO GG CCCCCCCCC UUU'
 			for ([$i, $sameFares] of Object.entries(php.array_values($mergedFares))) {
@@ -253,9 +252,9 @@ class MakeMultiPccTariffDumpAction {
 		$groupedFares = this.constructor.mergeJobFares($finishedJobs, $cmdData);
 		$dump += php.PHP_EOL + this.constructor.makeContentDump($groupedFares, $sessionData, $cmdData);
 		return {
-			'cmd': '$D\/MIX',
-			'output': $dump,
-			'noWrap': true,
+			cmd: '$D\/MIX',
+			output: $dump,
+			noWrap: true,
 		};
 	}
 }

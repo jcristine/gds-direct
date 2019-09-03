@@ -6,7 +6,7 @@ const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHel
 const FareConstructionParser = require('../../../Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
 const BagAllowanceParser = require('../../../Gds/Parsers/Sabre/BagAllowanceParser.js');
 
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class TicketMaskParser {
 	/**
@@ -31,10 +31,10 @@ class TicketMaskParser {
 		$split = this.splitByPositionLetters($line, $pattern);
 		if ($split['L'] === 'TKT-RCI-LOC-') {
 			return {
-				'ticketNumber': $split['N'],
-				'ticketExtension': $split['E'] || null,
-				'confirmationCode': $split['I'] || null,
-				'recordLocator': $split['R'],
+				ticketNumber: $split['N'],
+				ticketExtension: $split['E'] || null,
+				confirmationCode: $split['I'] || null,
+				recordLocator: $split['R'],
 			};
 		} else {
 			return null;
@@ -51,17 +51,17 @@ class TicketMaskParser {
 		if ($split['L'] === 'OD-SI-FCMI-POI-DOI-IOI-') {
 			$dt = CommonParserHelpers.parseApolloFullDate($split['W']);
 			return {
-				'departureCity': $split['O'],
-				'destinationCity': $split['D'],
-				'saleIndicator': $split['S'] || null,
-				'fcMode': $split['C'],
-				'issuePlace': $split['I'],
-				'issueDate': {
-					'raw': $split['W'],
-					'parsed': $dt ? '20' + $dt : null,
-					'full': $dt ? '20' + $dt : null,
+				departureCity: $split['O'],
+				destinationCity: $split['D'],
+				saleIndicator: $split['S'] || null,
+				fcMode: $split['C'],
+				issuePlace: $split['I'],
+				issueDate: {
+					raw: $split['W'],
+					parsed: $dt ? '20' + $dt : null,
+					full: $dt ? '20' + $dt : null,
 				},
-				'pccIataCode': $split['A'],
+				pccIataCode: $split['A'],
 			};
 		} else {
 			return null;
@@ -77,9 +77,9 @@ class TicketMaskParser {
 		$split = this.splitByPositionLetters($line, $pattern);
 		if ($split['.'] === '.' && $split[' '] === '' && $split['L'] === 'ST') {
 			return {
-				'nameNumber': php.intval($split['D']),
-				'passengerName': $split['N'],
-				'ptc': $split['P'],
+				nameNumber: php.intval($split['D']),
+				passengerName: $split['N'],
+				ptc: $split['P'],
 			};
 		} else {
 			return null;
@@ -93,9 +93,9 @@ class TicketMaskParser {
 		if (php.preg_match(/^\s*(\d+)\s+([A-Z]{3})\s+ARNK\s*$/, $line, $matches = [])) {
 			[$line, $couponNumber, $departureAirport] = $matches;
 			return {
-				'couponNumber': $couponNumber,
-				'departureAirport': $departureAirport,
-				'type': 'void',
+				couponNumber: $couponNumber,
+				departureAirport: $departureAirport,
+				type: 'void',
 			};
 		} else {
 			return null;
@@ -133,23 +133,23 @@ class TicketMaskParser {
 			$type = 'flight';
 		}
 		$result = {
-			'type': $type,
-			'couponNumber': php.intval($split['D']),
-			'isStopover': $split['X'] !== 'X',
-			'departureAirport': $split['A'],
-			'airline': $split['C'],
-			'flightNumber': $flightNumber,
-			'operatingAirline': $split['P'] || null,
-			'bookingClass': $split['L'],
-			'departureDate': !$split['W'] ? null : {'raw': $split['W'], 'parsed': $date},
-			'departureTime': !$split['T'] ? null : {'raw': $split['T'], 'parsed': $time},
-			'bookingStatus': $split['S'] || null,
-			'fareBasis': $fareBasis, // truncated at 8/9-th character
-			'ticketDesignator': $ticketDesignator || null,
-			'couponStatus': $split['U'],
-			'notValidBefore': $nvbDate ? {'raw': $split['O'], 'parsed': $nvbDate} : null,
-			'notValidAfter': $nvbDate ? {'raw': $split['E'], 'parsed': $nvaDate} : null,
-			'bagAmount': BagAllowanceParser.parseAmountCode($split['B']),
+			type: $type,
+			couponNumber: php.intval($split['D']),
+			isStopover: $split['X'] !== 'X',
+			departureAirport: $split['A'],
+			airline: $split['C'],
+			flightNumber: $flightNumber,
+			operatingAirline: $split['P'] || null,
+			bookingClass: $split['L'],
+			departureDate: !$split['W'] ? null : {raw: $split['W'], parsed: $date},
+			departureTime: !$split['T'] ? null : {raw: $split['T'], parsed: $time},
+			bookingStatus: $split['S'] || null,
+			fareBasis: $fareBasis, // truncated at 8/9-th character
+			ticketDesignator: $ticketDesignator || null,
+			couponStatus: $split['U'],
+			notValidBefore: $nvbDate ? {raw: $split['O'], parsed: $nvbDate} : null,
+			notValidAfter: $nvbDate ? {raw: $split['E'], parsed: $nvaDate} : null,
+			bagAmount: BagAllowanceParser.parseAmountCode($split['B']),
 		};
 		if ($split[' '] === '' && !Fp.any($isEmptyString, $result) &&
 			$result['couponNumber'] && ($date && $time || $type === 'open')
@@ -175,8 +175,8 @@ class TicketMaskParser {
 			$label = $split['L'];
 			$visibility = $split['V'];
 			$value = {
-				'currency': $split['U'] || null,
-				'amount': $split['A'],
+				currency: $split['U'] || null,
+				amount: $split['A'],
 			};
 			if ($label === 'FARE') {
 				$result['baseFare'] = $value;
@@ -218,8 +218,8 @@ class TicketMaskParser {
 					$fcRecord = FareConstructionParser.parse($fcLine);
 					$fcRecord['raw'] = $fcLine;
 					return {
-						'fareConstruction': $fcRecord,
-						'footerData': $footerData,
+						fareConstruction: $fcRecord,
+						footerData: $footerData,
 					};
 				}
 			}
@@ -250,9 +250,9 @@ class TicketMaskParser {
 				} else {
 					$result['genericFields'] = $result['genericFields'] || [];
 					$result['genericFields'].push({
-						'type': $field['type'],
-						'data': $field['data'],
-						'content': $field['content'],
+						type: $field['type'],
+						data: $field['data'],
+						content: $field['content'],
 					});
 				}
 			} else if ($gotAny) {
@@ -290,7 +290,7 @@ class TicketMaskParser {
 		$error = $errorType
 			? 'GDS returned error of type ' + $errorType
 			: 'Unexpected start of dump - ' + php.trim($dump);
-		return {'airline': $airline, 'error': $error, 'errorType': $errorType};
+		return {airline: $airline, error: $error, errorType: $errorType};
 	}
 
 	static parse($dump) {
@@ -306,12 +306,12 @@ class TicketMaskParser {
 
 		$line = php.array_shift($lines);
 		if (!($dateData = this.parseDateLine($line))) {
-			return {'error': 'Unexpected line - ' + php.trim($line)};
+			return {error: 'Unexpected line - ' + php.trim($line)};
 		}
 
 		$line = php.array_shift($lines);
 		if (!($nameData = this.parseNameLine($line))) {
-			return {'error': 'Unexpected line - ' + php.trim($line)};
+			return {error: 'Unexpected line - ' + php.trim($line)};
 		}
 
 		$segments = [];
@@ -322,60 +322,60 @@ class TicketMaskParser {
 			} else {
 				$lastAirport = php.trim($line);
 				if (php.preg_match(/^[A-Z]{3}$/, $lastAirport)) {
-					$segments.push({'departureAirport': $lastAirport, 'type': 'void'});
+					$segments.push({departureAirport: $lastAirport, type: 'void'});
 					break;
 				} else {
-					return {'error': 'Invalid last airport line - ' + $lastAirport};
+					return {error: 'Invalid last airport line - ' + $lastAirport};
 				}
 			}
 		}
 
 		let tuple;
 		if (!(tuple = this.parseFareBlock($lines))) {
-			return {'error': 'Failed to parse FARE block - ' + php.trim(php.array_shift($lines))};
+			return {error: 'Failed to parse FARE block - ' + php.trim(php.array_shift($lines))};
 		}
 		[$fareData, $linesLeft] = tuple;
 		$lines = $linesLeft;
 
 		if (!($fcBlockData = this.parseFcBlock($lines))) {
-			return {'error': 'Failed to parse /FC block - ' + php.trim(php.array_shift($lines))};
+			return {error: 'Failed to parse /FC block - ' + php.trim(php.array_shift($lines))};
 		}
 
 		return {
-			'ticketNumber': $numberData['ticketNumber'],
-			'ticketExtension': $numberData['ticketExtension'],
-			'confirmationCode': $numberData['confirmationCode'],
-			'recordLocator': $numberData['recordLocator'],
+			ticketNumber: $numberData['ticketNumber'],
+			ticketExtension: $numberData['ticketExtension'],
+			confirmationCode: $numberData['confirmationCode'],
+			recordLocator: $numberData['recordLocator'],
 
-			'departureCity': $dateData['departureCity'],
-			'destinationCity': $dateData['destinationCity'],
-			'saleIndicator': $dateData['saleIndicator'],
-			'fcMode': $dateData['fcMode'],
-			'issuePlace': $dateData['issuePlace'],
-			'issueDate': $dateData['issueDate'],
-			'pccIataCode': $dateData['pccIataCode'],
+			departureCity: $dateData['departureCity'],
+			destinationCity: $dateData['destinationCity'],
+			saleIndicator: $dateData['saleIndicator'],
+			fcMode: $dateData['fcMode'],
+			issuePlace: $dateData['issuePlace'],
+			issueDate: $dateData['issueDate'],
+			pccIataCode: $dateData['pccIataCode'],
 
-			'nameNumber': $nameData['nameNumber'],
-			'passengerName': $nameData['passengerName'],
-			'ptc': $nameData['ptc'],
+			nameNumber: $nameData['nameNumber'],
+			passengerName: $nameData['passengerName'],
+			ptc: $nameData['ptc'],
 
-			'segments': $segments,
+			segments: $segments,
 
-			'fareVisibility': $fareData['visibility'],
-			'baseFare': $fareData['baseFare'],
-			'fareEquivalent': $fareData['fareEquivalent'],
-			'totalTax': $fareData['totalTax'],
-			'netPrice': $fareData['netPrice'],
-			'additionalCollection': $fareData['additionalCollection'],
+			fareVisibility: $fareData['visibility'],
+			baseFare: $fareData['baseFare'],
+			fareEquivalent: $fareData['fareEquivalent'],
+			totalTax: $fareData['totalTax'],
+			netPrice: $fareData['netPrice'],
+			additionalCollection: $fareData['additionalCollection'],
 
-			'fareConstruction': $fcBlockData['fareConstruction'],
-			'endorsementLines': ($fcBlockData['footerData'] || {})['endorsementLines'] || [],
-			'formOfPayment': ($fcBlockData['footerData'] || {})['formOfPayment'],
-			'originalIssue': ($fcBlockData['footerData'] || {})['originalIssue'],
-			'exchangedFor': (($fcBlockData['footerData'] || {})['originalIssue'] || {})['exchangedFor'],
-			'tourCode': ($fcBlockData['footerData'] || {})['tourCode'],
-			'genericFields': ($fcBlockData['footerData'] || {})['genericFields'] || [],
-			'unparsedLines': php.array_filter(($fcBlockData['footerData'] || {})['unparsedLines'] || []),
+			fareConstruction: $fcBlockData['fareConstruction'],
+			endorsementLines: ($fcBlockData['footerData'] || {})['endorsementLines'] || [],
+			formOfPayment: ($fcBlockData['footerData'] || {})['formOfPayment'],
+			originalIssue: ($fcBlockData['footerData'] || {})['originalIssue'],
+			exchangedFor: (($fcBlockData['footerData'] || {})['originalIssue'] || {})['exchangedFor'],
+			tourCode: ($fcBlockData['footerData'] || {})['tourCode'],
+			genericFields: ($fcBlockData['footerData'] || {})['genericFields'] || [],
+			unparsedLines: php.array_filter(($fcBlockData['footerData'] || {})['unparsedLines'] || []),
 		};
 	}
 }

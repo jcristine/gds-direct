@@ -7,7 +7,7 @@ const {fetchAll} = require('../../../../../../GdsHelpers/TravelportUtils.js');
 /**
  * calls >*HTE and >*TE001, >*TE002, ...
  */
-const php = require('../../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const Pccs = require("../../../../../../Repositories/Pccs");
 const TravelportClient = require("../../../../../../GdsClients/TravelportClient");
 const Forbidden = require("klesun-node-tools/src/Rej").Forbidden;
@@ -80,12 +80,12 @@ class RetrieveApolloTicketsAction extends AbstractGdsAction {
 			$errorTypes = php.array_column($tickets, 'errorType');
 			if (php.count($errors) === php.count($tickets)) {
 				$ticketInfo = {
-					'error': 'All ' + php.count($tickets) + ' ticket masks are not available - ' + php.array_shift($errors),
-					'errorType': php.count(php.array_unique($errorTypes)) === 1 ? $errorTypes[0] : null,
-					'tickets': $tickets,
+					error: 'All ' + php.count($tickets) + ' ticket masks are not available - ' + php.array_shift($errors),
+					errorType: php.count(php.array_unique($errorTypes)) === 1 ? $errorTypes[0] : null,
+					tickets: $tickets,
 				};
 			} else {
-				$ticketInfo = {'tickets': $tickets};
+				$ticketInfo = {tickets: $tickets};
 			}
 		} else {
 			$ticketInfo = $listOrTicket;

@@ -29,30 +29,30 @@ class LinearFareParser
 			$matches = php.array_filter($matches);
 			php.preg_match_all('/'+$taxPattern+'/', $matches['taxList'] || '', $taxMatches = [], php.PREG_SET_ORDER);
 			return {
-				'fareAndMarkup': {
-					'currency': $matches['baseCurrency'],
-					'amount': $matches['baseAmount'],
+				fareAndMarkup: {
+					currency: $matches['baseCurrency'],
+					amount: $matches['baseAmount'],
 				},
-				'fareEquivalent': php.isset($matches['equivalentCurrency']) ? {
-					'currency': $matches['equivalentCurrency'],
-					'amount': $matches['equivalentAmount'],
+				fareEquivalent: php.isset($matches['equivalentCurrency']) ? {
+					currency: $matches['equivalentCurrency'],
+					amount: $matches['equivalentAmount'],
 				} : null,
-				'taxes': Fp.map(($tuple) => {
+				taxes: Fp.map(($tuple) => {
 					let $_, $amount, $taxCode;
 					[$_, $amount, $taxCode] = $tuple;
 					if (php.trim($amount) === 'EXEMPT') {
 						$amount = '0.00';
 					}
 					return {
-						'pseudoCountryCode': $taxCode,
-						'amount': $amount,
+						pseudoCountryCode: $taxCode,
+						amount: $amount,
 					};
 				}, $taxMatches),
-				'amountCharged': {
-					'currency': $matches['totalCurrency'],
-					'amount': $matches['totalAmount'],
+				amountCharged: {
+					currency: $matches['totalCurrency'],
+					amount: $matches['totalAmount'],
 				},
-				'textLeft': $matches['textLeft'] || '',
+				textLeft: $matches['textLeft'] || '',
 			};
 		} else {
 			return null;
@@ -73,14 +73,14 @@ class LinearFareParser
 					$textLeft = $fareBreakdown['textLeft'];
 					delete($fareBreakdown['textLeft']);
 					$fareConstruction = {
-						'parsed': php.array_merge($fareConstruction['parsed'], $fareBreakdown),
-						'textLeft': $textLeft,
+						parsed: php.array_merge($fareConstruction['parsed'], $fareBreakdown),
+						textLeft: $textLeft,
 					};
 				}
 				return $fareConstruction;
 			}
 		}
-		return {'error': 'Failed to parse fare breakdown'};
+		return {error: 'Failed to parse fare breakdown'};
 	}
 }
 module.exports = LinearFareParser;

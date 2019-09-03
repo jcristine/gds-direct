@@ -45,6 +45,9 @@ export const CHANGE_GDS = gdsName => {
 		language,
 		theme,
 	});
+	const gdsUnit = getStore().app.Gds.getGds(gdsName);
+
+	return gdsUnit;
 };
 
 export const UPDATE_CUR_GDS = props => {

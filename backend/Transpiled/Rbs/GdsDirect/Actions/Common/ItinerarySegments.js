@@ -1,4 +1,38 @@
 const Rej = require('klesun-node-tools/src/Rej.js');
+const _ = require('lodash');
+
+const normDate = (seg) => {
+	const parsed = _.get(seg, ['departureDate', 'parsed']);
+	let full = _.get(seg, ['departureDt', 'full']);
+	if (parsed && parsed.match(/^\d{4}-\d{2}-\d{2}/)) {
+		full = parsed;
+	}
+	if (full) {
+		return full.slice('2019-'.length, '2019-12-31'.length);
+	} else {
+		return parsed.slice(0, '12-31'.length);
+	}
+};
+
+const doSegmentsMatch = (seg, pnrSeg) => {
+	return seg.airline === pnrSeg.airline
+		&& +seg.flightNumber === +pnrSeg.flightNumber
+		&& seg.departureAirport === pnrSeg.departureAirport
+		&& seg.destinationAirport === pnrSeg.destinationAirport
+		&& normDate(seg) === normDate(pnrSeg);
+};
+
+const findSegmentInPnr = (seg, pnrItinerary) => {
+	const pnrSegment = pnrItinerary.find(pnrSeg => doSegmentsMatch(seg, pnrSeg));
+	if (!pnrSegment) {
+		const msg = `Failed to match GK segment #${seg.segmentNumber} to resulting PNR`;
+		throw Rej.InternalServerError.makeExc(msg, {seg, itin: pnrItinerary});
+	}
+	return pnrSegment;
+};
+
+module.exports.doSegmentsMatch = doSegmentsMatch;
+module.exports.findSegmentInPnr = findSegmentInPnr;
 
 // Segment's segmentNumber might not be correct one, it represents
 // its index in supplied itinerary not PNR(segment might have ended
@@ -8,20 +42,5 @@ module.exports.findSegmentNumberInPnr = (seg, itinerary) => {
 		return seg.segmentNumber;
 	}
 
-	const pnr = itinerary.find(pnrSeg =>
-		seg.airline === pnrSeg.airline &&
-		+seg.flightNumber === +pnrSeg.flightNumber &&
-		seg.departureAirport === pnrSeg.departureAirport &&
-		seg.destinationAirport === pnrSeg.destinationAirport &&
-		(seg.departureDate.parsed === pnrSeg.departureDate.parsed
-			// travelport will return dates with year in it, but itinerary in code is without
-			|| seg.departureDate.parsed === pnrSeg.departureDate.parsed.substr('2019-'.length))
-	);
-
-	if (!pnr) {
-		const msg = `Failed to match GK segment #${seg.segmentNumber} to resulting PNR`;
-		throw Rej.InternalServerError.makeExc(msg, {seg, itin: itinerary});
-	}
-
-	return pnr.segmentNumber;
+	return findSegmentInPnr(seg, itinerary).segmentNumber;
 };

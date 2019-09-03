@@ -4,7 +4,7 @@ const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const FareRuleSectionParser = require('../../../../Gds/Parsers/Common/FareRuleSectionParser.js');
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * parses output of >FQN...; which displays Fare Rules or component list
@@ -66,14 +66,14 @@ class FareRuleParser
 		if (php.preg_match($regex, $line, $matches = [])) {
 			$paxNumType = php.trim($matches['paxNumType']);
 			return {
-				'pricingPaxNum': $matches['pricingPaxNum'],
-				'paxNumberType': {
+				pricingPaxNum: $matches['pricingPaxNum'],
+				paxNumberType: {
 					'PSGR P': 'pnrName',
 					'PTC': 'commandPtc',
 				}[$paxNumType],
-				'paxNumbers': this.parsePaxNums($matches['paxNumExpr']),
-				'ptc': $matches['ptc'],
-				'isRulesDisplay': $matches['isRulesDisplayMark'] ? true : false,
+				paxNumbers: this.parsePaxNums($matches['paxNumExpr']),
+				ptc: $matches['ptc'],
+				isRulesDisplay: $matches['isRulesDisplayMark'] ? true : false,
 			};
 		} else {
 			return null;
@@ -100,16 +100,16 @@ class FareRuleParser
             '$\/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'command': $matches['label'] !== 'FARE COMPONENT'
+				command: $matches['label'] !== 'FARE COMPONENT'
 					? $matches['label']+$matches['componentNumber']
 					: null,
-				'componentNumber': $matches['componentNumber'],
-				'ptc': $matches['ptc'],
-				'departureCity': $matches['departureCity'],
-				'destinationCity': $matches['destinationCity'],
-				'airline': $matches['airline'],
-				'fareBasis': $matches['fareBasis'],
-				'ticketDesignator': $matches['ticketDesignator'],
+				componentNumber: $matches['componentNumber'],
+				ptc: $matches['ptc'],
+				departureCity: $matches['departureCity'],
+				destinationCity: $matches['destinationCity'],
+				airline: $matches['airline'],
+				fareBasis: $matches['fareBasis'],
+				ticketDesignator: $matches['ticketDesignator'],
 			};
 		} else {
 			return null;
@@ -127,11 +127,11 @@ class FareRuleParser
 
 		if ($split['L'] === 'FCL:TRF:RULE:BK:') {
 			return {
-				'fareBasis': $split['F'],
+				fareBasis: $split['F'],
 				// in XML it's called "tariff class id"
-				'trf': $split['T'],
-				'rule': $split['R'],
-				'bookingClass': $split['B'],
+				trf: $split['T'],
+				rule: $split['R'],
+				bookingClass: $split['B'],
 			};
 		} else {
 			return null;
@@ -150,10 +150,10 @@ class FareRuleParser
 
 		if ($split['L'] === 'PTC:FTC:') {
 			return {
-				'ptc': $split['C'],
-				'ptcMeaning': $split['M'],
-				'fareType': $split['T'],
-				'tripTypeRemark': $split['R'],
+				ptc: $split['C'],
+				ptcMeaning: $split['M'],
+				fareType: $split['T'],
+				tripTypeRemark: $split['R'],
 			};
 		} else {
 			return null;
@@ -190,24 +190,24 @@ class FareRuleParser
 		let $abbrToNumber, $matches, $_, $abbr, $name, $num;
 
 		$abbrToNumber = {
-			'EL': '01', 'DA': '02', 'SE': '03', 'FL': '04',
-			'AP': '05', 'MN': '06', 'MX': '07', 'SO': '08',
-			'TF': '09', 'CO': '10', 'BO': '11', 'SU': '12',
-			'AC': '13', 'TR': '14', 'SR': '15', 'PE': '16',
-			'HI': '17', 'TE': '18', 'CD': '19', 'TC': '20',
-			'AD': '21', 'OD': '22', 'MD': '23', 'GP': '26',
-			'TO': '27', 'VI': '28', 'DE': '29', 'VC': '31',
-			'RU': '50',
-			'AO': null, 'EE': null, 'OJ': null, 'CT': null,
+			EL: '01', DA: '02', SE: '03', FL: '04',
+			AP: '05', MN: '06', MX: '07', SO: '08',
+			TF: '09', CO: '10', BO: '11', SU: '12',
+			AC: '13', TR: '14', SR: '15', PE: '16',
+			HI: '17', TE: '18', CD: '19', TC: '20',
+			AD: '21', OD: '22', MD: '23', GP: '26',
+			TO: '27', VI: '28', DE: '29', VC: '31',
+			RU: '50',
+			AO: null, EE: null, OJ: null, CT: null,
 		};
 
 		if (php.preg_match(/^([A-Z]{2})\.(\S.*?)\s*$/, $line, $matches = [])) {
 			[$_, $abbr, $name] = $matches;
 			$num = $abbrToNumber[$abbr];
 			return {
-				'abbreviation': $abbr,
-				'sectionName': $name,
-				'sectionNumber': $num ? php.intval($num) : null,
+				abbreviation: $abbr,
+				sectionName: $name,
+				sectionNumber: $num ? php.intval($num) : null,
 			};
 		} else {
 			return null;
@@ -247,13 +247,13 @@ class FareRuleParser
 		$linesLeft = StringUtil.lines($dump);
 		$cmdCopy = php.trim(php.array_shift($linesLeft));
 		if (!StringUtil.startsWith($cmdCopy, 'FQN')) {
-			return {'error': 'Unexpected command copy format - '+$cmdCopy};
+			return {error: 'Unexpected command copy format - '+$cmdCopy};
 		}
 		[$emptyLines, $linesLeft] = this.parseSequence($linesLeft, (...args) => this.isEmptyLine(...args));
 
 		$displayHeaderLine = php.array_shift($linesLeft);
 		if (!($displayHeaderData = this.parseScreenHeaderLine($displayHeaderLine))) {
-			return {'error': 'Failed to parse FQN screen header - '+php.trim($displayHeaderLine)};
+			return {error: 'Failed to parse FQN screen header - '+php.trim($displayHeaderLine)};
 		}
 
 		if ($displayHeaderData['isRulesDisplay']) {
@@ -262,27 +262,27 @@ class FareRuleParser
 			[$header, $linesLeft] = this.parseRulesHeader($linesLeft);
 			$sections = this.parseSections(php.array_splice($linesLeft, 0));
 			$data = {
-				'fareComponent': $fareComponent,
-				'header': $header,
-				'sections': $sections,
+				fareComponent: $fareComponent,
+				header: $header,
+				sections: $sections,
 			};
 		} else {
 			$type = 'componentList';
 			[$components, $linesLeft] = this.parseSequence($linesLeft, (...args) => this.parseComponentLine(...args));
 			if (!$components) {
-				return {'error': 'Failed to parse fare component - '+php.trim(ArrayUtil.getFirst($linesLeft))};
+				return {error: 'Failed to parse fare component - '+php.trim(ArrayUtil.getFirst($linesLeft))};
 			}
 			$data = $components;
 		}
 		[$emptyLines, $linesLeft] = this.parseSequence($linesLeft, (...args) => this.isEmptyLine(...args));
 		return {
-			'pricingPaxNum': $displayHeaderData['pricingPaxNum'],
-			'paxNumberType': $displayHeaderData['paxNumberType'],
-			'paxNumbers': $displayHeaderData['paxNumbers'],
-			'ptc': $displayHeaderData['ptc'],
-			'type': $type,
-			'data': $data,
-			'linesLeft': $linesLeft,
+			pricingPaxNum: $displayHeaderData['pricingPaxNum'],
+			paxNumberType: $displayHeaderData['paxNumberType'],
+			paxNumbers: $displayHeaderData['paxNumbers'],
+			ptc: $displayHeaderData['ptc'],
+			type: $type,
+			data: $data,
+			linesLeft: $linesLeft,
 		};
 	}
 }

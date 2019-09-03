@@ -9,7 +9,36 @@ const Cmp = (...args) => new Component(...args);
  * @param {GdsSwitch} gdsSwitch
  * @param {TerminalPlugin} plugin
  */
-const PricePccMixList = ({gdsSwitch, plugin}) => {
+const PricePccMixList = ({
+	plugin, itinerary, processes, cmdRqId,
+}) => {
+	const comparePccRecs = (neo, old) => {
+		const gds = plugin.gdsName;
+		const pcc = plugin.getSessionInfo().pcc;
+		const gdsOrdering = [gds, 'apollo', 'sabre', 'amadeus', 'galileo'];
+		const newGdsOrder = gdsOrdering.indexOf(neo.gds);
+		const oldGdsOrder = gdsOrdering.indexOf(old.gds);
+
+		if (neo.pcc === pcc && old.pcc !== pcc) {
+			return -1;
+		} else if (neo.pcc !== pcc && old.pcc === pcc) {
+			return 1;
+		} else {
+		} if (neo.gds === gds && old.gds !== gds) {
+			return -1;
+		} else if (neo.gds !== gds && old.gds === gds) {
+			return 1;
+		} else if (newGdsOrder === oldGdsOrder) {
+			return 0;
+		} else if (newGdsOrder === -1) {
+			return 1;
+		} else if (oldGdsOrder === -1) {
+			return -1;
+		} else {
+			return newGdsOrder - oldGdsOrder;
+		}
+	};
+
 	const theadCmp = Cmp('thead.usedCommand').attach([
 		Cmp('tr').attach([
 			Cmp('th', {textContent: 'GDS'}),
@@ -21,38 +50,82 @@ const PricePccMixList = ({gdsSwitch, plugin}) => {
 			Cmp('th', {textContent: 'INF'}),
 		]),
 	]);
-	const tbodyCmp = Cmp('tbody');
+	const tbodyCmp = Cmp('tbody').attach(processes
+		.sort(comparePccRecs)
+		.map(({gds, pricingPcc, pcc, pricingCmd, pricingAction}) => {
+			const trCmp = Cmp('tr').attach([
+				Cmp('td.gds', {textContent: gds}),
+				Cmp('td.pcc', {textContent: (!pricingPcc ? '' : pricingPcc + '.') + pcc, title: pricingCmd}),
+			]);
+			trCmp.context.setAttribute('data-gds', gds);
+			trCmp.context.setAttribute('data-pcc', pcc);
+			trCmp.context.setAttribute('data-cmd', pricingCmd);
+			trCmp.context.setAttribute('data-pricing-action', pricingAction);
+			return trCmp;
+		}));
 	const rootCmp = Cmp('div.price-pcc-mix-list').attach([
 		Cmp('table').attach([theadCmp, tbodyCmp]),
 	]);
+	let pendingLeft = processes.length;
 
 	const formatNet = (ptcBlock) => {
 		if (!ptcBlock) {
 			return '';
 		}
 		const netPrice = ptcBlock.fareInfo.totalFare;
-		const sign = netPrice.currency === 'USD' ? '$' : netPrice.currency + ' ';
+		const sign = {
+			'USD': '$',
+			'EUR': '€',
+			'GBP': '£',
+			'CAD': 'C$',
+			'PHP': '₱',
+			'AUD': 'A$',
+		}[netPrice.currency] || netPrice.currency + ' ';
+
 		return sign + netPrice.amount;
 	};
 
-	const findFirstHigherThan = (newTr) => {
-		const newPrice = newTr.getAttribute('data-net-price');
-		const trs = [...tbodyCmp.context.querySelectorAll(':scope > tr[data-net-price]')];
+	const trToData = (tr) => ({
+		price: tr.getAttribute('data-net-price'),
+		gds: tr.getAttribute('data-gds'),
+		pcc: tr.getAttribute('data-pcc'),
+		pricingAction: tr.getAttribute('data-pricing-action'),
+	});
+
+	const compareRows = (newTr, oldTr) => {
+		const neo = trToData(newTr);
+		const old = trToData(oldTr);
+
+		if (!old.price) {
+			return -1;
+		} else if (neo.price != old.price) {
+			return neo.price - old.price;
+		} else {
+			return comparePccRecs(neo, old);
+		}
+	};
+
+	const findFirstWorseThan = (newTr) => {
+		const trs = [...tbodyCmp.context.querySelectorAll(':scope > tr')];
 		for (const tr of trs) {
-			const oldPrice = tr.getAttribute('data-net-price');
-			if (+oldPrice > +newPrice) {
+			const sign = compareRows(newTr, tr);
+			if (sign <= 0) {
 				return tr;
 			}
 		}
 		return null;
 	};
 
-	/** @param {{gds, pcc}} pccResult = (new (require('RepriceInAnotherPccAction.js'))).repriceIn() */
-	const addRow = ({pccResult}) => {
-		console.debug('pccResult', pccResult);
+	const finalize = () => {
+		delete cmdRqToList[cmdRqId];
+		rootCmp.attach([Cmp('div', {style: 'color: green', textContent: 'Done'})]);
+	};
 
+	const populateRow = (pccResult, trCmp) => {
+		const {gds, pcc, pricingCmd, pricingBlockList = [], calledCommands = [], rebookItinerary = []} = pccResult;
+		const processData = trToData(trCmp.context);
 		const ageGroupToBlock = {};
-		for (const ptcBlock of pccResult.pricingBlockList || []) {
+		for (const ptcBlock of pricingBlockList) {
 			const ageGroup = ptcBlock.ptcInfo.ageGroupRequested || ptcBlock.ptcInfo.ageGroup;
 			ageGroupToBlock[ageGroup] = ptcBlock;
 		}
@@ -62,28 +135,30 @@ const PricePccMixList = ({gdsSwitch, plugin}) => {
 			ageGroupToBlock.infant ||
 			null;
 
-		if (!mainPtcBlock) {
-			// an error, could show it somewhere probably...
-			return;
-		}
 		const ptc = mainPtcBlock.ptcInfo.ptcRequested || mainPtcBlock.ptcInfo.ptc;
-		const pricingDump = (pccResult.calledCommands || [])
+		const pricingDump = calledCommands
 			.map(({cmd, output}) => '>' + cmd + ';\n' + output)
 			.join('\n');
 
-		const goToPricing = () => {
+		/** @param {MouseEvent} evt */
+		const goToPricing = (evt) => {
+			rootCmp.context.classList.toggle('go-to-pricing-in-progress', true);
 			plugin._withSpinner(() => post('terminal/goToPricing', {
 				gds: plugin.gdsName, useSocket: true,
-				pricingGds: pccResult.gds,
-				pricingPcc: pccResult.pcc,
-				pricingCmd: pccResult.pricingCmd,
-				itinerary: pccResult.itinerary,
+				pricingGds: gds,
+				pricingPcc: pcc,
+				pricingCmd: pricingCmd,
+				pricingAction: processData.pricingAction,
+				itinerary: rebookItinerary.length ? rebookItinerary : itinerary,
 			})).then((cmdResult) => {
-				CHANGE_GDS(pccResult.gds);
-				gdsSwitch.getGds(pccResult.gds).getActiveTerminal()
+				const gdsUnit = CHANGE_GDS(gds);
+				gdsUnit.getActiveTerminal()
 					.plugin.parseBackEnd(cmdResult, 'GOTOPRICEMIX');
+			}).finally(() => {
+				rootCmp.context.classList.toggle('go-to-pricing-in-progress', false);
 			});
 		};
+
 		const makeNetCell = ptcBlock => Cmp('td.net-price').attach([
 			Cmp('span', {
 				textContent: formatNet(ptcBlock),
@@ -92,15 +167,9 @@ const PricePccMixList = ({gdsSwitch, plugin}) => {
 			}),
 		]);
 
-		const trCmp = Cmp('tr').attach([
-			Cmp('td.gds').attach([
-				Cmp('span', {textContent: pccResult.gds}),
-			]),
-			Cmp('td.pcc').attach([
-				Cmp('span', {textContent: pccResult.pcc}),
-			]),
+		trCmp.attach([
 			Cmp('td').attach([
-				Cmp('span', {textContent: ptc, title: pccResult.pricingCmd}),
+				Cmp('span', {textContent: ptc, title: pricingCmd}),
 			]),
 			Cmp('td').attach([
 				Cmp('span', {textContent: mainPtcBlock.fareType}),
@@ -111,7 +180,8 @@ const PricePccMixList = ({gdsSwitch, plugin}) => {
 		]);
 		trCmp.context.setAttribute('data-net-price', mainPtcBlock.fareInfo.totalFare.amount);
 
-		const firstHigher = findFirstHigherThan(trCmp.context);
+		trCmp.context.remove();
+		const firstHigher = findFirstWorseThan(trCmp.context);
 		if (firstHigher) {
 			firstHigher.parentNode.insertBefore(trCmp.context, firstHigher);
 		} else {
@@ -119,43 +189,59 @@ const PricePccMixList = ({gdsSwitch, plugin}) => {
 		}
 	};
 
-	const finalize = (data) => {
-		rootCmp.attach([Cmp('div', {style: 'color: green', textContent: 'Done'})]);
+	/** @param {{gds, pcc}} pccResult = (new (require('RepriceInAnotherPccAction.js'))).repriceIn() */
+	const addRow = ({pccResult}) => {
+		console.debug('pccResult', pccResult);
+
+		const {gds, pcc, rulePricingCmd, pricingBlockList = []} = pccResult;
+		const error = pccResult.error || (pricingBlockList.length ? null : 'No pricing returned');
+
+		const selector = ':scope > tr[data-gds="' + gds + '"][data-pcc="' + pcc + '"]:not(.filled)';
+		const tr = [...tbodyCmp.context.querySelectorAll(selector)]
+			.filter(tr => tr.getAttribute('data-cmd') === rulePricingCmd)[0];
+		const trCmp = Cmp({context: tr});
+
+		if (error) {
+			const text = error.slice(0, 300).replace('\n', ' - ');
+			trCmp.attach([
+				Cmp('td.error', {colSpan: 5}).attach([
+					Cmp('div', {textContent: text}),
+				]),
+			]);
+		} else {
+			populateRow(pccResult, trCmp);
+		}
+		trCmp.context.classList.toggle('filled', true);
+
+		if (--pendingLeft <= 0) {
+			finalize();
+		}
 	};
 
-	const main = () => {
-		return {
-			dom: rootCmp.context,
-			addRow: addRow,
-			finalize: finalize,
-		};
+	return {
+		dom: rootCmp.context,
+		addRow: addRow,
+		finalize: finalize,
 	};
-
-	return main();
 };
 
-let priceMixList = null;
+const cmdRqToList = {};
 
-PricePccMixList.finalize = (data) => {
-	if (priceMixList) {
-		priceMixList.finalize(data);
-	}
-	return priceMixList = null;
+PricePccMixList.initialize = (plugin, data) => {
+	const {itinerary, cmdRqId, processes} = data;
+	const priceMixList = PricePccMixList({
+		plugin, itinerary, processes, cmdRqId,
+	});
+	cmdRqToList[cmdRqId] = priceMixList;
+	const {remove} = plugin.injectDom({
+		cls: 'price-mix-pcc-holder',
+		dom: priceMixList.dom,
+		onCancel: () => remove(),
+	});
 };
 
-PricePccMixList.displayPriceMixPccRow = (gdsSwitch, plugin, pccResult) => {
-	if (!priceMixList) {
-		priceMixList = PricePccMixList({gdsSwitch, plugin});
-		const {remove} = plugin.injectDom({
-			cls: 'price-mix-pcc-holder',
-			dom: priceMixList.dom,
-			onCancel: () => {
-				remove();
-				priceMixList = null;
-			},
-		});
-	}
-	priceMixList.addRow(pccResult);
+PricePccMixList.displayPriceMixPccRow = (pccResult) => {
+	cmdRqToList[pccResult.cmdRqId].addRow(pccResult);
 };
 
 export default PricePccMixList;

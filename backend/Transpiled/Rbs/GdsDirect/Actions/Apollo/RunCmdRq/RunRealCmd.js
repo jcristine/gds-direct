@@ -98,7 +98,7 @@ const RunRealCmd = ({
 			if ($remark['remarkType'] !== GenericRemarkParser.CMS_LEAD_REMARK) continue;
 			$lineNum = $remark['lineNumber'];
 			if (isInRanges($lineNum, $data['ranges'])) {
-				$errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {'lineNum': $lineNum}));
+				$errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {lineNum: $lineNum}));
 			}
 		}
 		return $errors;
@@ -115,7 +115,7 @@ const RunRealCmd = ({
 		if (php.array_key_exists($pnrCreationPcc, $pccLimitations)) {
 			$allowedPccs = $pccLimitations[$pnrCreationPcc];
 			if (!php.in_array($currentPcc, $allowedPccs)) {
-				$errorData = {'allowedPccs': php.implode(' or ', $allowedPccs)};
+				$errorData = {allowedPccs: php.implode(' or ', $allowedPccs)};
 				$errors.push(Errors.getMessage(Errors.CANT_CHANGE_IN_THIS_PCC, $errorData));
 			}
 		}
@@ -169,12 +169,12 @@ const RunRealCmd = ({
 			StringUtil.startsWith($cmd, 'Q');
 		if (php.in_array($type, CommonDataHelper.getTicketingCommands())) {
 			if (!$agent.canIssueTickets()) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
+				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type}));
 			}
 		} else if (php.in_array($type, CommonDataHelper.getCountedFsCommands())) {
 			const totalAllowed = $agent.getFsLimit();
 			if (!totalAllowed) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
+				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type}));
 			} else {
 				const {cnt, minDt} = await $agent.getFsCallsUsedRec();
 				if (cnt >= totalAllowed) {
@@ -183,14 +183,14 @@ const RunRealCmd = ({
 			}
 		} else if ($isQueueCmd && !php.in_array($type, ['movePnrToQueue', 'qmdr'])) {
 			if (!$agent.canProcessQueues()) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type || 'queueOperation'}));
+				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type || 'queueOperation'}));
 			}
 		} else if ($type === 'searchPnr') {
 			if (!$agent.canSearchPnr()) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
+				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type}));
 			}
 		} else if (php.in_array($type, CommonDataHelper.getTotallyForbiddenCommands())) {
-			$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {'cmd': $cmd, 'type': $type}));
+			$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type}));
 		} else if ($type === 'airAvailability' && isForbiddenBaAvailability($cmd)) {
 			$errors.push('NO BA AVAILABILITY IN THIS PCC. PLEASE CHECK IN 2G2H');
 		}

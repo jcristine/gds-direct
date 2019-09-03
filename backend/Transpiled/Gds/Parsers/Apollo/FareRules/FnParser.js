@@ -10,7 +10,7 @@ const FareRuleSectionParser = require('../../../../Gds/Parsers/Common/FareRuleSe
  * it is a screen with flight fare component line in
  * the header followed by it's Fare Rule sections
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const HeaderParser = require("./HeaderParser");
 class FnParser
 {
@@ -41,9 +41,9 @@ class FnParser
 			if ($error === 'categoryNotFound') {
 				// returned when none of requested
 				// sections is specified in the rules
-				return {'sections': []};
+				return {sections: []};
 			} else {
-				return {'error': $error};
+				return {error: $error};
 			}
 		}
 		$lines = StringUtil.lines($fullDump);
@@ -53,14 +53,14 @@ class FnParser
 			$header = php.array_shift($lines);
 		}
 		$sections = this.splitToSections($lines);
-		return {'sections': $sections};
+		return {sections: $sections};
 	}
 
 	static parse($dump)  {
 		let $result, $error;
 
 		$result = this.extractSections($dump);
-		if ($error = $result['error']) return {'error': $error};
+		if ($error = $result['error']) return {error: $error};
 
 		$result['sections'] = Fp.map(($section) => {
 

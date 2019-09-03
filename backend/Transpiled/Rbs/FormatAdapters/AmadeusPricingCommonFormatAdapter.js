@@ -7,8 +7,26 @@ const PtcUtil = require('../../Rbs/Process/Common/PtcUtil.js');
  * transforms PNR to format compatible with any GDS
  * removes Amadeus-specific fields
  */
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const AmadeusBaggageAdapter = require("./AmadeusBaggageAdapter");
+
+/** @param locations = [require('FxParser.js').parseSegmentLine()] */
+const addDepartures = (nextDeparture, locations) => {
+	const fullSegments = [];
+	for (let i = 0; i < locations.length; ++i) {
+		const location = locations[i];
+		if (location.type === 'flight') {
+			fullSegments.push({
+				/** starting from 1 */
+				order: i + 1,
+				departureCity: nextDeparture,
+				...location,
+			});
+		}
+		nextDeparture = location.destinationCity;
+	}
+	return fullSegments;
+};
 
 class AmadeusPricingCommonFormatAdapter {
 	static joinTaxes($mainTaxes, $xtTaxes) {
@@ -28,8 +46,8 @@ class AmadeusPricingCommonFormatAdapter {
 	static parseDiscountCode($code) {
 		let $twoLetterCodes;
 
-		$twoLetterCodes = {'CH': 'child', 'IN': 'infant'};
-		return {'ageGroup': $twoLetterCodes[$code]};
+		$twoLetterCodes = {CH: 'child', IN: 'infant'};
+		return {ageGroup: $twoLetterCodes[$code]};
 	}
 
 	static parsePtc($code) {
@@ -91,9 +109,9 @@ class AmadeusPricingCommonFormatAdapter {
 						continue;
 					}
 					$cmdPaxes.push({
-						'ptc': (($mods['generic'] || {})['ptcs'] || {})[0],
-						'nameRecord': $paxRec,
-						'mods': $storeMods,
+						ptc: (($mods['generic'] || {})['ptcs'] || {})[0],
+						nameRecord: $paxRec,
+						mods: $storeMods,
 					});
 				}
 			}
@@ -188,15 +206,15 @@ class AmadeusPricingCommonFormatAdapter {
 			);
 			$cmdPtc = (($mods['generic'] || {})['ptcs'] || {})[$storePtcNum - 1];
 			return {
-				'ptc': $ptc,
-				'ptcRequested': $cmdPtc,
-				'quantity': $quantity,
-				'ageGroup': this.parsePtc($ptc)['ageGroup'],
-				'ageGroupRequested': $cmdPtc ? this.parsePtc($cmdPtc)['ageGroup'] : null,
-				'pricingPaxNums': [$paxRow['lineNumber']],
-				'nameNumbers': $nameNumber ? [$nameNumber] : [],
+				ptc: $ptc,
+				ptcRequested: $cmdPtc,
+				quantity: $quantity,
+				ageGroup: this.parsePtc($ptc)['ageGroup'],
+				ageGroupRequested: $cmdPtc ? this.parsePtc($cmdPtc)['ageGroup'] : null,
+				pricingPaxNums: [$paxRow['lineNumber']],
+				nameNumbers: $nameNumber ? [$nameNumber] : [],
 				// it would be nice to group by store too one day
-				'storeNumber': $storeNumber,
+				storeNumber: $storeNumber,
 			};
 		}, $pricingPaxes);
 	}
@@ -226,44 +244,48 @@ class AmadeusPricingCommonFormatAdapter {
 	}
 
 	/**
-	 * @param $parsedFx = FxParser::parse()
+	 * @param parsedFx = require('FxParser.js').parse()
 	 * @return array like ImportApolloPnrFormatAdapter::transformPricing()['pricingBlockList'][0]
 	 *                 || ImportSabrePnrFormatAdapter::transformPricingBlock()
 	 */
-	static transformPtcBlock($parsedFx, $ptcInfo) {
-		let $parsed, $nameNumbers, $baggageInfoParsed, $bagSegments, $bagCodes;
-
-		$parsed = $parsedFx['data'];
-		$nameNumbers = $ptcInfo['nameNumbers'];
-		delete ($ptcInfo['nameNumbers']);
-		$baggageInfoParsed = AmadeusBaggageAdapter.transformCurrentPricing($parsed, $ptcInfo);
-		$bagSegments = $baggageInfoParsed['baggageAllowanceBlocks'][0]['segments'];
-		$bagCodes = php.array_column(php.array_column($bagSegments, 'segmentDetails'), 'bagWithoutFeeNumber');
+	static transformPtcBlock(parsedFx, ptcInfo) {
+		const parsed = parsedFx.data;
+		const nameNumbers = ptcInfo.nameNumbers;
+		delete ptcInfo.nameNumbers;
+		const baggageInfoParsed = AmadeusBaggageAdapter.transformCurrentPricing(parsed, ptcInfo);
+		const bagSegments = baggageInfoParsed.baggageAllowanceBlocks[0].segments;
+		const bagCodes = php.array_column(php.array_column(bagSegments, 'segmentDetails'), 'bagWithoutFeeNumber');
 		return {
-			'ptcInfo': $ptcInfo,
-			'passengerNameNumbers': $nameNumbers,
-			'validatingCarrier': ($parsed['additionalInfo'] || {})['validatingCarrier'],
-			'fareInfo': {
-				'baseFare': $parsed['baseFare'],
-				'fareEquivalent': $parsed['fareEquivalent'],
-				'totalFare': $parsed['netPrice'],
-				'taxList': this.joinTaxes($parsed['mainTaxes'], $parsed['xtTaxes']),
-				'fareConstruction': $parsed['fareConstruction']['parsed'],
-				'fareConstructionRaw': $parsed['fareConstruction']['raw'],
+			ptcInfo: ptcInfo,
+			passengerNameNumbers: nameNumbers,
+			validatingCarrier: (parsed['additionalInfo'] || {})['validatingCarrier'],
+			fareInfo: {
+				baseFare: parsed['baseFare'],
+				fareEquivalent: parsed['fareEquivalent'],
+				totalFare: parsed['netPrice'],
+				taxList: this.joinTaxes(parsed['mainTaxes'], parsed['xtTaxes']),
+				fareConstruction: parsed['fareConstruction']['parsed'],
+				fareConstructionRaw: parsed['fareConstruction']['raw'],
 			},
-			'endorsementBoxLines': ($parsed['additionalInfo'] || {})['endorsementLines'] || [],
-			'hasPrivateFaresSelectedMessage': ($parsed['additionalInfo'] || {})['hasNegotiatedFaresMessage'] || false,
-			'privateFareType': null,
-			'tourCode': null,
-			'lastDateToPurchase': !php.isset($parsedFx['wholeMessages']['lastDateToPurchase']) ? null : {
-				'raw': $parsedFx['wholeMessages']['lastDateToPurchase']['raw'],
-				'parsed': $parsedFx['wholeMessages']['lastDateToPurchase']['parsed'],
-				'full': $parsedFx['wholeMessages']['lastDateToPurchase']['parsed'],
+			endorsementBoxLines: (parsed['additionalInfo'] || {})['endorsementLines'] || [],
+			hasPrivateFaresSelectedMessage: (parsed['additionalInfo'] || {})['hasNegotiatedFaresMessage'] || false,
+			privateFareType: null,
+			tourCode: null,
+			lastDateToPurchase: !php.isset(parsedFx['wholeMessages']['lastDateToPurchase']) ? null : {
+				raw: parsedFx['wholeMessages']['lastDateToPurchase']['raw'],
+				parsed: parsedFx['wholeMessages']['lastDateToPurchase']['parsed'],
+				full: parsedFx['wholeMessages']['lastDateToPurchase']['parsed'],
 			},
+			/**
+			 * note, unlike other GDS-es, this one holds actual segments here:
+			 * with airline, flight number, etc... but WITHOUT SEGMENT NUMBER
+			 */
+			rebookSegments: addDepartures(parsed.departureCity, parsed.segments)
+				.filter(seg => seg.rebookRequired),
 
-			'baggageInfo': {
-				'raw': php.implode(' ', $bagCodes),
-				'parsed': $baggageInfoParsed,
+			baggageInfo: {
+				raw: php.implode(' ', bagCodes),
+				parsed: baggageInfoParsed,
 			},
 		};
 	}

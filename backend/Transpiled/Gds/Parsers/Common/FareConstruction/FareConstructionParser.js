@@ -1,7 +1,7 @@
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
-const FareConstructionTokenizer = require("./FareConstructionTokenizer");
-const php = require('../../../../phpDeprecated');
+const FcTokenizer = require("gds-utils/src/text_format_processing/agnostic/fare_calculation/FcTokenizer");
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * parse Linear Fare Construction, aka Fare Calculation line
@@ -19,20 +19,20 @@ class FareConstructionParser {
 		$letters = php.explode('/', $flagsText);
 		php.array_pop($letters);
 		$codes = {
-			'X': 'noStopover',
-			'E': 'extraMiles',
-			'L': 'reducesMpm', // maximum permitted mileage
-			'T': 'ticketed',
+			X: 'noStopover',
+			E: 'extraMiles',
+			L: 'reducesMpm', // maximum permitted mileage
+			T: 'ticketed',
 
 			// not sure they belong here
-			'R': 'commonCity',
-			'C': 'combined',
-			'B': 'equalizedMiles',
+			R: 'commonCity',
+			C: 'combined',
+			B: 'equalizedMiles',
 		};
 		return Fp.map(($letter) => {
 			return {
-				'raw': $letter,
-				'parsed': $codes[$letter] || null,
+				raw: $letter,
+				parsed: $codes[$letter] || null,
 			};
 		}, $letters);
 	}
@@ -74,19 +74,19 @@ class FareConstructionParser {
 		if ([$xfTotal, $airports] = $data['facilityCharge'] || [null, null]) {
 			if (php.preg_match_all(/([A-Z]{3})([\.\d]+)/, $airports, $matches = [], php.PREG_SET_ORDER)) {
 				for ([$_, $airport, $amount] of $matches) {
-					$facilityCharges.push({'airport': $airport, 'amount': $amount});
+					$facilityCharges.push({airport: $airport, amount: $amount});
 				}
 			}
 		}
 		return {
-			'markup': $markup,
-			'currency': $currency,
-			'fareAndMarkupInNuc': $totalAmount,
-			'fare': $fare,
-			'hasEndMark': php.isset($data['end']),
-			'infoMessage': ($data['end'] || {})['infoMessage'] || null,
-			'rateOfExchange': $data['rateOfExchange'] || null,
-			'facilityCharges': $facilityCharges,
+			markup: $markup,
+			currency: $currency,
+			fareAndMarkupInNuc: $totalAmount,
+			fare: $fare,
+			hasEndMark: php.isset($data['end']),
+			infoMessage: ($data['end'] || {})['infoMessage'] || null,
+			rateOfExchange: $data['rateOfExchange'] || null,
+			facilityCharges: $facilityCharges,
 		};
 	}
 
@@ -125,9 +125,9 @@ class FareConstructionParser {
 				[excessMark, $number, $amount] = $data;
 				$segment['stopoverFees'] = $segment['stopoverFees'] || [];
 				$segment['stopoverFees'].push({
-					'excessMark': excessMark || undefined,
-					'stopoverNumber': $number,
-					'amount': $amount,
+					excessMark: excessMark || undefined,
+					stopoverNumber: $number,
+					amount: $amount,
 				});
 			} else if ($lexeme === 'fareBasis') {
 				$segment['fareBasis'] = $data[0];
@@ -135,25 +135,25 @@ class FareConstructionParser {
 			} else if ($lexeme === 'nextDeparture') {
 				[$faredMark, $flags, $city] = $data;
 				$segment['nextDeparture'] = {
-					'fared': $faredMark === '/',
-					'flags': this.parseFlags($flags),
-					'city': $city,
+					fared: $faredMark === '/',
+					flags: this.parseFlags($flags),
+					city: $city,
 				};
 			} else if ($lexeme === 'fareClassDifference') {
 				[$from, $to, $mileage, $amount] = $data;
 				$segment['fareClassDifferences'] = $segment['fareClassDifferences'] || [];
 				$segment['fareClassDifferences'].push({
-					'from': $from,
-					'to': $to,
-					'mileageSurcharge': $mileage || null,
-					'amount': $amount,
+					from: $from,
+					to: $to,
+					mileageSurcharge: $mileage || null,
+					amount: $amount,
 				});
 			} else if ($lexeme === 'requiredMinimum') {
 				[$from, $to, $amount] = $data;
 				$segment['requiredMinimum'] = {
-					'from': $from,
-					'to': $to,
-					'amount': $amount,
+					from: $from,
+					to: $to,
+					amount: $amount,
 				};
 			} else if (php.in_array($lexeme, ['hiddenInclusiveTourFare', 'hiddenBulkTourFare'])) {
 				$segment['fare'] = $data;
@@ -167,7 +167,7 @@ class FareConstructionParser {
 	}
 
 	static endsSegments($token) {
-		return php.in_array($token['lexeme'], FareConstructionTokenizer.getItineraryEndLexemes());
+		return php.in_array($token['lexeme'], FcTokenizer.getItineraryEndLexemes());
 	}
 
 	static isSameAmount($a, $b) {
@@ -220,7 +220,7 @@ class FareConstructionParser {
 					$isFareHidden = ($seg) => $seg['isFareHidden'] || null;
 					$result['hasHiddenFares'] = Fp.any($isFareHidden, $segments);
 					if (this.isValidEnding($result, $segments)) {
-						return php.array_merge({'segments': $segments}, $result);
+						return php.array_merge({segments: $segments}, $result);
 					} else {
 						return null;
 					}
@@ -238,14 +238,14 @@ class FareConstructionParser {
 		$isNotWhitespace = ($lexeme) => $lexeme['lexeme'] !== 'whitespace';
 		$combinationLimit = 10;
 		$result = {
-			'parsed': null,
-			'tokens': [],
-			'textLeft': $dump,
+			parsed: null,
+			tokens: [],
+			textLeft: $dump,
 		};
 		$errorTokens = [];
 		$errorTextLeft = $dump;
 		$i = 0;
-		$split = new FareConstructionTokenizer();
+		$split = new FcTokenizer();
 		for ($lexed of $split.tryTokenCombinations($dump)) {
 			$tokens = $lexed['lexemes'];
 			const filtered = php.array_values(Fp.filter($isNotWhitespace, $lexed['lexemes']));
@@ -253,9 +253,9 @@ class FareConstructionParser {
 			$maybeParsed = this.collectStructure(filtered);
 			if ($maybeParsed && php.strlen($textLeft) < php.strlen($result['textLeft'])) {
 				$result = {
-					'parsed': $maybeParsed,
-					'tokens': $tokens,
-					'textLeft': $textLeft,
+					parsed: $maybeParsed,
+					tokens: $tokens,
+					textLeft: $textLeft,
 				};
 			} else if (php.strlen($textLeft) < php.strlen($errorTextLeft)) {
 				$errorTokens = $tokens;
@@ -264,11 +264,11 @@ class FareConstructionParser {
 			if (++$i > $combinationLimit) break;
 		}
 		return $result['parsed'] ? $result : {
-			'error': $i > $combinationLimit
+			error: $i > $combinationLimit
 				? 'combination depth reached limitation - ' + $combinationLimit + ' on ' + php.substr($errorTextLeft, 0, 7)
 				: 'failed to completely parse fare construction in ' + $i + ' attempts on ' + php.substr($errorTextLeft, 0, 7),
-			'tokens': $errorTokens,
-			'textLeft': $errorTextLeft,
+			tokens: $errorTokens,
+			textLeft: $errorTextLeft,
 		};
 	}
 }

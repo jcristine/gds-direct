@@ -7,7 +7,7 @@ const ItineraryParser = require('./ItineraryParser.js');
  * parse text before first explicit section in *R
  * includes PS- remark, passengers, record locator line, itinerary
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class HeadParser
 {
 	static parsePnrHeaderLine($line)  {
@@ -34,14 +34,14 @@ class HeadParser
 		if (php.preg_match($regex, php.trim($line), $tokens = [])) {
 			$creatorToken = php.trim($tokens['pnrCreatorToken']);
 			return {
-				'recordLocator': $tokens['recordLocator'],
-				'focalPointInitials': $tokens['focalPointInitials'],
-				'agencyId': $tokens['agencyId'],
-				'pnrCreatorToken': $creatorToken,
-				'arcNumber': $tokens['arcNumber'],
-				'reservationDate': {
-					'raw': $tokens['reservationDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($tokens['reservationDate']),
+				recordLocator: $tokens['recordLocator'],
+				focalPointInitials: $tokens['focalPointInitials'],
+				agencyId: $tokens['agencyId'],
+				pnrCreatorToken: $creatorToken,
+				arcNumber: $tokens['arcNumber'],
+				reservationDate: {
+					raw: $tokens['reservationDate'],
+					parsed: CommonParserHelpers.parsePartialDate($tokens['reservationDate']),
 				},
 			};
 		} else {
@@ -80,9 +80,9 @@ class HeadParser
 		}
 
 		return {
-			'headerData': $headerData,
-			'nameRecords': $nameRecords,
-			'itinerary': $itinerary,
+			headerData: $headerData,
+			nameRecords: $nameRecords,
+			itinerary: $itinerary,
 		};
 	}
 

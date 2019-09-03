@@ -1,0 +1,144 @@
+<head>
+    <title>$D/MIX pricing settings</title>
+</head>
+
+<body>
+
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"
+        integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+        crossorigin="anonymous"
+></script>
+
+<!-- Bootstrap -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"
+        integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo="
+        crossorigin="anonymous"
+></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"
+        integrity="sha256-7/yoZS3548fXSRXqc/xYzjsmuW3sFKzuvOCHd06Pmps="
+        crossorigin="anonymous"
+></script>
+
+<div class="x_panel">
+    <div class="x_title">
+        <h2>$D/MIX pricing settings</h2>
+        <div class="pull-right">
+            <button type="button"
+                    class="btn btn-default btn-sm js-open-modal-multi-pcc-tariff">
+                <i class="fa fa-plus"></i>
+            </button>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+        <table class="table table-main">
+            <thead>
+            <tr>
+                <th class="cell-departure">
+                    Departure
+                </th>
+                <th class="cell-destination">
+                    Destination
+                </th>
+                <th>
+                    Reprice PCC
+                </th>
+                <th class="cell-action">
+                    Action
+                </th>
+            </tr>
+            </thead>
+            <tbody class="js-tbody-main"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade js-modal-multi-pcc-tariff modal-multi-pcc-tariff" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><span class="js-modal-state"></span> multi pcc tariff</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-main">
+                    <tbody>
+                    <tr>
+                        <td class="cell-departure">
+                            <label>Departure</label>
+                            <select class="js-departure"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cell-destination">
+                            <label>Destination</label>
+                            <select class="js-destination"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="cell-pcc">
+                            <label>PCC</label>
+                            <div>
+                                <select class="js-pcc"></select>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <table class="table table-striped table-reprice-pcc">
+                    <tbody class="js-reprice-pccs"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary js-save-multi-pcc-tariff">Save</button>
+                <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal error -->
+<div class="modal fade js-modal-error" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Error</h4>
+            </div>
+            <div class="modal-body js-modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gentelella/1.3.0/css/custom.min.css" integrity="sha256-OvcgXxRONl1V26rs+1VRBgz6EReTjpFvyvIPzCjDu9I=" crossorigin="anonymous" />
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.min.css" />
+<!--    <link rel="stylesheet" href="{{ root }}static/vendor/selectize/selectize.default.css">-->
+<!--    <link href="{{ root }}static/vendor/gentelella/vendors/iCheck/skins/flat/green.css" rel="stylesheet" >-->
+
+<link rel="stylesheet" href="./multiPccTariffRules.css" type="text/css" media="all" />
+
+<!--    <script src="{{ root }}static/vendor/lodash/dist/lodash.min.js" type="text/javascript" charset="utf-8"></script>-->
+<!--    <script src="{{ root }}static/vendor/spin/spin.min.js"></script>-->
+<!--    <script src="{{ root }}static/js/customSpinner.js" type="text/javascript" charset="utf-8"></script>-->
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.js"
+    integrity="sha256-412FxT7SHXk39AYYNe8+6YGQAhZhlKhthDw2Z3qp/B0="
+    crossorigin="anonymous"
+></script>
+<!--    <script src="{{ root }}static/vendor/selectize/selectize.js"></script>-->
+<!--    <script src="{{ root }}static/vendor/gentelella/vendors/iCheck/icheck.min.js"></script>-->
+<!--    <script src="{{ root }}static/vendor/bootstrap/dist/js/bootstrap.min.js"></script>-->
+<!--    <script src="{{ root }}static/js/alertCustom.js"></script>-->
+
+<script type="module" src="./multiPccTariffRules.js" charset="utf-8"></script>
+
+</body>

@@ -37,7 +37,6 @@ const parseItinerary = output => {
 	return parsed['parsedData'] || [];
 };
 
-
 const GalileoBuildItineraryAction = ({
 	session,
 	itinerary,
@@ -63,7 +62,7 @@ const GalileoBuildItineraryAction = ({
 				? segment['departureDate']['raw']
 				: formatGdsDate(segment['departureDate']);
 
-			return {...segment, 'departureDate': date};
+			return {...segment, departureDate: date};
 		});
 
 		resultItinerary = [];
@@ -78,16 +77,16 @@ const GalileoBuildItineraryAction = ({
 					errorType = GalileoBuildItineraryAction.ERROR_GDS_ERROR;
 				}
 				tplData = {
-					'segmentNumber': i + 1,
-					'from': segment['departureAirport'],
-					'to': segment['destinationAirport'],
-					'response': php.trim(output),
+					segmentNumber: i + 1,
+					from: segment['departureAirport'],
+					to: segment['destinationAirport'],
+					response: php.trim(output),
 				};
-				return {'success': false, 'errorType': errorType, 'errorData': tplData};
+				return {success: false, errorType: errorType, errorData: tplData};
 			}
 			resultItinerary = php.array_merge(resultItinerary, segments);
 		}
-		return {'success': true, 'itinerary': resultItinerary};
+		return {success: true, itinerary: resultItinerary};
 	};
 
 	const execute = async (itinerary, isParserFormat) => {
@@ -108,5 +107,7 @@ const GalileoBuildItineraryAction = ({
 
 GalileoBuildItineraryAction.ERROR_GDS_ERROR = 'ERROR_GDS_ERROR';
 GalileoBuildItineraryAction.ERROR_NO_AVAIL = 'ERROR_NO_AVAIL';
+
+/** @deprecated I guess, should use TravelportBuildItineraryActionViaXml.js (and rename it maybe to be a lit less verbose) */
 module.exports = GalileoBuildItineraryAction;
 module.exports.parseItinerary = parseItinerary;

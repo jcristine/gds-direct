@@ -1,5 +1,5 @@
 
-const php = require("../../phpDeprecated");
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 
 
@@ -120,8 +120,8 @@ class StringUtil
 			}
 			++$i;}
 		return {
-			'map': $map,
-			'literals': $literals,
+			map: $map,
+			literals: $literals,
 		};
 	}
 
@@ -130,12 +130,12 @@ class StringUtil
 		$res = [];
 		for ([$char, $positions] of Object.entries($map['literals'])) {
 			for ($position of Object.values($positions)) {
-				$res[$position] = {'type': 'literal', 'data': $char};}}
+				$res[$position] = {type: 'literal', data: $char};}}
 		for ([$char, $positions] of Object.entries($map['map'])) {
 			$res[$positions['firstPosition']] = {
-				'type': 'var',
-				'length': php.isset($positions['lastPosition']) ? ($positions['lastPosition'] - $positions['firstPosition'] + 1) : 1,
-				'data': $char,
+				type: 'var',
+				length: php.isset($positions['lastPosition']) ? ($positions['lastPosition'] - $positions['firstPosition'] + 1) : 1,
+				data: $char,
 			};}
 		php.ksort($res);
 		return $res;

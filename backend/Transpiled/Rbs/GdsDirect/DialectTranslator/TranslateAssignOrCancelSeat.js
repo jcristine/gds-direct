@@ -1,6 +1,6 @@
 
 const Fp = require('../../../Lib/Utils/Fp.js');
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class TranslateAssignOrCancelSeat {
 	static flattenPaxNums($paxRanges) {
@@ -76,7 +76,7 @@ class TranslateAssignOrCancelSeat {
 			if (php.empty($data['seatCodes'])) {
 				$location = ($data['location'] || {})['parsed'] || 'window';
 				$hasParams = !php.empty($data['paxRanges']) || !php.empty($data['segNums']);
-				$locLetter = {'window': 'W', 'aisle': 'A', 'bulkhead': 'B'}[$location];
+				$locLetter = {window: 'W', aisle: 'A', bulkhead: 'B'}[$location];
 				$cmd += ($hasParams ? '/' : '') + 'N' + $locLetter;
 			}
 		}
@@ -96,7 +96,7 @@ class TranslateAssignOrCancelSeat {
 			$cmd += '/' + php.implode('', $seatCodes);
 		} else if (!$cancel) {
 			$location = ($data['location'] || {})['parsed'] || 'window';
-			$cmd += '/' + {'aisle': 'A', 'window': 'W', 'bulkhead': 'X'}[$location];
+			$cmd += '/' + {aisle: 'A', window: 'W', bulkhead: 'X'}[$location];
 		}
 		if (!php.empty($paxNums)) {
 			$addMinor = ($num) => $num + '.1';
@@ -121,7 +121,7 @@ class TranslateAssignOrCancelSeat {
 			$cmd += '/' + php.implode('/', $seatCodes);
 		} else if (!$cancel) {
 			$location = ($data['location'] || {})['parsed'] || 'window';
-			$cmd += '/' + {'aisle': 'A', 'window': 'W', 'bulkhead': 'B'}[$location];
+			$cmd += '/' + {aisle: 'A', window: 'W', bulkhead: 'B'}[$location];
 		}
 		if (!php.empty($paxNums)) {
 			$cmd += '/P' + php.implode(',', $paxNums);

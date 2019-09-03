@@ -1,0 +1,420 @@
+.table-pcc {
+    border-collapse: separate;
+    border-spacing: 5px;
+    table-layout: fixed;
+}
+
+.table-pcc table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.table-pcc th {
+    padding: 0 5px;
+}
+
+.table-pcc .galileo,
+.table-pcc .amadeus {
+    width: 200px;
+}
+
+.table-pcc .col-main {
+    background: #fff;
+    border: 1px solid #e6e9ed;
+    vertical-align: top;
+    padding: 5px;
+}
+
+.table-pcc .col {
+    padding: 0;
+    vertical-align: top;
+}
+
+.table-pcc .scroll-pcc {
+    height: 500px;
+    overflow-y: auto;
+}
+
+.table-pcc .overflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.table-pcc .item {
+    padding: 5px;
+}
+
+.table-pcc .item:hover {
+    background-color: #f5f5f5;
+}
+
+.table-pcc label {
+    display: inline;
+    margin: 0 0 0 5px;
+    vertical-align: middle;
+    color: #4b5f71;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.table-pcc .italic {
+    font-style: italic;
+    color: #73879C;
+    line-height: 1;
+}
+
+.selectize-control.multi .selectize-input .item {
+    background: #1abb9c;
+    border: none!important;;
+    text-shadow: none!important;;
+    box-shadow: none!important;;
+}
+
+.selectize-control.multi .selectize-input .item.active {
+    background: #1abb9c;
+}
+
+.selectize-control.multi .selectize-input .item.apollo {
+    background: #337ab7;
+}
+
+.selectize-control.multi .selectize-input .item.galileo {
+    background: #5bc0de;
+}
+
+.selectize-control.multi .selectize-input .item.amadeus {
+    background: #f0ad4e;
+}
+
+.selectize-control.plugin-remove_button [data-value] .selectize-close {
+    position: absolute;
+    right: 5px;
+    top: 0;
+    bottom: 0;
+    color: #FFF;
+    z-index: 1;
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.selectize-control.plugin-remove_button [data-value] .selectize-close:before {
+    vertical-align: -webkit-baseline-middle;
+    vertical-align: -moz-middle-with-baseline;
+    content: "\f00d";
+    font-size: 11px;
+}
+
+.selectize-dropdown [data-selectable] {
+    min-height: 28px;
+    color: #73879c;
+}
+
+.selectize-dropdown [data-selectable].active {
+    color: #262626;
+    background-color: #f5f5f5;
+}
+
+.selectize-dropdown [data-selectable]:hover {
+    cursor: pointer;
+}
+
+.selectize-dropdown-content .create {
+    display: none;
+}
+
+.select-pcc.selectize-control.single .selectize-input {
+    background: #FFFFFF;
+    padding: 3px;
+    min-height: 30px;
+}
+
+.select-single.selectize-control.single .selectize-input {
+    background: #FFFFFF;
+    height: 30px;
+    padding: 6px;
+    color: #555;
+    font-size: 14px;
+}
+
+.select-single.selectize-control.single .selectize-input input {
+    top: -1px;
+    font-size: 14px;
+    color: #555;
+}
+
+.select-pcc .selectize-input > [data-value] {
+    background: #1abb9c;
+    color: #FFFFFF;
+    border-radius: 3px;
+    padding: 2px 6px;
+    line-height: 1.42857143;
+}
+
+.select-pcc.selectize-control.plugin-remove_button .remove-single {
+    top: 0;
+    font-size: 14px;
+    right: 4px;
+    color: #FFF;
+}
+
+.select-pcc.selectize-control.plugin-remove_button .remove-single:hover {
+    color: #73879C;
+}
+
+.modal-multi-pcc-tariff .modal-body {
+    padding: 0 15px;
+}
+
+.modal-multi-pcc-tariff .table {
+    table-layout: fixed;
+}
+
+.modal-multi-pcc-tariff .table-main {
+    margin-bottom: 5px;
+}
+
+.modal-multi-pcc-tariff td.cell-departure,
+.modal-multi-pcc-tariff td.cell-destination {
+    border: none;
+    padding: 5px 5px 0;
+}
+
+.modal-multi-pcc-tariff td.cell-departure .selectize-input,
+.modal-multi-pcc-tariff td.cell-destination .selectize-input {
+    padding: 5px;
+}
+
+.modal-multi-pcc-tariff td.cell-departure .selectize-input,
+.modal-multi-pcc-tariff td.cell-destination .selectize-input,
+.modal-multi-pcc-tariff td.cell-pcc .selectize-input {
+    padding: 5px 5px 0;
+    min-height: 34px;
+}
+
+.modal-multi-pcc-tariff td.cell-pcc {
+    border: none;
+    padding: 5px 5px 0;
+}
+
+.modal-multi-pcc-tariff td.cell-pcc .selectize-dropdown {
+    width: 558px!important;
+}
+
+.modal-multi-pcc-tariff .cross-box {
+    position: relative;
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+}
+
+.modal-multi-pcc-tariff .cross {
+    position: absolute;
+    right: 5px;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    opacity: .3;
+}
+
+.modal-multi-pcc-tariff .cross:hover {
+    opacity: 1;
+}
+
+.modal-multi-pcc-tariff .cross:after,
+.modal-multi-pcc-tariff .cross:before {
+    position: absolute;
+    left: 15px;
+    content: " ";
+    height: 23px;
+    width: 2px;
+    background-color: #333;
+}
+
+.modal-multi-pcc-tariff .cross:before {
+    transform: rotate(45deg);
+}
+
+.modal-multi-pcc-tariff .cross:after {
+    transform: rotate(-45deg);
+}
+
+.modal-multi-pcc-tariff .cell-action {
+    width: 30px;
+    vertical-align: bottom;
+}
+
+.modal-multi-pcc-tariff .form-control {
+    height: 30px;
+    padding: 6px;
+    border-radius: 2px;
+    border-color: #b8b8b8;
+}
+
+.modal-multi-pcc-tariff .modal-footer .btn+.btn {
+    margin: 0 5px 5px 0;
+}
+
+.modal-multi-pcc-tariff .pcc-items-wrap {
+    position: relative;
+    padding-left: 35px;
+    min-height: 36px;
+}
+
+.modal-multi-pcc-tariff .pcc-items-wrap .btn-add {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 3px 0 0;
+}
+
+.modal-multi-pcc-tariff .table-pcc-items {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.modal-multi-pcc-tariff .table-pcc-items td {
+    padding: 3px;
+}
+
+.modal-multi-pcc-tariff .table-reprice-pcc {
+    margin-bottom: 10px;
+}
+
+.modal-multi-pcc-tariff .table-reprice-pcc>tbody>tr>td {
+    padding: 5px;
+}
+
+.modal-multi-pcc-tariff .table-reprice-pcc .sabre {
+    color: #1abb9c;
+    font-weight: 600;
+}
+
+.modal-multi-pcc-tariff .table-reprice-pcc .apollo {
+    color: #337ab7;
+    font-weight: 600;
+}
+
+.modal-multi-pcc-tariff .table-reprice-pcc .galileo {
+    color: #5bc0de;
+    font-weight: 600;
+}
+
+.modal-multi-pcc-tariff .table-reprice-pcc .amadeus {
+    color: #f0ad4e;
+    font-weight: 600;
+}
+
+.modal-multi-pcc-tariff .table-reprice-pcc .pcc-text {
+    line-height: 1.2;
+}
+
+.modal-multi-pcc-tariff .table-pcc-items .selectize-control.select-single {
+    line-height: 8px;
+}
+
+.select-single.selectize-control.single .selectize-input input::-webkit-input-placeholder,
+.form-control::-webkit-input-placeholder {
+    color: #999;
+    opacity: 0.8!important;
+}
+
+.select-single.selectize-control.single .selectize-input input::-moz-placeholder,
+.form-control::-moz-placeholder {
+    color: #999;
+    opacity: 0.8!important;
+}
+
+.selectize-input .is-empty {
+    color: #999;
+    opacity: 0.8!important;
+}
+
+.is-error .selectize-control .selectize-input {
+    border-color: #CE5454;
+}
+
+.is-error {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.error-text {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transform: translateY(100%);
+    color: #CE5454;
+    line-height: 1.2;
+}
+
+.table-main .cell-action,
+.table-main .cell-id {
+    width: 80px;
+}
+
+.table-main .cell-departure,
+.table-main .cell-destination {
+    width: 250px;
+}
+
+.table-main .sabre {
+    color: #1abb9c;
+    font-weight: 600;
+}
+
+.table-main .apollo {
+    color: #337ab7;
+    font-weight: 600;
+}
+
+.table-main .galileo {
+    color: #5bc0de;
+    font-weight: 600;
+}
+
+.table-main .amadeus {
+    color: #f0ad4e;
+    font-weight: 600;
+}
+
+.table-main .is-default {
+    background-color: #f9f9f9;
+}
+
+.table-main .is-default .cell-geo {
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.alert-custom {
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    z-index: 100;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 0px;
+    min-width: 400px;
+    height: 40px;
+    display: none;
+    opacity: 0;
+}
+
+.alert-custom.alert-success {
+    background-color: rgba(38,185,154,1);
+    border-color: rgba(38,185,154,1);
+}
+
+.alert-custom.alert-danger {
+    background-color: rgba(231,76,60,1);
+    border-color: rgba(231,76,60,1);
+}
+
+.modal-dialog {
+    width: 900px;
+}

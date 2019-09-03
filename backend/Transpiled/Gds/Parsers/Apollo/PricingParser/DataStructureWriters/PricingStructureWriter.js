@@ -3,7 +3,7 @@
 const AtfqParser = require('../../../../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const BaggageAllowanceParser = require('../../../../../Gds/Parsers/Apollo/BaggageAllowanceParser/BaggageAllowanceParser.js');
 const BaggageAllowanceParserDataStructureWriter = require('../../../../../Gds/Parsers/Apollo/BaggageAllowanceParser/BaggageAllowanceParserDataStructureWriter.js');
-const php = require('../../../../../phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class PricingStructureWriter
 {
@@ -14,14 +14,14 @@ class PricingStructureWriter
 	constructor()  {
 		this.$currentPricingBlock = {};
 		this.$baggageInfoLines = [];
-		this.$dataStructure = {
-			'wholePricingMarkers': {
-				'fareGuaranteedAtTicketIssuance': false,
-				'fareHasPlatingCarrierRestriction': false,
-				'agentSelectedFareUsed': false,
-				'eTicketRequired': false,
+		this.dataStructure = {
+			wholePricingMarkers: {
+				fareGuaranteedAtTicketIssuance: false,
+				fareHasPlatingCarrierRestriction: false,
+				agentSelectedFareUsed: false,
+				eTicketRequired: false,
 			},
-			'pricingBlockList': [],
+			pricingBlockList: [],
 		};
 	}
 
@@ -41,7 +41,7 @@ class PricingStructureWriter
 
 			this.$baggageInfoLines = [];
 		}
-		this.$dataStructure['pricingBlockList'].push(this.$currentPricingBlock);
+		this.dataStructure.pricingBlockList.push(this.$currentPricingBlock);
 	}
 
 	makeNewPricingBlock()  {
@@ -49,46 +49,46 @@ class PricingStructureWriter
 			this.saveCurrentPricingBlock();
 		}
 		this.$currentPricingBlock = {
-			'baggageInfo': {'raw': '', 'parsed': null},
-			'defaultPlatingCarrier': null,
-			'fareConstruction': null,
-			'lastDateToPurchaseTicket': null,
-			'notValidBA': [],
-			'passengerNumbers': null,
-			'penaltyApplies': false,
-			'ticketingAgencyPcc': null,
-			'tourCode': null,
-			'privateFaresSelected': false,
-			'bankSellingRate': null,
-			'bsrCurrencyFrom': null,
-			'bsrCurrencyTo': null,
+			baggageInfo: {raw: '', parsed: null},
+			defaultPlatingCarrier: null,
+			fareConstruction: null,
+			lastDateToPurchaseTicket: null,
+			notValidBA: [],
+			passengerNumbers: null,
+			penaltyApplies: false,
+			ticketingAgencyPcc: null,
+			tourCode: null,
+			privateFaresSelected: false,
+			bankSellingRate: null,
+			bsrCurrencyFrom: null,
+			bsrCurrencyTo: null,
 		};
 	}
 
 	// --------------------------------------------------
 
-	commandCopyLineFound($res)  {
-		this.$dataStructure['pricingCommandCopy'] = this.$dataStructure['pricingCommandCopy'] || '';
-		this.$dataStructure['pricingCommandCopy'] += $res['line'];
-		this.$dataStructure['parsedPricingCommand'] = AtfqParser.parsePricingCommand(php.substr(this.$dataStructure['pricingCommandCopy'], 1));
+	commandCopyLineFound(res)  {
+		this.dataStructure.pricingCommandCopy = this.dataStructure.pricingCommandCopy || '';
+		this.dataStructure.pricingCommandCopy += res.line;
+		this.dataStructure.parsedPricingCommand = AtfqParser.parsePricingCommand(php.substr(this.dataStructure.pricingCommandCopy, 1));
 	}
 	eTicketRequiredStatementFound($res)  {
-		this.$dataStructure['wholePricingMarkers']['eTicketRequired'] = true;
+		this.dataStructure.wholePricingMarkers.eTicketRequired = true;
 	}
 	paperTicketRequiredStatementFound()  {
-		this.$dataStructure['wholePricingMarkers']['paperTicketRequired'] = true;
+		this.dataStructure.wholePricingMarkers.paperTicketRequired = true;
 	}
 	fareGuaranteedAtTicketIssuanceStatementFound($res)  {
-		this.$dataStructure['wholePricingMarkers']['fareGuaranteedAtTicketIssuance'] = true;
+		this.dataStructure.wholePricingMarkers.fareGuaranteedAtTicketIssuance = true;
 	}
 	fareHasPlatingCarrierRestrictionStatementFound($res)  {
-		this.$dataStructure['wholePricingMarkers']['fareHasPlatingCarrierRestriction'] = true;
+		this.dataStructure.wholePricingMarkers.fareHasPlatingCarrierRestriction = true;
 	}
 	fareHasFormOfPaymentRestrictionStatementFound($res)  {
-		this.$dataStructure['wholePricingMarkers']['fareHasFormOfPaymentRestriction'] = true;
+		this.dataStructure.wholePricingMarkers.fareHasFormOfPaymentRestriction = true;
 	}
 	agentSelectedFareUsedStatementFound($res)  {
-		this.$dataStructure['wholePricingMarkers']['agentSelectedFareUsed'] = true;
+		this.dataStructure.wholePricingMarkers.agentSelectedFareUsed = true;
 	}
 
 	// --------------------------------------------------
@@ -159,9 +159,9 @@ class PricingStructureWriter
 	notValidBeforeOrAfterLineFound($res)  {
 		this.$currentPricingBlock['notValidBA'] = this.$currentPricingBlock['notValidBA'] || [];
 		this.$currentPricingBlock['notValidBA'].push({
-			'number': $res['number'],
-			'notValidBefore': $res['notValidBefore'],
-			'notValidAfter': $res['notValidAfter'],
+			number: $res['number'],
+			notValidBefore: $res['notValidBefore'],
+			notValidAfter: $res['notValidAfter'],
 		});
 	}
 
@@ -205,7 +205,7 @@ class PricingStructureWriter
 				segments.push({...segment, ptc: ptcRecord.ptc});
 			}
 		}
-		this.$dataStructure['wholePricingMarkers']['rebookSegments'] = segments;
+		this.dataStructure.wholePricingMarkers.rebookSegments = segments;
 	}
 
 	// --------------------------------------------------
@@ -214,7 +214,7 @@ class PricingStructureWriter
 		if (this.$currentPricingBlock) {
 			this.saveCurrentPricingBlock();
 		}
-		return this.$dataStructure;
+		return this.dataStructure;
 	}
 }
 module.exports = PricingStructureWriter;

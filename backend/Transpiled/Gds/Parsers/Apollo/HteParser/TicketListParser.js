@@ -13,7 +13,7 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
  * '>*TE005;  GARCIAFERNANDE   0017729613238                        '
  * 'END OF LIST                                                     '
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class TicketListParser {
 	static parse($dump) {
@@ -30,7 +30,7 @@ class TicketListParser {
 		if (!($firstLine == 'ELECTRONIC TICKET LIST BY *HTE'
 			&& $secondLine == '          NAME             TICKET NUMBER'
 			&& $lastLine == 'END OF LIST')) {
-			return {'error': 'Cannot parse ticket list - ' + $firstLine};
+			return {error: 'Cannot parse ticket list - ' + $firstLine};
 		}
 
 		$result = [];
@@ -39,10 +39,10 @@ class TicketListParser {
 			if ($parsedLine) {
 				$result.push($parsedLine);
 			} else {
-				return {'error': 'Cannot parse ' + $i + '-th ticket line - ' + $line};
+				return {error: 'Cannot parse ' + $i + '-th ticket line - ' + $line};
 			}
 		}
-		return {'tickets': $result};
+		return {tickets: $result};
 	}
 
 	static parseTicketLine($line) {
@@ -66,9 +66,9 @@ class TicketListParser {
 		}
 
 		return {
-			'teCommandNumber': $result['teCommandNumber'],
-			'passengerName': $result['passengerName'],
-			'ticketNumber': $result['ticketNumber'],
+			teCommandNumber: $result['teCommandNumber'],
+			passengerName: $result['passengerName'],
+			ticketNumber: $result['ticketNumber'],
 		};
 	}
 }

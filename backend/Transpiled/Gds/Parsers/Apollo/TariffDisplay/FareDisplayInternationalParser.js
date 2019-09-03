@@ -2,7 +2,7 @@
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const FareDisplayCommonParser = require("./FareDisplayCommonParser");
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class FareDisplayInternationalParser extends FareDisplayCommonParser
 {
@@ -36,25 +36,25 @@ class FareDisplayInternationalParser extends FareDisplayCommonParser
 			$parsed['whitespace'].trim() === ''
 		) {
 			return {
-				'lineNumber': php.intval($parsed['lineNumber']),
-				'isPrivateFare': ($parsed['privateFareToken'] === '-'),
-				'isRoundTrip': ($parsed['roundTripToken'] === 'R'),
-				'fareType': FareDisplayCommonParser.decodeFareType($parsed['privateFareToken']),
-				'airline': $parsed['airline'],
-				'fare': $parsed['fare'],
-				'fareBasis': $parsed['fareBasis'],
-				'bookingClass': $parsed['bookingClass'],
-				'advancePurchase': this.parseAdvancePurchase($parsed['advancePurchase']),
-				'minStay': FareDisplayCommonParser.parseStayLimit($parsed['minStay']),
-				'maxStay': FareDisplayCommonParser.parseStayLimit($parsed['maxStay']),
-				'seasonStart': this.parseDate($parsed['seasonStart']),
-				'seasonEnd': this.parseDate($parsed['seasonEnd']),
-				'isRoutingBased': StringUtil.contains($parsed['mileageRouting'], 'R'),
-				'isMileageBased': StringUtil.contains($parsed['mileageRouting'], 'M'),
-				'oceanicFlight': {'raw': $parsed['oceanicFlight']},
-				'hasDayRestriction': StringUtil.contains($parsed['dtRestrictions'], 'D'),
-				'hasTimeRestriction': StringUtil.contains($parsed['dtRestrictions'], 'T'),
-				'isInvalid': ($parsed['privateFareToken'] === 'X'),
+				lineNumber: php.intval($parsed['lineNumber']),
+				isPrivateFare: ($parsed['privateFareToken'] === '-'),
+				isRoundTrip: ($parsed['roundTripToken'] === 'R'),
+				fareType: FareDisplayCommonParser.decodeFareType($parsed['privateFareToken']),
+				airline: $parsed['airline'],
+				fare: $parsed['fare'],
+				fareBasis: $parsed['fareBasis'],
+				bookingClass: $parsed['bookingClass'],
+				advancePurchase: this.parseAdvancePurchase($parsed['advancePurchase']),
+				minStay: FareDisplayCommonParser.parseStayLimit($parsed['minStay']),
+				maxStay: FareDisplayCommonParser.parseStayLimit($parsed['maxStay']),
+				seasonStart: this.parseDate($parsed['seasonStart']),
+				seasonEnd: this.parseDate($parsed['seasonEnd']),
+				isRoutingBased: StringUtil.contains($parsed['mileageRouting'], 'R'),
+				isMileageBased: StringUtil.contains($parsed['mileageRouting'], 'M'),
+				oceanicFlight: {raw: $parsed['oceanicFlight']},
+				hasDayRestriction: StringUtil.contains($parsed['dtRestrictions'], 'D'),
+				hasTimeRestriction: StringUtil.contains($parsed['dtRestrictions'], 'T'),
+				isInvalid: ($parsed['privateFareToken'] === 'X'),
 			};
 		} else {
 			return null;

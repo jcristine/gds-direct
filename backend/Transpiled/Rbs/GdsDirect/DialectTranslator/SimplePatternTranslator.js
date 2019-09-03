@@ -8,7 +8,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
  *        'translated' => true,
  *     ];
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const PatternTranslator = require("./PatternTranslator");
 
 class SimplePatternTranslator {
@@ -41,13 +41,13 @@ class SimplePatternTranslator {
 			$output = StringUtil.format($patternTo, $params);
 
 			return {
-				'output': $output,
-				'translated': true,
+				output: $output,
+				translated: true,
 			};
 		} else {
 			return {
-				'output': null,
-				'translated': false,
+				output: null,
+				translated: false,
 			};
 		}
 	}

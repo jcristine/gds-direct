@@ -1,4 +1,4 @@
-const RepricePccRules = require('../../../../../Repositories/RepricePccRules.js');
+const MultiPccTariffRules = require('../../../../../Repositories/MultiPccTariffRules.js');
 
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
@@ -46,7 +46,7 @@ class GetMultiPccTariffDisplayAction {
 	}
 
 	async getPccs(cmdData, sessionData) {
-		return RepricePccRules.getMatchingPccs({
+		return MultiPccTariffRules.getMatchingPccs({
 			departureAirport: cmdData.departureAirport,
 			destinationAirport: cmdData.destinationAirport,
 			gds: sessionData.gds,
@@ -76,11 +76,11 @@ class GetMultiPccTariffDisplayAction {
 	static transformFareType($inParserFormat) {
 		let $inRpcFormat;
 		$inRpcFormat = {
-			'public': 'published',
-			'private': 'private',
-			'agencyPrivate': 'airline_private',
-			'airlinePrivate': 'agency_private',
-			'netAirlinePrivate': 'net_private',
+			public: 'published',
+			private: 'private',
+			agencyPrivate: 'airline_private',
+			airlinePrivate: 'agency_private',
+			netAirlinePrivate: 'net_private',
 		}[$inParserFormat] || null;
 		return $inRpcFormat;
 	}
@@ -91,17 +91,17 @@ class GetMultiPccTariffDisplayAction {
 			.setBaseDate(this.$baseDate)
 			.execute($cmd, $sessionData['gds']);
 		if (!$cmdData) {
-			return {'error': ['Failed to parse base Tariff Display command ' + $cmd]};
+			return {error: ['Failed to parse base Tariff Display command ' + $cmd]};
 		}
 		$departureDate = ($cmdData['departureDate'] || {})['full'];
 		$returnDate = ($cmdData['returnDate'] || {})['full'];
 		$params = {
-			'maxFares': 40,
-			'timeout': this.constructor.TIMEOUT * 2 / 3,
-			'departureDate': $departureDate,
-			'returnDate': $returnDate,
-			'departureAirport': $cmdData['departureAirport'],
-			'destinationAirport': $cmdData['destinationAirport'],
+			maxFares: 40,
+			timeout: this.constructor.TIMEOUT * 2 / 3,
+			departureDate: $departureDate,
+			returnDate: $returnDate,
+			departureAirport: $cmdData['departureAirport'],
+			destinationAirport: $cmdData['destinationAirport'],
 		};
 		for ([$type, $data] of Object.entries($cmdData['typeToData'])) {
 			if ($type === 'airlines') {
@@ -117,7 +117,7 @@ class GetMultiPccTariffDisplayAction {
 			} else if ($type === 'accountCode') {
 				$params['accountCode'] = $data;
 			} else {
-				return {'error': 'Unsupported modifier - ' + $type};
+				return {error: 'Unsupported modifier - ' + $type};
 			}
 		}
 		$options = [];
@@ -126,9 +126,9 @@ class GetMultiPccTariffDisplayAction {
 		}
 		$options = php.array_values(Fp.map(a => ArrayUtil.getFirst(a), Fp.groupBy(a => JSON.stringify(a), $options)));
 		return {
-			'baseParams': $params,
-			'options': $options,
-			'cmdData': $cmdData,
+			baseParams: $params,
+			options: $options,
+			cmdData: $cmdData,
 		};
 	}
 
@@ -191,11 +191,11 @@ class GetMultiPccTariffDisplayAction {
 			$timeout, $hasFares, $cmdRecord;
 		$sessionData = {...$session.getSessionData(), gds: $session.gds};
 		if (!$session.getAgent().canUseMultiPccTariffDisplay()) {
-			return {'errors': ['You are not allowed to use \/MIX alias']};
+			return {errors: ['You are not allowed to use \/MIX alias']};
 		}
 		$rpcParamRecord = await this.makeRpcParamOptions($cmd, $sessionData);
 		if (!php.empty($rpcParamRecord['error'])) {
-			return {'errors': ['Failed to generate RPC params - ' + $rpcParamRecord['error']]};
+			return {errors: ['Failed to generate RPC params - ' + $rpcParamRecord['error']]};
 		}
 		const promises = [];
 		for (const $rpcParams of Object.values($rpcParamRecord['options'])) {
@@ -228,13 +228,13 @@ class GetMultiPccTariffDisplayAction {
 		if (!Fp.any($hasFares, $finishedJobs)) {
 			const formatted = php.array_map(a => this.constructor.formatJobError(a), $finishedJobs);
 			formatted.push(...errors);
-			return {'errors': formatted.length > 0 ? formatted : ['None of PCC jobs responded']};
+			return {errors: formatted.length > 0 ? formatted : ['None of PCC jobs responded']};
 		}
 		if (!php.empty($finishedJobs)) {
 			$cmdRecord = (new MakeMultiPccTariffDumpAction()).execute($finishedJobs, $sessionData, $rpcParamRecord['cmdData']);
-			return {'calledCommands': [$cmdRecord], userMessages: errors};
+			return {calledCommands: [$cmdRecord], userMessages: errors};
 		} else {
-			return {'errors': ['All ' + php.count(promises) + ' PCC jobs failed'].concat(errors)};
+			return {errors: ['All ' + php.count(promises) + ' PCC jobs failed'].concat(errors)};
 		}
 	}
 }

@@ -12,7 +12,7 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
  * 'LIBERMANE/LEPIN    >*7NDC84;',
  * '><',
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class DvParser
 {
 	static parseBookingLine($line)  {
@@ -26,8 +26,8 @@ class DvParser
 		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
 		if ($split['>'] === '>' && $split['*'] === '*' && $split[';'] === ';') {
 			return {
-				'passengerName': $split['F'],
-				'recordLocator': $split['R'],
+				passengerName: $split['F'],
+				recordLocator: $split['R'],
 			};
 		} else {
 			return null;
@@ -41,9 +41,9 @@ class DvParser
 		$headerLine = php.array_shift($lines);
 
 		if (php.trim($headerLine) === 'NO DIVIDED BOOKINGS EXIST') {
-			return {'records': []};
+			return {records: []};
 		} else if (php.trim($headerLine) !== '** DIVIDED BOOKING DATA **') {
-			return {'error': 'Unexpected start of dump - '+php.trim($headerLine)};
+			return {error: 'Unexpected start of dump - '+php.trim($headerLine)};
 		}
 		$typeLine = php.trim(php.array_shift($lines));
 		$recordType = ({
@@ -52,7 +52,7 @@ class DvParser
 		} || {})[$typeLine];
 
 		$records = php.array_map((...args) => this.parseBookingLine(...args), $lines);
-		return {'recordType': $recordType, 'records': $records};
+		return {recordType: $recordType, records: $records};
 	}
 }
 module.exports = DvParser;

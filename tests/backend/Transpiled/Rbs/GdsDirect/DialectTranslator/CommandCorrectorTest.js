@@ -76,7 +76,7 @@ class CommandCorrectorTest extends require('../../../Lib/TestCase.js') {
 			['sabre', '1(', '1*'],
 			['sabre', '1*(', '1*'],
 			['sabre', 'AAAA6IIF', 'AAA6IIF'],
-//            ['sabre', '120SENYCMNL', '120SEPNYCMNL'],
+			//            ['sabre', '120SENYCMNL', '120SEPNYCMNL'],
 			['sabre', '1&', '1*'],
 			['sabre', 'WPPJCB:NC', 'WPPJCB‡NC'],
 			['sabre', 'PE¥TEST@ITNCORP.COM¥', 'PE¥TEST@ITNCORP.COM¥'], // No changes should be made

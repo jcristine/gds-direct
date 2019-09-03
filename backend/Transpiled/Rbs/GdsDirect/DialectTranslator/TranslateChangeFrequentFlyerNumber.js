@@ -6,7 +6,7 @@ const Fp = require('../../../Lib/Utils/Fp.js');
  * Amadeus: NON-TRANSLATABLE
  * Galileo: M+P1*DL/P2*AA@
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class TranslateChangeFrequentFlyerNumber {
 	static normalizeData($parsedData, $gds) {
@@ -16,7 +16,7 @@ class TranslateChangeFrequentFlyerNumber {
 		}
 		if ($gds === 'apollo') {
 			return {
-				'passengers': Fp.map(($pax) => {
+				passengers: Fp.map(($pax) => {
 
 					$pax['airline'] = (($pax['mileagePrograms'] || {})[0] || {})['airline'];
 					return $pax;
@@ -24,7 +24,7 @@ class TranslateChangeFrequentFlyerNumber {
 			};
 		} else if ($gds === 'sabre') {
 			if (php.empty($parsedData['lineNums'])) { // ALL
-				return {'passengers': []};
+				return {passengers: []};
 			} else {
 				// Sabre allows deleting only by line number, not by pax
 				return null;

@@ -11,7 +11,7 @@ const ProcessTerminalInput = require('../Actions/ProcessTerminalInput.js');
 const MakeMcoApolloAction = require('../Transpiled/Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
 const CmdResultAdapter = require('../Transpiled/App/Services/CmdResultAdapter.js');
 
-const php = require('../Transpiled/phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CmsClient = require("../IqClients/CmsClient");
 const ImportPq = require('../Actions/ImportPq.js');
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
@@ -57,7 +57,7 @@ exports.runInputCmd = async (params) => {
 	rqBody.command = rqBody.command.trim();
 	return Promise.resolve()
 		.then(() => runInSession(params))
-		.catch(async exc => GdsSessionManager.restartIfNeeded(exc, params, async (newSession) => {
+		.catch(exc => GdsSessionManager.restartIfNeeded(exc, params, async (newSession) => {
 			const runt = await runInSession({...params, session: newSession});
 			runt.startNewSession = true;
 			runt.userMessages = ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'];
@@ -145,7 +145,11 @@ exports.addMpRemark = async ({rqBody, ...params}) => {
 
 exports.goToPricing = async ({rqBody, ...controllerData}) => {
 	const stateful = await StatefulSession.makeFromDb(controllerData);
-	return GoToPricing({stateful, rqBody, controllerData})
+	const gdsClients = GdsSession.makeLoggingGdsClients({
+		gds: controllerData.session.context.gds,
+		logId: controllerData.session.logId,
+	});
+	return GoToPricing({stateful, rqBody, controllerData, gdsClients})
 		.then(result => CmdResultAdapter({
 			cmdRq: 'GOTOPRICEMIX',
 			gds: rqBody.pricingGds,

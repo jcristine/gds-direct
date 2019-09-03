@@ -23,7 +23,7 @@ const StoredPricingListParser = require('../../../../Gds/Parsers/Galileo/Pricing
  * 'FONE-SFOR:8775591134'
  * 'TKTG-TAU/SA10MAR'
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const HeadParser = require("./HeadParser");
 const VlParser = require("./VlParser");
 const DvParser = require("./DvParser");
@@ -70,7 +70,7 @@ class PnrParser {
 		let $sections, $currentSectionName, $line, $sectionName;
 
 		const dataExistsLines = [];
-		$sections = {'HEAD': ''};
+		$sections = {HEAD: ''};
 
 		$currentSectionName = 'HEAD';
 		for ($line of Object.values(StringUtil.lines($dump))) {
@@ -122,20 +122,20 @@ class PnrParser {
 		}, $lines);
 
 		return {
-			'filedFareDataExists': php.in_array('*FF', $markers) || !php.empty($sections['FQ']),
-			'dividedBookingExists': php.in_array('*DV', $markers) || !php.empty($sections['** DIVIDED BOOKING DATA **']),
-			'vlocDataExists': php.in_array('*VL', $markers) || !php.empty($sections['VLOC']),
-			'vendorRemarksDataExists': php.in_array('*VR', $markers) || !php.empty($sections['VENDOR REMARKS']),
-			'serviceInformationExists': php.in_array('*SI', $markers)
+			filedFareDataExists: php.in_array('*FF', $markers) || !php.empty($sections['FQ']),
+			dividedBookingExists: php.in_array('*DV', $markers) || !php.empty($sections['** DIVIDED BOOKING DATA **']),
+			vlocDataExists: php.in_array('*VL', $markers) || !php.empty($sections['VLOC']),
+			vendorRemarksDataExists: php.in_array('*VR', $markers) || !php.empty($sections['VENDOR REMARKS']),
+			serviceInformationExists: php.in_array('*SI', $markers)
 				|| !php.empty($sections['** SPECIAL SERVICE REQUIREMENT **'])
 				|| !php.empty($sections['NO OSI EXISTS'])
 				|| !php.empty($sections['** MANUAL SSR DATA **'])
 				|| !php.empty($sections['** OTHER SUPPLEMENTARY INFORMATION **']),
-			'membershipDataExists': php.in_array('*MM', $markers) || !php.empty($sections['** MILEAGE MEMBERSHIP DATA **']),
-			'seatDataExists': php.in_array('*SD', $markers) || !php.empty($sections['** SEAT DATA **']),
-			'tinRemarksExist': php.in_array('*HTI', $markers),
-			'eTicketDataExists': php.in_array('*HTE', $markers),
-			'additionalItineraryDataExists': php.in_array('*I', $markers),
+			membershipDataExists: php.in_array('*MM', $markers) || !php.empty($sections['** MILEAGE MEMBERSHIP DATA **']),
+			seatDataExists: php.in_array('*SD', $markers) || !php.empty($sections['** SEAT DATA **']),
+			tinRemarksExist: php.in_array('*HTI', $markers),
+			eTicketDataExists: php.in_array('*HTE', $markers),
+			additionalItineraryDataExists: php.in_array('*I', $markers),
 		};
 	}
 
@@ -157,35 +157,35 @@ class PnrParser {
 			'/';
 		if (php.preg_match($ticketedRegex, $dump, $tokens = [])) {
 			return {
-				'agencyCode': $tokens['agencyCode'],
-				'ticketingDate': {
-					'raw': $tokens['ticketingDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($tokens['ticketingDate']),
+				agencyCode: $tokens['agencyCode'],
+				ticketingDate: {
+					raw: $tokens['ticketingDate'],
+					parsed: CommonParserHelpers.parsePartialDate($tokens['ticketingDate']),
 				},
-				'ticketingTime': {
-					'raw': $tokens['ticketingTime'],
-					'parsed': CommonParserHelpers.decodeApolloTime($tokens['ticketingTime']),
+				ticketingTime: {
+					raw: $tokens['ticketingTime'],
+					parsed: CommonParserHelpers.decodeApolloTime($tokens['ticketingTime']),
 				},
-				'timezone': {
-					'raw': $tokens['timezone'],
-					'parsed': $tokens['timezone'] === 'Z' ? 'UTC' : null,
+				timezone: {
+					raw: $tokens['timezone'],
+					parsed: $tokens['timezone'] === 'Z' ? 'UTC' : null,
 				},
-				'fpInitials': $tokens['fpInitials'],
+				fpInitials: $tokens['fpInitials'],
 			};
 		} else if (php.preg_match(/^TKTG-TAU\/([A-Z]{2})(\d{1,2}[A-Z]{3})$/, $dump, $matches = [])) {
 			[$_, $dayOfWeek, $tauDate] = $matches;
 			return {
-				'tauDayOfWeek': {
-					'raw': $dayOfWeek,
-					'parsed': CommonParserHelpers.apolloDayOfWeekToNumber($dayOfWeek),
+				tauDayOfWeek: {
+					raw: $dayOfWeek,
+					parsed: CommonParserHelpers.apolloDayOfWeekToNumber($dayOfWeek),
 				},
-				'tauDate': {
-					'raw': $tauDate,
-					'parsed': CommonParserHelpers.parsePartialDate($tauDate),
+				tauDate: {
+					raw: $tauDate,
+					parsed: CommonParserHelpers.parsePartialDate($tauDate),
 				},
 			};
 		} else {
-			return {'raw': $dump};
+			return {raw: $dump};
 		}
 	}
 
@@ -221,9 +221,9 @@ class PnrParser {
 				$text = php.str_replace(php.PHP_EOL, '', $text);
 				$generic = GenericRemarkParser.parse($text);
 				$result.push({
-					'lineNumber': $lineNum,
-					'remarkType': $generic['remarkType'],
-					'data': $generic['data'],
+					lineNumber: $lineNum,
+					remarkType: $generic['remarkType'],
+					data: $generic['data'],
 				});
 			}
 		}
@@ -239,8 +239,8 @@ class PnrParser {
 		$lineNumber = php.substr($line, 0, php.strlen('FONE-'));
 		$data = php.substr($line, php.strlen('FONE-'));
 		return {
-			'lineNumber': $lineNumber === 'FONE-' ? '1' : php.trim($lineNumber, ' .'),
-			'data': $data,
+			lineNumber: $lineNumber === 'FONE-' ? '1' : php.trim($lineNumber, ' .'),
+			data: $data,
 		};
 	}
 
@@ -262,14 +262,14 @@ class PnrParser {
 				$zipCode = $matches['postCode'];
 			}
 		} else {
-			return {'raw': $line};
+			return {raw: $line};
 		}
 		return {
-			'name': $name,
-			'addressLine1': $addressLine1,
-			'addressLine2': $addressLine2,
-			'addressLine3': $addressLine3,
-			'postCode': $zipCode,
+			name: $name,
+			addressLine1: $addressLine1,
+			addressLine2: $addressLine2,
+			addressLine3: $addressLine3,
+			postCode: $zipCode,
 		};
 	}
 
@@ -289,22 +289,22 @@ class PnrParser {
 			'(\\\/\\*(?<approvalCode>[A-Z\\d]+))?' +
 			'/';
 		if (php.trim($line) == 'CK') {
-			return {'formOfPayment': 'cash'};
+			return {formOfPayment: 'cash'};
 		} else if (php.preg_match($cardRegex, $line, $matches = [])) {
 			$approvalCode = php.array_key_exists('approvalCode', $matches) ? $matches['approvalCode'] : null;
 			return {
-				'formOfPayment': 'creditCard',
-				'ccType': $matches['ccType'],
-				'ccNumber': $matches['ccNumber'],
-				'expirationDate': {
-					'raw': $matches['expirationMonth'] + $matches['expirationYear'],
-					'parsed': '20' + $matches['expirationYear'] + '-' +
+				formOfPayment: 'creditCard',
+				ccType: $matches['ccType'],
+				ccNumber: $matches['ccNumber'],
+				expirationDate: {
+					raw: $matches['expirationMonth'] + $matches['expirationYear'],
+					parsed: '20' + $matches['expirationYear'] + '-' +
 						php.str_pad($matches['expirationMonth'], 2, '0', php.STR_PAD_LEFT),
 				},
-				'approvalCode': $approvalCode,
+				approvalCode: $approvalCode,
 			};
 		} else {
-			return {'raw': $line};
+			return {raw: $line};
 		}
 
 	}
@@ -318,7 +318,7 @@ class PnrParser {
 		$sections = this.splitToSections($dump);
 		$parsedHead = HeadParser.parse($sections['HEAD'] || '');
 		$result['headerData'] = $parsedHead['headerData'];
-		$result['passengers'] = {'passengerList': $parsedHead['nameRecords']};
+		$result['passengers'] = {passengerList: $parsedHead['nameRecords']};
 		$result['itineraryData'] = $parsedHead['itinerary'];
 		$result['foneData'] = php.empty($sections['FONE']) ? [] : php.array_map((...args) => this.parseFoneLine(...args), StringUtil.lines($sections['FONE']));
 		$result['adrsData'] = php.empty($sections['ADRS']) ? null : this.parseAddressLine($sections['ADRS']);

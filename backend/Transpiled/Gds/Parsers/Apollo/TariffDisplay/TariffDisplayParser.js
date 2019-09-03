@@ -6,7 +6,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
 const FareDisplayCommonParser = require('./FareDisplayCommonParser.js');
 const FareDisplayDomesticParser = require('./FareDisplayDomesticParser.js');
 const FareDisplayInternationalParser = require('./FareDisplayInternationalParser.js');
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class TariffDisplayParser
 {
@@ -30,8 +30,8 @@ class TariffDisplayParser
 				$headLines.push($line);
 			}}
 		return {
-			'headLines': $headLines,
-			'contentLines': $contentLines,
+			headLines: $headLines,
+			contentLines: $contentLines,
 		};
 	}
 
@@ -41,8 +41,8 @@ class TariffDisplayParser
 		[$h, $i] = php.explode(':', $numStr);
 		$gdsStr = $h+$i+php.substr($clockStr, 0, 1);
 		return {
-			'raw': $raw,
-			'parsed': CommonParserHelpers.decodeApolloTime($gdsStr),
+			raw: $raw,
+			parsed: CommonParserHelpers.decodeApolloTime($gdsStr),
 		};
 	}
 
@@ -68,16 +68,16 @@ class TariffDisplayParser
 			$currency = null;
 		}
 		$result = {
-			'dumpType': $dumpType,
-			'currency': $currency,
+			dumpType: $dumpType,
+			currency: $currency,
 		};
 		$infoLines = !php.trim($infoText) ? [] : StringUtil.lines($infoText);
 		for ($line of Object.values($infoLines)) {
 			if (php.preg_match(/^\s*FARES LAST UPDATED (\d{1,2}[A-Z]{3})\s+(\d{1,2}:\d{2}\s+(PM|AM))/, $line, $matches = [])) {
 				[$_, $date, $time] = $matches;
 				$result['lastUpdatedDate'] = {
-					'raw': $date,
-					'parsed': CommonParserHelpers.parsePartialDate($date),
+					raw: $date,
+					parsed: CommonParserHelpers.parsePartialDate($date),
 				};
 				$result['lastUpdatedTime'] = this.parseTime($time);
 			} else if (php.preg_match(/^>(\$D.*?)\s*$/, $line, $matches = [])) {
@@ -86,7 +86,7 @@ class TariffDisplayParser
 				[$_, $from, $to, $weekDay, $date] = $matches;
 				$result['departureCity'] = $from;
 				$result['destinationCity'] = $to;
-				$result['departureDayOfWeek'] = {'raw': $weekDay};
+				$result['departureDayOfWeek'] = {raw: $weekDay};
 				$result['departureDate'] = CommonParserHelpers.parseCurrentCenturyFullDate($date);
 			} else if (php.preg_match(/^\s*(PUBLIC|PUBLIC\/PRIVATE|PRIVATE)\s+FARES\s+FOR\s+([A-Z0-9]{3,})/, $line, $matches = [])) {
 				[$_, $fareSelection, $pcc] = $matches;
@@ -113,11 +113,11 @@ class TariffDisplayParser
 			for ($value of Object.values($data['result'])) {
 				$result.push($value);}
 			return {
-				'success': true,
-				'header': $format,
-				'result': $result,
-				'dumpType': $format['dumpType'],
-				'currency': $format['currency'],
+				success: true,
+				header: $format,
+				result: $result,
+				dumpType: $format['dumpType'],
+				currency: $format['currency'],
 			};
 		} else if ($dumpType == 'DOMESTIC') {
 			$data = FareDisplayDomesticParser.parseLines($lines);
@@ -125,17 +125,17 @@ class TariffDisplayParser
 				$value['bookingClass'] = php.substr($value['fareBasis'], 0, 1);
 				$result.push($value);}
 			return {
-				'success': true,
-				'header': $format,
-				'result': $result,
-				'dumpType': $format['dumpType'],
-				'currency': $format['currency'],
+				success: true,
+				header: $format,
+				result: $result,
+				dumpType: $format['dumpType'],
+				currency: $format['currency'],
 			};
 		} else {
 			return {
-				'success': false,
-				'error': 'Table format is not supported',
-				'errorType': $dump.match(/^\s*NEED TARIFF DISPLAY\s*(><|)$/)
+				success: false,
+				error: 'Table format is not supported',
+				errorType: $dump.match(/^\s*NEED TARIFF DISPLAY\s*(><|)$/)
 					? 'needTariffDisplay'
 					: null,
 			};

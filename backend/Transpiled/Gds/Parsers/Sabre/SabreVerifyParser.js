@@ -4,7 +4,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const GdsConstants = require('../../../Gds/Parsers/Common/GdsConstants.js');
 const SabreVerifyParsedStructureWriter = require('./SabreVerifyParsedStructureWriter.js');
 
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class SabreVerifyParser
 {
 	static isValidHeader($firstLine)  {
@@ -52,13 +52,13 @@ class SabreVerifyParser
 			$departureTerminal = php.trim($tokens['departureTerminal'] || '');
 			$destinationTerminal = php.trim($tokens['destinationTerminal'] || '');
 			return {
-				'departureTerminal': {
-					'raw': $departureTerminal,
-					'parsed': this.parseTerminalNumber($departureTerminal),
+				departureTerminal: {
+					raw: $departureTerminal,
+					parsed: this.parseTerminalNumber($departureTerminal),
 				},
-				'destinationTerminal': {
-					'raw': $destinationTerminal,
-					'parsed': this.parseTerminalNumber($destinationTerminal),
+				destinationTerminal: {
+					raw: $destinationTerminal,
+					parsed: this.parseTerminalNumber($destinationTerminal),
 				},
 			};
 		} else {
@@ -114,20 +114,20 @@ class SabreVerifyParser
 			$tokens['flightDuration'].match(/^\d*\.\d{2}$/)
 		) {
 			return {
-				'segmentNumber': $tokens['segmentNumber'],
-				'airline': $tokens['airline'],
-				'flightNumber': $tokens['flightNumber'],
-				'departureDate': this.parseDate($tokens['departureDate']),
-				'departureAirport': $tokens['departureAirport'],
-				'destinationAirport': $tokens['destinationAirport'],
-				'departureTime': this.parseTime($tokens['departureTime']),
-				'destinationTime': this.parseTime($tokens['destinationTime']),
-				'offset': this.parseDayOffset($tokens['offset']),
-				'meals': this.parseMeals($tokens['meals']),
-				'smoking': $tokens['smoking'] === 'Y',
-				'aircraft': $tokens['aircraft'],
-				'flightDuration': this.parseDuration($tokens['flightDuration']),
-				'miles': $tokens['miles'],
+				segmentNumber: $tokens['segmentNumber'],
+				airline: $tokens['airline'],
+				flightNumber: $tokens['flightNumber'],
+				departureDate: this.parseDate($tokens['departureDate']),
+				departureAirport: $tokens['departureAirport'],
+				destinationAirport: $tokens['destinationAirport'],
+				departureTime: this.parseTime($tokens['departureTime']),
+				destinationTime: this.parseTime($tokens['destinationTime']),
+				offset: this.parseDayOffset($tokens['offset']),
+				meals: this.parseMeals($tokens['meals']),
+				smoking: $tokens['smoking'] === 'Y',
+				aircraft: $tokens['aircraft'],
+				flightDuration: this.parseDuration($tokens['flightDuration']),
+				miles: $tokens['miles'],
 			};
 		} else {
 			return null;
@@ -142,7 +142,7 @@ class SabreVerifyParser
 			: null;
 
 		return $parsed
-			? {'raw': $token, 'parsed': $parsed}
+			? {raw: $token, parsed: $parsed}
 			: null;
 	}
 
@@ -154,7 +154,7 @@ class SabreVerifyParser
 			: null;
 
 		return $parsed
-			? {'raw': $token, 'parsed': $parsed}
+			? {raw: $token, parsed: $parsed}
 			: null;
 	}
 
@@ -189,21 +189,21 @@ class SabreVerifyParser
 		let $codes, $chars, $result, $char, $meal;
 
 		$codes = {
-			'M': GdsConstants.MEAL_MEAL,
-			'L': GdsConstants.MEAL_LUNCH,
-			'S': GdsConstants.MEAL_SNACK,
-			'D': GdsConstants.MEAL_DINNER,
-			'H': GdsConstants.MEAL_HOT_MEAL,
-			'O': GdsConstants.MEAL_COLD_MEAL,
-			'B': GdsConstants.MEAL_BREAKFAST,
-			'N': GdsConstants.MEAL_NO_MEAL_SVC,
-			'R': GdsConstants.MEAL_REFRESHMENTS,
-			'C': GdsConstants.MEAL_ALCOHOL_NO_COST,
-			'V': GdsConstants.MEAL_REFRESH_AT_COST,
-			'F': GdsConstants.MEAL_FOOD_TO_PURCHASE,
-			'P': GdsConstants.MEAL_ALCOHOL_PURCHASE,
-			'K': GdsConstants.MEAL_CONTINENTAL_BREAKFAST,
-			'G': GdsConstants.MEAL_FOOD_AND_ALCOHOL_AT_COST,
+			M: GdsConstants.MEAL_MEAL,
+			L: GdsConstants.MEAL_LUNCH,
+			S: GdsConstants.MEAL_SNACK,
+			D: GdsConstants.MEAL_DINNER,
+			H: GdsConstants.MEAL_HOT_MEAL,
+			O: GdsConstants.MEAL_COLD_MEAL,
+			B: GdsConstants.MEAL_BREAKFAST,
+			N: GdsConstants.MEAL_NO_MEAL_SVC,
+			R: GdsConstants.MEAL_REFRESHMENTS,
+			C: GdsConstants.MEAL_ALCOHOL_NO_COST,
+			V: GdsConstants.MEAL_REFRESH_AT_COST,
+			F: GdsConstants.MEAL_FOOD_TO_PURCHASE,
+			P: GdsConstants.MEAL_ALCOHOL_PURCHASE,
+			K: GdsConstants.MEAL_CONTINENTAL_BREAKFAST,
+			G: GdsConstants.MEAL_FOOD_AND_ALCOHOL_AT_COST,
 		};
 
 		$chars = php.str_split($token);
@@ -215,8 +215,8 @@ class SabreVerifyParser
 			}}
 
 		return {
-			'raw': $token,
-			'parsed': $result,
+			raw: $token,
+			parsed: $result,
 		};
 	}
 }

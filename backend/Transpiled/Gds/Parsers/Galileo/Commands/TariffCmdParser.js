@@ -1,16 +1,16 @@
 const AtfqParser = require("../../Apollo/Pnr/AtfqParser");
 const ApoCmdParser = require("../../Apollo/CommandParser");
 const CommonParserHelpers = require('../../Apollo/CommonParserHelpers.js');
-const Lexeme = require('../../../../Lib/Lexer/Lexeme.js');
-const Lexer = require('../../../../Lib/Lexer/Lexer.js');
-const php = require('../../../../phpDeprecated.js');
+const Lexeme = require('gds-utils/src/lexer/Lexeme.js');
+const Lexer = require('gds-utils/src/lexer/Lexer.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 
 const parseDate = ($raw) => {
 	return !$raw ? null : {
-		'raw': $raw,
-		'partial': CommonParserHelpers.parsePartialDate($raw),
-		'full': CommonParserHelpers.parseCurrentCenturyFullDate($raw)['parsed'],
+		raw: $raw,
+		partial: CommonParserHelpers.parsePartialDate($raw),
+		full: CommonParserHelpers.parseCurrentCenturyFullDate($raw)['parsed'],
 	};
 };
 
@@ -48,7 +48,7 @@ exports.parse = ($cmd) => {
 	if (php.preg_match(/^FD(?<modsPart>.*)$/, $cmd, $matches = {})) {
 		const $lexed = $lexer.lex($matches['modsPart']);
 		const modifiers = Fp.map(($rec) => ({
-			'type': $rec['lexeme'], 'raw': $rec['raw'], 'parsed': $rec['data'],
+			type: $rec['lexeme'], raw: $rec['raw'], parsed: $rec['data'],
 		}), $lexed['lexemes']);
 
 		// code expects them to be separate from rest modifiers
@@ -58,12 +58,12 @@ exports.parse = ($cmd) => {
 			.forEach(m => Object.assign(baseData, m.parsed));
 
 		return {
-			'departureDate': baseData.departureDate || null,
-			'returnDate': baseData.returnDate || null,
-			'departureAirport': baseData.departureAirport || '',
-			'destinationAirport': baseData.destinationAirport || '',
-			'modifiers': modifiers.filter(m => !baseModNames.has(m.type)),
-			'unparsed': $lexed['text'],
+			departureDate: baseData.departureDate || null,
+			returnDate: baseData.returnDate || null,
+			departureAirport: baseData.departureAirport || '',
+			destinationAirport: baseData.destinationAirport || '',
+			modifiers: modifiers.filter(m => !baseModNames.has(m.type)),
+			unparsed: $lexed['text'],
 		};
 	} else {
 		return null;

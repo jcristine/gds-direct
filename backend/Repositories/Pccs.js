@@ -2,7 +2,7 @@ const iqJson = require("../Utils/TmpLib").iqJson;
 const {getConfig} = require('../Config.js');
 
 const Db = require('../Utils/Db.js');
-const php = require('../Transpiled/phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const sqlNow = require("../Utils/TmpLib").sqlNow;
 const Conflict = require("klesun-node-tools/src/Rej").Conflict;
 const NotFound = require("klesun-node-tools/src/Rej").NotFound;
@@ -38,7 +38,7 @@ exports.updateFromService = async () => {
 			passwd: config.external_service.act.password,
 		},
 		functionName: 'getPCCsAll',
-		serviceName: 'rbs',
+		serviceName: config.external_service.act.serviceName,
 	});
 
 	const rows = Object

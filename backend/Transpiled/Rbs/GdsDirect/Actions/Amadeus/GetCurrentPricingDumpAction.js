@@ -10,7 +10,7 @@ const PagingHelper = require('../../../../../GdsHelpers/AmadeusUtils.js');
  * MP FXP-es, etc..+ Amadeus allows us to continue scrolling pricing even if you called other
  * commands afterwards, that allows us to save at least one command when pricing is incomplete
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class GetCurrentPricingDumpAction extends AbstractGdsAction
 {
 	/**
@@ -41,12 +41,12 @@ class GetCurrentPricingDumpAction extends AbstractGdsAction
 		}
 		$baseCmd = $parsed['data']['baseCmd'];
 		return ({
-			'FXP': 'FXP',
-			'FXX': 'FXP',
-			'FXA': 'FXA',
-			'FXL': 'FXL',
-			'FXB': 'FXB',
-			'FXR': 'FXB',
+			FXP: 'FXP',
+			FXX: 'FXP',
+			FXA: 'FXA',
+			FXL: 'FXL',
+			FXB: 'FXB',
+			FXR: 'FXB',
 		} || {})[$baseCmd];
 	}
 
@@ -94,11 +94,11 @@ class GetCurrentPricingDumpAction extends AbstractGdsAction
 			}}
 
 		return {
-			'pricingCmd': $pricingCmd,
-			'isInPricingMd': $isInPricingMd,
-			'pageNum': $pageNum,
-			'pageCnt': $pageCnt,
-			'numToPage': $numToPage,
+			pricingCmd: $pricingCmd,
+			isInPricingMd: $isInPricingMd,
+			pageNum: $pageNum,
+			pageCnt: $pageCnt,
+			numToPage: $numToPage,
 		};
 	}
 
@@ -110,7 +110,7 @@ class GetCurrentPricingDumpAction extends AbstractGdsAction
 		$uninterrupted = this.constructor.cutInterrupted($pageData['numToPage']);
 		$fetchedPart = php.implode(php.PHP_EOL, $uninterrupted);
 		if (!$pageData['pricingCmd']) {
-			return {'error': 'State changed since last pricing'};
+			return {error: 'State changed since last pricing'};
 		} else if (
 			php.count($uninterrupted) === php.count($pageData['numToPage']) &&
             php.isset($pageData['numToPage'][$pageData['pageCnt']])
@@ -119,7 +119,7 @@ class GetCurrentPricingDumpAction extends AbstractGdsAction
 		} else {
 			$scrollAlias = this.constructor.makeScrollAlias($pageData['pricingCmd']);
 			if (!$scrollAlias) {
-				return {'error': 'Scrolling for '+$pageData['pricingCmd']+' format is not supported'};
+				return {error: 'Scrolling for '+$pageData['pricingCmd']+' format is not supported'};
 			} else {
 				// go to bottom and fetch rest pages with MU
 				$pages = [];
@@ -127,7 +127,7 @@ class GetCurrentPricingDumpAction extends AbstractGdsAction
 				$lastPage = (await this.runCmd($redisplayCmd)).output;
 				$pager = PagingHelper.parseFxPager($lastPage);
 				if (!$pager['hasPageMark']) {
-					return {'error': 'Failed to redisplay pricing with '+$redisplayCmd+' - '+$lastPage};
+					return {error: 'Failed to redisplay pricing with '+$redisplayCmd+' - '+$lastPage};
 				} else {
 					php.array_unshift($pages, $pager['content']);
 					for ($i = $pageData['pageCnt'] - 1; $i > $pageData['pageNum']; --$i) {
@@ -139,7 +139,7 @@ class GetCurrentPricingDumpAction extends AbstractGdsAction
 			}
 		}
 
-		return {'cmd': $pageData['pricingCmd'], 'output': $fullDump};
+		return {cmd: $pageData['pricingCmd'], output: $fullDump};
 	}
 }
 module.exports = GetCurrentPricingDumpAction;

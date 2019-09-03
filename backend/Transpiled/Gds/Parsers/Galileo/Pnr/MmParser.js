@@ -10,7 +10,7 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
  * 'P  4+ LIBERMANE/STAS    BA  123456',
  * '                        SN  1234',
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class MmParser
 {
 	static parseRpogramLine($line)  {
@@ -22,8 +22,8 @@ class MmParser
 		$names = php.array_combine($symbols, $symbols);
 		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
 		$result = {
-			'airline': $split['Y'],
-			'code': $split['M'],
+			airline: $split['Y'],
+			code: $split['M'],
 		};
 		if (php.trim($split[' ']) === '' &&
             $result['airline'] && $result['code']
@@ -48,9 +48,9 @@ class MmParser
 		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
 
 		$result = {
-			'passengerNumber': $split['N'],
-			'passengerName': $split['F'],
-			'mileagePrograms': [$program],
+			passengerNumber: $split['N'],
+			passengerName: $split['F'],
+			mileagePrograms: [$program],
 		};
 		if ($split['P'] === 'P' && php.trim($split[' ']) === '' &&
             $split['N'] && $program && $split['F']
@@ -67,7 +67,7 @@ class MmParser
 		$lines = StringUtil.lines($dump);
 		$headerLine = php.array_shift($lines);
 		if (php.trim($headerLine) !== '** MILEAGE MEMBERSHIP DATA **') {
-			return {'error': 'Unexpected start of dump - '+php.trim($headerLine)};
+			return {error: 'Unexpected start of dump - '+php.trim($headerLine)};
 		}
 		$paxes = [];
 		for ($line of Object.values($lines)) {
@@ -76,7 +76,7 @@ class MmParser
 			} else if (!php.empty($paxes) && ($record = this.parseRpogramLine($line))) {
 				$paxes[php.count($paxes) - 1]['mileagePrograms'].push($record);
 			}}
-		return {'passengers': $paxes};
+		return {passengers: $paxes};
 	}
 }
 module.exports = MmParser;

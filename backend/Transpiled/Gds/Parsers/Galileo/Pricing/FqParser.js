@@ -40,7 +40,15 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * 'BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/',
  * 'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
+
+const parseRebookSegmentsStr = segListStr => {
+	return segListStr.split('/').map(token => {
+		const segmentNumber = token.slice(0, -1);
+		const bookingClass = token.slice(-1);
+		return {segmentNumber, bookingClass};
+	});
+};
 
 class FqParser {
 	// '                   *** BEST BUY QUOTATION ***'
@@ -50,26 +58,24 @@ class FqParser {
 	// '                  ***  REBOOK SUCCESSFUL  ***'
 	// '              REBOOKED SEGMENTS 1T/2T/3T/4T/5T/6T'
 	// '                   *** NO REBOOK REQUIRED ***'
-	static parseHeaderMessages($messages) {
-		let $rebookStatus, $unparsed, $message;
-
-		$rebookStatus = null;
-		$unparsed = [];
-		for ($message of Object.values($messages)) {
-			if (StringUtil.startsWith(php.trim($message), '*** REBOOK BF SEGMENTS ')) {
-				$rebookStatus = 'required';
-			} else if (php.trim($message) === '***  REBOOK SUCCESSFUL  ***') {
-				$rebookStatus = 'successful';
-			} else if (php.trim($message) === '*** NO REBOOK REQUIRED ***') {
-				$rebookStatus = 'notRequired';
+	static parseHeaderMessages(messages) {
+		let rebookStatus = null;
+		const rebookSegments = [];
+		const unparsed = [];
+		for (const message of messages) {
+			let match;
+			if (match = message.match(/^\s*\*\*\* REBOOK BF SEGMENTS\s*(\S*?)[\s*]*$/)) {
+				rebookSegments.push(...parseRebookSegmentsStr(match[1]));
+				rebookStatus = 'required';
+			} else if (php.trim(message) === '***  REBOOK SUCCESSFUL  ***') {
+				rebookStatus = 'successful';
+			} else if (php.trim(message) === '*** NO REBOOK REQUIRED ***') {
+				rebookStatus = 'notRequired';
 			} else {
-				$unparsed.push($message);
+				unparsed.push(message);
 			}
 		}
-		return {
-			'rebookStatus': $rebookStatus,
-			'unparsed': $unparsed,
-		};
+		return {rebookStatus, rebookSegments, unparsed};
 	}
 
 	/** @param $query = '1-2.4' */
@@ -111,16 +117,16 @@ class FqParser {
 			'\\s*$\/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'guaranteeCode': $matches['guaranteeCode'],
-				'passengerNumbers': this.parsePaxNums($matches['paxNums']),
-				'fareBasis': $matches['fareBasis'],
-				'fareBasisMark': $matches['fareBasisMark'],
-				'currency': $matches['currency'],
-				'baseFare': $matches['baseFare'],
-				'taxAmount': $matches['taxAmount'],
-				'netPrice': $matches['netPrice'],
-				'ptc': $matches['ptc'],
-				'ptcDescription': $matches['ptcDescription'],
+				guaranteeCode: $matches['guaranteeCode'],
+				passengerNumbers: this.parsePaxNums($matches['paxNums']),
+				fareBasis: $matches['fareBasis'],
+				fareBasisMark: $matches['fareBasisMark'],
+				currency: $matches['currency'],
+				baseFare: $matches['baseFare'],
+				taxAmount: $matches['taxAmount'],
+				netPrice: $matches['netPrice'],
+				ptc: $matches['ptc'],
+				ptcDescription: $matches['ptcDescription'],
 			};
 		} else {
 			return null;
@@ -146,7 +152,7 @@ class FqParser {
 			$type = null;
 			$parsed = null;
 		}
-		return {'type': $type, 'parsed': $parsed};
+		return {type: $type, parsed: $parsed};
 	}
 
 	static parsePtcMessageLine($line) {
@@ -164,11 +170,11 @@ class FqParser {
 		$raw = $split['M'];
 		$parsed = this.parsePtcMessage($raw);
 		$result = {
-			'ptc': php.trim($split['P']),
-			'ptcDescription': php.trim($split['D']),
-			'raw': $raw,
-			'type': $parsed['type'],
-			'parsed': $parsed['parsed'],
+			ptc: php.trim($split['P']),
+			ptcDescription: php.trim($split['D']),
+			raw: $raw,
+			type: $parsed['type'],
+			parsed: $parsed['parsed'],
 		};
 		if (php.trim($split[' ']) === '' && $raw &&
 			php.preg_match(/^[A-Z0-9]+$/, $result['ptc'])
@@ -195,8 +201,8 @@ class FqParser {
 			}
 		}
 		return {
-			'unparsed': $unparsed,
-			'ptcMessages': $ptcMessages,
+			unparsed: $unparsed,
+			ptcMessages: $ptcMessages,
 		};
 	}
 
@@ -212,7 +218,7 @@ class FqParser {
 		}
 		if ($guarLine = php.array_shift($lines)) {
 			if (StringUtil.contains($guarLine, 'GUARANTEED')) {
-				$parsed['guarantee'] = {'raw': php.trim($guarLine)};
+				$parsed['guarantee'] = {raw: php.trim($guarLine)};
 			} else {
 				php.array_unshift($lines, $guarLine);
 			}
@@ -233,8 +239,8 @@ class FqParser {
 			$baggageParsed = null;
 		}
 		return {
-			'raw': php.implode(php.PHP_EOL, $blockLines),
-			'parsed': $baggageParsed,
+			raw: php.implode(php.PHP_EOL, $blockLines),
+			parsed: $baggageParsed,
 		};
 	}
 
@@ -256,76 +262,77 @@ class FqParser {
 			$blockLines.push($line);
 		}
 		$bagPtcPricingBlocks.push(this.parseBagPtcBlock($header, $blockLines));
-		return {'bagPtcPricingBlocks': $bagPtcPricingBlocks};
+		return {bagPtcPricingBlocks: $bagPtcPricingBlocks};
 	}
 
-	static parse($dump) {
-		let $rawLines, $cmdCopyLine, $matches, $cmdCopy, $wrapped, $linesLeft, $headerMessages, $line, $headerInfo,
-			$ptcRows, $parsed, $left, $grandLine, $_, $grandCurrency, $grandAmount, $additionalMessages,
-			$additionalInfo, $baggageDump, $baggageParsed;
+	static parse(dump) {
+		let matches, line;
 
-		$rawLines = StringUtil.lines($dump);
-		$cmdCopyLine = php.array_shift($rawLines);
-		if (php.preg_match(/^\s*>(FQ.*?);?\s*$/, $cmdCopyLine, $matches = [])) {
-			$cmdCopy = $matches[1];
+		const rawLines = StringUtil.lines(dump);
+		const cmdCopyLine = php.array_shift(rawLines);
+		let cmdCopy;
+		if (php.preg_match(/^\s*>(FQ.*?);?\s*$/, cmdCopyLine, matches = [])) {
+			cmdCopy = matches[1];
 		} else {
-			return {'error': 'Unexpected start of dump - ' + $cmdCopyLine};
+			return {error: 'Unexpected start of dump - ' + cmdCopyLine};
 		}
-		$dump = php.implode(php.PHP_EOL, $rawLines);
+		dump = php.implode(php.PHP_EOL, rawLines);
 
-		$wrapped = StringUtil.wrapLinesAt($dump, 64);
-		$linesLeft = StringUtil.lines($wrapped);
-		$headerMessages = [];
-		while ($line = php.array_shift($linesLeft)) {
-			if (php.preg_match(/PSGR.*FARE.*TOTAL.* PSG/, $line)) {
+		const wrapped = StringUtil.wrapLinesAt(dump, 64);
+		let linesLeft = StringUtil.lines(wrapped);
+		const headerMessages = [];
+		while (line = php.array_shift(linesLeft)) {
+			if (php.preg_match(/PSGR.*FARE.*TOTAL.* PSG/, line)) {
 				break;
 			} else {
-				$headerMessages.push($line);
+				headerMessages.push(line);
 			}
 		}
-		$headerInfo = this.parseHeaderMessages($headerMessages);
-		if (php.empty($linesLeft)) {
-			return {'error': 'Could not find FQ column headers line - ' + $headerMessages[0]};
+		const headerInfo = this.parseHeaderMessages(headerMessages);
+		if (php.empty(linesLeft)) {
+			return {error: 'Could not find FQ column headers line - ' + headerMessages[0]};
 		}
-		$ptcRows = [];
+		const ptcRows = [];
 		let tuple;
-		while (tuple = this.parsePtcRowLines($linesLeft)) {
-			[$parsed, $left] = tuple;
-			$ptcRows.push($parsed);
-			$linesLeft = $left;
+		while (tuple = this.parsePtcRowLines(linesLeft)) {
+			const [$parsed, $left] = tuple;
+			ptcRows.push($parsed);
+			linesLeft = $left;
 		}
 		// 'GRAND TOTAL INCLUDING TAXES  ****      USD     2789.50                       '
 		// 'GRAND TOTAL INCLUDING TAXES ****     USD       272.90           ',
-		$grandLine = php.array_shift($linesLeft);
-		if (php.preg_match(/^GRAND TOTAL INCLUDING TAXES\s*\*+\s+([A-Z]{3})\s+(\d*\.\d+)/, $grandLine, $matches = [])) {
-			[$_, $grandCurrency, $grandAmount] = $matches;
+		const grandLine = php.array_shift(linesLeft);
+		let grandCurrency, grandAmount;
+		if (php.preg_match(/^GRAND TOTAL INCLUDING TAXES\s*\*+\s+([A-Z]{3})\s+(\d*\.\d+)/, grandLine, matches = [])) {
+			[, grandCurrency, grandAmount] = matches;
 		} else {
-			return {'error': 'Failed to parse GRAND TOTAL line - ' + php.trim($grandLine)};
+			return {error: 'Failed to parse GRAND TOTAL line - ' + php.trim(grandLine)};
 		}
-		$additionalMessages = [];
-		while ($line = php.array_shift($linesLeft)) {
-			if (php.trim($line) === 'BAGGAGE ALLOWANCE') {
-				php.array_unshift($linesLeft, $line);
+		const additionalMessages = [];
+		while (line = php.array_shift(linesLeft)) {
+			if (php.trim(line) === 'BAGGAGE ALLOWANCE') {
+				php.array_unshift(linesLeft, line);
 				break;
 			} else {
-				$additionalMessages.push($line);
+				additionalMessages.push(line);
 			}
 		}
-		$additionalInfo = this.parseAdditionalInfo($additionalMessages);
-		$baggageDump = php.implode(php.PHP_EOL, $linesLeft);
-		$baggageParsed = this.parseBagAllowance($baggageDump);
+		const additionalInfo = this.parseAdditionalInfo(additionalMessages);
+		const baggageDump = php.implode(php.PHP_EOL, linesLeft);
+		const baggageParsed = this.parseBagAllowance(baggageDump);
 		return {
-			'cmdCopy': $cmdCopy,
-			'rebookStatus': $headerInfo['rebookStatus'],
-			'headerMessages': $headerInfo['unparsed'],
-			'ptcRows': $ptcRows,
-			'grandTotal': {
-				'currency': $grandCurrency,
-				'amount': $grandAmount,
+			cmdCopy: cmdCopy,
+			rebookStatus: headerInfo.rebookStatus,
+			rebookSegments: headerInfo.rebookSegments,
+			headerMessages: headerInfo.unparsed,
+			ptcRows: ptcRows,
+			grandTotal: {
+				currency: grandCurrency,
+				amount: grandAmount,
 			},
-			'additionalMessages': $additionalInfo['unparsed'],
-			'ptcMessages': $additionalInfo['ptcMessages'],
-			'bagPtcPricingBlocks': $baggageParsed['bagPtcPricingBlocks'] || [],
+			additionalMessages: additionalInfo.unparsed,
+			ptcMessages: additionalInfo.ptcMessages,
+			bagPtcPricingBlocks: baggageParsed.bagPtcPricingBlocks || [],
 		};
 	}
 }

@@ -102,7 +102,7 @@ const normalizeRuleForFrontend = (rule) => {
 // 224	0	Pricing Screen	Exceeding maximum permitted Mileage on Pricing screen
 const matchApolloPricingRules = (output) => {
 	const records = [];
-	const fcMatches = Str.matchAll(/(?<=\n(?:\$B[A-Z]*|TKT \d+)-\d+.*\n)([\s\S]+)\nFARE/g, output);
+	const fcMatches = Str.matchAll(/(?<=\n(?:\$B[A-Z]*0?|TKT \d+)-\d+.*\n)([\s\S]+)\nFARE/g, output);
 	for (const fcMatch of fcMatches) {
 		let offset = fcMatch.index;
 		const fcText = fcMatch[1];
@@ -248,11 +248,15 @@ class TerminalHighlightService {
 							} else {
 								captures.push(...match);
 							}
+							let fromIndex = 0;
 							for (const captured of captures) {
 								// javascript does not seem to return capture indexes unlike php...
 								// this is a stupid hack, but we'll have to use it till I find a lib
-								const relIndex = whole.indexOf(captured);
+								// Upd.: there is no lib. 'xregexp' uses built-in regex for execution,
+								// 'regex-tree' does not have anything useful regarding execution either
+								const relIndex = whole.indexOf(captured, fromIndex);
 								if (relIndex > -1) {
+									fromIndex = relIndex + captured.length;
 									this.matchPattern(captured, index + relIndex, rule);
 								}
 							}
@@ -284,7 +288,7 @@ class TerminalHighlightService {
 			});
 			this.appliedRules[rule.value] = {...rule};
 			const offsets = this.appliedRules[rule.value].offsets || [];
-			offsets.push({'index': index, 'end': index + strlen(matchedText)});
+			offsets.push({index: index, end: index + strlen(matchedText)});
 			this.appliedRules[rule.value].offsets = offsets;
 		}
 	}

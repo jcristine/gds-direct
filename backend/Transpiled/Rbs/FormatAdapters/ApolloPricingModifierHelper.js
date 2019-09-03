@@ -1,7 +1,7 @@
 const Fp = require('../../Lib/Utils/Fp.js');
 const PtcUtil = require('../../Rbs/Process/Common/PtcUtil.js');
 
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * deals with linking names to atfq and pricing command ptc-s to output ptc blocks
@@ -19,30 +19,30 @@ class ApolloPricingModifierHelper {
 		let $ageGroupToPtc, $flatAtfqPaxes, $atfqPax, $matched, $nameRecord, $nameNumber, $fieldNumberMatches,
 			$firstNameNumberMatches;
 		$ageGroupToPtc = {
-			'adult': 'ADT',
-			'child': 'CNN',
-			'infant': 'INF',
+			adult: 'ADT',
+			child: 'CNN',
+			infant: 'INF',
 		};
 		if (!$namesModifier) {
 			$flatAtfqPaxes = $passengers
 				? Fp.map(($nameRecord) => {
 					return {
-						'ptc': $nameRecord['ptc'] || 'ADT',
-						'nameNumber': $nameRecord['nameNumber'],
+						ptc: $nameRecord['ptc'] || 'ADT',
+						nameNumber: $nameRecord['nameNumber'],
 					};
 				}, $passengers)
-				: [{'ptc': null, 'nameNumber': null}];
+				: [{ptc: null, nameNumber: null}];
 		} else if (!$namesModifier['passengersSpecified']) {
 			$atfqPax = $namesModifier['passengerProperties'][0];
 			$flatAtfqPaxes = $passengers
 				? Fp.map(($nameRecord) => {
 					return {
-						'ptc': $atfqPax['ptc'] || $nameRecord['ptc']
+						ptc: $atfqPax['ptc'] || $nameRecord['ptc']
 							|| $ageGroupToPtc[PtcUtil.getPaxAgeGroup($nameRecord)] || null,
-						'nameNumber': $nameRecord['nameNumber'],
+						nameNumber: $nameRecord['nameNumber'],
 					};
 				}, $passengers)
-				: [{'ptc': $atfqPax['ptc'], 'nameNumber': null}];
+				: [{ptc: $atfqPax['ptc'], nameNumber: null}];
 		} else {
 			$flatAtfqPaxes = [];
 			for ($atfqPax of $namesModifier['passengerProperties']) {
@@ -59,15 +59,15 @@ class ApolloPricingModifierHelper {
 				if (!php.empty($matched)) {
 					for ($nameRecord of $matched) {
 						$flatAtfqPaxes.push({
-							'ptc': $atfqPax['ptc'] || $nameRecord['ptc']
+							ptc: $atfqPax['ptc'] || $nameRecord['ptc']
 								|| $ageGroupToPtc[PtcUtil.getPaxAgeGroup($nameRecord)] || null,
-							'nameNumber': $nameRecord['nameNumber'],
+							nameNumber: $nameRecord['nameNumber'],
 						});
 					}
 				} else {
 					$flatAtfqPaxes.push({
-						'ptc': $atfqPax['ptc'] || null,
-						'nameNumber': null,
+						ptc: $atfqPax['ptc'] || null,
+						nameNumber: null,
 					});
 				}
 			}
@@ -103,7 +103,7 @@ class ApolloPricingModifierHelper {
 		$selected = [];
 		for ($atfqPaxNum of $atfqPaxNumbers) {
 			$selected.push($flatAtfqPaxes[$atfqPaxNum - 1]
-				|| {'ptc': null, 'nameNumber': null});
+				|| {ptc: null, nameNumber: null});
 		}
 		$cmdPtcs = php.array_unique(php.array_column($selected, 'ptc'));
 		$cmdPtc = php.count($cmdPtcs) === 1 ? $cmdPtcs[0] : null;
@@ -114,13 +114,13 @@ class ApolloPricingModifierHelper {
 			? 'Pricing covers pax #' + php.max($atfqPaxNumbers) + ' which is absent in PNR. This usually happens in an improper divided booking. >T:V; should be made.'
 			: null;
 		return {
-			'ptc': $ptc,
-			'ptcRequested': $cmdPtc,
-			'ageGroup': $ptc ? PtcUtil.parsePtc($ptc)['ageGroup'] : null,
-			'ageGroupRequested': $cmdPtc ? PtcUtil.parsePtc($cmdPtc)['ageGroup'] : null,
-			'quantity': php.count($atfqPaxNumbers),
-			'nameNumbers': $nameNumbers,
-			'paxLinkError': $paxLinkError,
+			ptc: $ptc,
+			ptcRequested: $cmdPtc,
+			ageGroup: $ptc ? PtcUtil.parsePtc($ptc)['ageGroup'] : null,
+			ageGroupRequested: $cmdPtc ? PtcUtil.parsePtc($cmdPtc)['ageGroup'] : null,
+			quantity: php.count($atfqPaxNumbers),
+			nameNumbers: $nameNumbers,
+			paxLinkError: $paxLinkError,
 		};
 	}
 }

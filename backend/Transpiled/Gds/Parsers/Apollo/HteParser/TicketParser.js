@@ -3,7 +3,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class TicketParser
 {
 	// 'UNABLE TO PROCESS ELECTRONIC TICKET DISPLAY',
@@ -22,9 +22,9 @@ class TicketParser
             '\/';
 		if (php.preg_match($regex, $dump, $matches = [])) {
 			return {
-				'pcc': $matches['pcc'],
-				'gdsCode': $matches['gdsCode'],
-				'recordLocator': $matches['recordLocator'],
+				pcc: $matches['pcc'],
+				gdsCode: $matches['gdsCode'],
+				recordLocator: $matches['recordLocator'],
 			};
 		} else {
 			return null;
@@ -84,14 +84,14 @@ class TicketParser
 		}
 
 		$result = {
-			'header': {
-				'ticketNumber': $parsedTktLine['ticketNumber'],
-				'passengerName': $parsedTktLine['passengerName'],
-				'issueDate': $parsedIssuedLine['issueDate'],
-				'pcc': $parsedPseudoLine['pcc'],
-				'platingCarrier': $parsedPseudoLine['platingCarrier'],
+			header: {
+				ticketNumber: $parsedTktLine['ticketNumber'],
+				passengerName: $parsedTktLine['passengerName'],
+				issueDate: $parsedIssuedLine['issueDate'],
+				pcc: $parsedPseudoLine['pcc'],
+				platingCarrier: $parsedPseudoLine['platingCarrier'],
 			},
-			'segments': [],
+			segments: [],
 		};
 
 		while (!php.empty($lines)) {
@@ -126,16 +126,16 @@ class TicketParser
 		//         'TKT: 001 7729 613240     NAME: GARCIA/ALEXANDRA                 ',
 		$pattern = 'LLLLTTTTTTTTTTTTTTTT     LLLLLNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN';
 		$names = {
-			'L': 'labels',
-			'T': 'ticketNumber',
-			'N': 'passengerName',
+			L: 'labels',
+			T: 'ticketNumber',
+			N: 'passengerName',
 		};
 		$result = StringUtil.splitByPosition($line, $pattern, $names, true);
 
 		if ($result['labels'] == 'TKT:NAME:') {
 			return {
-				'ticketNumber': $result['ticketNumber'],
-				'passengerName': $result['passengerName'],
+				ticketNumber: $result['ticketNumber'],
+				passengerName: $result['passengerName'],
 			};
 		} else {
 			return null;
@@ -150,16 +150,16 @@ class TicketParser
 		//         ' CC: CA5111111111111111'
 		$pattern = ' LLL TTNNNNNNNNNNNNNNNNNN';
 		$names = {
-			'L': 'labels',
-			'T': 'ccType',
-			'N': 'ccNumber',
+			L: 'labels',
+			T: 'ccType',
+			N: 'ccNumber',
 		};
 		$result = StringUtil.splitByPosition($line, $pattern, $names, true);
 
 		if ($result['labels'] == 'CC:') {
 			return {
-				'ccType': $result['ccType'],
-				'ccNumber': $result['ccNumber'],
+				ccType: $result['ccType'],
+				ccNumber: $result['ccNumber'],
 			};
 		} else {
 			return null;
@@ -172,20 +172,20 @@ class TicketParser
 		//         'ISSUED: 21FEB16          FOP:CA1111111111111111-22529P'
 		$pattern = 'LLLLLLL DDDDDDD          LLLLFFFFFFFFFFFFFFFFFFFFFFFFFF';
 		$names = {
-			'L': 'labels',
-			'D': 'issueDate',
-			'F': 'formOfPayment',
+			L: 'labels',
+			D: 'issueDate',
+			F: 'formOfPayment',
 		};
 		$result = StringUtil.splitByPosition($line, $pattern, $names, true);
 
 		if ($result['labels'] == 'ISSUED:FOP:') {
 			$parsedDate = CommonParserHelpers.parseApolloFullDate($result['issueDate']);
 			return {
-				'issueDate': {
-					'raw': $result['issueDate'],
-					'parsed': $parsedDate ? '20'+$parsedDate : null,
+				issueDate: {
+					raw: $result['issueDate'],
+					parsed: $parsedDate ? '20'+$parsedDate : null,
 				},
-				'formOfPayment': $result['formOfPayment'],
+				formOfPayment: $result['formOfPayment'],
 			};
 		} else {
 			return null;
@@ -198,20 +198,20 @@ class TicketParser
 		//         'PSEUDO: 115Q  PLATING CARRIER: AA  ISO: US  IATA: 23854526   '
 		$pattern = 'LLLLLLL DDDD  LLLLLLLLLLLLLLLLAAA  LLLLIII  LLLLL TTTTTTTTTTT';
 		$names = {
-			'L': 'labels',
-			'D': 'pcc',
-			'A': 'platingCarrier',
-			'I': 'iso',
-			'T': 'iata',
+			L: 'labels',
+			D: 'pcc',
+			A: 'platingCarrier',
+			I: 'iso',
+			T: 'iata',
 		};
 		$result = StringUtil.splitByPosition($line, $pattern, $names, true);
 
 		if ($result['labels'] == 'PSEUDO:PLATING CARRIER:ISO:IATA:') {
 			return {
-				'pcc': $result['pcc'],
-				'platingCarrier': $result['platingCarrier'],
-				'iso': $result['iso'],
-				'iata': $result['iata'],
+				pcc: $result['pcc'],
+				platingCarrier: $result['platingCarrier'],
+				iso: $result['iso'],
+				iata: $result['iata'],
 			};
 		} else {
 			return null;
@@ -230,17 +230,17 @@ class TicketParser
 		//         '   OPEN AA 8642  O  16JUN LAXMAD 0620P OK OKN8D1I1/F27E      1'
 		$pattern = '   UUUU AA FFFF CCC DDDDD PPPNNN TTTTT SS BBBBBBBBBBBBBBBBB OOO';
 		$names = {
-			'U': 'couponStatus',
-			'A': 'airline',
-			'F': 'flightNumber',
-			'C': 'bookingClass',
-			'D': 'departureDate',
-			'P': 'departureAirport',
-			'N': 'destinationAirport',
-			'T': 'departureTime',
-			'S': 'bookingStatus',
-			'B': 'fareBasis',
-			'O': 'couponNumber',
+			U: 'couponStatus',
+			A: 'airline',
+			F: 'flightNumber',
+			C: 'bookingClass',
+			D: 'departureDate',
+			P: 'departureAirport',
+			N: 'destinationAirport',
+			T: 'departureTime',
+			S: 'bookingStatus',
+			B: 'fareBasis',
+			O: 'couponNumber',
 		};
 		$result = StringUtil.splitByPosition($line, $pattern, $names, true);
 
@@ -254,24 +254,24 @@ class TicketParser
 		}
 
 		return {
-			'couponStatus': $result['couponStatus'],
-			'airline': $result['airline'],
-			'flightNumber': $result['flightNumber'],
-			'bookingClass': $result['bookingClass'],
-			'departureDate': {
-				'raw': $result['departureDate'],
-				'parsed': $date,
+			couponStatus: $result['couponStatus'],
+			airline: $result['airline'],
+			flightNumber: $result['flightNumber'],
+			bookingClass: $result['bookingClass'],
+			departureDate: {
+				raw: $result['departureDate'],
+				parsed: $date,
 			},
-			'departureAirport': $result['departureAirport'],
-			'destinationAirport': $result['destinationAirport'],
-			'departureTime': {
-				'raw': $result['departureTime'],
-				'parsed': $time,
+			departureAirport: $result['departureAirport'],
+			destinationAirport: $result['destinationAirport'],
+			departureTime: {
+				raw: $result['departureTime'],
+				parsed: $time,
 			},
-			'bookingStatus': $result['bookingStatus'],
-			'fareBasis': php.explode('\/', $result['fareBasis'])[0],
-			'ticketDesignator': (php.explode('\/', $result['fareBasis']) || {})[1],
-			'couponNumber': $result['couponNumber'],
+			bookingStatus: $result['bookingStatus'],
+			fareBasis: php.explode('\/', $result['fareBasis'])[0],
+			ticketDesignator: (php.explode('\/', $result['fareBasis']) || {})[1],
+			couponNumber: $result['couponNumber'],
 		};
 	}
 
@@ -297,21 +297,21 @@ class TicketParser
 
 		$parts = this.parseFooterParts($lines);
 		return {
-			'success': $parts['success'],
-			'baseFare': ($parts['fare'] || {})['baseFare'],
-			'taxList': ($parts['fare'] || {})['taxList'],
-			'totalFare': $parts['total'],
-			'endorsementLines': $parts['endorsementLines'],
-			'fareConstruction': php.isset($parts['fareConstructionLines']) ? {
+			success: $parts['success'],
+			baseFare: ($parts['fare'] || {})['baseFare'],
+			taxList: ($parts['fare'] || {})['taxList'],
+			totalFare: $parts['total'],
+			endorsementLines: $parts['endorsementLines'],
+			fareConstruction: php.isset($parts['fareConstructionLines']) ? {
 				// can't simply use parser because
 				// it has taxes glued to the end
-				'raw': php.implode(php.PHP_EOL, $parts['fareConstructionLines']),
+				raw: php.implode(php.PHP_EOL, $parts['fareConstructionLines']),
 			} : null,
-			'extraFields': !php.empty($parts['extraFields'])
+			extraFields: !php.empty($parts['extraFields'])
 				? this.parseExtraFieldLabels($parts['extraFields'] || [])
 				: null,
-			'airlinePnrs': $parts['airlinePnrs'],
-			'unparsedLines': $parts['unparsedLines'],
+			airlinePnrs: $parts['airlinePnrs'],
+			unparsedLines: $parts['unparsedLines'],
 		};
 	}
 
@@ -329,26 +329,26 @@ class TicketParser
             '\\s*$\/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'airlineNumber': $matches['airlineNumber'],
-				'documentNumber': $matches['documentNumber'],
-				'location': $matches['location'],
-				'date': CommonParserHelpers.parseCurrentCenturyFullDate($matches['date']),
-				'iata': $matches['iata'],
+				airlineNumber: $matches['airlineNumber'],
+				documentNumber: $matches['documentNumber'],
+				location: $matches['location'],
+				date: CommonParserHelpers.parseCurrentCenturyFullDate($matches['date']),
+				iata: $matches['iata'],
 			};
 		} else {
-			return {'raw': $line};
+			return {raw: $line};
 		}
 	}
 
 	static parseExtraFieldLabels($labelToValue)  {
 
 		return {
-			'tourCode': $labelToValue['TOUR CODE'],
-			'exchangedFor': php.empty($labelToValue['EXCHANGED FOR']) ? null : {
-				'airlineNumber': php.substr($labelToValue['EXCHANGED FOR'], 0, 3),
-				'documentNumber': php.substr($labelToValue['EXCHANGED FOR'], 3),
+			tourCode: $labelToValue['TOUR CODE'],
+			exchangedFor: php.empty($labelToValue['EXCHANGED FOR']) ? null : {
+				airlineNumber: php.substr($labelToValue['EXCHANGED FOR'], 0, 3),
+				documentNumber: php.substr($labelToValue['EXCHANGED FOR'], 3),
 			},
-			'originalIssue': !php.isset($labelToValue['ORIGINAL ISSUE']) ? null :
+			originalIssue: !php.isset($labelToValue['ORIGINAL ISSUE']) ? null :
 				this.parseOriginalIssue($labelToValue['ORIGINAL ISSUE']),
 		};
 	}
@@ -356,7 +356,7 @@ class TicketParser
 	static parseFooterParts($lines)  {
 		let $result, $i, $withUnparsed, $endorsementLines, $line, $fcLines, $matches, $fcFinished, $_, $label, $value, $rloc;
 
-		$result = {'success': false, extraFields: {}};
+		$result = {success: false, extraFields: {}};
 		$i = -1;
 		$withUnparsed = () => {
 
@@ -429,16 +429,16 @@ class TicketParser
 		if (php.preg_match($regex, $line, $matches = [])) {
 			$matches = php.array_filter($matches);
 			$result = {
-				'baseFare': {
-					'currency': $matches['currency'],
-					'amount': $matches['amount'],
-					'privateFareType': $matches['privateFareType'],
+				baseFare: {
+					currency: $matches['currency'],
+					amount: $matches['amount'],
+					privateFareType: $matches['privateFareType'],
 				},
-				'taxList': [],
+				taxList: [],
 			};
 			php.preg_match_all('\/'+$taxPattern+'\/', $matches['taxes'], $taxTuples = [], php.PREG_SET_ORDER);
 			for ([$_, $amount, $taxCode] of Object.values($taxTuples)) {
-				$result['taxList'].push({'taxCode': $taxCode, 'amount': $amount});}
+				$result['taxList'].push({taxCode: $taxCode, amount: $amount});}
 			return $result;
 		} else {
 			return null;
@@ -456,9 +456,9 @@ class TicketParser
 			[$_, $currency, $amount] = $matches;
 			$amountAvailable = php.preg_match(/^\d*\.?\d+$/, $amount);
 			return {
-				'currency': $currency || null,
-				'amount': $amountAvailable ? $amount : null,
-				'privateFareType': !$amountAvailable ? $amount : null,
+				currency: $currency || null,
+				amount: $amountAvailable ? $amount : null,
+				privateFareType: !$amountAvailable ? $amount : null,
 			};
 		} else {
 			return null;
@@ -476,8 +476,8 @@ class TicketParser
 			php.preg_match_all('\/'+$pnrPattern+'\/', $matches[1], $pnrTuples = [], php.PREG_SET_ORDER);
 			$airlinePnrs = [];
 			for ([$_, $airline, $recordLocator] of Object.values($pnrTuples)) {
-				$airlinePnrs.push({'airline': $airline, 'recordLocator': $recordLocator});}
-			return {'airlinePnrs': $airlinePnrs};
+				$airlinePnrs.push({airline: $airline, recordLocator: $recordLocator});}
+			return {airlinePnrs: $airlinePnrs};
 		} else {
 			return null;
 		}

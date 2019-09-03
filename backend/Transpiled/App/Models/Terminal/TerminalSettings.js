@@ -1,6 +1,6 @@
 const AgentCustomSettings = require('../../../../Repositories/AgentCustomSettings.js');
 const Db = require('./../../../../Utils/Db.js');
-const {array_map, array_flip, array_intersect_key, empty, json_decode, str_split, intval, isset} = require("../../../phpDeprecated.js");
+const {array_map, array_flip, array_intersect_key, empty, json_decode, str_split, intval, isset} = require('klesun-node-tools/src/Transpiled/php.js');
 const RedisData = require("../../../../LibWrappers/RedisData.js");
 const AreaSettings = require("../../../../Repositories/AreaSettings");
 const GdsSessions = require("../../../../Repositories/GdsSessions");
@@ -25,13 +25,13 @@ const self = {
 		'matrixConfiguration',
 	],
 	$default: {
-		'currentGds': 'apollo',
-		'language': 'apollo',
-		'area': 'A',
-		'terminalNumber': 1,
-		'fontSize': 1,
-		'canCreatePq': 0,
-		'terminalTheme': 4,
+		currentGds: 'apollo',
+		language: 'apollo',
+		area: 'A',
+		terminalNumber: 1,
+		fontSize: 1,
+		canCreatePq: 0,
+		terminalTheme: 4,
 	},
 };
 
@@ -77,12 +77,12 @@ class TerminalSettings {
 
 	_transformRowFromDb($row, areaRows) {
 		return {
-			'language': $row['language'],
-			'terminalNumber': intval($row['terminalNumber']),
-			'keyBindings': json_decode($row['keyBindings']),
-			'fontSize': intval($row['fontSize']),
-			'theme': intval($row['terminalTheme']),
-			'areaSettings': areaRows
+			language: $row['language'],
+			terminalNumber: intval($row['terminalNumber']),
+			keyBindings: json_decode($row['keyBindings']),
+			fontSize: intval($row['fontSize']),
+			theme: intval($row['terminalTheme']),
+			areaSettings: areaRows
 				.filter(areaRow => areaRow.gds === $row['gds'])
 				.map(areaRow => {
 					const defaultPcc = areaRow.defaultPcc ||
@@ -90,7 +90,7 @@ class TerminalSettings {
 						GdsSessions.makeDefaultAreaState(areaRow.gds).pcc;
 					return {...areaRow, defaultPcc};
 				}),
-			'matrix': json_decode($row['matrixConfiguration']),
+			matrix: json_decode($row['matrixConfiguration']),
 		};
 	}
 
@@ -165,7 +165,7 @@ class TerminalSettings {
 	 */
 	setSetting($gds, $field, $value) {
 		this.addGds($gds);
-		return self.addUpdateRow({'agentId': this.agentId, 'gds': $gds, [$field]: $value});
+		return self.addUpdateRow({agentId: this.agentId, gds: $gds, [$field]: $value});
 	}
 
 	/**

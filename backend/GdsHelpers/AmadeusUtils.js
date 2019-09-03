@@ -4,7 +4,7 @@ const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
  * provides functions to fetch all output of Amadeus commands
  * different commands have different paging mark, so you have to know what exactly to use
  */
-const php = require('../Transpiled/phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 const parseRtPager = ($page) => {
 	let $matches, $_, $content, $hasMoreMark;

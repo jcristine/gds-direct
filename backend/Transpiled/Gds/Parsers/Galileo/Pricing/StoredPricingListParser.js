@@ -38,7 +38,7 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
  * '>FQP1*ITX.2*C03.3*INS                                          '
 ... and so on ...
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const FqCmdParser = require("../Commands/FqCmdParser");
 const StoredPtcPricingBlockParser = require("./StoredPtcPricingBlockParser");
 class StoredPricingListParser
@@ -70,11 +70,11 @@ class StoredPricingListParser
             '/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				'pricingNumber': $matches['pricingNumber'],
-				'segmentNumbers': this.parseRange($matches['segmentNumbers']),
-				'addedDate': CommonParserHelpers.parseCurrentCenturyFullDate($matches['addedDate']),
-				'agentInitials': $matches['agentInitials'],
-				'dutyCode': $matches['dutyCode'],
+				pricingNumber: $matches['pricingNumber'],
+				segmentNumbers: this.parseRange($matches['segmentNumbers']),
+				addedDate: CommonParserHelpers.parseCurrentCenturyFullDate($matches['addedDate']),
+				agentInitials: $matches['agentInitials'],
+				dutyCode: $matches['dutyCode'],
 			};
 		} else {
 			return null;
@@ -93,15 +93,15 @@ class StoredPricingListParser
 		$names = php.array_combine($symbols, $symbols);
 		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
 		$result = {
-			'passengerNumber': $split['N'],
-			'passengerName': $split['F'],
-			'ptc': $split['P'],
-			'guaranteeCode': $split['G'],
-			'guaranteeDate': !$split['D'] ? null :
+			passengerNumber: $split['N'],
+			passengerName: $split['F'],
+			ptc: $split['P'],
+			guaranteeCode: $split['G'],
+			guaranteeDate: !$split['D'] ? null :
 				CommonParserHelpers.parseCurrentCenturyFullDate($split['D']),
-			'starMark': $split['*'],
-			'currency': $split['C'],
-			'amount': $split['A'],
+			starMark: $split['*'],
+			currency: $split['C'],
+			amount: $split['A'],
 		};
 		$dateValid = !$result['guaranteeDate']
             || $result['guaranteeDate']['parsed'];
@@ -131,12 +131,12 @@ class StoredPricingListParser
 		$names = php.array_combine($symbols, $symbols);
 		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
 		$result = {
-			'passengerNumber': $split['N'],
-			'passengerName': $split['F'],
-			'ptc': $split['P'],
-			'guaranteeCode': $split['G'],
-			'isEticket': $split['E'] === 'E',
-			'ticketNumber': $split['T'],
+			passengerNumber: $split['N'],
+			passengerName: $split['F'],
+			ptc: $split['P'],
+			guaranteeCode: $split['G'],
+			isEticket: $split['E'] === 'E',
+			ticketNumber: $split['T'],
 		};
 
 		$paxOrSpace =
@@ -160,8 +160,8 @@ class StoredPricingListParser
 		if (php.preg_match(/^\s*P(\d+)\s+([A-Z][^\/\d]*\/[A-Z][^\/\d]*?)\s*$/, $line, $matches = [])) {
 			[$_, $passengerNumber, $passengerName] = $matches;
 			return {
-				'passengerNumber': $passengerNumber,
-				'passengerName': $passengerName,
+				passengerNumber: $passengerNumber,
+				passengerName: $passengerName,
 			};
 		} else {
 			return null;
@@ -201,7 +201,7 @@ class StoredPricingListParser
 		$mods = php.array_map((...args) => FqCmdParser.parseMod(...args), $rawMods);
 		$types = php.array_column($mods, 'type');
 		if (php.in_array('segments', $types)) {
-			return {'normalizedPricingModifiers': $mods};
+			return {normalizedPricingModifiers: $mods};
 		} else {
 			return null;
 		}
@@ -289,16 +289,16 @@ class StoredPricingListParser
 			}
 		}
 		$store = {
-			'pricingNumber': $fqData['pricingNumber'],
-			'segmentNumbers': $fqData['segmentNumbers'],
-			'addedDate': $fqData['addedDate'],
-			'agentInitials': $fqData['agentInitials'],
-			'dutyCode': $fqData['dutyCode'],
-			'commandCopy': $commandCopy,
-			'hasPrivateFaresSelectedMessage': $hasPrivateFaresSelectedMessage,
-			'headerMessages': $headerMessages,
-			'passengers': $passengers,
-			'footerData': $footerData,
+			pricingNumber: $fqData['pricingNumber'],
+			segmentNumbers: $fqData['segmentNumbers'],
+			addedDate: $fqData['addedDate'],
+			agentInitials: $fqData['agentInitials'],
+			dutyCode: $fqData['dutyCode'],
+			commandCopy: $commandCopy,
+			hasPrivateFaresSelectedMessage: $hasPrivateFaresSelectedMessage,
+			headerMessages: $headerMessages,
+			passengers: $passengers,
+			footerData: $footerData,
 		};
 		return [$store, $linesLeft];
 	}
@@ -312,22 +312,22 @@ class StoredPricingListParser
 		while (tuple = this.parseStore($linesLeft)) {
 			[$store, $left] = tuple;
 			if (!$store['passengers']) {
-				return {'error': 'Failed to parse PTC rows of store #'+$store['pricingNumber']+' - '+($left[0] || '(no lines left)')};
+				return {error: 'Failed to parse PTC rows of store #'+$store['pricingNumber']+' - '+($left[0] || '(no lines left)')};
 			}
 			$pricingList.push($store);
 			$linesLeft = $left;
 		}
 		if (!$pricingList) {
-			return {'error': 'Unexpected start of dump - '+$linesLeft[0]};
+			return {error: 'Unexpected start of dump - '+$linesLeft[0]};
 		}
 		for ($store of Object.values($pricingList)) {
 			for ($pax of Object.values($store['passengers'])) {
 				if ($error = ($pax['blockData'] || {})['error']) {
-					return {'error': 'Failed to parse block of pax #'+$pax['passengerNumber']+' - '+$error};
+					return {error: 'Failed to parse block of pax #'+$pax['passengerNumber']+' - '+$error};
 				}}}
 		return {
-			'pricingList': $pricingList,
-			'linesLeft': $linesLeft,
+			pricingList: $pricingList,
+			linesLeft: $linesLeft,
 		};
 	}
 }

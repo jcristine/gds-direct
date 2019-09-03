@@ -68,7 +68,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		let $output;
 		$output = this.$cmdToFullOutput[$cmd] || (await fetchAll($cmd, this)).output;
 		this.$cmdToFullOutput[$cmd] = $output;
-		this.$allCommands.push({'cmd': $cmd, 'output': $output});
+		this.$allCommands.push({cmd: $cmd, output: $output});
 		return $output;
 	}
 
@@ -77,7 +77,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		$raw = await this.runOrReuse('*R');
 		$parsed = PnrParser.parse($raw);
 		$common = ImportApolloPnrFormatAdapter.transformReservation($parsed, this.getBaseDate());
-		$result = {'raw': $raw};
+		$result = {raw: $raw};
 		if ($result['error'] = $common['error'] || null) {
 			return $result;
 		} else {
@@ -119,16 +119,17 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			const msg = 'Failed to parse pricing - ' + php.get_class($exc) + ' ' + $exc.message + ' - ' + $dump;
 			throw Rej.NotImplemented.makeExc(msg);
 		}
-		if (!$parsed) return {'error': 'Gds returned error - ' + php.trim($dump)};
-		const pricingAdapter = (new ApolloPricingAdapter())
-			.setPricingCommand($cmd)
-			.setNameRecords($nameRecords);
-		$common = pricingAdapter.transform($parsed);
+		if (!$parsed) return {error: 'Gds returned error - ' + php.trim($dump)};
+		$common = ApolloPricingAdapter({
+			parsed: $parsed,
+			pricingCommand: $cmd,
+			nameRecords: $nameRecords,
+		});
 		$ptcBagRecords = (new ApolloBaggageAdapter())
-			.transform($parsed, pricingAdapter);
+			.transform($parsed, $common.modsHelper);
 		return {
-			'store': $common,
-			'bagPtcPricingBlocks': $ptcBagRecords,
+			store: $common,
+			bagPtcPricingBlocks: $ptcBagRecords,
 		};
 	}
 
@@ -136,7 +137,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		let $errors, $result;
 		$errors = CanCreatePqRules.checkPricingOutput('apollo', $output, this.$leadData);
 		if (!php.empty($errors)) {
-			$result = {'error': 'Invalid pricing data on >' + $cmd + '; - ' + php.implode(';', $errors)};
+			$result = {error: 'Invalid pricing data on >' + $cmd + '; - ' + php.implode(';', $errors)};
 		} else {
 			$result = this.constructor.parsePricing($output, $nameRecords, $cmd);
 		}
@@ -169,21 +170,21 @@ class ImportPqApolloAction extends AbstractGdsAction {
 				$error = 'Last pricing command ' +  php.implode(' & ', php.array_column($followingCommands, 'cmd')) +
 					' does not cover some itinerary segments: ' +
 					php.implode(',', php.array_column($segmentsLeft, 'segmentNumber'));
-				return {'error': $error};
+				return {error: $error};
 			} else {
-				return {'segmentsLeft': []};
+				return {segmentsLeft: []};
 			}
 		} else {
 			for ($bundle of $bundles) {
 				for ($segNum of $bundle['segmentNumbers']) {
 					if (!php.array_key_exists($segNum, $numToSeg)) {
-						return {'error': 'Repeating segment number ' + $segNum + ' covered by >' + $cmdRecord['cmd'] + ';'};
+						return {error: 'Repeating segment number ' + $segNum + ' covered by >' + $cmdRecord['cmd'] + ';'};
 					} else {
 						delete ($numToSeg[$segNum]);
 					}
 				}
 			}
-			return {'segmentsLeft': php.array_values($numToSeg)};
+			return {segmentsLeft: php.array_values($numToSeg)};
 		}
 	}
 
@@ -209,7 +210,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 					$cmdRecords.push($cmdRecord);
 					$segmentsLeft = $calculated['segmentsLeft'];
 					if (php.empty($segmentsLeft)) {
-						return Promise.resolve({'cmdRecords': php.array_reverse($cmdRecords)});
+						return Promise.resolve({cmdRecords: php.array_reverse($cmdRecords)});
 					}
 				}
 			}
@@ -227,12 +228,12 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		$collected = await this.collectPricingCmds($reservation['itinerary']);
 		$cmdRecords = $collected['cmdRecords'];
 		$result = {
-			'pricingPart': {
-				'cmd': php.implode('&', php.array_column($cmdRecords, 'cmd')),
-				'raw': php.implode(php.PHP_EOL + '&' + php.PHP_EOL, php.array_column($cmdRecords, 'output')),
-				'parsed': {'pricingList': []},
+			pricingPart: {
+				cmd: php.implode('&', php.array_column($cmdRecords, 'cmd')),
+				raw: php.implode(php.PHP_EOL + '&' + php.PHP_EOL, php.array_column($cmdRecords, 'output')),
+				parsed: {pricingList: []},
 			},
-			'bagPtcPricingBlocks': [],
+			bagPtcPricingBlocks: [],
 		};
 		for ([$i, $cmdRecord] of Object.entries($cmdRecords)) {
 			$pricingCommand = $cmdRecord['cmd'];
@@ -281,7 +282,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 				}
 			}
 		}
-		$result = {'isRequired': $isPrivateFare, 'raw': null, 'parsed': null};
+		$result = {isRequired: $isPrivateFare, raw: null, parsed: null};
 		if (!$isPrivateFare) return $result;
 		$cmd = '$BB/:N';
 		$raw = await this.runOrReuse($cmd);
@@ -289,9 +290,9 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		$result['cmd'] = $cmd;
 		$result['raw'] = $raw;
 		if ($error = $processed['error'] || null) {
-			return {'error': 'Failed to fetch published pricing - ' + $error};
+			return {error: 'Failed to fetch published pricing - ' + $error};
 		}
-		$result['parsed'] = {'pricingList': [$processed['store']]};
+		$result['parsed'] = {pricingList: [$processed['store']]};
 		return $result;
 	}
 
@@ -301,7 +302,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			.useXml(this.useXml)
 			.setTravelportClient(this.travelport)
 			.setSession(this.session).execute($sections, 1);
-		if ($error = $result['error'] || null) return {'error': $error};
+		if ($error = $result['error'] || null) return {error: $error};
 
 		this.$allCommands.push($result.cmdRec);
 		for (const $fareData of Object.values($result['fareList'])) {
@@ -309,32 +310,32 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		}
 		return {
 			// could parse them, but nah for now
-			'fareListRecords': [],
-			'ruleRecords': [],
+			fareListRecords: [],
+			ruleRecords: [],
 		};
 	}
 
 	async getFareRules($pricing, $itinerary) {
 		let $sections, $common, $error, $raw;
 		if (php.count($pricing['pricingList']) > 1) {
-			return {'error': 'Fare rules are not supported in multi-pricing PQ'};
+			return {error: 'Fare rules are not supported in multi-pricing PQ'};
 		}
 		$sections = [16];
 		$common = await this.getApolloFareRules($sections, $itinerary);
 		if ($error = $common['error'] || null) {
 			$raw = $common['raw'] || null;
-			return {'error': $error, 'raw': $raw};
+			return {error: $error, raw: $raw};
 		}
 		return {
-			'fareListRecords': $common['fareListRecords'],
-			'ruleRecords': Fp.map(($fareComp) => {
+			fareListRecords: $common['fareListRecords'],
+			ruleRecords: Fp.map(($fareComp) => {
 				let $sections, $isNotError, $byNumber;
 				$sections = $fareComp['sections'] || [];
 				$isNotError = ($sec) => !php.isset($sec['error']);
 				$sections = Fp.filter($isNotError, $sections);
 				$byNumber = php.array_combine(php.array_column($sections, 'sectionNumber'), $sections);
 				$fareComp['sections'] = {
-					'exchange': $byNumber[16] || null,
+					exchange: $byNumber[16] || null,
 				};
 				return $fareComp;
 			}, $common['ruleRecords']),
@@ -344,7 +345,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	async collectPnrData() {
 		let $result, $reservationRecord, $nameRecords, $pricingRecord, $flightServiceRecord, $pricing, $fareRuleData,
 			$publishedPricingRecord;
-		$result = {'pnrData': {}};
+		$result = {pnrData: {}};
 		$reservationRecord = await this.getReservation();
 		if ($result['error'] = $reservationRecord['error'] || null) return $result;
 
@@ -377,14 +378,14 @@ class ImportPqApolloAction extends AbstractGdsAction {
 
 	static transformCmdType($parsedCmdType) {
 		return {
-			'redisplayPnr': 'redisplayPnr',
-			'priceItinerary': 'priceItinerary',
-			'redisplayPriceItinerary': 'priceItinerary',
-			'storePricing': 'priceItinerary',
-			'flightServiceInfo': 'flightServiceInfo',
-			'flightRoutingAndTimes': 'flightRoutingAndTimes',
-			'fareList': 'fareList',
-			'fareRules': 'fareRules',
+			redisplayPnr: 'redisplayPnr',
+			priceItinerary: 'priceItinerary',
+			redisplayPriceItinerary: 'priceItinerary',
+			storePricing: 'priceItinerary',
+			flightServiceInfo: 'flightServiceInfo',
+			flightRoutingAndTimes: 'flightRoutingAndTimes',
+			fareList: 'fareList',
+			fareRules: 'fareRules',
 		}[$parsedCmdType] || null;
 	}
 

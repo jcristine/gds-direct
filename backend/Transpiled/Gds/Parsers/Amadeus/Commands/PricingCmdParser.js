@@ -18,7 +18,7 @@ class PricingCmdParser
 		$partial = CommonParserHelpers.parsePartialDate($raw);
 		$full = CommonParserHelpers.parseCurrentCenturyFullDate($raw)['parsed'];
 		if ($partial || $full) {
-			return {'raw': $raw, 'partial': $partial, 'full': $full};
+			return {raw: $raw, partial: $partial, full: $full};
 		} else {
 			return null;
 		}
@@ -66,7 +66,7 @@ class PricingCmdParser
 			$parsed = null;
 		}
 		return {
-			'raw': $rSubMod, 'type': $type, 'parsed': $parsed,
+			raw: $rSubMod, type: $type, parsed: $parsed,
 		};
 	}
 
@@ -84,10 +84,10 @@ class PricingCmdParser
 		let $parsed, $ownSeatTypes, $matches, $_, $override, $fareBasis, $type, $content, $rMods, $ptcs;
 
 		$parsed = null;
-		$ownSeatTypes = {'PAX': true, 'INF': false};
+		$ownSeatTypes = {PAX: true, INF: false};
 		if (php.preg_match(/^([AL]) *- *(\S+)$/, $raw, $matches = [])) {
 			[$_, $override, $fareBasis] = $matches;
-			$parsed = {'fareBasis': $fareBasis, 'override': $override === 'L'};
+			$parsed = {fareBasis: $fareBasis, override: $override === 'L'};
 			$type = 'fareBasis';
 		} else if (StringUtil.startsWith($raw, 'R')) {
 			$content = php.substr($raw, 1);
@@ -96,8 +96,8 @@ class PricingCmdParser
 			$rMods = php.explode(',', $content);
 			$ptcs = php.array_filter(php.explode('*', php.array_shift($rMods)));
 			$parsed = {
-				'ptcs': $ptcs,
-				'rSubModifiers': php.array_map((...args) => this.parseRSubModifier(...args), $rMods),
+				ptcs: $ptcs,
+				rSubModifiers: php.array_map((...args) => this.parseRSubModifier(...args), $rMods),
 			};
 			$type = 'generic';
 		} else if (php.preg_match(/^P(\d[-,\d]*)$/, $raw, $matches = [])) {
@@ -119,9 +119,9 @@ class PricingCmdParser
 		}
 
 		return {
-			'raw': $raw,
-			'type': $type,
-			'parsed': $parsed,
+			raw: $raw,
+			type: $type,
+			parsed: $parsed,
 		};
 	}
 
@@ -139,8 +139,8 @@ class PricingCmdParser
 						php.array_values(php.array_filter(php.explode('/', $rawModPack)))));}
 			}
 			return {
-				'baseCmd': $baseCmd,
-				'pricingStores': $pricingStores,
+				baseCmd: $baseCmd,
+				pricingStores: $pricingStores,
 			};
 		} else {
 			return null;

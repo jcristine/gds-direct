@@ -1,6 +1,6 @@
 
 
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class SabreVerifyParsedStructureWriter
 {
 	constructor()  {
@@ -53,7 +53,7 @@ class SabreVerifyParsedStructureWriter
 
 		this.flushSegment();
 		return {
-			'segments': this.$segments,
+			segments: this.$segments,
 		};
 	}
 
@@ -61,9 +61,9 @@ class SabreVerifyParsedStructureWriter
 		let $segment;
 
 		$segment = {
-			'segmentNumber': $fistLeg['segmentNumber'],
-			'airline': $fistLeg['airline'],
-			'flightNumber': $fistLeg['flightNumber'],
+			segmentNumber: $fistLeg['segmentNumber'],
+			airline: $fistLeg['airline'],
+			flightNumber: $fistLeg['flightNumber'],
 		};
 		$fistLeg = php.array_diff_key($fistLeg, $segment);
 

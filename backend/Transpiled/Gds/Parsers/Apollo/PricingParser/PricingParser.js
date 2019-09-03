@@ -29,7 +29,7 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const PricingStructureWriter = require('../../../../Gds/Parsers/Apollo/PricingParser/DataStructureWriters/PricingStructureWriter.js');
 const NextToken = require("./NextToken");
 const ParserState = require("./ParserState");
-const php = require('../../../../phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class PricingParser
 {
@@ -60,6 +60,7 @@ class PricingParser
 		$text = this.preprocessDump($text);
 		$commandLinesEnded = false;
 		while (true) {
+			let match;
 			if ($state == ParserState.DUMP_START) {
 				if ($res = NextToken.matchFlightNotFoundStatement($text)) {
 					return null;
@@ -80,6 +81,9 @@ class PricingParser
 					$text = $res['textLeft'];
 				} else if ($res = NextToken.matchTicketingWithinHoursLine($text)) {
 					$text = $res['textLeft'];
+				} else if (match = $text.match(/^ROUND THE WORLD FARES QUOTED-AGENT MUST VERIFY RULES\s*\n/)) {
+					// ignore
+					$text = $text.slice(match[0].length);
 				} else if ($res = NextToken.matchFareGuaranteedAtTicketIssuanceStatement($text)) {
 					$structureWriter.fareGuaranteedAtTicketIssuanceStatementFound($res);
 					$text = $res['textLeft'];
@@ -124,7 +128,7 @@ class PricingParser
 					$text = $res['textLeft'];
 				} else if ($text && !$commandLinesEnded) {
 					$lines = StringUtil.lines($text);
-					$structureWriter.commandCopyLineFound({'line': php.array_shift($lines)});
+					$structureWriter.commandCopyLineFound({line: php.array_shift($lines)});
 					$text = php.implode(php.PHP_EOL, $lines);
 					$nonCommandLinesFound = false;
 				} else {

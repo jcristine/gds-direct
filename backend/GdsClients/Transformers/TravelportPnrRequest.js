@@ -1,3 +1,7 @@
+const BuilderUtil = require('gds-utils/src/text_format_processing/agnostic/BuilderUtil.js');
+const AtfqParser = require('../../Transpiled/Gds/Parsers/Apollo/Pnr/AtfqParser.js');
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 const DecodeTravelportError = require('./DecodeTravelportError.js');
 const {parseXml} = require("../../GdsHelpers/CommonUtils.js");
 const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
@@ -12,15 +16,28 @@ module.exports.buildPnrXmlDataObject = params => js2xml([
 	{SessionMods: [
 		{AreaInfoReq: null},
 	]},
-	{AirSegSellMods: (params.addAirSegments || [])
-		.map(transformAirSegmentForSoap)
-		.map(v => ({AirSegSell: v}))},
+	...(!params.addAirSegments ? [] : [
+		{AirSegSellMods: (params.addAirSegments || [])
+			.map(transformAirSegmentForSoap)
+			.map(v => ({AirSegSell: v}))},
+	]),
 	// note, position of <PNRBFRetrieveMods/> element is important: if it were placed before
 	// <AirSegSellMods/>, it would not include the newly added segments with their numbers
 	// the code outside is expecting them to be included, so let's make sure this element is always in the end
 	{PNRBFRetrieveMods: [params.recordLocator ?
 		{PNRAddr: [{RecLoc: params.recordLocator}]} : {CurrentPNR: null},
 	]},
+	// display all stored pricing-s (8 max)
+	// see http://testws.galileo.com/GWSSample/Help/GWSHelp/mergedprojects/XML_Samples/PNRBFManagement_33_s105.xml
+	...[...Array(8).keys()].map(i => ({FareRedisplayMods: [
+		{DisplayAction: {Action: 'D'}}, // 'D' - *LF (detailed) data, 'I' - ATFQ (brief) data
+		{FareNumInfo: [{FareNumAry: [{FareNum: +i + 1}]}]},
+	]})),
+	// no point in putting it higher, you won't get the
+	// updated <DocProdDisplayStoredQuote/> in same request anyway
+	...(!params.storePricingParams ? [] : [{
+		StorePriceMods: makeStorePriceMods(params.storePricingParams),
+	}]),
 ]);
 
 // parses travelport soap request response body and build corresponding object
@@ -35,6 +52,8 @@ module.exports.parsePnrXmlResponse = async response => {
 
 	const airSegmentElement = respElement.querySelectorAll("AirSeg") || [];
 	const sellSegmentElement = respElement.querySelector("AirSegSell");
+	const storeElements = [...respElement.querySelectorAll("DocProdDisplayStoredQuote")];
+	const currentPricingEl = respElement.querySelector("FareInfo");
 
 	const airSellResult = transformAirSellSegFromSoap(sellSegmentElement);
 
@@ -43,6 +62,9 @@ module.exports.parsePnrXmlResponse = async response => {
 		reservation: {
 			itinerary: _.map(airSegmentElement, transformAirSegmentFromSoap),
 		},
+		currentPricing: !currentPricingEl ? null : transformCurrentPricing(currentPricingEl),
+		/** stored pricing */
+		fareQuoteInfo: transformFareQuoteInfo(storeElements),
 		newAirSegments: airSellResult.sell,
 	};
 };
@@ -81,25 +103,39 @@ const transformTimeFromSoap = time => {
 	};
 };
 
-const transformAirSegmentFromSoap = element => ({
-	segmentNumber: getValueOrNullFromDomElement(element, 'SegNum'),
-	segmentStatus: getValueOrNullFromDomElement(element, 'Status'),
-	departureDate: transformDateFromSoap(getValueOrNullFromDomElement(element, 'Dt')),
-	dayOffset: getValueOrNullFromDomElement(element, 'DayChg'),
-	airline: getValueOrNullFromDomElement(element, 'AirV'),
-	seatCount: getValueOrNullFromDomElement(element, 'NumPsgrs'),
-	departureAirport: getValueOrNullFromDomElement(element, 'StartAirp'),
-	destinationAirport: getValueOrNullFromDomElement(element, 'EndAirp'),
-	departureTime: transformTimeFromSoap(getValueOrNullFromDomElement(element, 'StartTm')),
-	destinationTime: transformTimeFromSoap(getValueOrNullFromDomElement(element, 'EndTm')),
-	bookingClass: getValueOrNullFromDomElement(element, 'BIC'),
-	flightNumber: getValueOrNullFromDomElement(element, 'FltNum'),
-	marriage: getValueOrNullFromDomElement(element, 'MarriageNum'),
-	statusOld: getValueOrNullFromDomElement(element, 'PrevStatusCode'),
-	confirmedByAirlineIndicator: getValueOrNullFromDomElement(element, 'VndLocInd'),
-	isFlown: getValueOrNullFromDomElement(element, 'FltFlownInd') === 'Y',
-	scheduleValidationIndicator: getValueOrNullFromDomElement(element, 'ScheduleValidationInd'),
-});
+const transformAirSegmentFromSoap = element => {
+	const departureDate = transformDateFromSoap(getValueOrNullFromDomElement(element, 'Dt'));
+	const departureTime = transformTimeFromSoap(getValueOrNullFromDomElement(element, 'StartTm'));
+	let departureDtStr = departureDate.parsed;
+	if (departureDtStr && departureTime) {
+		departureDtStr += ' ' + departureTime.parsed;
+	}
+	return {
+		segmentNumber: getValueOrNullFromDomElement(element, 'SegNum'),
+		segmentStatus: getValueOrNullFromDomElement(element, 'Status'),
+		airline: getValueOrNullFromDomElement(element, 'AirV'),
+		seatCount: getValueOrNullFromDomElement(element, 'NumPsgrs'),
+		departureAirport: getValueOrNullFromDomElement(element, 'StartAirp'),
+		destinationAirport: getValueOrNullFromDomElement(element, 'EndAirp'),
+		bookingClass: getValueOrNullFromDomElement(element, 'BIC'),
+		flightNumber: getValueOrNullFromDomElement(element, 'FltNum'),
+		marriage: getValueOrNullFromDomElement(element, 'MarriageNum'),
+		departureDt: !departureDtStr ? null : {full: departureDtStr},
+		// XML-specific fields follow
+		statusOld: getValueOrNullFromDomElement(element, 'PrevStatusCode'),
+		// is it confirmedByAirline from ItineraryParser.js per chance?
+		confirmedByAirlineIndicator: getValueOrNullFromDomElement(element, 'VndLocInd'),
+		isFlown: getValueOrNullFromDomElement(element, 'FltFlownInd') === 'Y',
+		scheduleValidationIndicator: getValueOrNullFromDomElement(element, 'ScheduleValidationInd'),
+		// separate departure/destination date/time fields should probably be removed, as they
+		// would make sense only in parser-specific processes, and XML actions should be as
+		// close to the ImportApolloPnrFormatAdapter.js::transformReservation() as possible
+		departureDate: departureDate,
+		departureTime: departureTime,
+		dayOffset: getValueOrNullFromDomElement(element, 'DayChg'),
+		destinationTime: transformTimeFromSoap(getValueOrNullFromDomElement(element, 'EndTm')),
+	};
+};
 
 const transformAirSellFromSoap = element => ({
 	success: getValueOrNullFromDomElement(element, 'SuccessInd') === 'Y',
@@ -222,4 +258,205 @@ const collectErrors = (dom, sellSegments) => {
 	}
 
 	return errors.length > 0 ? errors.join("; ") : null;
+};
+
+/** @param storePricingParams = require('AtfqParser.js').parsePricingCommand() */
+const makeStorePriceMods = (storePricingParams) => {
+	const {gds, pricingModifiers} = storePricingParams;
+	const xmlMods = [];
+	const xmlModSegSelection = {SegSelection: [
+		{ReqAirVPFs: 'Y'},
+		{SegRangeAry: []},
+	]};
+	const xmlPFQual = {PFQual: [
+		{CRSInd: {
+			'apollo': '1V',
+			'galileo': '1G',
+		}[gds]},
+		{PublishedFaresInd: 'Y'},
+		{Type: 'A'}, // 'A' - all types, 'V' - validated
+	]};
+	const xmlModGenQuoteInfo = {GenQuoteInfo: [
+		{NetFaresOnly: 'A'}, // both net and pub/private
+	]};
+	const xmlModPassengerType = {PassengerType: [{PsgrAry: []}]};
+
+	for (const mod of pricingModifiers) {
+		const {type, parsed, raw} = mod;
+		if (type === 'forceProperEconomy') {
+			// does not appear in ATFQ cmd copy, but hope it works
+			xmlModGenQuoteInfo.GenQuoteInfo.push({Decontented: 'Y'});
+		} else if (type === 'fareType') {
+			xmlMods.push({DocProdFareType: [{Type: AtfqParser.encodeFareType(parsed)}]});
+		} else if (type === 'validatingCarrier') {
+			xmlMods.push({PlatingAirVMods: [{PlatingAirV: parsed}]});
+		} else if (type === 'commission') {
+			const commMod = parsed.units === 'percent'
+				? {CommissionMod: [{Amt: parsed.value}]}
+				: {CommissionMod: [{Percent: parsed.value}]};
+			xmlMods.push(commMod);
+		} else if (type === 'passengers') {
+			for (const pax of parsed.passengerProperties) {
+				xmlMods.push({AssocPsgrs: [
+					{PsgrAry: [
+						{Psgr: [
+							{LNameNum: pax.passengerNumber || 1},
+							{PsgrNum: pax.firstNameNumber || 1},
+							{AbsNameNum: pax.passengerNumber || 1},
+						]},
+					]},
+				]});
+				if (pax.ptc) {
+					xmlMods.push({PICOptMod: [{PIC: pax.ptc}]});
+				}
+			}
+			xmlModPassengerType.PassengerType[0].PsgrAry
+				.push(...parsed.passengerProperties.map(pax => {
+					const age = ((pax.ptc || '').match(/^[A-Z](\d{1,2})$/) || [])[1];
+					return ({Psgr: [
+						{LNameNum: pax.passengerNumber || 1},
+						{PsgrNum: pax.firstNameNumber || 1},
+						{AbsNameNum: pax.passengerNumber || 1},
+						{PTC: pax.ptc},
+						...(!age ? [] : [{Age: age}]),
+					]});
+				}));
+		} else if (type === 'accompaniedChild') {
+			// weird, but seems to work. Now, even though /ACC does
+			// not appear in ATFQ cmd copy, we do get the child price
+			xmlModPassengerType.PassengerType[0].PsgrAry
+				.push({Psgr: [
+					{LNameNum: '0'},
+					{PsgrNum: '0'},
+					{AbsNameNum: '0'},
+				]});
+		} else if (type === 'segments') {
+			for (const b of parsed.bundles) {
+				const segNums = b.segmentNumbers;
+				const ranges = segNums.length > 0
+					? BuilderUtil.shortenRanges(segNums)
+					: [{from: 0, to: 0}];
+				if (b.accountCode || b.pcc || b.bookingClass) {
+					const msg = 'Unsupported segment modifier for #' +
+						segNums.join(',') + ' - ' + raw;
+					return Rej.NotImplemented(msg, b);
+				}
+				for (const {from, to} of ranges) {
+					xmlModSegSelection.SegSelection[1].SegRangeAry
+						.push({SegRange: [
+							{StartSeg: from},
+							{EndSeg: to},
+							{FareType: !b.fareBasis ? 'P' : 'B'},
+							...(!b.fareBasis ? [] : [{FIC: b.fareBasis}]),
+							xmlPFQual,
+						]});
+				}
+			}
+		} else {
+			throw Rej.NotImplemented.makeExc('Unsupported T:$B modifier - ' + type + ' - ' + raw);
+		}
+	}
+	if (xmlModSegSelection.SegSelection[1].SegRangeAry.length === 0) {
+		xmlModSegSelection.SegSelection[1].SegRangeAry.push({SegRange: [
+			{StartSeg: '00'}, {EndSeg: '00'}, {FareType: 'P'}, xmlPFQual,
+		]});
+	}
+	xmlMods.push(xmlModSegSelection);
+	xmlMods.push(xmlModPassengerType);
+	xmlMods.push(xmlModGenQuoteInfo);
+
+	return xmlMods;
+};
+
+/** @param {Element} blockEl */
+const transformPtcBlock = (blockEl, storeEl) => {
+	const uniqueKey = +blockEl.querySelector(':scope > UniqueKey').textContent;
+	/** @see https://ask.travelport.com/index?page=content&id=AN9643&actp=search&viewlocale=en_US&searchid=1527512839140#FSI */
+	const fareTypeCode = [...storeEl.querySelectorAll(':scope > FareGarnteCD')]
+		.filter(guarEl => +(guarEl.querySelector('UniqueKey') || {}).textContent === uniqueKey)
+		.map(guarEl => (guarEl.querySelector('GuaranteeCD') || {}).textContent || null)[0];
+	return {
+		fareTypeCode: fareTypeCode,
+		hasPrivateFaresSelectedMessage: ['B', 'A', 'Z', 'P'].includes(fareTypeCode),
+		// there is more data in XML, but for now I need just few fields
+	};
+};
+
+/** @param {Element} storeEl */
+const transformStore = (storeEl) => {
+	const get = (keys) => [...storeEl.querySelectorAll(':scope > ' + keys.join(' > '))];
+	return {
+		pricingNumber: get(['FareNumInfo', 'FareNumAry', 'FareNum'])
+			.map(el => el.textContent)[0] || null,
+		pricingBlockList: get(['GenQuoteDetails']).map((b, i) => transformPtcBlock(b, storeEl)),
+		// there is more data in XML, but for now I need just few fields
+	};
+};
+
+const transformFareQuoteInfo = (storeElements) => {
+	const pricingList = [];
+	const messages = [];
+	for (const storeEl of storeElements) {
+		const error = storeEl.querySelector(':scope > ErrText > Text');
+		if (error) {
+			messages.push(error.textContent);
+		} else {
+			pricingList.push(transformStore(storeEl));
+		}
+	}
+	return {pricingList, messages};
+};
+
+const normMoney = (el, currencyField, centsField, decPosField) => {
+	const currency = el.querySelector(currencyField).textContent;
+	const cents = el.querySelector(centsField).textContent;
+	const decPos = el.querySelector(decPosField).textContent;
+	return {
+		currency,
+		amount: (cents / Math.pow(10, decPos)).toFixed(decPos),
+	};
+};
+
+const transformPricedSegment = (segEl) => {
+	const bagCode = segEl.querySelector('BagInfo').textContent;
+	const nvb = (segEl.querySelector('NotValidBeforeDt') || {}).textContent;
+	const nva = (segEl.querySelector('NotValidAfterDt') || {}).textContent;
+	return {
+		fareBasis: segEl.querySelector('FIC').textContent,
+		ticketDesignator: (segEl.querySelector('TkDesignator') || {}).textContent,
+		freeBaggageAmount: ParserUtil.parseBagAmountCode(bagCode),
+		notValidBefore: !nvb ? null : {raw: nvb},
+		notValidAfter: !nva ? null : {raw: nva},
+		fare: [...segEl.querySelectorAll('Fare')]
+			.map(el => el.textContent.trim())[0],
+		isStopover: [...segEl.querySelectorAll('Stopover')]
+			.some(el => el.textContent !== 'X'),
+	};
+};
+
+const transformCurrentPtcBlock = (blockEl, pricingEl) => {
+	const uniqueKey = +blockEl.querySelector(':scope > UniqueKey').textContent;
+	return ({
+		fareInfo: {
+			baseFare: normMoney(blockEl, 'BaseFareCurrency', 'BaseFareAmt', 'BaseDecPos'),
+			totalFare: normMoney(blockEl, 'TotCurrency', 'TotAmt', 'TotDecPos'),
+		},
+		hasPrivateFaresSelectedMessage: [...blockEl.querySelectorAll('PrivFQd')]
+			.some(el => el.textContent === 'Y'),
+		segments: [...pricingEl.querySelectorAll(':scope > SegRelatedInfo')]
+			.filter(el => +el.querySelector('UniqueKey').textContent === uniqueKey)
+			.map(segEl => transformPricedSegment(segEl)),
+	});
+};
+
+const transformCurrentPricing = (pricingEl) => {
+	const error = [...pricingEl.querySelectorAll(':scope > ErrText > Text')]
+		.map(el => el.textContent)[0];
+	const ptcBlocks = [...pricingEl.querySelectorAll(':scope > GenQuoteDetails')]
+		.map(blockEl => transformCurrentPtcBlock(blockEl, pricingEl));
+	return {
+		error: error,
+		pricingBlockList: ptcBlocks,
+		// there is more data in the XML...
+	};
 };

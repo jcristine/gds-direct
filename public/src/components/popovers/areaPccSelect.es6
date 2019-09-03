@@ -11,10 +11,10 @@ export default class AreaPccSelect extends Component{
             new Option(notSelectedMsg, '')
         );
 
-        pccs.map( pcc => {
-            let isSelected = pcc.name === defaultPcc;
+        pccs.map( pccRow => {
+            let isSelected = pccRow.name === defaultPcc;
             this.context.appendChild(
-                new Option(pcc.name + " - " + pcc.consolidatorName, pcc.name, isSelected, isSelected)
+                new Option(pccRow.pcc + " - " + pccRow.consolidator, pccRow.pcc, isSelected, isSelected)
             );
         } );
     }

@@ -1,6 +1,6 @@
 
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 
@@ -15,8 +15,8 @@ class FareDisplayCommonParser
 		if (php.preg_match(/^\s*([A-Z]{3})([A-Z]{3})\s*$/, $line, $matches = [])) {
 			[$_, $departure, $destination] = $matches;
 			return {
-				'departure': $departure,
-				'destination': $destination,
+				departure: $departure,
+				destination: $destination,
 			};
 		} else {
 			return null;
@@ -62,8 +62,8 @@ class FareDisplayCommonParser
 			$lastFare = null;
 		}
 		return {
-			'result': $result,
-			'unparsed': $unparsed,
+			result: $result,
+			unparsed: $unparsed,
 		};
 	}
 
@@ -79,7 +79,7 @@ class FareDisplayCommonParser
 	static parseStayLimit($raw)  {
 		let $weekDays, $result, $matches;
 		$weekDays = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
-		$result = {'raw': $raw, 'type': null};
+		$result = {raw: $raw, type: null};
 		if ($raw === '@@' || $raw === '--' || $raw === '') {
 			$result['type'] = 'noRequirements';
 		} else if ($raw === '||' || $raw === '++' || $raw === 'V') {
@@ -112,13 +112,13 @@ class FareDisplayCommonParser
 		let $matches, $result, $pairs, $pair, $name, $value;
 		if (php.preg_match(/^\s+[A-Z]+:/, $line, $matches = [])) {
 			$result = {
-				'ticketDesignator': null,
-				'ptc': [],
+				ticketDesignator: null,
+				ptc: [],
 			};
 			$line += ' ';
 			php.preg_match_all(/(?<name>[A-Z]+):\s*(?<value>([A-Z\d]+\s)*)/, $line, $matches = []);
 			$pairs = php.array_map(
-				([$name, $value]) => ({'name': php.trim($name), 'value': php.trim($value)}),
+				([$name, $value]) => ({name: php.trim($name), value: php.trim($value)}),
 				Fp.zip([$matches['name'], $matches['value']])
 			);
 			for ($pair of Object.values($pairs)) {
@@ -140,8 +140,8 @@ class FareDisplayCommonParser
 		let $result;
 		$result = require('../CommonParserHelpers.js').parsePartialDate($date);
 		return {
-			'raw': $date,
-			'parsed': $result,
+			raw: $date,
+			parsed: $result,
 		};
 	}
 }

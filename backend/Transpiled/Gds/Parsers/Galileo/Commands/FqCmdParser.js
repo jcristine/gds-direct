@@ -20,10 +20,10 @@ class FqCmdParser
 			[$_, $range, $ptc, $ptcDesc] = $matches;
 			[$from, $to] = php.array_pad(php.explode('-', $range), 2, '');
 			return {
-				'passengerNumbers': $range ? php.range($from, $to || $from) : [],
-				'ptc': php.ltrim($ptc, '*'),
-				'ptcDescription': $ptcDesc,
-				'raw': $matches[0],
+				passengerNumbers: $range ? php.range($from, $to || $from) : [],
+				ptc: php.ltrim($ptc, '*'),
+				ptcDescription: $ptcDesc,
+				raw: $matches[0],
 			};
 		} else {
 			return null;
@@ -61,11 +61,11 @@ class FqCmdParser
 		} else {
 			return null;
 		}
-		$parsed = {'appliesToAll': $appliesToAll, 'ptcGroups': $records};
+		$parsed = {appliesToAll: $appliesToAll, ptcGroups: $records};
 		return {
-			'type': 'passengers',
-			'raw': $raw,
-			'parsed': $parsed,
+			type: 'passengers',
+			raw: $raw,
+			parsed: $parsed,
 		};
 	}
 
@@ -141,22 +141,22 @@ class FqCmdParser
 		let $codes;
 
 		$codes = {
-			'N': 'public',
-			'P': 'private',
-			'G': 'agencyPrivate',
-			'A': 'airlinePrivate',
-			'C': 'netAirlinePrivate',
+			N: 'public',
+			P: 'private',
+			G: 'agencyPrivate',
+			A: 'airlinePrivate',
+			C: 'netAirlinePrivate',
 		};
 		return $codes[$letter];
 	}
 
 	static getCabinClassMapping() {
 		return {
-			'ECON': 'economy',
-			'PREME': 'premiumEconomy',
-			'BUSNS': 'business',
-			'FIRST': 'first',
-			'AB': 'sameAsBooked',
+			ECON: 'economy',
+			PREME: 'premiumEconomy',
+			BUSNS: 'business',
+			FIRST: 'first',
+			AB: 'sameAsBooked',
 		};
 	}
 
@@ -177,7 +177,7 @@ class FqCmdParser
 			[$raw, $type, $parsed] = [$matches[0], 'accompaniedChild', true];
 		} else if (php.preg_match(/^\.T(\d{1,2}[A-Z]{3}\d*)(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
 			// may be either full or partial
-			[$raw, $type, $parsed] = [$matches[0], 'ticketingDate', {'raw': $matches[1]}];
+			[$raw, $type, $parsed] = [$matches[0], 'ticketingDate', {raw: $matches[1]}];
 		} else if (php.preg_match(/^:([A-Z])(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
 			[$raw, $type, $parsed] = [$matches[0], 'fareType', this.decodeFareType($matches[1])];
 		} else if (php.preg_match(/^[|+][|+]-([A-Z]+)(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
@@ -188,17 +188,17 @@ class FqCmdParser
 			[$raw, $type, $parsed] = [$matches[0], 'bookingClass', $matches[1]];
 		} else if (php.preg_match(/^\.([A-Z]{3})([A-Z]{3})(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
 			[$raw, $type, $parsed] = [$matches[0], 'pointOfSale', {
-				'sellingCity': $matches[1],
-				'ticketingCity': $matches[2],
+				sellingCity: $matches[1],
+				ticketingCity: $matches[2],
 			}];
 		} else if (php.preg_match(/^:([A-Z]{2})(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
 			[$raw, $type, $parsed] = [$matches[0], 'ignoreRule', {
-				'abbreviation': $matches[1],
+				abbreviation: $matches[1],
 			}];
 		} else if (php.preg_match(/^-([A-Z0-9]+)/, $gluedModsPart, $matches = [])) {
 			[$raw, $type, $parsed] = [$matches[0], 'accountCode', {
 				// there are more formats like -:BSAG and possibly -BSAG@@EUR8
-				'code': $matches[1],
+				code: $matches[1],
 			}];
 		} else if ($mod = this.parsePassengerModifier($gluedModsPart)) {
 			$raw = $mod['raw'];
@@ -215,9 +215,9 @@ class FqCmdParser
 			[$raw, $type, $parsed] = [$gluedModsPart, null, null];
 		}
 		return {
-			'raw': $raw,
-			'type': $type,
-			'parsed': $parsed,
+			raw: $raw,
+			type: $type,
+			parsed: $parsed,
 		};
 	}
 
@@ -237,14 +237,14 @@ class FqCmdParser
 						$gluedModsPart = php.substr($gluedModsPart, php.strlen($mod['raw']));
 						$mods.push($mod);
 					} else {
-						$mods.push({'raw': $gluedModsPart, 'type': null, 'data': null});
+						$mods.push({raw: $gluedModsPart, type: null, data: null});
 						break;
 					}
 				}
 			}
 			return {
-				'baseCmd': $baseCmd,
-				'pricingModifiers': $mods,
+				baseCmd: $baseCmd,
+				pricingModifiers: $mods,
 			};
 		} else {
 			return null;

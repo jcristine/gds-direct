@@ -1,13 +1,18 @@
+const AmadeusPnr = require('../TravelDs/AmadeusPnr.js');
 
-const PnrParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const AbstractGdsAction = require('./AbstractGdsAction.js');
 const AmadeusUtils = require('../../../GdsHelpers/AmadeusUtils.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
-const transformToReservation = stop => ({...stop, segmentNumber: stop.lineNumber});
-
 class AmadeusBuildItineraryAction extends AbstractGdsAction {
+
+	constructor({session, baseDate} = {}) {
+		super();
+		this.session = session;
+		this.baseDate = baseDate;
+	}
+
 	static isAvailabilityOutput($output) {
 		return php.preg_match(/\*\* AMADEUS AVAILABILITY/, $output);
 	}
@@ -19,7 +24,8 @@ class AmadeusBuildItineraryAction extends AbstractGdsAction {
 	/** @param $itinerary = [AmadeusReservationParser::parseSegmentLine(), ...] */
 	async execute($itinerary) {
 		let $i, $segment, $date, $segmentStatus, $segmentStatusParam, $cmd, $output, $errorType, $tplData;
-		let parsed = null;
+		const baseDate = this.baseDate || new Date().toISOString();
+		let reservation = null;
 		if (php.empty($itinerary)) {
 			// maybe it would make sense to return success, but way too often
 			// empty itinerary passed here is a result of some code mistake
@@ -55,26 +61,29 @@ class AmadeusBuildItineraryAction extends AbstractGdsAction {
 				$output = (await this.runCmd($cmd)).output;
 			}
 			// last command output will have full itinerary
-			parsed = PnrParser.parse($output);
-			if (!parsed.success) {
+			reservation = AmadeusPnr.makeFromDump($output).getReservation(baseDate);
+			if (!reservation.itinerary.length) {
 				if (this.constructor.isAvailabilityOutput($output)) {
 					$errorType = this.constructor.ERROR_NO_AVAIL;
 				} else {
 					$errorType = this.constructor.ERROR_GDS_ERROR;
 				}
 				$tplData = {
-					'segmentNumber': '0', // can't tell what line it would be in Amadeus
-					'from': $segment['departureAirport'],
-					'to': $segment['destinationAirport'],
-					'response': php.trim($output),
+					segmentNumber: '0', // can't tell what line it would be in Amadeus
+					from: $segment['departureAirport'],
+					to: $segment['destinationAirport'],
+					response: php.trim($output),
 				};
-				return {'success': false, 'errorType': $errorType, 'errorData': $tplData};
+				return {success: false, errorType: $errorType, errorData: $tplData};
 			}
 		}
 
 		return {
 			success: true,
-			itinerary: (((parsed || {}).parsed || {}).itinerary || []).map(transformToReservation),
+			/** does not include marriages! */
+			reservation,
+			/** @deprecated - should only return `reservation` same as in Apollo */
+			itinerary: (reservation || {}).itinerary || [],
 		};
 	}
 }

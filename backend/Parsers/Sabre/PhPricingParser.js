@@ -1,7 +1,7 @@
 
 const Rej = require('klesun-node-tools/src/Rej.js');
 const BagAllowanceParser = require("../../Transpiled/Gds/Parsers/Sabre/BagAllowanceParser");
-const {parseSequence} = require('../ParserUtil.js');
+const {parseSequence} = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 const CommonParserHelpers = require('../../Transpiled/Gds/Parsers/Apollo/CommonParserHelpers.js');
 const {matchAll} = require('../../Utils/Str.js');
 const PricingCommonHelper = require('../../Transpiled/Gds/Parsers/Sabre/Pricing/PricingCommonHelper.js');

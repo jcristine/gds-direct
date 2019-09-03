@@ -1,5 +1,5 @@
 
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class ArrayUtil {
 	static overwrite($originalArray, $newArray) {

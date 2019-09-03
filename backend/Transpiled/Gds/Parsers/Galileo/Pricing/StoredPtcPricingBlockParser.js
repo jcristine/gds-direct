@@ -19,7 +19,7 @@ const FareConstructionParser = require('../../../../Gds/Parsers/Common/FareConst
  * 'NONEND/RES RSTR/RBK FOC                                       '
  * 'LAST DATE TO PURCHASE TICKET: 10MAY18                         '
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class StoredPtcPricingBlockParser
 {
 	/** format is not same as in >F*Q; tax code and amount changed places */
@@ -45,16 +45,16 @@ class StoredPtcPricingBlockParser
 			$matches = php.array_filter($matches);
 			php.preg_match_all('/'+$taxPattern+'/', $matches['taxList'] || '', $taxMatches = [], php.PREG_SET_ORDER);
 			return {
-				'fcText': $matches['fcText'],
-				'baseFare': {
-					'currency': $matches['baseCurrency'],
-					'amount': $matches['baseAmount'],
+				fcText: $matches['fcText'],
+				baseFare: {
+					currency: $matches['baseCurrency'],
+					amount: $matches['baseAmount'],
 				},
-				'fareEquivalent': php.isset($matches['equivalentCurrency']) ? {
-					'currency': $matches['equivalentCurrency'],
-					'amount': $matches['equivalentAmount'],
+				fareEquivalent: php.isset($matches['equivalentCurrency']) ? {
+					currency: $matches['equivalentCurrency'],
+					amount: $matches['equivalentAmount'],
 				} : null,
-				'taxes': Fp.map(($tuple) => {
+				taxes: Fp.map(($tuple) => {
 					let $_, $amount, $taxCode;
 
 					[$_, $amount, $taxCode] = $tuple;
@@ -62,15 +62,15 @@ class StoredPtcPricingBlockParser
 						$amount = '0.00';
 					}
 					return {
-						'taxCode': $taxCode,
-						'amount': $amount,
+						taxCode: $taxCode,
+						amount: $amount,
 					};
 				}, $taxMatches),
-				'netPrice': {
-					'currency': $matches['totalCurrency'],
-					'amount': $matches['totalAmount'],
+				netPrice: {
+					currency: $matches['totalCurrency'],
+					amount: $matches['totalAmount'],
 				},
-				'textLeft': $matches['textLeft'] || '',
+				textLeft: $matches['textLeft'] || '',
 			};
 		} else {
 			return null;
@@ -101,7 +101,7 @@ class StoredPtcPricingBlockParser
 				return [];
 			}
 			[$code, $value] = $pair;
-			$values.push({'code': $code, 'raw': $value});}
+			$values.push({code: $code, raw: $value});}
 		return $values;
 	}
 
@@ -126,14 +126,14 @@ class StoredPtcPricingBlockParser
 			$values = this.parseSegmentValues($split['R']);
 
 			if (php.trim($split[' ']) === '' && $values && $isSegmentStart) {
-				$segments.push({'segmentNumber': $segmentNumber, 'values': $values});
+				$segments.push({segmentNumber: $segmentNumber, values: $values});
 			} else if (php.trim($split[' ']) === '' && $values &&
                 $segments.length > 0 && $segmentNumber === '' && $split['S'] === ''
 			) {
 				$segments[php.count($segments) - 1]['values'] = php.array_merge($segments[php.count($segments) - 1]['values'], $values);
 			} else if (php.preg_match(/^\s*ACCT-(.*?)\s*$/, $line, $matches = [])) {
 				$segments[php.count($segments) - 1]['values'].push({
-					'code': 'ACCT', 'raw': $matches[1],
+					code: 'ACCT', raw: $matches[1],
 				});
 			} else {
 				php.array_unshift($linesLeft, $line);
@@ -145,9 +145,9 @@ class StoredPtcPricingBlockParser
 		}
 		$lastDateToPurchaseLine = php.array_pop($linesLeft);
 		return {
-			'segments': $segments,
-			'endorsementBoxLines': $linesLeft,
-			'lastDateToPurchase': this.parseLastDateToPurchase($lastDateToPurchaseLine),
+			segments: $segments,
+			endorsementBoxLines: $linesLeft,
+			lastDateToPurchase: this.parseLastDateToPurchase($lastDateToPurchaseLine),
 		};
 	}
 
@@ -166,10 +166,10 @@ class StoredPtcPricingBlockParser
 			}
 		}
 		return {
-			'unparsed': $unparsed,
-			'segments': $segmentBlock['segments'],
-			'endorsementBoxLines': $segmentBlock['endorsementBoxLines'],
-			'lastDateToPurchase': $segmentBlock['lastDateToPurchase'],
+			unparsed: $unparsed,
+			segments: $segmentBlock['segments'],
+			endorsementBoxLines: $segmentBlock['endorsementBoxLines'],
+			lastDateToPurchase: $segmentBlock['lastDateToPurchase'],
 		};
 	}
 
@@ -186,24 +186,24 @@ class StoredPtcPricingBlockParser
 
 		$breakdown = this.parseFareBreakdown($dump);
 		if (!$breakdown) {
-			return {'error': 'Failed to parse Fare Breakdown', 'raw': $dump};
+			return {error: 'Failed to parse Fare Breakdown', raw: $dump};
 		}
 		$fcText = this.unwrapFcText($breakdown['fcText']);
 		$fc = FareConstructionParser.parse($fcText);
 		if ($error = $fc['error']) {
-			return {'error': 'Failed to parse FC - '+$error};
+			return {error: 'Failed to parse FC - '+$error};
 		}
 		$additionalInfo = this.parseAdditionalInfo($breakdown['textLeft']);
 		return {
-			'fareConstruction': $fc['parsed'],
-			'baseFare': $breakdown['baseFare'],
-			'fareEquivalent': $breakdown['fareEquivalent'],
-			'taxes': $breakdown['taxes'],
-			'netPrice': $breakdown['netPrice'],
-			'additionalMessages': $additionalInfo['unparsed'],
-			'segments': $additionalInfo['segments'],
-			'endorsementBoxLines': $additionalInfo['endorsementBoxLines'],
-			'lastDateToPurchase': $additionalInfo['lastDateToPurchase'],
+			fareConstruction: $fc['parsed'],
+			baseFare: $breakdown['baseFare'],
+			fareEquivalent: $breakdown['fareEquivalent'],
+			taxes: $breakdown['taxes'],
+			netPrice: $breakdown['netPrice'],
+			additionalMessages: $additionalInfo['unparsed'],
+			segments: $additionalInfo['segments'],
+			endorsementBoxLines: $additionalInfo['endorsementBoxLines'],
+			lastDateToPurchase: $additionalInfo['lastDateToPurchase'],
 		};
 	}
 }

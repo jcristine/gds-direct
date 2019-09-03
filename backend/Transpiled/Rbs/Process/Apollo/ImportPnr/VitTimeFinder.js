@@ -11,7 +11,7 @@ const {fetchAll} = require('../../../../../GdsHelpers/TravelportUtils.js');
  * first time we use it for first leg destination,
  * and second - for second leg departure
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class VitTimeFinder {
 	constructor($session, $airline, $flightNumber, $departureDate) {
@@ -92,12 +92,12 @@ class VitTimeFinder {
 			let $dprtDt, $dstDt;
 
 			$dprtDt = {
-				'date': $seg['departureDate'],
-				'time': $seg['departureTime'],
+				date: $seg['departureDate'],
+				time: $seg['departureTime'],
 			};
 			$dstDt = {
-				'date': $seg['destinationDate'],
-				'time': $seg['destinationTime'],
+				date: $seg['destinationDate'],
+				time: $seg['destinationTime'],
 			};
 
 			return [$seg['departureAirport'], $seg['destinationAirport'], $dprtDt, $dstDt];

@@ -6,7 +6,7 @@ const FrequentFlyerParser = require('../../../../Gds/Parsers/Sabre/FrequentFlyer
 const SabreTicketListParser = require('../../../../Gds/Parsers/Sabre/SabreTicketListParser.js');
 const SeatsParser = require('../../../../Gds/Parsers/Sabre/SeatsParser.js');
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const GdsPassengerBlockParser = require("../../Common/GdsPassengerBlockParser");
 const ItineraryParser = require("./ItineraryParser");
 const FactsBlockParser = require("./FactsBlockParser");
@@ -71,9 +71,9 @@ class PnrParser
                 || StringUtil.startsWith($line, 'TICKET RECORD')
                 || StringUtil.startsWith($line, 'CUSTOMER NUMBER')
 			) {
-				$result.push({'line': $line, 'type': 'misc'});
+				$result.push({line: $line, type: 'misc'});
 			} else {
-				$result.push({'line': $line, 'type': $section});
+				$result.push({line: $line, type: $section});
 			}}
 
 		return $result;
@@ -83,20 +83,20 @@ class PnrParser
 		let $result, $lines, $markedLines, $sections, $section, $sectionLines;
 
 		$result = {
-			'passengers': null,
-			'itinerary': null,
-			'tktgData': null,
-			'phones': null,
-			'aaFacts': null,
-			'generalFacts': null,
-			'frequentTraveler': null,
-			'seatData': null,
-			'remarks': null,
-			'address': null,
-			'accountingData': null,
-			'seats': null,
-			'pnrInfo': null,
-			'misc': null,
+			passengers: null,
+			itinerary: null,
+			tktgData: null,
+			phones: null,
+			aaFacts: null,
+			generalFacts: null,
+			frequentTraveler: null,
+			seatData: null,
+			remarks: null,
+			address: null,
+			accountingData: null,
+			seats: null,
+			pnrInfo: null,
+			misc: null,
 		};
 
 		$lines = StringUtil.lines($dump);
@@ -140,15 +140,15 @@ class PnrParser
 
 		$isPqExistsLine = ($line) => StringUtil.startsWith($line, 'PRICE QUOTE RECORD EXISTS');
 		return {
-			'isInvoiced': php.in_array('INVOICED', $lines),
-			'ffDataExists': php.in_array('FREQUENT TRAVELER DATA EXISTS *FF TO DISPLAY ALL', $lines),
-			'fopDataExists': php.in_array('FORM OF PAYMENT DATA EXISTS *FOP TO DISPLAY ALL', $lines),
-			'passengerEmailDataExists': php.in_array('PASSENGER EMAIL DATA EXISTS  *PE TO DISPLAY ALL', $lines),
-			'pctcDataExists': php.in_array('PCTC DATA EXISTS - PLEASE USE *P3 TO VIEW', $lines),
-			'pctcDataExistsAa': php.in_array('PCTC DATA EXISTS - PLEASE USE *P4 TO VIEW', $lines),
-			'pqfDataExists': php.in_array('CHANGE FEE/ADD COLLECT EXISTS - *PQF', $lines),
-			'priceQuoteRecordExists': Fp.any($isPqExistsLine, $lines),
-			'securityInfoExists': php.in_array('SECURITY INFO EXISTS *P3D OR *P4D TO DISPLAY', $lines),
+			isInvoiced: php.in_array('INVOICED', $lines),
+			ffDataExists: php.in_array('FREQUENT TRAVELER DATA EXISTS *FF TO DISPLAY ALL', $lines),
+			fopDataExists: php.in_array('FORM OF PAYMENT DATA EXISTS *FOP TO DISPLAY ALL', $lines),
+			passengerEmailDataExists: php.in_array('PASSENGER EMAIL DATA EXISTS  *PE TO DISPLAY ALL', $lines),
+			pctcDataExists: php.in_array('PCTC DATA EXISTS - PLEASE USE *P3 TO VIEW', $lines),
+			pctcDataExistsAa: php.in_array('PCTC DATA EXISTS - PLEASE USE *P4 TO VIEW', $lines),
+			pqfDataExists: php.in_array('CHANGE FEE/ADD COLLECT EXISTS - *PQF', $lines),
+			priceQuoteRecordExists: Fp.any($isPqExistsLine, $lines),
+			securityInfoExists: php.in_array('SECURITY INFO EXISTS *P3D OR *P4D TO DISPLAY', $lines),
 		};
 	}
 

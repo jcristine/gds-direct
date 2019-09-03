@@ -1,9 +1,10 @@
+const Errors = require('../GdsDirect/Errors.js');
 
 const DateTime = require('../../Lib/Utils/DateTime.js');
 const Fp = require('../../Lib/Utils/Fp.js');
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
 const AbstractGdsAction = require('./AbstractGdsAction.js');
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const AirAvailabilityParser = require('../../Gds/Parsers/Sabre/AirAvailabilityParser.js');
 const matchAll = require('../../../Utils/Str').matchAll;
 const SabreClient = require('../../../GdsClients/SabreClient');
@@ -31,10 +32,13 @@ const parseWaitlist = output => {
 class SabreBuildItineraryAction extends AbstractGdsAction {
 	constructor({
 		sabre = SabreClient.makeCustom(),
+		session, baseDate = null,
 	} = {}) {
 		super();
 		this.$useXml = true;
 		this.sabre = sabre;
+		this.session = session;
+		this.baseDate = baseDate;
 	}
 
 	useXml($flag) {
@@ -51,7 +55,7 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 				? $segment['departureDate']['raw']
 				: this.constructor.formatSabreDate($segment['departureDate']);
 
-			return {...$segment, 'departureDate': $date};
+			return {...$segment, departureDate: $date};
 		}, $itinerary);
 
 		for ([$i, $segment] of Object.entries($itinerary)) {
@@ -62,23 +66,23 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 			}
 			if (!this.constructor.isOutputValid($output)) {
 				if (this.constructor.isAvailabilityOutput($output)) {
-					$errorType = this.constructor.ERROR_NO_AVAIL;
+					$errorType = Errors.REBUILD_NO_AVAIL;
 				} else if (waitlist = parseWaitlist($output)) {
-					$errorType = this.constructor.ERROR_NO_AVAIL;
+					$errorType = Errors.REBUILD_NO_AVAIL;
 				} else {
-					$errorType = this.constructor.ERROR_GDS_ERROR;
+					$errorType = Errors.REBUILD_GDS_ERROR;
 				}
 				$tplData = {
-					'segmentNumber': $i + 1,
-					'from': $segment['departureDate'],
-					'to': $segment['destinationAirport'],
-					'waitlist': waitlist,
-					'response': php.trim($output),
+					segmentNumber: $i + 1,
+					from: $segment['departureDate'],
+					to: $segment['destinationAirport'],
+					waitlist: waitlist,
+					response: php.trim($output),
 				};
 				return {
-					'success': false,
-					'errorType': $errorType,
-					'errorData': $tplData,
+					success: false,
+					errorType: $errorType,
+					errorData: $tplData,
 				};
 			}
 		}
@@ -86,16 +90,17 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 		// happening on the next command after passive segment sell of some
 		// airlines, for example: >0DY7088C20APRLAXARNGK1;
 		const pnrCmdRec = await this.runCmd('*R');
-		return {'success': true, pnrCmdRec};
+		return {success: true, pnrCmdRec};
 	}
 
 	async executeViaXml(itinerary, isParserFormat) {
-		const startDt = php.is_callable(this.session.getStartDt) ? this.session.getStartDt() : php.date('Y-m-d');
+		const fallbackDt = php.is_callable(this.session.getStartDt) ? this.session.getStartDt() : php.date('Y-m-d');
+		const baseDate = this.baseDate || fallbackDt;
 
 		const params = {
 			addAirSegments: itinerary.map(seg => {
 				const departureDt = !isParserFormat ? seg.departureDate :
-					DateTime.decodeRelativeDateInFuture(seg.departureDate.parsed, startDt);
+					DateTime.decodeRelativeDateInFuture(seg.departureDate.parsed, baseDate);
 
 				return {
 					airline: seg.airline,
@@ -107,6 +112,13 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 					destinationAirport: seg.destinationAirport,
 					segmentStatus: seg.segmentStatus,
 					seatCount: seg.seatCount,
+					marriage: seg.marriage,
+					/**
+					 * possibly it is "is married to next", dunno how we should
+					 * process marriages between a marriage then though, so
+					 * booking each marriage with a separate request for now
+					 */
+					isMarried: seg.marriage > 0 && seg.segmentStatus !== 'GK' ? true : undefined,
 				};
 			}),
 			redisplay: true,
@@ -118,13 +130,17 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 			return {
 				success: false,
 				airSegmentCount: result.newAirSegments.length,
-				errorType: this.constructor.ERROR_MULTISEGMENT, 'errorData': result.error,
+				errorType: Errors.REBUILD_MULTISEGMENT, errorData: {response: result.error},
 			};
 		}
 
 		return {
 			success: true,
 			airSegmentCount: result.newAirSegments.length,
+			reservation: {
+				itinerary: result.reservations,
+			},
+			/** @deprecated - use reservation, to match Apollo and importPnr format */
 			itinerary: result.reservations,
 		};
 	}
@@ -169,7 +185,4 @@ class SabreBuildItineraryAction extends AbstractGdsAction {
 	}
 }
 
-SabreBuildItineraryAction.ERROR_GDS_ERROR = 'ERROR_GDS_ERROR';
-SabreBuildItineraryAction.ERROR_MULTISEGMENT = 'ERROR_MULTISEGMENT';
-SabreBuildItineraryAction.ERROR_NO_AVAIL = 'ERROR_NO_AVAIL';
 module.exports = SabreBuildItineraryAction;

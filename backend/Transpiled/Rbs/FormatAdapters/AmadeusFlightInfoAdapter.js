@@ -1,7 +1,7 @@
 
 const ArrayUtil = require('../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../Lib/Utils/Fp.js');
-const php = require('../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * adds full dates to legs, joins service info
@@ -19,8 +19,8 @@ class AmadeusFlightInfoAdapter {
 		}
 		$makeRaw = ($meal) => php.implode('', $meal['bookingClasses']) + '/' + $meal['raw'];
 		$leg['meals'] = {
-			'raw': php.implode(' ', Fp.map($makeRaw, $leg['meals'])),
-			'parsed': php.array_values(php.array_unique($mealTypes)),
+			raw: php.implode(' ', Fp.map($makeRaw, $leg['meals'])),
+			parsed: php.array_values(php.array_unique($mealTypes)),
 		};
 		$inFlightServices = [];
 		$leg['smoking'] = false;
@@ -30,7 +30,7 @@ class AmadeusFlightInfoAdapter {
 			} else if (php.preg_match(/^\s*\d+\s*\/\s*SMOKING\s*$/, $comment['raw'])) {
 				$leg['smoking'] = true;
 			} else if (php.preg_match(/^\s*\d+\s*\//, $comment['raw'])) {
-				$inFlightServices.push({'raw': $comment['raw']});
+				$inFlightServices.push({raw: $comment['raw']});
 			}
 		}
 		delete (
@@ -75,7 +75,7 @@ class AmadeusFlightInfoAdapter {
 				$weekDay = $newWeekDay;
 				$date = php.date('Y-m-d', php.strtotime('+' + $offset + ' days', php.strtotime($dt)));
 				$dt = $date + ' ' + $time + ':00';
-				$legs[$i][$key] = {'full': $dt};
+				$legs[$i][$key] = {full: $dt};
 			}
 		}
 		return $legs;
@@ -113,13 +113,13 @@ class AmadeusFlightInfoAdapter {
 			}
 		}
 		$svcSeg = {
-			'segmentNumber': !$linkedPnrSegment ? null : $linkedPnrSegment['lineNumber'],
-			'airline': $doSeg['airline'],
-			'flightNumber': $doSeg['flightNumber'],
-			'legs': $doSeg['type'] === 'planned'
+			segmentNumber: !$linkedPnrSegment ? null : $linkedPnrSegment['lineNumber'],
+			airline: $doSeg['airline'],
+			flightNumber: $doSeg['flightNumber'],
+			legs: $doSeg['type'] === 'planned'
 				? this.makeLegs($doSeg, $linkedPnrSegment)
 				: [],
-			'type': $doSeg['type'],
+			type: $doSeg['type'],
 		};
 		return $svcSeg;
 	}
@@ -130,7 +130,7 @@ class AmadeusFlightInfoAdapter {
 	 */
 	static transform($parsed, $itinerary) {
 		return {
-			'segments': $parsed['segments'].map(($doSeg) =>
+			segments: $parsed['segments'].map(($doSeg) =>
 				this.transformFlightInfoSegment($doSeg, $itinerary)),
 		};
 	}

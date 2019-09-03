@@ -1,6 +1,6 @@
 
 
-const php = require('../../phpDeprecated');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * initializes new PNR with data from the existing PNR in session
@@ -40,7 +40,7 @@ class ApolloRepeatItineraryAction
 		let $matches, $_, $repeatedSegmentCount;
 		if (php.preg_match(/^\s*RE SUCCESSFUL THRU SEGMENT\s+(\d+)\s*$/, $dump, $matches = [])) {
 			[$_, $repeatedSegmentCount] = $matches;
-			return {'repeatedSegmentCount': $repeatedSegmentCount};
+			return {repeatedSegmentCount: $repeatedSegmentCount};
 		} else {
 			return null;
 		}

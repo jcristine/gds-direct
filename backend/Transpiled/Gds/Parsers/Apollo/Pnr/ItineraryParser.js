@@ -10,7 +10,7 @@ const {
 	preg_match, rtrim, str_split,
 	explode, in_array,
 	trim,
-} = require("../../../../phpDeprecated.js");
+} = require('klesun-node-tools/src/Transpiled/php.js');
 
 const CommonParserHelpers = require('./../CommonParserHelpers.js');
 
@@ -41,9 +41,9 @@ class ItineraryParser {
 					$parsedData.push($lastParsedSegment);
 				}
 				$lastParsedSegment = {
-					'segmentType': SEGMENT_TYPE_OTH,
-					'segmentNumber': $result['segmentNumber'],
-					'text': $result['text'],
+					segmentType: SEGMENT_TYPE_OTH,
+					segmentNumber: $result['segmentNumber'],
+					text: $result['text'],
 				};
 			} else if($result = this.parseTurSegmentLine($line)) {
 				if ($lastParsedSegment) {
@@ -55,7 +55,7 @@ class ItineraryParser {
 				if ($lastParsedSegment) {
 					$parsedData.push($lastParsedSegment);
 				}
-				$lastParsedSegment = {'segmentType': SEGMENT_TYPE_ARNK, 'segmentNumber': $result['segmentNumber']};
+				$lastParsedSegment = {segmentType: SEGMENT_TYPE_ARNK, segmentNumber: $result['segmentNumber']};
 			} else if($result = this.parseCarSegmentLine($line)) {
 				if ($lastParsedSegment) {
 					$parsedData.push($lastParsedSegment);
@@ -96,9 +96,9 @@ class ItineraryParser {
 						$lastParsedSegment['raw'] += PHP_EOL + $line;
 						$lastParsedSegment['planeChange'] = $lastParsedSegment['planeChange'] || [];
 						$lastParsedSegment['planeChange'].push({
-							'aircraft': $matches['aircraft'],
-							'from': $matches['from'],
-							'to': $matches['to'],
+							aircraft: $matches['aircraft'],
+							from: $matches['from'],
+							to: $matches['to'],
 						});
 					} else {
 						array_unshift($lines, $line);
@@ -115,7 +115,7 @@ class ItineraryParser {
 		if ($lastParsedSegment) {
 			$parsedData.push($lastParsedSegment);
 		}
-		return {'segments': $parsedData, 'textLeft': implode(PHP_EOL, $lines)};
+		return {segments: $parsedData, textLeft: implode(PHP_EOL, $lines)};
 	}
 
 	// ' 1 UA1704S 19DEC LASEWR HK1   605A  157P *         SA   E  1'
@@ -150,36 +150,36 @@ class ItineraryParser {
 			const $marriage = array_key_exists('marriage', $matches) ? intval(trim($matches['marriage'])) : false;
 			const $confirmedByAirline = in_array('*', [$matches['confirmedByAirline1'], $matches['confirmedByAirline2'], $matches['confirmedByAirline3']]);
 			return {
-				'segmentNumber': intval(trim($matches['segmentNumber'])),
-				'airline': trim($matches['airline']),
-				'flightNumber': trim($matches['flightNumber']),
-				'bookingClass': trim($matches['bookingClass'] || ''),
-				'departureDate': {
-					'raw': $matches['departureDay'] + $matches['departureMonth'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['departureDay'] + $matches['departureMonth']),
+				segmentNumber: intval(trim($matches['segmentNumber'])),
+				airline: trim($matches['airline']),
+				flightNumber: trim($matches['flightNumber']),
+				bookingClass: trim($matches['bookingClass'] || ''),
+				departureDate: {
+					raw: $matches['departureDay'] + $matches['departureMonth'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['departureDay'] + $matches['departureMonth']),
 				},
-				'departureAirport': trim($matches['departureAirport']),
-				'destinationAirport': trim($matches['destinationAirport']),
-				'segmentStatus': trim($matches['segmentStatus']),
-				'seatCount': intval(trim($matches['seatCount'])),
-				'departureTime': {
-					'raw': trim($matches['departureTime']),
-					'parsed': CommonParserHelpers.decodeApolloTime(trim($matches['departureTime'])),
+				departureAirport: trim($matches['departureAirport']),
+				destinationAirport: trim($matches['destinationAirport']),
+				segmentStatus: trim($matches['segmentStatus']),
+				seatCount: intval(trim($matches['seatCount'])),
+				departureTime: {
+					raw: trim($matches['departureTime']),
+					parsed: CommonParserHelpers.decodeApolloTime(trim($matches['departureTime'])),
 				},
-				'destinationTime': {
-					'raw': trim($matches['destinationTime']),
-					'parsed': CommonParserHelpers.decodeApolloTime(trim($matches['destinationTime'])),
+				destinationTime: {
+					raw: trim($matches['destinationTime']),
+					parsed: CommonParserHelpers.decodeApolloTime(trim($matches['destinationTime'])),
 				},
-				'dayOffset': this.decodeDayOffset(trim($matches['dayOffset'])),
-				'confirmedByAirline': $confirmedByAirline,
-				'daysOfWeek': {
-					'raw': (isset($matches['days']) && $matches['days']) ? trim($matches['days']) : '',
-					'parsed': (isset($matches['days']) && $matches['days']) ? this.decodeDaysOfWeek(trim($matches['days'])) : null,
+				dayOffset: this.decodeDayOffset(trim($matches['dayOffset'])),
+				confirmedByAirline: $confirmedByAirline,
+				daysOfWeek: {
+					raw: (isset($matches['days']) && $matches['days']) ? trim($matches['days']) : '',
+					parsed: (isset($matches['days']) && $matches['days']) ? this.decodeDaysOfWeek(trim($matches['days'])) : null,
 				},
-				'eticket': $eticket,
-				'marriage': $marriage,
-				'unexpectedText': $matches['unexpectedText'] || '',
-				'raw': $line,
+				eticket: $eticket,
+				marriage: $marriage,
+				unexpectedText: $matches['unexpectedText'] || '',
+				raw: $line,
 			};
 		} else {
 			return false;
@@ -214,7 +214,7 @@ class ItineraryParser {
 		const $regex = /^(?<segmentNumber>[\s\d]{2}) OTH (?<text>.+)$/;
 		let $matches;
 		if ($matches = preg_match($regex, $line, $matches)) {
-			return {'success': true, 'segmentNumber': trim($matches['segmentNumber']), 'text': trim($matches['text'])};
+			return {success: true, segmentNumber: trim($matches['segmentNumber']), text: trim($matches['text'])};
 		} else {
 			return false;
 		}
@@ -227,17 +227,17 @@ class ItineraryParser {
 		let $matches;
 		if ($matches = preg_match($regex, $line)) {
 			return {
-				'segmentNumber': $matches['segmentNumber'],
-				'segmentType': $matches['segmentType'],
-				'vendor': $matches['vendor'],
-				'segmentStatus': $matches['segmentStatus'],
-				'seatCount': $matches['seatCount'],
-				'location': $matches['location'],
-				'date': {
-					'raw': $matches['date'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['date']),
+				segmentNumber: $matches['segmentNumber'],
+				segmentType: $matches['segmentType'],
+				vendor: $matches['vendor'],
+				segmentStatus: $matches['segmentStatus'],
+				seatCount: $matches['seatCount'],
+				location: $matches['location'],
+				date: {
+					raw: $matches['date'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['date']),
 				},
-				'remark': $matches['remark'],
+				remark: $matches['remark'],
 			};
 		} else {
 			return null;
@@ -249,7 +249,7 @@ class ItineraryParser {
 		let $matches;
 		if ($matches = preg_match(/^\s*PLANE CHANGE\s+([A-Z]{3})-([A-Z]{3})\s+([A-Z0-9]{3})\s*$/, $line)) {
 			const [$_, $from, $to, $aircraft] = $matches;
-			return {'from': $from, 'to': $to, 'aircraft': $aircraft};
+			return {from: $from, to: $to, aircraft: $aircraft};
 		} else {
 			return null;
 		}
@@ -259,7 +259,7 @@ class ItineraryParser {
 		const $regex = /^(?<segmentNumber>[\s\d]{2})\s{3}ARNK\s*$/;
 		let $matches;
 		if ($matches = preg_match($regex, $line, $matches)) {
-			return {'success': true, 'segmentNumber': trim($matches['segmentNumber'])};
+			return {success: true, segmentNumber: trim($matches['segmentNumber'])};
 		} else {
 			return false;
 		}
@@ -272,7 +272,7 @@ class ItineraryParser {
 		$line = trim(array_shift($wrappedLines));
 		let $matches = [];
 		if ($matches = preg_match(/^OPERATED BY(?<operator>.*?)( [A-Z]{3}-[A-Z]{3})?$/, trim($line), $matches)) {
-			return {'success': true, 'operator': trim($matches['operator']), 'followingLines': $wrappedLines};
+			return {success: true, operator: trim($matches['operator']), followingLines: $wrappedLines};
 		} else {
 			return false;
 		}
@@ -287,24 +287,24 @@ class ItineraryParser {
 		if ($matches = preg_match('/' + $regex + '/', $line, $matches)) {
 			const $modifiers = this.parseCarSegmentModifiers($matches['modifiers']);
 			return {
-				'success': true,
-				'segmentNumber': trim($matches['segmentNumber']),
-				'vendorCode': trim($matches['vendorCode']),
-				'segmentStatus': trim($matches['segmentStatus']),
-				'seatCount': intval(trim($matches['seatCount'])),
-				'airport': trim($matches['airport']),
-				'arrivalDate': {
-					'raw': $matches['arrivalDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['arrivalDate']),
+				success: true,
+				segmentNumber: trim($matches['segmentNumber']),
+				vendorCode: trim($matches['vendorCode']),
+				segmentStatus: trim($matches['segmentStatus']),
+				seatCount: intval(trim($matches['seatCount'])),
+				airport: trim($matches['airport']),
+				arrivalDate: {
+					raw: $matches['arrivalDate'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['arrivalDate']),
 				},
-				'returnDate': {
-					'raw': $matches['returnDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['returnDate']),
+				returnDate: {
+					raw: $matches['returnDate'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['returnDate']),
 				},
-				'acrissCode': trim($matches['acrissCode']),
-				'confirmationNumber': $modifiers['confirmationNumber'],
-				'rateGuarantee': $modifiers['rateGuarantee'] || null,
-				'approxTotal': $modifiers['approxTotal'] || null,
+				acrissCode: trim($matches['acrissCode']),
+				confirmationNumber: $modifiers['confirmationNumber'],
+				rateGuarantee: $modifiers['rateGuarantee'] || null,
+				approxTotal: $modifiers['approxTotal'] || null,
 			};
 		} else {
 			return null;
@@ -323,13 +323,13 @@ class ItineraryParser {
 			return [$code, $data];
 		};
 		const $result = {
-			'confirmationNumber': null,
-			'bookingSource': null,
-			'pickUpPoint': null,
-			'arrivalTime': null,
-			'rateCode': null,
-			'departureTime': null,
-			'name': null,
+			confirmationNumber: null,
+			bookingSource: null,
+			pickUpPoint: null,
+			arrivalTime: null,
+			rateCode: null,
+			departureTime: null,
+			name: null,
 		};
 		const $modifiers = array_map($getModifierCodeAndData, array_map('trim', explode('/', $txt)));
 		for (const [$code, $data] of $modifiers) {
@@ -351,13 +351,13 @@ class ItineraryParser {
 				// 'USD109.00DY-UNL FM'
 				let $match;
 				if ($match = preg_match(/^(?<currency>[A-Z]{3})(?<amount>\d*\.\d{2})/, $data, $match)) {
-					$result['rateGuarantee'] = {'currency': $match['currency'], 'amount': $match['amount']};
+					$result['rateGuarantee'] = {currency: $match['currency'], amount: $match['amount']};
 				}
 			} else if ($code === 'APPROXIMATE TOTAL RATE') {
 				// 'APPROXIMATE TOTAL RATE-USD237.00-UNL FM 03DY 00HR .00MC'
 				let $match;
 				if ($match = preg_match(/^(?<currency>[A-Z]{3})(?<amount>\d*\.\d{2})/, $data, $match)) {
-					$result['approxTotal'] = {'currency': $match['currency'], 'amount': $match['amount']};
+					$result['approxTotal'] = {currency: $match['currency'], amount: $match['amount']};
 				}
 			} else if ($code === 'AT') { // TODO: Unknown
 			}
@@ -374,7 +374,7 @@ class ItineraryParser {
 		let $matches;
 		if ($matches = preg_match(/^(.*?)-(.*)$/, $fieldStr, $matches)) {
 			const [$_, $code, $content] = $matches;
-			return {'code': $code, 'content': $content};
+			return {code: $code, content: $content};
 		} else {
 			return null;
 		}
@@ -394,27 +394,27 @@ class ItineraryParser {
 				explode('/', $matches['fields'])
 			)));
 			return {
-				'segmentNumber': trim($matches['segmentNumber']),
-				'hotelType': $matches['hotelType'],
-				'hotel': trim($matches['hotel']),
-				'segmentStatus': trim($matches['segmentStatus']),
-				'roomCount': intval(trim($matches['roomCount'])),
-				'city': trim($matches['city']),
-				'startDate': {
-					'raw': $matches['from'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['from']),
+				segmentNumber: trim($matches['segmentNumber']),
+				hotelType: $matches['hotelType'],
+				hotel: trim($matches['hotel']),
+				segmentStatus: trim($matches['segmentStatus']),
+				roomCount: intval(trim($matches['roomCount'])),
+				city: trim($matches['city']),
+				startDate: {
+					raw: $matches['from'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['from']),
 				},
-				'endDate': {
-					'raw': $matches['to'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['to']),
+				endDate: {
+					raw: $matches['to'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['to']),
 				},
-				'stayNights': $matches['stayNights'],
-				'propertyCode': $matches['propertyCode'],
-				'hotelName': $matches['hotelName'],
-				'basisRoomCount': $matches['basisRoomCount'],
-				'fareBasis': $matches['fareBasis'],
-				'personCount': $matches['personCount'],
-				'fields': $fields,
+				stayNights: $matches['stayNights'],
+				propertyCode: $matches['propertyCode'],
+				hotelName: $matches['hotelName'],
+				basisRoomCount: $matches['basisRoomCount'],
+				fareBasis: $matches['fareBasis'],
+				personCount: $matches['personCount'],
+				fields: $fields,
 			};
 		} else {
 			return null;
@@ -429,21 +429,21 @@ class ItineraryParser {
 		let $matches;
 		if ($matches = preg_match($regex, $line)) {
 			return {
-				'segmentNumber': trim($matches['segmentNumber']),
-				'hotelType': $matches['hotelType'],
-				'hotel': trim($matches['hotel']),
-				'segmentStatus': trim($matches['segmentStatus']),
-				'roomCount': intval(trim($matches['roomCount'])),
-				'city': trim($matches['city']),
-				'startDate': {
-					'raw': $matches['from'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['from']),
+				segmentNumber: trim($matches['segmentNumber']),
+				hotelType: $matches['hotelType'],
+				hotel: trim($matches['hotel']),
+				segmentStatus: trim($matches['segmentStatus']),
+				roomCount: intval(trim($matches['roomCount'])),
+				city: trim($matches['city']),
+				startDate: {
+					raw: $matches['from'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['from']),
 				},
-				'endDate': {
-					'raw': $matches['to'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['to']),
+				endDate: {
+					raw: $matches['to'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['to']),
 				},
-				'unparsed': trim($matches['unparsed']),
+				unparsed: trim($matches['unparsed']),
 			};
 		} else {
 			return null;
@@ -469,21 +469,21 @@ class ItineraryParser {
 		let $matches;
 		if ($matches = preg_match($regex, $line)) {
 			return {
-				'segmentNumber': intval(trim($matches['segmentNumber'])),
-				'airline': trim($matches['airline']),
-				'flightNumber': trim($matches['flightNumber']),
-				'bookingClass': trim($matches['bookingClass'] || ''),
-				'departureDate': {
-					'raw': $matches['departureDate'],
-					'parsed': CommonParserHelpers.parsePartialDate($matches['departureDate']),
+				segmentNumber: intval(trim($matches['segmentNumber'])),
+				airline: trim($matches['airline']),
+				flightNumber: trim($matches['flightNumber']),
+				bookingClass: trim($matches['bookingClass'] || ''),
+				departureDate: {
+					raw: $matches['departureDate'],
+					parsed: CommonParserHelpers.parsePartialDate($matches['departureDate']),
 				},
-				'departureAirport': trim($matches['departureAirport']),
-				'destinationAirport': trim($matches['destinationAirport']),
-				'segmentStatus': trim($matches['segmentStatus']),
-				'seatCount': intval(trim($matches['seatCount'])),
-				'daysOfWeek': {
-					'raw': (isset($matches['daysOfWeek']) && $matches['daysOfWeek']) ? trim($matches['daysOfWeek']) : '',
-					'parsed': (isset($matches['daysOfWeek']) && $matches['daysOfWeek']) ? this.decodeDaysOfWeek(trim($matches['daysOfWeek'])) : null,
+				departureAirport: trim($matches['departureAirport']),
+				destinationAirport: trim($matches['destinationAirport']),
+				segmentStatus: trim($matches['segmentStatus']),
+				seatCount: intval(trim($matches['seatCount'])),
+				daysOfWeek: {
+					raw: (isset($matches['daysOfWeek']) && $matches['daysOfWeek']) ? trim($matches['daysOfWeek']) : '',
+					parsed: (isset($matches['daysOfWeek']) && $matches['daysOfWeek']) ? this.decodeDaysOfWeek(trim($matches['daysOfWeek'])) : null,
 				},
 			};
 		} else {

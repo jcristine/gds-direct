@@ -10,7 +10,7 @@ const Variables = require('../../../Rbs/GdsDirect/DialectTranslator/VariableTran
  *        'translated' => true,
  *     ];
  */
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class PatternTranslator {
 	static makeRegexFromPattern($pattern, $dialect) {
@@ -45,8 +45,8 @@ class PatternTranslator {
 			return null;
 		} else {
 			return {
-				'pattern': $pattern,
-				'filter': StringUtil.format($pattern, $params),
+				pattern: $pattern,
+				filter: StringUtil.format($pattern, $params),
 			};
 		}
 	}
@@ -254,23 +254,23 @@ class PatternTranslator {
 					$resultCmd = this.putVariablesToDestPattern($destPatternList, $variables, $fromGds, $toGds);
 					if (php.empty($resultCmd)) {
 						return {
-							'output': '',
-							'error': 'empty destination pattern',
-							'translated': true,
+							output: '',
+							error: 'empty destination pattern',
+							translated: true,
 						};
 					}
 					return {
-						'output': this.formatOutput($resultCmd, $toGds),
-						'error': '',
-						'translated': true,
+						output: this.formatOutput($resultCmd, $toGds),
+						error: '',
+						translated: true,
 					};
 				}
 			}
 		}
 		return {
-			'output': null,
-			'error': '',
-			'translated': false,
+			output: null,
+			error: '',
+			translated: false,
 		};
 	}
 }

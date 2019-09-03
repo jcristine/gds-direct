@@ -7,7 +7,7 @@ const FareConstructionParser = require('../../../../Gds/Parsers/Common/FareConst
  * parses output of >$FC{ptcNumber}/{storeNumber}
  * it is a fare construction of a manual pricing
  */
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class FcScreenParser {
 	//'STL KL X/MSP KL X/AMS KL ATH M151.00KL. ',
@@ -30,7 +30,7 @@ class FcScreenParser {
 			$raw = php.preg_replace(/\.+\s/, '  ', $raw); // line may end like 'KL. '
 			$raw = php.preg_replace(/\s\n/, '', $raw); // join into single line
 			$fcRecord = FareConstructionParser.parse($raw);
-			$result = {'raw': $raw};
+			$result = {raw: $raw};
 			if ($error = $fcRecord['error']) {
 				$result['error'] = $error;
 			} else {
@@ -38,7 +38,7 @@ class FcScreenParser {
 			}
 			return $result;
 		} else {
-			return {'error': 'Failed to extract regex from mask'};
+			return {error: 'Failed to extract regex from mask'};
 		}
 	}
 
@@ -76,9 +76,9 @@ class FcScreenParser {
 			$type = null;
 		}
 		return {
-			'raw': php.trim($text),
-			'type': $type,
-			'parsed': $parsed,
+			raw: php.trim($text),
+			type: $type,
+			parsed: $parsed,
 		};
 	}
 
@@ -88,7 +88,7 @@ class FcScreenParser {
 		$lines = StringUtil.lines($dump);
 		$header = php.array_shift($lines);
 		if (!StringUtil.contains($header, 'FARE CONSTRUCTION')) {
-			return {'error': 'Unexpected start of dump - ' + php.trim($header)};
+			return {error: 'Unexpected start of dump - ' + php.trim($header)};
 		}
 
 		$removeSemicolon = ($line) => php.substr($line, 1);
@@ -106,19 +106,19 @@ class FcScreenParser {
 			$cleanFcRecord = FareConstructionParser.parse($matches['cleanFcText']);
 			$maskFcRecord = this.parseMaskFareConstruction($matches['maskFcText']);
 			return {
-				'formOfPayment': this.parseFopText($matches['fopText']),
-				'hasFareConstruction': $cleanFcRecord['parsed'] || $maskFcRecord['parsed'] || null ? true : false,
-				'fareConstruction': {
-					'mask': $maskFcRecord,
-					'clean': {
-						'raw': php.trim($matches['cleanFcText']),
-						'parsed': $cleanFcRecord['parsed'],
-						'error': $cleanFcRecord['error'],
+				formOfPayment: this.parseFopText($matches['fopText']),
+				hasFareConstruction: $cleanFcRecord['parsed'] || $maskFcRecord['parsed'] || null ? true : false,
+				fareConstruction: {
+					mask: $maskFcRecord,
+					clean: {
+						raw: php.trim($matches['cleanFcText']),
+						parsed: $cleanFcRecord['parsed'],
+						error: $cleanFcRecord['error'],
 					},
 				},
 			};
 		} else {
-			return {'error': 'Invalid dump structure:' + php.PHP_EOL + $textLeft};
+			return {error: 'Invalid dump structure:' + php.PHP_EOL + $textLeft};
 		}
 	}
 }

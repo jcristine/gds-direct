@@ -1,3 +1,5 @@
+const Airports = require('./Repositories/Airports.js');
+const MultiPccTariffRules = require('./Repositories/MultiPccTariffRules.js');
 const AgentCustomSettings = require('./Repositories/AgentCustomSettings.js');
 
 const Clustering = require('./Utils/Clustering.js');
@@ -237,6 +239,7 @@ app.post('/admin/updateHighlightRules', withDevAuth((reqBody, emcResult) => {
 
 app.post('/admin/terminal/highlight', toHandleHttp(HighlightRulesRepository.getFullDataForAdminPage));
 app.post('/admin/terminal/highlight/save', withDevAuth(HighlightRulesRepository.saveRule));
+app.post('/admin/terminal/highlight/saveSampleDump', withDevAuth(HighlightRulesRepository.saveSampleDump));
 app.post('/admin/terminal/themes/save', withAuth(rqBody => {
 	return Db.with(db => db.writeRows('terminalThemes', [{
 		id: rqBody.id || undefined,
@@ -309,9 +312,9 @@ app.post('/admin/getModel', withOwnerAuth(async (reqBody, emcResult) => {
 }));
 
 app.get('/admin/showTables', withOwnerAuth(async (rqBody) => {
-    const rows = await Db.with(async db => db.query('SHOW TABLES'));
-    const records = rows.map(row => ({name: Object.values(row)[0]}));
-    return {records};
+	const rows = await Db.with(async db => db.query('SHOW TABLES'));
+	const records = rows.map(row => ({name: Object.values(row)[0]}));
+	return {records};
 }));
 app.post('/admin/getAllRedisKeys', withOwnerAuth(async (reqBody, emcResult) => {
 	const redis = await Redis.getClient();
@@ -442,6 +445,10 @@ const routes = {
 	'/gdsDirect/keepAlive': withGdsSession(GdsSessionController.keepAliveCurrent),
 	'/terminal/addMpRemark': withGdsSession(GdsSessionController.addMpRemark),
 	'/terminal/goToPricing': withGdsSession(GdsSessionController.goToPricing),
+	'/api/js/admin/multi-pcc-tariff/list-rules': toHandleHttp(MultiPccTariffRules.getAll),
+	'/api/js/data/locations': toHandleHttp(Airports.getAllLocations),
+	'/api/js/admin/multi-pcc-tariff/store-rule': withDevAuth(MultiPccTariffRules.saveRule),
+	'/api/js/admin/multi-pcc-tariff/delete-rule': withDevAuth(MultiPccTariffRules.deleteRule),
 };
 
 const socketIo = SocketIo.init(routes);
@@ -508,7 +515,7 @@ app.get('/CURRENT_PRODUCTION_TAG', async (rq, rs) => {
 
 //The 404 Route (ALWAYS Keep this as the last route)
 app.get('*', function(req, res){
-  res.status(404).send('GRECT Route ' + req.path + ' not found');
+	res.status(404).send('GRECT Route ' + req.path + ' not found');
 });
 
 exports.initListeners = () => {

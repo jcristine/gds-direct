@@ -10,7 +10,7 @@ const McoListParser = require('../../../../Gds/Parsers/Apollo/Mco/McoListParser.
 const McoMaskParser = require('../../../../Gds/Parsers/Apollo/Mco/McoMaskParser.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
-const php = require('../../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * get current PNR data, ApolloMakeMcoAction and format output
@@ -41,11 +41,11 @@ class MakeMcoApolloAction extends AbstractGdsAction
 			$fop += '/OK';
 		}
 		return {
-			'validatingCarrier': $validatingCarrier,
-			'hub': $hub,
-			'fop': $fop,
-			'expirationDate': $expirationDate,
-			'approvalCode': $storedParams['approvalCode'] || null,
+			validatingCarrier: $validatingCarrier,
+			hub: $hub,
+			fop: $fop,
+			expirationDate: $expirationDate,
+			approvalCode: $storedParams['approvalCode'] || null,
 		};
 	}
 
@@ -75,19 +75,19 @@ class MakeMcoApolloAction extends AbstractGdsAction
 			return $pnrParams;
 		}
 		$paramsFromPnr = {
-			'validatingCarrier': $pnrParams['validatingCarrier'],
-			'to': $pnrParams['validatingCarrier'],
-			'at': $pnrParams['hub'],
-			'formOfPayment': $pnrParams['fop'],
-			'expirationDate': $pnrParams['expirationDate'],
-			'approvalCode': $pnrParams['approvalCode'],
+			validatingCarrier: $pnrParams['validatingCarrier'],
+			to: $pnrParams['validatingCarrier'],
+			at: $pnrParams['hub'],
+			formOfPayment: $pnrParams['fop'],
+			expirationDate: $pnrParams['expirationDate'],
+			approvalCode: $pnrParams['approvalCode'],
 		};
 		$paramsFromUser = {
-			'mcoNumber': (await this.getCurrentMcoCount()) + 1,
-			'passengerName': $userParams['passengerName'],
-			'amount': $userParams['amount'],
-			'amountCurrency': $userParams['amountCurrency'],
-			'issueNow': $userParams['issueNow'],
+			mcoNumber: (await this.getCurrentMcoCount()) + 1,
+			passengerName: $userParams['passengerName'],
+			amount: $userParams['amount'],
+			amountCurrency: $userParams['amountCurrency'],
+			issueNow: $userParams['issueNow'],
 		};
 		return php.array_merge($defaultParams, $paramsFromPnr, $paramsFromUser);
 	}
@@ -100,9 +100,9 @@ class MakeMcoApolloAction extends AbstractGdsAction
 			.execute($params);
 		if ($mcoResult['success'] || false) {
 			return {
-				'calledCommands': [{
-					'cmd': 'HHMCU',
-					'output': $mcoResult['response'],
+				calledCommands: [{
+					cmd: 'HHMCU',
+					output: $mcoResult['response'],
 				}],
 			};
 		} else {

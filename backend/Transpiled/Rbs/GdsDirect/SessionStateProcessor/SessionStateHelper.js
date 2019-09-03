@@ -2,7 +2,7 @@
 
 const CanCreatePqRules = require('./CanCreatePqRules.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
-const php = require('../../../phpDeprecated.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CommonDataHelper = require("../CommonDataHelper");
 
 /**
@@ -22,8 +22,8 @@ class SessionStateHelper
 		$row = $cmdLog.getSessionData();
 		return {
 			...$row,
-			'canCreatePqErrors': await this.checkCanCreatePq($cmdLog, $leadData),
-			'canCreatePqFor': await this.getPricedAgeGroups($cmdLog),
+			canCreatePqErrors: await this.checkCanCreatePq($cmdLog, $leadData),
+			canCreatePqFor: await this.getPricedAgeGroups($cmdLog),
 		};
 	}
 
