@@ -1,4 +1,4 @@
-const ParserUtil = require('../../../../Parsers/ParserUtil.js');
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 
 const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');

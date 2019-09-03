@@ -1,5 +1,5 @@
 const AtfqParser = require('../../Transpiled/Gds/Parsers/Apollo/Pnr/AtfqParser.js');
-const ParserUtil = require('../../Parsers/ParserUtil.js');
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const DecodeTravelportError = require('./DecodeTravelportError.js');
 const {parseXml} = require("../../GdsHelpers/CommonUtils.js");
