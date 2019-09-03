@@ -749,9 +749,10 @@ const RunCmdRq = ({
 		}
 		const calledCommands = [];
 		if (stateful.getSessionData().isPnrStored) {
-			const login = getAgent().getLogin().toUpperCase();
-			const erCmdRec = await runCmd('R:' + login + '|ER');
-			calledCommands.push(erCmdRec);
+			// disabled for first release, to not scare agents with 2 new behaviours
+			//const login = getAgent().getLogin().toUpperCase();
+			//const erCmdRec = await runCmd('R:' + login + '|ER');
+			//calledCommands.push(erCmdRec);
 		}
 		const lfCmdRec = await runCmd('*LF');
 		calledCommands.push(lfCmdRec);
