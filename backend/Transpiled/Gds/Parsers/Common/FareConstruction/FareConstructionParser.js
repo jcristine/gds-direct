@@ -1,6 +1,6 @@
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
-const FareConstructionTokenizer = require("./FareConstructionTokenizer");
+const FcTokenizer = require("gds-utils/src/text_format_processing/agnostic/fare_calculation/FcTokenizer");
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
@@ -167,7 +167,7 @@ class FareConstructionParser {
 	}
 
 	static endsSegments($token) {
-		return php.in_array($token['lexeme'], FareConstructionTokenizer.getItineraryEndLexemes());
+		return php.in_array($token['lexeme'], FcTokenizer.getItineraryEndLexemes());
 	}
 
 	static isSameAmount($a, $b) {
@@ -245,7 +245,7 @@ class FareConstructionParser {
 		$errorTokens = [];
 		$errorTextLeft = $dump;
 		$i = 0;
-		$split = new FareConstructionTokenizer();
+		$split = new FcTokenizer();
 		for ($lexed of $split.tryTokenCombinations($dump)) {
 			$tokens = $lexed['lexemes'];
 			const filtered = php.array_values(Fp.filter($isNotWhitespace, $lexed['lexemes']));
