@@ -773,7 +773,7 @@ const RunCmdRq = ({
 			//calledCommands.push(erCmdRec);
 		}
 		const lfCmdRec = await runCmd('*LF');
-		calledCommands.push(lfCmdRec);
+		calledCommands.push({...lfCmdRec, cmd});
 		return {calledCommands, messages};
 	};
 
