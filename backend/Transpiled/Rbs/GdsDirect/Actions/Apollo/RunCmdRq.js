@@ -728,7 +728,7 @@ const RunCmdRq = ({
 		const error = result.currentPricing.error;
 		if (error) {
 			const reject = error.includes('DUPLICATE NAME/SEGMENT COMBINATION')
-				? Rej.NotImplemented : Rej.UnprocessableEntity;
+				? Rej.BadRequest : Rej.UnprocessableEntity;
 			return reject('Failed to >' + cmd + '; - ' + error);
 		} else {
 			return Promise.resolve(result);
