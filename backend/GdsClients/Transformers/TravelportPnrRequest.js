@@ -425,9 +425,12 @@ const transformCurrentPtcBlock = (blockEl, pricingEl) => {
 };
 
 const transformCurrentPricing = (pricingEl) => {
+	const error = [...pricingEl.querySelectorAll(':scope > ErrText > Text')]
+		.map(el => el.textContent)[0];
 	const ptcBlocks = [...pricingEl.querySelectorAll(':scope > GenQuoteDetails')]
 		.map(blockEl => transformCurrentPtcBlock(blockEl, pricingEl));
 	return {
+		error: error,
 		pricingBlockList: ptcBlocks,
 		// there is more data in the XML...
 	};
