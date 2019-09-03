@@ -333,6 +333,8 @@ const makeStorePriceMods = (storePricingParams) => {
 					{PsgrNum: '0'},
 					{AbsNameNum: '0'},
 				]});
+		} else if (type === 'segments' && parsed.bundles[0].fareBasis) {
+			throw Rej.NotImplemented.makeExc('Consider using STORE/FXD, Fare Basis override is not yet implemented - ' + raw);
 		} else {
 			throw Rej.NotImplemented.makeExc('Unsupported T:$B modifier - ' + type + ' - ' + raw);
 		}
