@@ -32,72 +32,66 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 class SiParser
 {
-	static parseSegmentLine($line)  {
-		let $pattern, $symbols, $names, $split, $result;
-
-		//         'S 1. DL  0890 M  20SEP RDUDTW',
-		//         'S 4. DL  0180 M  28SEP MNLNRT',
-		//         'S11. OS  0655 D  21JUN VIEKIV',
-		$pattern = 'SNN. YY  FFFF B  DDDDD PPPTTT';
-		$symbols = php.str_split($pattern, 1);
-		$names = php.array_combine($symbols, $symbols);
-		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
-		$result = {
-			segmentNumber: php.trim($split['N'], ' .'),
-			airline: $split['Y'],
-			flightNumber: $split['F'],
-			bookingClass: $split['B'],
+	static parseSegmentLine(line)  {
+		//              'S 1. DL  0890 M  20SEP RDUDTW',
+		//              'S 4. DL  0180 M  28SEP MNLNRT',
+		//              'S11. OS  0655 D  21JUN VIEKIV',
+		const pattern = 'SNN. YY  FFFF B  DDDDD PPPTTT';
+		const symbols = php.str_split(pattern, 1);
+		const names = php.array_combine(symbols, symbols);
+		const split = StringUtil.splitByPosition(line, pattern, names, true);
+		const result = {
+			segmentNumber: php.trim(split['N'], ' .'),
+			airline: split['Y'],
+			flightNumber: split['F'],
+			bookingClass: split['B'],
 			departureDate: {
-				raw: $split['D'],
-				parsed: CommonParserHelpers.parsePartialDate($split['D']),
+				raw: split['D'],
+				parsed: CommonParserHelpers.parsePartialDate(split['D']),
 			},
-			departureAirport: $split['P'],
-			destinationAirport: $split['T'],
+			departureAirport: split['P'],
+			destinationAirport: split['T'],
 		};
-		if ($split['S'] === 'S' && $split[' '] === '' && $split['.'] === '.' &&
-            php.intval($result['segmentNumber']) && $result['departureDate']['parsed']
+		if (split['S'] === 'S' && split[' '] === '' && split['.'] === '.' &&
+            php.intval(result['segmentNumber']) && result['departureDate']['parsed']
 		) {
-			return $result;
+			return result;
 		} else {
 			return null;
 		}
 	}
 
-	static parsePaxSsrLine($line)  {
-		let $pattern, $symbols, $names, $split, $result;
-
-		//         '                          LANG PN 1  ONLY SPEAKS JAPANESE',
-		//         '                          VGML PN 1',
-		$pattern = '                          CCCC SS Q  MMMMMMMMMMMMMMMMMMMMMMMMMMM';
-		$symbols = php.str_split($pattern, 1);
-		$names = php.array_combine($symbols, $symbols);
-		$split = StringUtil.splitByPosition($line, $pattern, $names, true);
-		$result = {
-			ssrCode: $split['C'],
-			status: $split['S'],
-			statusNumber: $split['Q'],
-			comment: $split['M'],
+	static parsePaxSsrLine(line)  {
+		//              '                          LANG PN 1  ONLY SPEAKS JAPANESE',
+		//              '                          VGML PN 1',
+		const pattern = '                          CCCC SS Q  MMMMMMMMMMMMMMMMMMMMMMMMMMM';
+		const symbols = php.str_split(pattern, 1);
+		const names = php.array_combine(symbols, symbols);
+		const split = StringUtil.splitByPosition(line, pattern, names, true);
+		const result = {
+			ssrCode: split['C'],
+			status: split['S'],
+			statusNumber: split['Q'],
+			comment: split['M'],
 		};
-		if (php.trim($split[' ']) === '' &&
-            php.preg_match(/^[A-Z]{4}$/, $result['ssrCode'])
+		if (php.trim(split[' ']) === '' &&
+            php.preg_match(/^[A-Z]{4}$/, result['ssrCode'])
 		) {
-			return $result;
+			return result;
 		} else {
 			return null;
 		}
 	}
 
-	static splitPaxSsrWrappedText($line)  {
-		let $pattern, $symbols, $names, $split;
-
-		//         '                          WCHC NN 1  DISABLED LIKE A BUTTON ON -'.
-		//         '                                     SALE SCREEN',
-		$pattern = '                                     MMMMMMMMMMMMMMMMMMMMMMMMMMM';
-		$symbols = php.str_split($pattern, 1);
-		$names = php.array_combine($symbols, $symbols);
-		$split = StringUtil.splitByPosition($line, $pattern, $names, false);
-		if (php.trim($split[' ']) === '' && php.trim($split['M'])) {
-			return $split['M'];
+	static splitPaxSsrWrappedText(line)  {
+		//              '                          WCHC NN 1  DISABLED LIKE A BUTTON ON -'.
+		//              '                                     SALE SCREEN',
+		const pattern = '                                     MMMMMMMMMMMMMMMMMMMMMMMMMMM';
+		const symbols = php.str_split(pattern, 1);
+		const names = php.array_combine(symbols, symbols);
+		const split = StringUtil.splitByPosition(line, pattern, names, false);
+		if (php.trim(split[' ']) === '' && php.trim(split['M'])) {
+			return split['M'];
 		} else {
 			return '';
 		}
@@ -112,26 +106,25 @@ class SiParser
 		return php.preg_replace(/-$/, '', $mainLine)+$wrappedLine;
 	}
 
-	static parsePassengerLine($line)  {
-		let $paxPattern, $whitespace, $ssrPart, $ssr, $symbols, $names, $split, $result;
-
-		//            '    P 2. SMITH/MARGARETH  INFT KK 1  SMITH/KATHY 23APR17',
-		//            '    P 4. SMITH/MICHALE    VGML PN 1',
-		//            '    P11. LIBERMANE/ZIMIM| VGML NN 1',
-		$paxPattern = '    PNN. FFFFFFFFFFFFFFF| ';
-		$whitespace = php.str_repeat(' ', php.strlen($paxPattern));
-		$ssrPart = $whitespace+php.substr($line, php.strlen($whitespace));
-		if (!($ssr = this.parsePaxSsrLine($ssrPart))) {
+	static parsePassengerLine(line)  {
+		//                 '    P 2. SMITH/MARGARETH  INFT KK 1  SMITH/KATHY 23APR17',
+		//                 '    P 4. SMITH/MICHALE    VGML PN 1',
+		//                 '    P11. LIBERMANE/ZIMIM| VGML NN 1',
+		const paxPattern = '    PNN. FFFFFFFFFFFFFFF| ';
+		const whitespace = php.str_repeat(' ', php.strlen(paxPattern));
+		const ssrPart = whitespace+php.substr(line, php.strlen(whitespace));
+		const ssr = this.parsePaxSsrLine(ssrPart);
+		if (!ssr) {
 			return null;
 		}
-		$symbols = php.str_split($paxPattern, 1);
-		$names = php.array_combine($symbols, $symbols);
-		$split = StringUtil.splitByPosition($line, $paxPattern, $names, true);
-		$result = {
+		const $symbols = php.str_split(paxPattern, 1);
+		const $names = php.array_combine($symbols, $symbols);
+		const $split = StringUtil.splitByPosition(line, paxPattern, $names, true);
+		const $result = {
 			passengerNumber: $split['N'],
 			passengerName: $split['F'],
 			isNameTruncated: $split['|'] === '|',
-			ssrs: [$ssr],
+			ssrs: [ssr],
 		};
 		if ($split['P'] === 'P' && $split[' '] === ''  &&
             $split['.'] === '.' && php.intval($result['passengerNumber'])
@@ -142,42 +135,46 @@ class SiParser
 		}
 	}
 
-	static parseSegmentSsrBlock($linesLeft)  {
-		let $headerLine, $segments, $line, $segment, $paxes, $i, $j, $passenger, $ssr, $wrapped;
-
-		if (!($headerLine = php.array_shift($linesLeft))) {
-			return [[], $linesLeft];
+	static parseSegmentSsrBlock(linesLeft)  {
+		const headerLine = php.array_shift(linesLeft);
+		if (!headerLine) {
+			return [[], linesLeft];
 		}
-		if (php.trim($headerLine) !== 'SEGMENT\/PASSENGER RELATED') {
-			php.array_unshift($linesLeft, $headerLine);
-			return [[], $linesLeft];
+		if (php.trim(headerLine) !== 'SEGMENT/PASSENGER RELATED') {
+			php.array_unshift(linesLeft, headerLine);
+			return [[], linesLeft];
 		}
-		$segments = [];
-		while ($line = php.array_shift($linesLeft)) {
-			if ($segment = this.parseSegmentLine($line)) {
-				$paxes = [];
-				while ($line = php.array_shift($linesLeft)) {
-					$i = php.count($paxes) - 1;
-					$j = php.count(($paxes[$i] || {})['ssrs'] || []) - 1;
-					if ($passenger = this.parsePassengerLine($line)) {
-						$paxes.push($passenger);
-					} else if (!php.empty($paxes) && ($ssr = this.parsePaxSsrLine($line))) {
-						$paxes[$i]['ssrs'].push($ssr);
-					} else if (!php.empty($paxes) && ($wrapped = this.splitPaxSsrWrappedText($line))) {
-						$paxes[$i]['ssrs'][$j]['comment'] = this.unwrap($paxes[$i]['ssrs'][$j]['comment'], $wrapped);
+		const segments = [];
+		let line;
+		while (line = php.array_shift(linesLeft)) {
+			const segment = this.parseSegmentLine(line);
+			if (segment) {
+				const paxes = [];
+				let line;
+				while (line = php.array_shift(linesLeft)) {
+					const i = php.count(paxes) - 1;
+					const j = php.count((paxes[i] || {}).ssrs || []) - 1;
+					const passenger = this.parsePassengerLine(line);
+					let ssr, wrapped;
+					if (passenger) {
+						paxes.push(passenger);
+					} else if (!php.empty(paxes) && (ssr = this.parsePaxSsrLine(line))) {
+						paxes[i].ssrs.push(ssr);
+					} else if (!php.empty(paxes) && (wrapped = this.splitPaxSsrWrappedText(line))) {
+						paxes[i].ssrs[j].comment = this.unwrap(paxes[i].ssrs[j].comment, wrapped);
 					} else {
-						php.array_unshift($linesLeft, $line);
+						php.array_unshift(linesLeft, line);
 						break;
 					}
 				}
-				$segment['passengers'] = $paxes;
-				$segments.push($segment);
+				segment.passengers = paxes;
+				segments.push(segment);
 			} else {
-				php.array_unshift($linesLeft, $line);
+				php.array_unshift(linesLeft, line);
 				break;
 			}
 		}
-		return [$segments, $linesLeft];
+		return [segments, linesLeft];
 	}
 
 	// '/P/LV/X2345/LV/XXXXXXX/F/11MAR22/IVANOV/ZHORA/D/D-1LIBERMANE/LEPIN',
