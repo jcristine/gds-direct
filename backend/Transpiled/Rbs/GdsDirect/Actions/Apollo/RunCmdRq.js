@@ -666,8 +666,16 @@ const RunCmdRq = ({
 	};
 
 	const makeStorePricingCmd = async (pnr, aliasData, needsColonN) => {
-		let adultPtc = aliasData.ptc || 'ADT';
-		const mods = aliasData.pricingModifiers;
+		let adultPtc = aliasData.ptc;
+		const mods = [];
+		for (const mod of aliasData.pricingModifiers) {
+			if (mod.type === 'passengers') {
+				adultPtc = mod.parsed.passengerProperties[0].ptc;
+			} else {
+				mods.push(mod);
+			}
+		}
+		adultPtc = adultPtc || 'ADT';
 		if (needsColonN && adultPtc === 'ITX') {
 			adultPtc = 'ADT';
 		}
@@ -690,7 +698,9 @@ const RunCmdRq = ({
 			const ageGroup = PtcUtil.getPaxAgeGroup(pax, tripEndDt);
 			return ['child', 'infant'].includes(ageGroup);
 		};
-		cmd += '/Z0';
+		if (!mods.some(m => m.type === 'commission')) {
+			cmd += '/Z0';
+		}
 		if (Fp.all(needsAccompanying, pnr.getPassengers())) {
 			cmd += '/ACC';
 		}
