@@ -490,6 +490,64 @@ let provide_parse = () => {
 		},
 	});
 
+	list.push({
+		title: 'INF example, no taxes',
+		input: [
+		    'PSGR TYPE  ADT - 01',
+		    '     CXR RES DATE  FARE BASIS      NVB   NVA    BG',
+		    ' ILO',
+		    'XMNL PR  O   26NOV O9FSTUSS              10DEC 25K',
+		    ' SIN PR  O   26NOV O9FSTUSS              10DEC 25K',
+		    'XMNL PR  T   30NOV TAPTSG          30NOV 30NOV 25K',
+		    ' ILO PR  T   30NOV TAPTSG          30NOV 30NOV 25K',
+		    'FARE  USD    186.00 EQUIV PHP      9713',
+		    'TAX   PHP      1620PH PHP       950LI PHP      2749XT',
+		    'TOTAL PHP     15032',
+		    'ADT-01  O9FSTUSS TAPTSG',
+		    ' ILO PR X/MNL PR SIN89.50PR X/MNL PR ILO96.50NUC186.00',
+		    ' END ROE1.00',
+		    'XT PHP1236SG PHP406L7 PHP230OP PHP53YR PHP824YQ',
+		    'ENDOS*SEG1/2*USS19/NONEND/NONREF/FARE RULES APPLY',
+		    'ENDOS*SEG3/4*ECONOMY SAVER/FARE RULES APPLY',
+		    'TKT/TL15SEP19/2359',
+		    'RATE USED 1USD-52.22PHP',
+		    'ATTN*VALIDATING CARRIER - PR',
+		    '  ',
+		    'PSGR TYPE  INF - 02',
+		    '     CXR RES DATE  FARE BASIS      NVB   NVA    BG',
+		    ' ILO',
+		    'XMNL PR  O   26NOV O9FSTUSS/IN90         10DEC 10K',
+		    ' SIN PR  O   26NOV O9FSTUSS/IN90         10DEC 10K',
+		    'XMNL PR  T   30NOV TAPTSG/IN90     30NOV 30NOV 10K',
+		    ' ILO PR  T   30NOV TAPTSG/IN90     30NOV 30NOV 10K',
+		    'FARE  USD     19.00 EQUIV PHP       993',
+		    'TOTAL PHP       993',
+		    'INF-01  O9FSTUSS/IN90 TAPTSG/IN90',
+		    ' ILO PR X/MNL PR SIN8.95PR X/MNL PR ILO9.65NUC18.60END ROE1.00',
+		    'ENDOS*SEG1/2*USS19/NONEND/NONREF/FARE RULES APPLY',
+		    'ENDOS*SEG3/4*ECONOMY SAVER/FARE RULES APPLY',
+		    'TKT/TL15SEP19/2359',
+		    'RATE USED 1USD-52.22PHP',
+		    'ATTN*EACH INF REQUIRES ACCOMPANYING ADT PASSENGER',
+		    'ATTN*VALIDATING CARRIER - PR',
+		    '          205.00          10706       5319             16025TTL',
+		    '                                                               ',
+		    'ATTN*AIR EXTRAS AVAILABLE - SEE WP*AE',
+		    'ATTN*BAGGAGE INFO AVAILABLE - SEE WP*BAG',
+		    '.',
+		].join('\n'),
+		output: {
+			pqList: [
+				{
+					"totals": {
+						"baseFare": {"currency": "USD", "amount": "186.00"},
+						"total": {"currency": "PHP", "amount": "15032", "ptc": "ADT"},
+					},
+				},
+			],
+		},
+	});
+
 	return list.map(a => [a]);
 };
 

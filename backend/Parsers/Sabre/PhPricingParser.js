@@ -73,14 +73,16 @@ const parseFareLine = (line) => {
 };
 
 // "TAX   PHP       974US PHP       294AY PHP     17094XT",
+// should not match this: 'TOTAL PHP       993',
 const parseMainTaxes = (linesLeft) => {
 	const mainTaxLine = linesLeft.shift().replace(/^TAX/, '');
-	const mainTaxes = matchAll(/\s*([A-Z]{3})\s*(\d*\.?\d+)([A-Z0-9]{2})/, mainTaxLine)
-		.map(([, currency, amount, taxCode]) => ({taxCode, currency, amount}));
-	if (mainTaxes.length === 0) {
+	const matches = matchAll(/\s*([A-Z]{3})\s*(\d*\.?\d+)([A-Z0-9]{2})/, mainTaxLine);
+	if (matches.length === 0 || matches[0].index > 0) {
 		// no taxes line, possible for infant
 		linesLeft.unshift(mainTaxLine);
 	}
+	const mainTaxes = matches
+		.map(([, currency, amount, taxCode]) => ({taxCode, currency, amount}));
 	return [mainTaxes, linesLeft];
 };
 
@@ -181,8 +183,13 @@ const parseSingleBlock = (linesLeft) => {
 	let mainTaxes;
 	[mainTaxes, linesLeft] = parseMainTaxes(linesLeft);
 
-	const [, totalCurrency, totalAmount] = linesLeft.shift()
+	const totalLine = linesLeft.shift();
+	const totalMatch = totalLine
 		.match(/^TOTAL\s+([A-Z]{3})\s*(\d*\.?\d+)\s*(.*)/);
+	if (!totalMatch) {
+		return null;
+	}
+	const [, totalCurrency, totalAmount] = totalMatch;
 
 	const fbLine = linesLeft.shift() || '';
 	const fareBasisInfo = PricingCommonHelper.parseFareBasisSummary(fbLine);
