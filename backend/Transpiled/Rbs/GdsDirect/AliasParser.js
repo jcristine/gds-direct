@@ -98,7 +98,7 @@ class AliasParser {
 		if (!php.preg_match(/^PRICE(MIX|)([A-Z0-9]{3}|)\/?(.*)$/, $cmd, $matches = [])) {
 			return Promise.resolve(null);
 		}
-		let [$_, mix, $ptc, $modsPart] = $matches;
+		let [$_, mix, inputPtc, modsPart] = $matches;
 		let leadData = null;
 		if (stateful.getLeadId()) {
 			leadData = await stateful.getGdRemarkData();
@@ -111,24 +111,30 @@ class AliasParser {
 				{ageGroup: 'infant', quantity: 1},
 			];
 		}
-		const isAll = $ptc === 'ALL';
-		if (!$ptc || isAll) {
-			$ptc = 'ADT';
+		if (inputPtc === 'FXD') {
+			// could probably just check that PTC is in the fare family
+			// whitelist, and treat it as just a modifier if it's not...
+			modsPart = modsPart ? 'FXD/' + modsPart : 'FXD';
+			inputPtc = '';
+		}
+		const isAll = inputPtc === 'ALL';
+		if (!inputPtc || isAll) {
+			inputPtc = 'ADT';
 		}
 		const ptcs = [];
 		for (const group of requestedAgeGroups) {
-			const ptc = await PtcUtil.convertPtcByAgeGroup($ptc, group.ageGroup, 7);
+			const ptc = await PtcUtil.convertPtcByAgeGroup(inputPtc, group.ageGroup, 7);
 			for (let i = 0; i < (group.quantity || 1); ++i) {
 				ptcs.push(ptc);
 			}
 		}
 		return {
-			ptc: $ptc,
+			ptc: inputPtc,
 			isMix: mix ? true : false,
 			isAll: isAll,
 			requestedAgeGroups: requestedAgeGroups,
 			ptcs: ptcs,
-			pricingModifiers: AtfqParser.parsePricingModifiers($modsPart),
+			pricingModifiers: AtfqParser.parsePricingModifiers(modsPart),
 		};
 	}
 
