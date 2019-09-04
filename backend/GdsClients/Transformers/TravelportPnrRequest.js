@@ -353,7 +353,8 @@ const makeStorePriceMods = (storePricingParams) => {
 				}
 			}
 		} else {
-			throw Rej.NotImplemented.makeExc('Unsupported T:$B modifier - ' + type + ' - ' + raw);
+			const reject = !type ? Rej.BadRequest : Rej.NotImplemented;
+			throw reject.makeExc('Unsupported T:$B modifier - ' + type + ' - ' + raw);
 		}
 	}
 	if (xmlModSegSelection.SegSelection[1].SegRangeAry.length === 0) {
