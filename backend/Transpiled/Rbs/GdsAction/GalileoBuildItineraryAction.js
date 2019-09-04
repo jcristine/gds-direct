@@ -1,5 +1,5 @@
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
-const ItineraryParser = require('../../Gds/Parsers/Galileo/Pnr/ItineraryParser.js');
+const ItineraryParser = require('gds-utils/src/text_format_processing/galileo/pnr/ItineraryParser.js');
 const TravelportBuildItineraryViaXml = require('./TravelportBuildItineraryActionViaXml');
 const moment = require('moment');
 
@@ -34,7 +34,7 @@ const parseItinerary = output => {
 	output = php.preg_replace(/^ {4}/, ' 0. ', output);
 	wrapped = StringUtil.wrapLinesAt(output, 64);
 	parsed = ItineraryParser.parse(wrapped);
-	return parsed['parsedData'] || [];
+	return parsed.segments || [];
 };
 
 const GalileoBuildItineraryAction = ({

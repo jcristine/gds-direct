@@ -3,17 +3,15 @@
 
 const GalileoGetFlightServiceInfoAction = require('../../../../../backend/Transpiled/Rbs/GdsAction/GalileoGetFlightServiceInfoAction.js');
 const FormatAdapter = require('../../../../../backend/Transpiled/Rbs/IqControllers/FormatAdapter.js');
-const ItineraryParser = require('../../../../../backend/Transpiled/Gds/Parsers/Galileo/Pnr/ItineraryParser.js');
+const ItineraryParser = require('gds-utils/src/text_format_processing/galileo/pnr/ItineraryParser.js');
 const AnyGdsStubSession = require('../../Rbs/TestUtils/AnyGdsStubSession.js');
 
 const php = require('../../php.js');
 class GalileoGetFlightServiceInfoActionTest extends require('../../Lib/TestCase.js')
 {
-	static makeFullItinerary($baseDate, $dump)  {
-		let $parsed;
-
-		$parsed = ItineraryParser.parse($dump);
-		return FormatAdapter.adaptApolloItineraryParseForClient($parsed['parsedData'], $baseDate);
+	static makeFullItinerary(baseDate, dump)  {
+		const parsed = ItineraryParser.parse(dump);
+		return FormatAdapter.adaptApolloItineraryParseForClient(parsed.segments, baseDate);
 	}
 
 	provideTestCases()  {

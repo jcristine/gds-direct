@@ -1,7 +1,7 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const GdsPassengerBlockParser = require('../../../../Gds/Parsers/Common/GdsPassengerBlockParser.js');
-const ItineraryParser = require('./ItineraryParser.js');
+const ItineraryParser = require('gds-utils/src/text_format_processing/galileo/pnr/ItineraryParser.js');
 
 /**
  * parse text before first explicit section in *R
@@ -68,8 +68,8 @@ class HeadParser
 			} else if (!php.empty($asPaxes['parsedData']['passengerList'])) {
 				$nameRecords = $asPaxes['parsedData']['passengerList'];
 				$lines = $asPaxes['textLeft'] ? StringUtil.lines($asPaxes['textLeft']) : [];
-			} else if (!php.empty($asItinerary['parsedData'])) {
-				$itinerary = $asItinerary['parsedData'];
+			} else if (!php.empty($asItinerary.segments)) {
+				$itinerary = $asItinerary.segments;
 				$lines = $asItinerary['textLeft'] ? StringUtil.lines($asItinerary['textLeft']) : [];
 				$headerData['skippedLines'] = php.array_merge($headerData['skippedLines'] || [], $lines);
 				break;
