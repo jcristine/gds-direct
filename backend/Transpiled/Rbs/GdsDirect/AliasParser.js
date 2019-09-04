@@ -5,6 +5,7 @@ const ParsersController = require('../../Rbs/IqControllers/ParsersController.js'
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CmsClient = require("../../../IqClients/CmsClient");
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 /**
  * provides functions to parse our custom formats
@@ -123,7 +124,10 @@ class AliasParser {
 		}
 		const ptcs = [];
 		for (const group of requestedAgeGroups) {
-			const ptc = await PtcUtil.convertPtcByAgeGroup(inputPtc, group.ageGroup, 7);
+			const ptc = await PtcUtil.convertPtcByAgeGroup(inputPtc, group.ageGroup, 7)
+				.catch(coverExc([Rej.NotFound], exc => {
+					return Rej.BadRequest('Invalid PTC - ' + exc.message);
+				}));
 			for (let i = 0; i < (group.quantity || 1); ++i) {
 				ptcs.push(ptc);
 			}
