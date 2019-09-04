@@ -1,51 +1,25 @@
-
 const php = require('klesun-node-tools/src/Transpiled/php.js');
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 
-
-
-class StringUtil
-{
-	/*
-     * //          ' 2 UA 999S 19DEC EWRBRU HK1   635P  750A|*      SA/SU   E  1'
-     * $pattern = 'NNAAAFFFFS_DDDDDCCCCRRRQQQQQTTTTTTTZZZZZ_KYYYYYYYYYYYLLLLUUUUUUU';
-     * @param $str -- string we want to split
-     * @param $pattern -- marker string to define split positions
-     */
-	static splitByPosition($str, $pattern, $names = null, $trim = false)  {
-		let $letters, $position, $markerChar, $result, $name;
-		if (!$names) {
-			const symbols = php.str_split($pattern, 1);
-			$names = php.array_combine(symbols, symbols);
-		}
-		$letters = [];
-		$position = 0;
-		for ($markerChar of php.str_split($pattern)) {
-			if (php.array_key_exists($markerChar, $letters)) {
-				$letters[$markerChar] += php.mb_substr($str, $position, 1);
-			} else {
-				$letters[$markerChar] = php.mb_substr($str, $position, 1);
-			}
-			++$position;}
-		$result = {};
-		for ([$markerChar, $name] of Object.entries($names)) {
-			$result[$name] = $trim ? php.trim($letters[$markerChar]) : $letters[$markerChar];}
-		return $result;
+class StringUtil {
+	static splitByPosition($str, $pattern, $names = null, $trim = false) {
+		return ParserUtil.splitByPosition($str, $pattern, $names, $trim);
 	}
 
-	static startsWith($haystack, $needle)  {
+	static startsWith($haystack, $needle) {
 		let $length;
 		$length = php.strlen($needle);
 		return (php.substr($haystack, 0, $length) === $needle);
 	}
 
-	static endsWith($haystack, $needle)  {
+	static endsWith($haystack, $needle) {
 		let $length, $start;
 		$length = php.strlen($needle);
-		$start  = $length * -1;
+		$start = $length * -1;
 		return (php.substr($haystack, $start) === $needle);
 	}
 
-	static lines($str)  {
+	static lines($str) {
 		return $str.split(/\r\n|\n|\r/);
 	}
 
@@ -53,52 +27,42 @@ class StringUtil
      * Basically, syntactic sugar to glue multiple lines together avoiding to write
      * PHP_EOL on each line
      */
-	static multiline()  {
+	static multiline() {
 		let $args;
 		$args = arguments;
 		return php.implode(php.PHP_EOL, $args);
 	}
 
-	static contains($str, $substr)  {
+	static contains($str, $substr) {
 		return php.strpos($str, $substr) !== false;
 	}
 
-	static wrapLinesAt($str, $wrapAt)  {
-		let $lines, $result, $line, $subLine;
-		$lines = this.lines($str);
-		$result = [];
-		for ($line of $lines) {
-			if (php.mb_strlen($line) > $wrapAt) {
-				for ($subLine of php.str_split($line, $wrapAt)) {
-					$result.push($subLine);}
-			} else {
-				$result.push($line);
-			}}
-		return php.implode(php.PHP_EOL, $result);
+	static wrapLinesAt($str, $wrapAt) {
+		return ParserUtil.wrapLinesAt($str, $wrapAt);
 	}
 
-	static getKeysInPattern($pattern, $keys)  {
+	static getKeysInPattern($pattern, $keys) {
 		return php.array_filter($keys, ($key) => {
-			return php.strpos($pattern, '{'+$key+'}') !== false;
+			return php.strpos($pattern, '{' + $key + '}') !== false;
 		});
 	}
 
-	static format($pattern, $params)  {
+	static format($pattern, $params) {
 		let $key, $value;
 		for ([$key, $value] of Object.entries($params || {})) {
-			$pattern = php.str_replace('{'+$key+'}', $value, $pattern);
+			$pattern = php.str_replace('{' + $key + '}', $value, $pattern);
 		}
 		return $pattern;
 	}
 
 	// StringUtil::unicode('\u2665') --> ♥
-	static unicode($code)  {
-		return php.json_decode('\"'+$code+'\"', true);
+	static unicode($code) {
+		return php.json_decode('\"' + $code + '\"', true);
 	}
 
 	// Helpers for formatLine
 
-	static findPositions($pattern, $data)  {
+	static findPositions($pattern, $data) {
 		let $map, $literals, $i, $char;
 		$map = [];
 		$literals = [];
@@ -118,30 +82,34 @@ class StringUtil
 				}
 				$literals[$char].push($i);
 			}
-			++$i;}
+			++$i;
+		}
 		return {
 			map: $map,
 			literals: $literals,
 		};
 	}
 
-	static makeStrMap($map)  {
+	static makeStrMap($map) {
 		let $res, $char, $positions, $position;
 		$res = [];
 		for ([$char, $positions] of Object.entries($map['literals'])) {
 			for ($position of Object.values($positions)) {
-				$res[$position] = {type: 'literal', data: $char};}}
+				$res[$position] = {type: 'literal', data: $char};
+			}
+		}
 		for ([$char, $positions] of Object.entries($map['map'])) {
 			$res[$positions['firstPosition']] = {
 				type: 'var',
 				length: php.isset($positions['lastPosition']) ? ($positions['lastPosition'] - $positions['firstPosition'] + 1) : 1,
 				data: $char,
-			};}
+			};
+		}
 		php.ksort($res);
 		return $res;
 	}
 
-	static formatLine($pattern, $data)  {
+	static formatLine($pattern, $data) {
 		let $res, $positions, $i, $length, $str, $direction, $padding;
 		$res = '';
 		$positions = this.makeStrMap(this.findPositions($pattern, $data));
@@ -171,7 +139,7 @@ class StringUtil
 		return $res;
 	}
 
-	static padLines($dump, $length, $padding, $direction)  {
+	static padLines($dump, $length, $padding, $direction) {
 		let $lines, $padLine;
 		$lines = this.lines($dump);
 		$padLine = ($str) => {
