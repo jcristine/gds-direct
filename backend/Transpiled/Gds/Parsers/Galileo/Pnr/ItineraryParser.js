@@ -13,28 +13,26 @@ class ItineraryParser {
 			.join('/');
 	}
 
-	static decodeDayOffset($token) {
+	static decodeDayOffset(token) {
 
-		if (php.trim($token) == '') {
+		if (php.trim(token) == '') {
 			return 0;
-		} else if ($token == '#') {
+		} else if (token == '#') {
 			return 1;
-		} else if ($token == '-') {
+		} else if (token == '-') {
 			return -1;
-		} else if ($token == '*') {
+		} else if (token == '*') {
 			return +2;
-		} else if (php.intval($token)) {
-			return php.intval($token);
+		} else if (php.intval(token)) {
+			return php.intval(token);
 		} else {
-			throw new Error('Unknown day offset [' + $token + ']');
+			throw new Error('Unknown day offset [' + token + ']');
 		}
 	}
 
 	// ' 2. ET  921 M  22MAR ADDACC HK1   840A  1120A O*         TH  1',
 	static parseSegmentLine($line) {
-		let $regex, $matches, $eticket, $confirmedByAirline;
-
-		$regex =
+		const regex =
 			'^' +
 			'(?<segmentNumber>[\\s\\d]{1,2})\\.' +
 			'\\s+' +
@@ -70,42 +68,47 @@ class ItineraryParser {
 			'(?<unexpectedText>.*)?' +
 			'$';
 
-		if (php.preg_match('/' + $regex + '/', $line, $matches = [])) {
-			$eticket = php.array_key_exists('eticket', $matches) ? php.trim($matches['eticket']) : false;
-			$confirmedByAirline = $matches['confirmedByAirline'] === '*';
+		let matches;
+		if (php.preg_match('/' + regex + '/', $line, matches = [])) {
+			const eticket = php.array_key_exists('eticket', matches)
+				? php.trim(matches.eticket) : false;
+			const confirmedByAirline = matches.confirmedByAirline === '*';
 			return {
-				segmentType: php.empty($matches['departureTime'])
+				segmentType: php.empty(matches.departureTime)
 					? this.SEGMENT_TYPE_FAKE
 					: this.SEGMENT_TYPE_ITINERARY_SEGMENT,
-				segmentNumber: php.intval(php.trim($matches['segmentNumber'])),
-				airline: php.trim($matches['airline']),
-				flightNumber: php.trim($matches['flightNumber']),
-				bookingClass: php.trim($matches['bookingClass'] || ''),
+				segmentNumber: php.intval(php.trim(matches.segmentNumber)),
+				airline: php.trim(matches.airline),
+				flightNumber: php.trim(matches.flightNumber),
+				bookingClass: php.trim(matches.bookingClass || ''),
 				departureDate: {
-					raw: $matches['departureDay'] + $matches['departureMonth'],
-					parsed: CommonParserHelpers.parsePartialDate($matches['departureDay'] + $matches['departureMonth']),
+					raw: matches.departureDay + matches.departureMonth,
+					parsed: CommonParserHelpers.parsePartialDate(matches.departureDay + matches.departureMonth),
 				},
-				departureAirport: php.trim($matches['departureAirport']),
-				destinationAirport: php.trim($matches['destinationAirport']),
-				segmentStatus: php.trim($matches['segmentStatus']),
-				seatCount: php.intval(php.trim($matches['seatCount'])),
-				departureTime: php.empty($matches['departureTime']) ? null : {
-					raw: php.trim($matches['departureTime']),
-					parsed: CommonParserHelpers.decodeApolloTime(php.trim($matches['departureTime'])),
+				departureAirport: php.trim(matches.departureAirport),
+				destinationAirport: php.trim(matches.destinationAirport),
+				segmentStatus: php.trim(matches.segmentStatus),
+				seatCount: php.intval(php.trim(matches.seatCount)),
+				departureTime: php.empty(matches.departureTime) ? null : {
+					raw: php.trim(matches.departureTime),
+					parsed: CommonParserHelpers.decodeApolloTime(php.trim(matches.departureTime)),
 				},
-				destinationTime: php.empty($matches['destinationTime']) ? null : {
-					raw: php.trim($matches['destinationTime']),
-					parsed: CommonParserHelpers.decodeApolloTime(php.trim($matches['destinationTime'])),
+				destinationTime: php.empty(matches['destinationTime']) ? null : {
+					raw: php.trim(matches['destinationTime']),
+					parsed: CommonParserHelpers.decodeApolloTime(php.trim(matches.destinationTime)),
 				},
-				dayOffset: this.decodeDayOffset(php.trim($matches['dayOffset'] || '')),
-				confirmedByAirline: $confirmedByAirline,
+				dayOffset: this.decodeDayOffset(php.trim(matches.dayOffset || '')),
+				confirmedByAirline: confirmedByAirline,
 				daysOfWeek: {
-					raw: (php.isset($matches['days']) && $matches['days']) ? php.trim($matches['days']) : '',
-					parsed: (php.isset($matches['days']) && $matches['days']) ? this.decodeDaysOfWeek(php.trim($matches['days'])) : null,
+					raw: php.isset(matches.days) && matches.days
+						? php.trim(matches.days) : '',
+					parsed: php.isset(matches.days) && matches.days
+						? this.decodeDaysOfWeek(php.trim(matches['days'])) : null,
 				},
-				eticket: $eticket,
-				marriage: php.trim($matches['marriage'] || ''),
-				unexpectedText: php.array_key_exists('unexpectedText', $matches) ? $matches['unexpectedText'] : false,
+				eticket: eticket,
+				marriage: php.trim(matches.marriage || ''),
+				unexpectedText: php.array_key_exists('unexpectedText', matches)
+					? matches.unexpectedText : false,
 				raw: $line,
 			};
 		} else {
@@ -381,4 +384,5 @@ ItineraryParser.SEGMENT_TYPE_CAR = 'CAR';
 ItineraryParser.SEGMENT_TYPE_FAKE = 'FAKE'; // segment without times
 ItineraryParser.SEGMENT_TYPE_ITINERARY_SEGMENT = 'SEGMENT_TYPE_ITINERARY_SEGMENT';
 ItineraryParser.SEGMENT_TYPE_HOTEL = 'HOTEL';
+
 module.exports = ItineraryParser;
