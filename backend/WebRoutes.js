@@ -11,7 +11,7 @@ const CompletionData = require('./HttpControllers/CompletionData.js');
 const Emc = require('./LibWrappers/Emc.js');
 const GdsSessionController = require('./HttpControllers/GdsSessionController.js');
 const TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.js');
-const {Forbidden, BadReqeust, LoginTimeOut} = require('klesun-node-tools/src/Rej.js');
+const {Forbidden, BadRequest, LoginTimeOut} = require('klesun-node-tools/src/Rej.js');
 const UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.js');
 const Db = require('./Utils/Db.js');
 const Diag = require('./LibWrappers/Diag.js');
@@ -151,7 +151,7 @@ app.get('/checkEmcSessionId', toHandleHttp(async rqBody => {
 }));
 app.post('/keepAliveEmc', toHandleHttp(async (rqBody) => {
 	if (!rqBody.emcSessionId) {
-		return BadReqeust('emcSessionId parameter is mandatory');
+		return BadRequest('emcSessionId parameter is mandatory');
 	} else if (rqBody.isForeignProjectEmcId) {
 		return Promise.resolve({message: 'Foreign Project EMC id - success by default'});
 	} else {
