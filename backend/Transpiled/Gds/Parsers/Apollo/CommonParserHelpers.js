@@ -3,28 +3,11 @@ const {
 	date,
 	intval,
 	preg_match,
-	str_pad,
-	STR_PAD_LEFT,
-	strtotime,
-	strval,
-	substr,
 } = require('klesun-node-tools/src/Transpiled/php.js');
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 
 class CommonParserHelpers
 {
-	getMonthIndexList() {
-		return {JAN: 1,FEB: 2,MAR: 3,APR: 4,MAY: 5,JUN: 6,JUL: 7,AUG: 8,SEP: 9,OCT: 10,NOV: 11,DEC: 12};
-	}
-
-	apolloMonthToNumber($str) {
-		const $monthIndex = this.getMonthIndexList();
-		if (array_key_exists($str, $monthIndex)) {
-			return $monthIndex[$str];
-		} else {
-        	return null;
-		}
-	}
-
 	numberToApolloDayOfWeek($index) {
 		$index = intval($index);
 		const $dayOfWeekAbbr = {[1]: 'MO',[2]: 'TU',[3]: 'WE',[4]: 'TH',[5]: 'FR',[6]: 'SA',[7]: 'SU'};
@@ -36,90 +19,15 @@ class CommonParserHelpers
 	}
 
 	apolloDayOfWeekToNumber($str) {
-		const $dayOfWeekIndex = {MO: 1,TU: 2,WE: 3,TH: 4,FR: 5,SA: 6,SU: 7};
-		if (array_key_exists($str, $dayOfWeekIndex)) {
-        	return $dayOfWeekIndex[$str];
-		} else {
-        	return null;
-		}
-	}
-
-	parseApollo12hTime($timeStr) {
-		const $paddedTime = str_pad($timeStr.trim(), 5, '0', STR_PAD_LEFT);
-		const $timeOfDayStr = substr($paddedTime, 4);
-		let $hours = substr($paddedTime, 0, 2);
-		$hours = $hours === '00' ? '12' : $hours;
-		const $minutes = substr($paddedTime, 2, 2);
-		const $hours12ModRes = this.convertApolloTo12hModifier($timeOfDayStr.trim());
-		if (!$hours12ModRes) {
-			return null;
-		}
-		const $hours12Mod = $hours12ModRes;
-		const $hours12 = $hours + ':' + $minutes + ' ' + $hours12Mod;
-		const $timestamp = strtotime($hours12);
-		if ($timestamp) {
-			return date('H:i', $timestamp);
-		} else if ($hours > 12 && $hours12Mod === 'AM'){
-			// '1740A', agent mistyped, but I guess there is no harm parsing it...
-			return this.parseApollo24hTime($hours + $minutes);
-		} else {
-			return null;
-		}
-	}
-
-	parseApollo24hTime($timeStr) {
-		const $paddedTime = str_pad($timeStr.trim(), 4, '0', STR_PAD_LEFT);
-		const $hours = substr($paddedTime, 0, 2);
-		const $minutes = substr($paddedTime, 2, 2);
-		return $hours + ':' + $minutes;
+		return ParserUtil.gdsDayOfWeekToNumber($str);
 	}
 
 	decodeApolloTime($timeStr) {
-		$timeStr = $timeStr.trim();
-		if (preg_match(/^\d+[A-Z]$/, $timeStr)) {
-			return this.parseApollo12hTime($timeStr);
-		} else if (preg_match(/^\d+$/, $timeStr)) {
-			return this.parseApollo24hTime($timeStr);
-		} else {
-        	return null;
-		}
+		return ParserUtil.decodeGdsTime($timeStr);
 	}
 
-	convertApolloTo12hModifier($timeOfDayStr) {
-		if ($timeOfDayStr == 'P' || $timeOfDayStr == 'N') {
-			// PM or noon
-			return 'PM';
-		} else if ($timeOfDayStr == 'A' || $timeOfDayStr == 'M') {
-			// AM or midnight
-			return 'AM';
-		} else {
-			return null;
-		}
-	}
-
-	/**
-     * Accepts date in format '09FEB' of '9FEB'
-     * and returns in format 'm-d'
-     */
 	parsePartialDate($date) {
-		$date = str_pad($date, 5, '0', STR_PAD_LEFT);
-		let $tokens;
-		if ($tokens = preg_match(/^(?<day>[0-9]{2})(?<month>[A-Z]{3})$/, $date)) {
-			const $day = $tokens['day'];
-			const $monthRes = this.apolloMonthToNumber($tokens['month']);
-			if ($monthRes) {
-				const $month = this.apolloMonthToNumber($tokens['month']);
-				// Of course, it can be any year, but it's the easiest way to
-				// validate date: 2016 is a leap year, so if date is valid, it
-				// exists in 2016
-				const $fullDate =
-                    '2016-' + str_pad(strval($month), 2, '0', STR_PAD_LEFT) + '-' + str_pad(strval($day), 2, '0', STR_PAD_LEFT);
-				if ($fullDate == date('Y-m-d', strtotime($fullDate))) {
-					return date('m-d', strtotime($fullDate));
-				}
-			}
-		}
-		return null;
+		return ParserUtil.parsePartialDate($date);
 	}
 
 	/**
