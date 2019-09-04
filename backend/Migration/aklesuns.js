@@ -552,6 +552,15 @@ module.exports.migrations = [
 		},
 	},
 	{
+		name: 'GRECT/2019.08.06015-create-role-NEW_GDS_DIRECT_CAN_EDIT_D_MIX_MODIFIERS',
+		perform: async (db) => {
+			const emc = await Emc.getClient();
+			return emc.addRole([
+				{"name": "NEW_GDS_DIRECT_CAN_EDIT_D_MIX_MODIFIERS", "project": "GDSD", "description": "Grants users access to $D/MIX config page and ability to modify it"},
+			]);
+		},
+	},
+	{
 		name: 'GRECT/2019.07.30001-create-local-diag-table-2',
 		perform: async (db) => db.query([
 			'CREATE TABLE local_diag (',
