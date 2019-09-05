@@ -90,80 +90,70 @@ class FareConstructionParser {
 		};
 	}
 
-	static collectSegment($tokens) {
-		let $segment, $token, $lexeme, $data, $oceanic, $starMark, $cities, $amount, $number, $faredMark, $flags, $city,
-			$from, $to, $mileage;
-		$segment = {};
-		for ($token of Object.values($tokens)) {
-			$lexeme = $token['lexeme'];
-			$data = $token['data'];
-			if ($lexeme === 'segment') {
-				$segment['airline'] = $data['airline'];
-				$segment['flags'] = this.parseFlags($data['flags']);
-				$segment['destination'] = $data['destination'];
-				if ($oceanic = $data['oceanicFlight']) {
-					$segment['oceanicFlight'] = $oceanic;
+	static collectSegment(tokens) {
+		const segment = {};
+		for (const token of tokens) {
+			const lexeme = token.lexeme;
+			const data = token.data;
+			if (lexeme === 'segment') {
+				segment.airline = data.airline;
+				segment.flags = this.parseFlags(data.flags);
+				segment.destination = data.destination;
+				const oceanic = data.oceanicFlight;
+				if (oceanic) {
+					segment.oceanicFlight = oceanic;
 				}
-				if ($starMark = $data['starMark'] || null) {
-					$segment['hasStarMark'] = true;
+				const starMark = data.starMark || null;
+				if (starMark) {
+					segment.hasStarMark = true;
 				}
-			} else if ($lexeme === 'fare') {
-				if ($data['mileagePrinciple']) {
-					$segment['mileageSurcharge'] = $data['mileagePrinciple'];
+			} else if (lexeme === 'fare') {
+				if (data.mileagePrinciple) {
+					segment.mileageSurcharge = data.mileagePrinciple;
 				}
-				if ($data['from']) {
-					$segment['fareCities'] = [$data['from'], $data['to']];
+				if (data.from) {
+					segment.fareCities = [data.from, data.to];
 				}
-				$segment['fare'] = $data['amount'];
-			} else if ($lexeme === 'fuelSurcharge') {
-				[$cities, $amount] = $data;
-				$segment['fuelSurcharge'] = this.addDecimal($segment['fuelSurcharge'] || '0', $amount);
-				$segment['fuelSurchargeParts'] = $segment['fuelSurchargeParts'] || [];
-				$segment['fuelSurchargeParts'].push($amount);
-			} else if ($lexeme === 'stopoverFee') {
-				let excessMark;
-				[excessMark, $number, $amount] = $data;
-				$segment['stopoverFees'] = $segment['stopoverFees'] || [];
-				$segment['stopoverFees'].push({
+				segment.fare = data.amount;
+			} else if (lexeme === 'fuelSurcharge') {
+				const [cities, amount] = data;
+				segment.fuelSurcharge = this.addDecimal(segment.fuelSurcharge || '0', amount);
+				segment.fuelSurchargeParts = segment.fuelSurchargeParts || [];
+				segment.fuelSurchargeParts.push(amount);
+			} else if (lexeme === 'stopoverFee') {
+				const [excessMark, $number, amount] = data;
+				segment.stopoverFees = segment['stopoverFees'] || [];
+				segment.stopoverFees.push({
 					excessMark: excessMark || undefined,
 					stopoverNumber: $number,
-					amount: $amount,
+					amount: amount,
 				});
-			} else if ($lexeme === 'fareBasis') {
-				$segment['fareBasis'] = $data[0];
-				$segment['ticketDesignator'] = $data[1] || null;
-			} else if ($lexeme === 'nextDeparture') {
-				[$faredMark, $flags, $city] = $data;
-				$segment['nextDeparture'] = {
-					fared: $faredMark === '/',
-					flags: this.parseFlags($flags),
-					city: $city,
+			} else if (lexeme === 'fareBasis') {
+				segment.fareBasis = data[0];
+				segment.ticketDesignator = data[1] || null;
+			} else if (lexeme === 'nextDeparture') {
+				const [faredMark, flags, city] = data;
+				segment.nextDeparture = {
+					fared: faredMark === '/',
+					flags: this.parseFlags(flags),
+					city: city,
 				};
-			} else if ($lexeme === 'fareClassDifference') {
-				[$from, $to, $mileage, $amount] = $data;
-				$segment['fareClassDifferences'] = $segment['fareClassDifferences'] || [];
-				$segment['fareClassDifferences'].push({
-					from: $from,
-					to: $to,
-					mileageSurcharge: $mileage || null,
-					amount: $amount,
-				});
-			} else if ($lexeme === 'requiredMinimum') {
-				[$from, $to, $amount] = $data;
-				$segment['requiredMinimum'] = {
-					from: $from,
-					to: $to,
-					amount: $amount,
-				};
-			} else if (php.in_array($lexeme, ['hiddenInclusiveTourFare', 'hiddenBulkTourFare'])) {
-				$segment['fare'] = $data;
-				$segment['isFareHidden'] = true;
+			} else if (lexeme === 'fareClassDifference') {
+				const [from, to, mileageSurcharge, amount] = data;
+				segment.fareClassDifferences = segment.fareClassDifferences || [];
+				segment.fareClassDifferences.push({from, to, mileageSurcharge, amount});
+			} else if (lexeme === 'requiredMinimum') {
+				const [from, to, amount] = data;
+				segment.requiredMinimum = {from, to, amount};
+			} else if (php.in_array(lexeme, ['hiddenInclusiveTourFare', 'hiddenBulkTourFare'])) {
+				segment.fare = data;
+				segment.isFareHidden = true;
 			} else {
-				$segment['misc'] = $segment['misc'] || [];
-				$segment['misc'].push($token);
+				segment.misc = segment.misc || [];
+				segment.misc.push(token);
 			}
 		}
-		return $segment;
+		return segment;
 	}
 
 	static endsSegments($token) {
@@ -195,32 +185,31 @@ class FareConstructionParser {
 		}
 	}
 
-	static collectStructure($tokens) {
-		let $firstToken, $lastCity, $segments, $segmentStart, $i, $segment, $result, $isFareHidden;
-		if (php.empty($tokens)) return null;
-		$firstToken = php.array_shift($tokens);
-		if ($firstToken['lexeme'] !== 'firstDeparture') return null;
-		$lastCity = $firstToken['data'];
-		$segments = [];
-		$segmentStart = 0;
-		for ($i = 1; $i < php.count($tokens); ++$i) {
-			if ($tokens[$i]['lexeme'] === 'segment' || this.endsSegments($tokens[$i])) {
-				$segment = this.collectSegment(php.array_slice($tokens, $segmentStart, $i - $segmentStart));
-				$segment['departure'] = $lastCity;
-				$lastCity = ($segment['nextDeparture'] || {})['city'] || $segment['destination'] || null;
-				if (!$lastCity) {
+	static collectStructure(tokens) {
+		if (php.empty(tokens)) return null;
+		const firstToken = php.array_shift(tokens);
+		if (firstToken.lexeme !== 'firstDeparture') return null;
+		let lastCity = firstToken.data;
+		const segments = [];
+		let segmentStart = 0;
+		for (let i = 1; i < php.count(tokens); ++i) {
+			if (tokens[i].lexeme === 'segment' || this.endsSegments(tokens[i])) {
+				const segment = this.collectSegment(php.array_slice(tokens, segmentStart, i - segmentStart));
+				segment.departure = lastCity;
+				lastCity = (segment.nextDeparture || {}).city || segment.destination || null;
+				if (!lastCity) {
 					return null;
 				}
-				$segmentStart = $i;
-				$segments.push($segment);
+				segmentStart = i;
+				segments.push(segment);
 			}
-			if (this.endsSegments($tokens[$i])) {
-				$result = this.collectEnding(php.array_slice($tokens, $i));
-				if ($result) {
-					$isFareHidden = ($seg) => $seg['isFareHidden'] || null;
-					$result['hasHiddenFares'] = Fp.any($isFareHidden, $segments);
-					if (this.isValidEnding($result, $segments)) {
-						return php.array_merge({segments: $segments}, $result);
+			if (this.endsSegments(tokens[i])) {
+				const result = this.collectEnding(php.array_slice(tokens, i));
+				if (result) {
+					const isFareHidden = ($seg) => $seg.isFareHidden || null;
+					result.hasHiddenFares = Fp.any(isFareHidden, segments);
+					if (this.isValidEnding(result, segments)) {
+						return php.array_merge({segments}, result);
 					} else {
 						return null;
 					}
