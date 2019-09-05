@@ -555,6 +555,7 @@ class FareConstructionParserTest extends require('../../../Lib/TestCase.js') {
 			},
 		]);
 
+		// #31
 		// with side trip
 		$list.push([
 			'WAS LH LON 123.50LH BRU(LH BJL 195.54LH BRU 195.54)S100.00 LH WAS 184.00NUC798.58END ROE1.0',
@@ -562,13 +563,12 @@ class FareConstructionParserTest extends require('../../../Lib/TestCase.js') {
 				'parsed': {
 					'segments': [
 						{'destination': 'LON'},
-						{'destination': 'BRU', 'misc': [{'lexeme': 'sideTripStart'}]},
+						{'destination': 'BRU', 'misc': [{'lexeme': 'sideTripStart'}], 'stopoverFees': [{'amount': '100.00'}]},
 						{'destination': 'BJL', 'fare': '195.54'},
 						{
 							'destination': 'BRU',
 							'fare': '195.54',
 							'misc': [{'lexeme': 'sideTripEnd'}],
-							'stopoverFees': [{'amount': '100.00'}]
 						},
 						{'destination': 'WAS', 'fare': '184.00'},
 					],
@@ -884,6 +884,43 @@ class FareConstructionParserTest extends require('../../../Lib/TestCase.js') {
 					],
 					'currency': 'NUC',
 					'fare': '726.54',
+					'rateOfExchange': '1.0',
+				},
+			},
+		]);
+
+		// #44
+		// change of airports right after side trip in Fare Calculation followed by a fare - a broken fare
+		// session #2915530
+		//" 1 TK  32U 08OCT ATLIST SS1  1035P  440P|*      TU/WE   E  1",
+		//" 2 TK1955V 09OCT ISTAMS SS1   645P  920P *         WE   E  1",
+		//" 3 TK1958Q 12OCT AMSIST SS1   240P  700P *         SA   E",
+		//" 4 TK 630U 18NOV ACCIST SS1   915P  700A|*      MO/TU   E  2",
+		//" 5 TK  31U 19NOV ISTATL SS1   340P  810P *         TU   E  2",
+		//>FQN
+		//  QUOTE    1
+		//  FARE  COMPONENT   BASIS
+		//    1    IST-AMS    VT2PC6M        RULE/ROUTE APPLIES
+		//    2    AMS-IST    QT2PX6M        RULE/ROUTE APPLIES
+		//    3    ATL-ACC    UV3XPCFB       RULE/ROUTE APPLIES
+		//    4    ACC-ATL    UV3XPCFB       RULE/ROUTE APPLIES
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				"ATL TK IST Q6.00(TK AMS 45.00VT2PC6M TK IST Q5.00",
+				"102.50QT2PX6M)//ACC 79.98UV3XPCFB TK X/IST TK ATL Q6.00",
+				"79.98UV3XPCFB NUC324.46END ROE1.0",
+			]),
+			{
+				parsed: {
+					segments: [
+						{departure: 'ATL', destination: 'IST', fuelSurchargeParts: ['6.00'], fare: '79.98', fareBasis: 'UV3XPCFB', misc: [{lexeme: 'sideTripStart'}]},
+						{departure: 'IST', destination: 'AMS', fare: '45.00', fareBasis: 'VT2PC6M'},
+						{departure: 'AMS', destination: 'IST', fuelSurchargeParts: ['5.00'], fare: '102.50', fareBasis: 'QT2PX6M', misc: [{lexeme: 'sideTripEnd'}]},
+						{departure: 'ACC', destination: 'IST'},
+						{departure: 'IST', destination: 'ATL', fuelSurchargeParts: ['6.00'], fare: '79.98', fareBasis: 'UV3XPCFB'},
+					],
+					'currency': 'NUC',
+					'fare': '324.46',
 					'rateOfExchange': '1.0',
 				},
 			},

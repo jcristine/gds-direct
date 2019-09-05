@@ -90,8 +90,8 @@ class FareConstructionParser {
 		};
 	}
 
-	static collectSegment(tokens) {
-		const segment = {};
+	static collectSegment(tokens, lastCity) {
+		const segment = {departure: lastCity};
 		for (const token of tokens) {
 			const lexeme = token.lexeme;
 			const data = token.data;
@@ -121,11 +121,11 @@ class FareConstructionParser {
 				segment.fuelSurchargeParts = segment.fuelSurchargeParts || [];
 				segment.fuelSurchargeParts.push(amount);
 			} else if (lexeme === 'stopoverFee') {
-				const [excessMark, $number, amount] = data;
-				segment.stopoverFees = segment['stopoverFees'] || [];
+				const [excessMark, number, amount] = data;
+				segment.stopoverFees = segment.stopoverFees || [];
 				segment.stopoverFees.push({
 					excessMark: excessMark || undefined,
-					stopoverNumber: $number,
+					stopoverNumber: number,
 					amount: amount,
 				});
 			} else if (lexeme === 'fareBasis') {
@@ -156,8 +156,12 @@ class FareConstructionParser {
 		return segment;
 	}
 
-	static endsSegments($token) {
+	static endsAllSegments($token) {
 		return php.in_array($token['lexeme'], FcTokenizer.getItineraryEndLexemes());
+	}
+
+	static endsCurrentSegment(token) {
+		return token.lexeme === 'segment' || this.endsAllSegments(token);
 	}
 
 	static isSameAmount($a, $b) {
@@ -185,37 +189,82 @@ class FareConstructionParser {
 		}
 	}
 
+	/**
+	 * it best fits into current format when you think of
+	 * side trip segments as a property of the preceding
+	 * segment, that can be followed by more properties, like fare
+	 *
+	 * though actually this fare belongs not to the segment, but to whole FQN component
+	 * (likewise to normal segments, where fare is specified only on the
+	 * last segment even though it applies to all preceding segments as well)
+	 */
+	static collectSideTripSegments(tokens, parentSegment) {
+		let lastCity = parentSegment.destination;
+		let segmentStart = 0;
+		const segments = [];
+		for (let i = 0; i < tokens.length; ++i) {
+			const next = tokens[i + 1];
+			if (!next || this.endsCurrentSegment(next)) {
+				const segment = this.collectSegment(tokens.slice(segmentStart, i + 1), lastCity);
+				if (!segment) {
+					return null;
+				}
+				segmentStart = i + 1;
+				lastCity = (segment.nextDeparture || {}).city || segment.destination || null;
+				segments.push(segment);
+			}
+		}
+		return segments;
+	}
+
 	static collectStructure(tokens) {
+		tokens = [...tokens];
 		if (php.empty(tokens)) return null;
 		const firstToken = php.array_shift(tokens);
 		if (firstToken.lexeme !== 'firstDeparture') return null;
 		let lastCity = firstToken.data;
 		const segments = [];
-		let segmentStart = 0;
-		for (let i = 1; i < php.count(tokens); ++i) {
-			if (tokens[i].lexeme === 'segment' || this.endsSegments(tokens[i])) {
-				const segment = this.collectSegment(php.array_slice(tokens, segmentStart, i - segmentStart));
-				segment.departure = lastCity;
-				lastCity = (segment.nextDeparture || {}).city || segment.destination || null;
+
+		let segmentTokens = [tokens.shift()];
+		let sideTripTokens = [];
+		let token;
+		while (token = tokens.shift()) {
+			if (token.lexeme === 'sideTripStart') {
+				let subToken;
+				while (subToken = tokens.shift()) {
+					sideTripTokens.push(subToken);
+					if (subToken.lexeme === 'sideTripEnd') {
+						break;
+					}
+				}
+			}
+			if (this.endsCurrentSegment(token)) {
+				const segment = this.collectSegment(segmentTokens, lastCity);
+				segments.push(segment);
+				const sideTripSegments = this.collectSideTripSegments(sideTripTokens, segment);
+				if (sideTripSegments === null) {
+					return null;
+				}
+				sideTripTokens = [];
+				segments.push(...sideTripSegments);
+				segmentTokens = [token];
+				const lastSeg = segments.slice(-1)[0];
+				lastCity = (segment.nextDeparture || {}).city || lastSeg.destination || null;
 				if (!lastCity) {
 					return null;
 				}
-				segmentStart = i;
-				segments.push(segment);
 			}
-			if (this.endsSegments(tokens[i])) {
-				const result = this.collectEnding(php.array_slice(tokens, i));
-				if (result) {
+			segmentTokens.push(token);
+			if (this.endsAllSegments(token)) {
+				const result = this.collectEnding([token, ...tokens]);
+				if (result && sideTripTokens.length === 0) {
 					const isFareHidden = ($seg) => $seg.isFareHidden || null;
 					result.hasHiddenFares = Fp.any(isFareHidden, segments);
 					if (this.isValidEnding(result, segments)) {
 						return php.array_merge({segments}, result);
-					} else {
-						return null;
 					}
-				} else {
-					return null;
 				}
+				break;
 			}
 		}
 		return null;
