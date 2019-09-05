@@ -737,8 +737,11 @@ const RunCmdRq = ({
 		});
 		const error = result.currentPricing.error;
 		if (error) {
-			const reject = error.includes('DUPLICATE NAME/SEGMENT COMBINATION')
-				? Rej.BadRequest : Rej.UnprocessableEntity;
+			const isBadRequest =
+				error.includes('DUPLICATE NAME/SEGMENT COMBINATION') ||
+				error.includes('ATFQ ALREADY EXISTS');
+
+			const reject = isBadRequest ? Rej.BadRequest : Rej.UnprocessableEntity;
 			return reject('Failed to >' + cmd + '; - ' + error);
 		} else {
 			return Promise.resolve(result);
