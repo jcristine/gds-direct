@@ -1,5 +1,5 @@
 const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
-const iqJson = require("../Utils/TmpLib").iqJson;
+const {iqJson} = require('dyn-utils/src/DynUtils.js');
 const {getConfig} = require('../Config.js');
 
 const callCms = async ({functionName, params}) => {

@@ -3,7 +3,7 @@ const MultiLevelMap = require('../Utils/MultiLevelMap.js');
 const {getConfig} = require('../Config.js');
 const Db = require('../Utils/Db.js');
 const sqlNow = require("../Utils/TmpLib").sqlNow;
-const iqJson = require("../Utils/TmpLib").iqJson;
+const iqJson = require("dyn-utils/src/DynUtils.js").iqJson;
 const {strval, implode, array_column, array_combine} = require('klesun-node-tools/src/Transpiled/php.js');
 
 const TABLE = 'airports';

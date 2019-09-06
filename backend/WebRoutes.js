@@ -1,3 +1,4 @@
+const DynUtils = require('dyn-utils/src/DynUtils.js');
 const Airports = require('./Repositories/Airports.js');
 const MultiPccTariffRules = require('./Repositories/MultiPccTariffRules.js');
 const AgentCustomSettings = require('./Repositories/AgentCustomSettings.js');
@@ -27,7 +28,6 @@ const Agents = require("./Repositories/Agents");
 const {withGdsSession} = require("./HttpControllers/MainController");
 const {toHandleHttp} = require("./HttpControllers/MainController");
 const {withAuth} = require("./HttpControllers/MainController");
-const GdsdLib = require('klesun-node-tools');
 const Settings = require("./Repositories/Settings");
 const SocketIo = require('./LibWrappers/SocketIo.js');
 const ParsersController = require("./HttpControllers/ParsersController");
@@ -424,7 +424,7 @@ app.get('/getAgentList', withOwnerAuth(async (reqBody, emcResult) => {
 app.get('/getAsapLocations', withOwnerAuth(async (reqBody, emcResult) => {
 	const config = await getConfig();
 	/** @type IGetAirportsRs */
-	return GdsdLib.Misc.iqJson({
+	return DynUtils.iqJson({
 		url: config.external_service.infocenter.host,
 		credentials: {
 			login: config.external_service.infocenter.login,

@@ -2,7 +2,7 @@
 const {getConfig} = require('../Config.js');
 const Db = require('../Utils/Db.js');
 const BadGateway = require("klesun-node-tools/src/Rej").BadGateway;
-const iqJson = require("../Utils/TmpLib").iqJson;
+const iqJson = require("dyn-utils/src/DynUtils.js").iqJson;
 
 const TABLE = 'airline_booking_classes';
 

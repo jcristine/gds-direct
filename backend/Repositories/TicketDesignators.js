@@ -1,4 +1,4 @@
-const iqJson = require("../Utils/TmpLib").iqJson;
+const iqJson = require("dyn-utils/src/DynUtils.js").iqJson;
 const {getConfig} = require('../Config.js');
 
 const Db = require('../Utils/Db.js');

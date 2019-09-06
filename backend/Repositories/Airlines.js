@@ -2,7 +2,7 @@
 const {getConfig} = require('../Config.js');
 const Db = require('../Utils/Db.js');
 const sqlNow = require("../Utils/TmpLib").sqlNow;
-const iqJson = require("../Utils/TmpLib").iqJson;
+const {iqJson} = require("dyn-utils/src/DynUtils.js");
 
 const TABLE = 'airlines';
 

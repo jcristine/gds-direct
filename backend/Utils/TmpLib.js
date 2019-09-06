@@ -13,8 +13,6 @@ exports.getExcData = GrectLib.Misc.getExcData;
 /** @deprecated - should refactor code to use it directly from the lib */
 exports.timeout = GrectLib.Misc.timeout;
 /** @deprecated - should refactor code to use it directly from the lib */
-exports.iqJson = GrectLib.Misc.iqJson;
-/** @deprecated - should refactor code to use it directly from the lib */
 exports.sqlNow = GrectLib.Misc.sqlNow;
 
 /**
