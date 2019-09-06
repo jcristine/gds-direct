@@ -1,39 +1,28 @@
+const IqClients = require('../LibWrappers/IqClients.js');
 
-const {getConfig} = require('../Config.js');
 const Db = require('../Utils/Db.js');
 const BadGateway = require("klesun-node-tools/src/Rej").BadGateway;
-const iqJson = require("dyn-utils/src/DynUtils.js").iqJson;
 
 const TABLE = 'airline_booking_classes';
 
-const normalizeRow = (airline, bookingClass, cabinClass) => {
+const normalizeRow = (airline, clsRec) => {
 	return {
 		airline: airline,
-		booking_class: bookingClass,
-		cabin_class: cabinClass,
+		booking_class: clsRec.bookingClass,
+		cabin_class: clsRec.primaryCabinClass,
 	};
 };
 
 exports.updateFromService = async () => {
-	const config = await getConfig();
-	/** @type {IGetAirlineBookingClassesRs} */
-	const serviceResult = await iqJson({
-		url: config.external_service.act.host,
-		credentials: {
-			login: config.external_service.act.login,
-			passwd: config.external_service.act.password,
-		},
-		functionName: 'getAirlineBookingClasses',
-		serviceName: config.external_service.act.serviceName,
-	});
+	const infocenter = await IqClients.getInfocenter();
+	const serviceResult = await infocenter.getAllAirlineList();
 
 	const rows = [];
-	for (const [airline, cabinClasses] of Object.entries(serviceResult.result.content)) {
-		for (const [cabinClass, bookingClasses] of Object.entries(cabinClasses)) {
-			for (const [bookingClass, exists] of Object.entries(bookingClasses)) {
-				const row = normalizeRow(airline, bookingClass, cabinClass);
-				rows.push(row);
-			}
+	for (const airRec of Object.values(serviceResult.result.data)) {
+		const airline = airRec.code_en;
+		for (const clsRec of Object.values(airRec.bookingClasses)) {
+			const row = normalizeRow(airline, clsRec);
+			rows.push(row);
 		}
 	}
 	if (rows.length === 0) {

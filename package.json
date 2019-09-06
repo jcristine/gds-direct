@@ -17,7 +17,7 @@
     "chokidar": "^3.0.2",
     "dyn-utils": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/dyn-utils.git#e21e4f5827ff7036b414b23afe98eb7faeeb561f",
     "dynatech-client-component": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component.git#7ad8d0caa829bf947dadced1834ced94ae90b734",
-    "dynatech-client-component-infocenter": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-infocenter.git#928d10a6a431c2a8777a55e3610e1664bf62191d",
+    "dynatech-client-component-infocenter": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-infocenter.git#0d2f03b85b2621d4ed65649593b4193ae9764111",
     "dynatech-client-component-emc": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-emc.git#v0.1.2",
     "dynatech-client-component-rbs": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-rbs.git#f48cf222a679a1918c90f20974ba064e1eb1a2c3",
     "dynatech-diag-service": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/diag-service.git#v0.1.6",
