@@ -1,6 +1,6 @@
 
 const ioredis = require("ioredis");
-const {getRedisConfig} = require('klesun-node-tools/src/Config.js');
+const {getRedisConfig} = require('dyn-utils/src/Config.js');
 const Conflict = require("klesun-node-tools/src/Rej").Conflict;
 const {never, StrConsts} = require('../Utils/StrConsts.js');
 const {nonEmpty, onDemand} = require("klesun-node-tools/src/Lang.js");

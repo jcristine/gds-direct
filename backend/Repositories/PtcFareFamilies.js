@@ -1,5 +1,5 @@
 const CustomData = require('./CustomData.js');
-const {iqJson} = require("klesun-node-tools/src/Dyn/DynUtils.js");
+const {iqJson} = require("dyn-utils/src/DynUtils.js");
 const {getExternalServices} = require('../Config.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {onDemand} = require('klesun-node-tools/src/Lang.js');

@@ -1,7 +1,7 @@
 const Rej = require('../../node_modules/klesun-node-tools/src/Rej.js');
 
 const mysql = require('promise-mysql');
-const {getDbConfig} = require('klesun-node-tools/src/Config.js');
+const {getDbConfig} = require('dyn-utils/src/Config.js');
 const NotFound = require("klesun-node-tools/src/Rej").NotFound;
 const Diag = require('../LibWrappers/Diag.js');
 const {SqlUtil} = require('klesun-node-tools');

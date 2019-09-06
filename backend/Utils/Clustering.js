@@ -7,8 +7,8 @@ const os = require('os');
 const fs = require('fs');
 const {readFile} = fs.promises;
 const Rej = require('klesun-node-tools/src/Rej.js');
-const {descrProc} = require('klesun-node-tools/src/Dyn/DynUtils.js');
-const {getEnvConfig} = require('klesun-node-tools/src/Dyn/Config.js');
+const {descrProc} = require('dyn-utils/src/DynUtils.js');
+const {getEnvConfig} = require('dyn-utils/src/Config.js');
 // fs.watch() does not track file anymore if it gets renamed, then renamed back
 const chokidar = require('chokidar');
 

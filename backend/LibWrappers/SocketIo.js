@@ -1,5 +1,5 @@
 
-const {getRedisConfig, getEnvConfig} = require('klesun-node-tools/src/Config.js');
+const {getRedisConfig, getEnvConfig} = require('dyn-utils/src/Config.js');
 const initSocketIo = require('socket.io');
 const redisAdapter = require('socket.io-redis');
 const Rej = require('klesun-node-tools/src/Rej.js');
