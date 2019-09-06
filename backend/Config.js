@@ -1,6 +1,5 @@
 
-const GrectLib = require('klesun-node-tools');
-
+const DynConfig = require('dyn-utils/src/Config.js');
 const env = process.env || {};
 
 const isProd = env.NODE_ENV === 'production';
@@ -67,7 +66,7 @@ StaticConfig.getConfig = async () => {
 	if (fetching) {
 		return fetching;
 	}
-	fetching = GrectLib.getConfig().then(lanConfig => {
+	fetching = DynConfig.getConfig().then(lanConfig => {
 		return Object.assign({}, StaticConfig, hardcodedConfig, lanConfig);
 	});
 	return fetching;
