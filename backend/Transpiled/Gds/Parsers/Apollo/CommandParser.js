@@ -89,7 +89,7 @@ class CommandParser {
 			'F-': 'addFormOfPayment',
 			'F:': 'operationalInfo',
 			'9V': 'seatMap',
-			'HMPR': 'soldTicketsDailyReport',
+			'HMP': 'soldTicketsDailyReport',
 			'TI-': 'visaAndHealthInfo',
 			'T:$B': 'storePricing', // store Ticketing pricing
 			'MV/': 'fillFromProfile',
