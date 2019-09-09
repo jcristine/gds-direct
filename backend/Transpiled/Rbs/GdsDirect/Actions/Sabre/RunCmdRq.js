@@ -810,12 +810,18 @@ const execute = ({
 		let output = await runCommand(cmd);
 
 		if (await needsPl(cmd, output, pnr)) {
-		// delete PQ we just created and store a correct one, with /PL/ mod
+			// delete PQ we just created and store a correct one, with /PL/ mod
 			await runCommand('PQD-ALL');
 			cmd = await makeStorePricingCmd(pnr, aliasData, true);
 			output = await runCommand(cmd);
 		}
-		return {calledCommands: [{cmd, output}]};
+		const calledCommands = [{cmd, output}];
+		if (stateful.getSessionData().isPnrStored) {
+			const login = getAgent().getLogin().toUpperCase();
+			const erCmdRec = await runCmd('6' + login + '§ER');
+			calledCommands.push(erCmdRec);
+		}
+		return {calledCommands};
 	};
 
 	const priceAll = async  (aliasData) => {
