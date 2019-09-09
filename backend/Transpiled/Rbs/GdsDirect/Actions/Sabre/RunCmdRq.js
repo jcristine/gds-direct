@@ -937,7 +937,7 @@ const execute = ({
 			return changeArea(parsed['data']);
 		} else if (reData = AliasParser.parseRe(cmd)) {
 			return processCloneItinerary(reData);
-		} else if (aliasData = AliasParser.parseStore(cmd)) {
+		} else if (aliasData = await AliasParser.parseStore(cmd)) {
 			return storePricing(aliasData);
 		} else if (aliasData = await AliasParser.parsePrice(cmd, stateful)) {
 			return priceAll(aliasData);

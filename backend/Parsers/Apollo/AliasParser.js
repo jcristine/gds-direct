@@ -86,7 +86,7 @@ exports.parse = async ($cmdRequested, stateful) => {
 			$cmds = php.array_merge([$mainCmd], $followingCommands);
 			$data = {'pricingCommands': $cmds};
 		}
-	} else if ($data = AliasParser.parseStore($realCmd)) {
+	} else if ($data = await AliasParser.parseStore($realCmd)) {
 		$type = 'storePricing';
 	} else if ($data = await AliasParser.parsePrice($realCmd, stateful)) {
 		$type = 'priceAll';

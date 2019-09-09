@@ -75,7 +75,7 @@ class AliasParser {
 		};
 	}
 
-	static parseStore(cmd) {
+	static async parseStore(cmd) {
 		let matches;
 		if (php.preg_match(/^STORE([A-Z0-9]{3}|)\/?(.*)$/, cmd, matches = [])) {
 			let [, ptc, modsPart] = matches;
@@ -84,6 +84,12 @@ class AliasParser {
 				// whitelist, and treat it as just a modifier if it's not...
 				modsPart = modsPart ? 'FXD/' + modsPart : 'FXD';
 				ptc = '';
+			}
+			if (ptc) {
+				const ptcFareType = await PtcUtil.getFareType(ptc);
+				if (!ptcFareType) {
+					return Rej.BadRequest('Invalid PTC - ' + ptc + ' - no known fare families matched');
+				}
 			}
 			return {
 				ptc: ptc,

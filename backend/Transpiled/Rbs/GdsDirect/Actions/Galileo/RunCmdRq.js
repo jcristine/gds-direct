@@ -971,7 +971,7 @@ const RunCmdRq = ({
 			return processCloneItinerary(reData);
 		} else if (aliasData = parseMultiPriceItineraryAlias(cmd)) {
 			return multiPriceItinerary(aliasData);
-		} else if (aliasData = AliasParser.parseStore(cmd)) {
+		} else if (aliasData = await AliasParser.parseStore(cmd)) {
 			return storePricing(aliasData);
 		} else if (aliasData = await AliasParser.parsePrice(cmd, stateful)) {
 			return priceAll(aliasData);
