@@ -1,6 +1,5 @@
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 
-const Fp = require('../../../../Lib/Utils/Fp.js');
-const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const FareConstructionParser = require('../../../../Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
@@ -15,28 +14,23 @@ class FxParser {
 	 * this wrapper does not require $names
 	 * handy if you do postprocessing
 	 */
-	static splitByPositionLetters($line, $pattern) {
-		let $symbols, $names;
-
-		$symbols = php.str_split($pattern, 1);
-		$names = php.array_combine($symbols, $symbols);
-
-		return StringUtil.splitByPosition($line, $pattern, $names, true);
+	static splitByPositionLetters(line, pattern) {
+		return ParserUtil.splitByPosition(line, pattern, null, true);
 	}
 
 	static isEmptyLine($line) {
-
 		return php.trim($line) === '';
 	}
 
-	static parseSegmentLine($line) {
-		let $flightSegment, $matches;
+	static parseSegmentLine(line) {
+		let matches;
 
-		if ($flightSegment = this.parseFlightSegment($line)) {
-			return $flightSegment;
-		} else if (php.preg_match(/^\s*([A-Z]{3})\s+S U R F A C E\s*$/, $line, $matches = [])) {
+		const flightSegment = this.parseFlightSegment(line);
+		if (flightSegment) {
+			return flightSegment;
+		} else if (php.preg_match(/^\s*([A-Z]{3})\s+S U R F A C E\s*$/, line, matches = [])) {
 			// ' YAO      S U R F A C E',
-			return {type: 'surface', destinationCity: $matches[1], isStopover: true};
+			return {type: 'surface', destinationCity: matches[1], isStopover: true};
 		} else {
 			return null;
 		}
@@ -58,7 +52,7 @@ class FxParser {
 
 		const isEmptyString = ($val) => $val === '';
 		const [fareBasis, ticketDesignator] = php.array_pad(php.explode('/', split['I']), 2, null);
-		const $result = {
+		const result = {
 			type: 'flight',
 			isStopover: split['X'] !== 'X',
 			/** it can be both a city (WAS), and an airport (JFK) */
@@ -76,9 +70,9 @@ class FxParser {
 			freeBaggageAmount: parseBagAmountCode(split['B']),
 		};
 		if (date && time && php.trim(split[' ']) === '' &&
-			$result.bookingClass && !Fp.any(isEmptyString, $result)
+			result.bookingClass && !Object.values(result).some(isEmptyString)
 		) {
-			return $result;
+			return result;
 		} else {
 			return null;
 		}
@@ -95,7 +89,7 @@ class FxParser {
 		const pattern = 'CCCAAAAAAAAATTT   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF';
 		const symbols = php.str_split(pattern, 1);
 		const names = php.array_combine(symbols, symbols);
-		const split = StringUtil.splitByPosition($line, pattern, names, false);
+		const split = ParserUtil.splitByPosition($line, pattern, names, false);
 		if (php.trim(split[' ']) === '') {
 			const fcLine = split['F'];
 			if (php.trim(split['C'] + split['A'] + split['T']) === '') {
@@ -117,123 +111,116 @@ class FxParser {
 	}
 
 	/**
-	 * @param $segments = [FxParser::parseSegmentLine(), ...]
+	 * @param segments = [FxParser::parseSegmentLine(), ...]
 	 * Amadeus wraps FC line on a digit followed by a letter or vice versa
 	 * it's ok with everything except fare basis, which is alphanumeric
 	 * so we use the known fare basis list to unwrap line correctly
 	 */
-	static unwrapFcLine($lines, $segments) {
-		let $fareBases, $airlines, $segment, $air, $fb, $td, $fullLine, $line, $nextStartsWith, $endsWith,
-			$wrappedOnLetter, $wrappedOnDigit;
-
-		$fareBases = [];
-		$airlines = [];
-		for ($segment of Object.values($segments)) {
-			if ($air = $segment['airline']) {
-				$airlines.push($air);
+	static unwrapFcLine(lines, segments) {
+		const fareBases = [];
+		const airlines = [];
+		for (const segment of segments) {
+			const air = segment.airline;
+			if (air) {
+				airlines.push(air);
 			}
-			if ($fb = $segment['fareBasis']) {
-				if ($td = $segment['ticketDesignator']) {
-					$fb += '/' + $td;
+			let fb = segment.fareBasis;
+			if (fb) {
+				const td = segment.ticketDesignator;
+				if (td) {
+					fb += '/' + td;
 				}
-				$fareBases.push($fb);
+				fareBases.push(fb);
 			}
 		}
-		$fullLine = php.array_shift($lines);
-		for ($line of Object.values($lines)) {
-			$nextStartsWith = ($airline) => StringUtil.startsWith($line, $airline + ' ');
-			$endsWith = ($fb) => StringUtil.endsWith($fullLine, $fb);
-			$wrappedOnLetter = php.preg_match(/[A-Z]$/, $fullLine) && php.preg_match(/^[A-Z]/, $line);
-			$wrappedOnDigit = php.preg_match(/\d$/, $fullLine) && php.preg_match(/^\d/, $line);
-			if (Fp.any($endsWith, $fareBases) || $wrappedOnLetter || $wrappedOnDigit ||
-				Fp.any($endsWith, $airlines) || Fp.any($nextStartsWith, $airlines)
+		let fullLine = php.array_shift(lines);
+		for (const line of lines) {
+			const nextStartsWith = airline => line.startsWith(airline + ' ');
+			const endsWith = fb => fullLine.endsWith(fb);
+			const wrappedOnLetter = php.preg_match(/[A-Z]$/, fullLine) && php.preg_match(/^[A-Z]/, line);
+			const wrappedOnDigit = php.preg_match(/\d$/, fullLine) && php.preg_match(/^\d/, line);
+			if (fareBases.some(endsWith) || wrappedOnLetter || wrappedOnDigit ||
+				airlines.some(endsWith) || airlines.some(nextStartsWith)
 			) {
-				$fullLine += ' ' + $line;
+				fullLine += ' ' + line;
 			} else {
-				$fullLine += $line;
+				fullLine += line;
 			}
 		}
-		return $fullLine;
+		return fullLine;
 	}
 
 	static parseFareConstruction($raw) {
-		let $matches, $_, $dateRaw, $fcRaw, $fcRecord;
-
-		if (php.preg_match(/^(\d{1,2}[A-Z]{3}\d{2,4})(.+)$/s, $raw, $matches = [])) {
-			[$_, $dateRaw, $fcRaw] = $matches;
-			$fcRecord = FareConstructionParser.parse($fcRaw);
-			$fcRecord['raw'] = $raw;
-			if ($fcRecord['parsed']) {
-				$fcRecord['parsed']['date'] = {
-					raw: $dateRaw,
-					parsed: '20' + CommonParserHelpers.parseApolloFullDate($dateRaw),
+		let matches;
+		if (php.preg_match(/^(\d{1,2}[A-Z]{3}\d{2,4})(.+)$/s, $raw, matches = [])) {
+			const [, dateRaw, fcRaw] = matches;
+			const fcRecord = FareConstructionParser.parse(fcRaw);
+			fcRecord.raw = $raw;
+			if (fcRecord.parsed) {
+				fcRecord.parsed.date = {
+					raw: dateRaw,
+					parsed: '20' + CommonParserHelpers.parseApolloFullDate(dateRaw),
 				};
 			}
-			return $fcRecord;
+			return fcRecord;
 		} else {
 			return {error: 'Failed to match FC start - ' + php.substr($raw, 0, 7)};
 		}
 	}
 
 	// separates XT taxes part from fare calculation
-	static parseTaxBreakdown($fcLine) {
-		let $xtTaxes, $facilityCharges, $matches, $_, $xtTaxesRaw, $facilityChargesRaw, $tuples, $airport, $amount,
-			$taxRegex, $taxCurrency, $taxCode, $taxBreakdown;
-
-		$xtTaxes = [];
-		$facilityCharges = [];
-		if (php.preg_match(/^(.+)XT\s+(.+?)(([A-Z]{3}\s*\d*\.?\d+\s*)*)$/, $fcLine, $matches = [])) {
-			[$_, $fcLine, $xtTaxesRaw, $facilityChargesRaw] = $matches;
-			if (php.preg_match_all(/([A-Z]{3})\s*(\d*\.?\d+)\s*/, $facilityChargesRaw, $tuples = [], php.PREG_SET_ORDER)) {
-				for ([$_, $airport, $amount] of Object.values($tuples)) {
-					$facilityCharges.push({airport: $airport, amount: $amount});
+	static parseTaxBreakdown(fcLine) {
+		const xtTaxes = [];
+		const facilityCharges = [];
+		let matches;
+		if (php.preg_match(/^(.+)XT\s+(.+?)(([A-Z]{3}\s*\d*\.?\d+\s*)*)$/, fcLine, matches = [])) {
+			let xtTaxesRaw, facilityChargesRaw;
+			[, fcLine, xtTaxesRaw, facilityChargesRaw] = matches;
+			let tuples;
+			if (php.preg_match_all(/([A-Z]{3})\s*(\d*\.?\d+)\s*/, facilityChargesRaw, tuples = [], php.PREG_SET_ORDER)) {
+				for (const [, airport, amount] of tuples) {
+					facilityCharges.push({airport, amount});
 				}
 			}
-			$taxRegex = /([A-Z]{3})\s*(\d*\.?\d+)[\s\-]*([A-Z0-9]{2})/;
-			if (php.preg_match_all($taxRegex, $xtTaxesRaw, $tuples = [], php.PREG_SET_ORDER)) {
-				for ([$_, $taxCurrency, $amount, $taxCode] of Object.values($tuples)) {
-					$xtTaxes.push({currency: $taxCurrency, amount: $amount, taxCode: $taxCode});
+			const taxRegex = /([A-Z]{3})\s*(\d*\.?\d+)[\s\-]*([A-Z0-9]{2})/;
+			if (php.preg_match_all(taxRegex, xtTaxesRaw, tuples = [], php.PREG_SET_ORDER)) {
+				for (const [, currency, amount, taxCode] of tuples) {
+					xtTaxes.push({currency, amount, taxCode});
 				}
 			}
 		}
-		$taxBreakdown = {
-			xtTaxes: $xtTaxes,
-			facilityCharges: $facilityCharges,
-		};
-		return [$fcLine, $taxBreakdown];
+		const taxBreakdown = {xtTaxes, facilityCharges};
+
+		return [fcLine, taxBreakdown];
 	}
 
-	static parseWholeMessages($lines, $appliesTo) {
-		let $result, $lastDateToPurchase, $line, $matches, $_, $dateRaw, $unparsed;
-
-		$result = {appliesTo: $appliesTo};
-		$lastDateToPurchase = null;
-		for ($line of Object.values($lines)) {
+	static parseWholeMessages(lines, appliesTo) {
+		const result = {appliesTo};
+		for (const $line of lines) {
+			let matches;
 			if (php.trim($line) === 'REBOOK TO CHANGE BOOKING CLASS AS SPECIFIED') {
-				$result['rebookStatus'] = 'required';
+				result.rebookStatus = 'required';
 			} else if (php.trim($line) === 'NO REBOOKING REQUIRED FOR LOWEST AVAILABLE FARE') {
-				$result['rebookStatus'] = 'notRequired';
-			} else if (php.preg_match(/^LAST TKT DTE (\d{1,2}[A-Z]{3}\d{2})\s*(.*?)\s*$/, $line, $matches = [])) {
-				[$_, $dateRaw, $unparsed] = $matches;
-				$result['lastDateToPurchase'] = {
-					raw: $dateRaw,
-					parsed: '20' + CommonParserHelpers.parseApolloFullDate($dateRaw),
-					unparsed: $unparsed,
+				result.rebookStatus = 'notRequired';
+			} else if (php.preg_match(/^LAST TKT DTE (\d{1,2}[A-Z]{3}\d{2})\s*(.*?)\s*$/, $line, matches = [])) {
+				const [, dateRaw, unparsed] = matches;
+				result.lastDateToPurchase = {
+					raw: dateRaw,
+					parsed: '20' + CommonParserHelpers.parseApolloFullDate(dateRaw),
+					unparsed: unparsed,
 				};
 			} else {
-				$result['unparsed'] = $result['unparsed'] || [];
-				$result['unparsed'].push($line);
+				result.unparsed = result.unparsed || [];
+				result.unparsed.push($line);
 			}
 		}
-		return $result;
+		return result;
 	}
 
 	// >HELP FCPI; >MS379;
 	// same code as in TQT
-	static parseTstIndicator($code) {
-		let $parsed;
-
-		$parsed = ({
+	static parseTstIndicator(raw) {
+		const parsed = ({
 			I: 'IATA_AUTOPRICED_FARE',
 			B: 'NEGOTIATED_FARE',
 			A: 'ATAF_AUTOPRICED_FARE',
@@ -243,40 +230,41 @@ class FxParser {
 			T: 'AUTOPRICED_INCLUSIVE_TOUR_FARE',
 			W: 'NO_FARE_CALC_CHECK_AGAINST_TST_ITINERARY',
 			O: 'CABIN_CLASS_OVERRIDE_USED_IN_PRICING',
-		} || {})[$code];
-		return {raw: $code, parsed: $parsed};
+		} || {})[raw];
+
+		return {raw, parsed};
 	}
 
-	static parsePtcPricingMessages($lines) {
-		let $result, $line, $matches, $_, $cat, $nego, $tstIndicator;
+	static parsePtcPricingMessages(lines) {
+		let matches;
 
-		$result = [];
-		for ($line of Object.values($lines)) {
-			if (php.preg_match(/^BG CXR: (\d+\*|)([A-Z0-9]{2})/, $line, $matches = [])) {
-				$result['bgCarrier'] = $matches[2];
-			} else if (php.preg_match(/^PRICED WITH VALIDATING CARRIER ([A-Z0-9]{2})/, $line, $matches = [])) {
-				$result['validatingCarrier'] = $matches[1];
-			} else if (php.preg_match(/^PRICED VC ([A-Z0-9]{2}) - OTHER VC AVAILABLE ([A-Z0-9]{2})/, $line, $matches = [])) {
-				$result['validatingCarrier'] = $matches[1];
-				$result['otherVcAvailable'] = $matches[2];
-			} else if (php.preg_match(/^ENDOS (.+?)$/, $line, $matches = [])) {
-				$result['endorsementLines'] = $result['endorsementLines'] || [];
-				$result['endorsementLines'].push($matches[1]);
-			} else if (php.preg_match(/^\s*TICKET STOCK RESTRICTION\s*$/, $line)) {
-				$result['hasTicketStockRestriction'] = true;
-			} else if (php.preg_match(/^\s*(CAT35|.*)\s*(NEGOTIATED FARES|PRIVATE RATES USED)\s*\*?([A-Z]|)\*?\s*$/, $line, $matches = [])) {
-				[$_, $cat, $nego, $tstIndicator] = $matches;
-				$result['negotiatedFareCategory'] = $cat;
-				$result['hasNegotiatedFaresMessage'] = true;
-				$result['tstIndicator'] = null;
-				$result['tstIndicator'] = !$tstIndicator ? null :
+		const result = {};
+		for (const line of lines) {
+			if (php.preg_match(/^BG CXR: (\d+\*|)([A-Z0-9]{2})/, line, matches = [])) {
+				result.bgCarrier = matches[2];
+			} else if (php.preg_match(/^PRICED WITH VALIDATING CARRIER ([A-Z0-9]{2})/, line, matches = [])) {
+				result.validatingCarrier = matches[1];
+			} else if (php.preg_match(/^PRICED VC ([A-Z0-9]{2}) - OTHER VC AVAILABLE ([A-Z0-9]{2})/, line, matches = [])) {
+				result.validatingCarrier = matches[1];
+				result.otherVcAvailable = matches[2];
+			} else if (php.preg_match(/^ENDOS (.+?)$/, line, matches = [])) {
+				result.endorsementLines = result['endorsementLines'] || [];
+				result.endorsementLines.push(matches[1]);
+			} else if (php.preg_match(/^\s*TICKET STOCK RESTRICTION\s*$/, line)) {
+				result.hasTicketStockRestriction = true;
+			} else if (php.preg_match(/^\s*(CAT35|.*)\s*(NEGOTIATED FARES|PRIVATE RATES USED)\s*\*?([A-Z]|)\*?\s*$/, line, matches = [])) {
+				const [, cat, nego, $tstIndicator] = matches;
+				result.negotiatedFareCategory = cat;
+				result.hasNegotiatedFaresMessage = true;
+				result.tstIndicator = null;
+				result.tstIndicator = !$tstIndicator ? null :
 					this.parseTstIndicator($tstIndicator);
 			} else {
-				$result['unparsed'] = $result['unparsed'] || [];
-				$result['unparsed'].push($line);
+				result.unparsed = result.unparsed || [];
+				result.unparsed.push(line);
 			}
 		}
-		return $result;
+		return result;
 	}
 
 	// first lines like:
@@ -322,18 +310,14 @@ class FxParser {
 		};
 	}
 
-	/** @param $query = '1' || '' || '1,3-4' */
-	static parseCmdPaxNums($query) {
-		let $parseRange;
-
-		if (php.preg_match(/^\s*(\d[\d,-]*)\s*$/, $query)) {
-			$parseRange = ($text) => {
-				let $pair;
-
-				$pair = php.explode('-', $text);
-				return php.range($pair[0], $pair[1] || $pair[0]);
+	/** @param query = '1' || '' || '1,3-4' */
+	static parseCmdPaxNums(query) {
+		if (php.preg_match(/^\s*(\d[\d,-]*)\s*$/, query)) {
+			const parseRange = (text) => {
+				const pair = text.split('-');
+				return php.range(pair[0], pair[1] || pair[0]);
 			};
-			return Fp.flatten(Fp.map($parseRange, php.explode(',', php.trim($query))));
+			return query.trim().split(',').flatMap(parseRange);
 		} else {
 			return null;
 		}
@@ -422,39 +406,38 @@ class FxParser {
 	}
 
 	static parse($dump) {
-		let $lines, $commandCopy, $wholeMessages, $type, $data, $i, $line, $matches, $pricingBlock, $ptcListBlock;
-
-		$lines = StringUtil.lines($dump);
-		$commandCopy = php.trim(php.array_shift($lines));
-		$wholeMessages = [];
-		$type = null;
-		$data = null;
-		for ($i = 0; $i < php.count($lines); ++$i) {
-			$line = $lines[$i];
-			if (php.trim($line) !== '') {
-				if (php.preg_match(/^\s*-{3,}(.*?)-{3,}\s*$/, $line, $matches = [])) {
-					$type = 'ptcPricing';
-					$pricingBlock = php.array_splice($lines, $i + 2);
-					$data = this.parsePtcPricing($pricingBlock);
-					$data['privateFareHeader'] = $matches[1];
-				} else if (php.preg_match(/PASSENGER.*PTC.*NP.*FARE\s+([A-Z]{3})/, $line, $matches = [])) {
-					$type = 'ptcList';
-					$ptcListBlock = php.array_splice($lines, $i + 1);
-					$data = this.parsePtcList($ptcListBlock);
-					$data['currency'] = $matches[1];
+		const lines = $dump.split('\n');
+		const commandCopy = lines.shift().trim();
+		const wholeMessages = [];
+		let type = null;
+		let data = null;
+		for (let i = 0; i < php.count(lines); ++i) {
+			const line = lines[i];
+			if (php.trim(line) !== '') {
+				let matches;
+				if (php.preg_match(/^\s*-{3,}(.*?)-{3,}\s*$/, line, matches = [])) {
+					type = 'ptcPricing';
+					const pricingBlock = php.array_splice(lines, i + 2);
+					data = this.parsePtcPricing(pricingBlock);
+					data.privateFareHeader = matches[1];
+				} else if (php.preg_match(/PASSENGER.*PTC.*NP.*FARE\s+([A-Z]{3})/, line, matches = [])) {
+					type = 'ptcList';
+					const ptcListBlock = php.array_splice(lines, i + 1);
+					data = this.parsePtcList(ptcListBlock);
+					data.currency = matches[1];
 				} else {
-					$wholeMessages.push(php.trim($line));
+					wholeMessages.push(php.trim(line));
 				}
 			}
 		}
 
-		if ($type !== null) {
+		if (type !== null) {
 			return {
-				commandCopy: $commandCopy,
-				wholeMessages: this.parseWholeMessages($wholeMessages),
-				type: $type,
-				data: $data,
-				error: $data.error || undefined,
+				commandCopy,
+				wholeMessages: this.parseWholeMessages(wholeMessages),
+				type,
+				data,
+				error: data.error || undefined,
 			};
 		} else {
 			return {error: 'Failed to parse PTC list/pricing - ' + $dump.trim().slice(0, 100)};
