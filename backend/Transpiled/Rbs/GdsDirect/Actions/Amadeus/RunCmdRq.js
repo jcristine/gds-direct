@@ -24,7 +24,6 @@ const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const MoveDownAllAction = require('./MoveDownAllAction.js');
 const AmadeusBuildItineraryAction = require('../../../../Rbs/GdsAction/AmadeusBuildItineraryAction.js');
 const MarriageItineraryParser = require('../../../../Gds/Parsers/Amadeus/MarriageItineraryParser.js');
-const AmadeusClient = require("../../../../../GdsClients/AmadeusClient");
 const Rej = require("klesun-node-tools/src/Rej");
 const FxParser = require('../../../../Gds/Parsers/Amadeus/Pricing/FxParser.js');
 const TicketMaskParser = require('../../../../Gds/Parsers/Amadeus/TicketMaskParser.js');

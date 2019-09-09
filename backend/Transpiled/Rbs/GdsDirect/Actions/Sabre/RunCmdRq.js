@@ -27,7 +27,6 @@ const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
 const SabreTicketParser = require('../../../../Gds/Parsers/Sabre/SabreTicketParser.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
-const {findSegmentNumberInPnr} = require('../Common/ItinerarySegments');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 const doesStorePnr = ($cmd) => {
@@ -774,35 +773,34 @@ const execute = ({
 		return Promise.resolve(sabreRawMods);
 	};
 
-	const makeStorePricingCmd = async  ($pnr, $aliasData, $needsPl) => {
-		let $adultPtc, $errors, $tripEndDate, $tripEndDt, $paxCmdParts, $pax, $cmd;
-
-		$adultPtc = $aliasData['ptc'] || 'ADT';
-		if ($needsPl && $adultPtc === 'ITX') {
-			$adultPtc = 'ADT';
+	const makeStorePricingCmd = async  (pnr, aliasData, needsPl) => {
+		let adultPtc = aliasData['ptc'] || 'ADT';
+		if (needsPl && adultPtc === 'ITX') {
+			adultPtc = 'ADT';
 		}
 
-		if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
-			return Rej.BadRequest('Invalid PNR - ' + $errors.join('; '));
+		const errors = CommonDataHelper.checkSeatCount(pnr);
+		if (!php.empty(errors)) {
+			return Rej.BadRequest('Invalid PNR - ' + errors.join('; '));
 		}
-		$tripEndDate = ((ArrayUtil.getLast($pnr.getItinerary()) || {})['departureDate'] || {})['parsed'];
-		$tripEndDt = $tripEndDate ? DateTime.decodeRelativeDateInFuture($tripEndDate, stateful.getStartDt()) : null;
+		const tripEndDate = ((ArrayUtil.getLast(pnr.getItinerary()) || {})['departureDate'] || {})['parsed'];
+		const tripEndDt = tripEndDate ? DateTime.addYear(tripEndDate, stateful.getStartDt()) : null;
 
-		$paxCmdParts = [];
-		for ($pax of Object.values($pnr.getPassengers())) {
-			const ptc = await PtcUtil.convertPtcAgeGroup($adultPtc, $pax, $tripEndDt);
-			$paxCmdParts.push('1' + ptc);
+		const paxCmdParts = [];
+		for (const pax of Object.values(pnr.getPassengers())) {
+			const ptc = await PtcUtil.convertPtcAgeGroup(adultPtc, pax, tripEndDt);
+			paxCmdParts.push('1' + ptc);
 		}
 		// KP0 - specify commission, needed by some airlines
-		$cmd = 'WPP' + php.implode('/', $paxCmdParts) + '¥KP0¥RQ';
+		let cmd = 'WPP' + paxCmdParts.join('/') + '¥KP0¥RQ';
 
-		if ($needsPl) {
-			$cmd += '¥PL';
+		if (needsPl) {
+			cmd += '¥PL';
 		}
-		const customMods = await translateMods($aliasData.pricingModifiers);
-		$cmd += customMods.map(m => '¥' + m).join('');
+		const customMods = await translateMods(aliasData.pricingModifiers);
+		cmd += customMods.map(m => '¥' + m).join('');
 
-		return $cmd;
+		return cmd;
 	};
 
 	const makePriceAllCmd = async  (aliasData) => {
