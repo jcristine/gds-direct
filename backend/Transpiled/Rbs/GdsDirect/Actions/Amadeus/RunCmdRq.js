@@ -640,7 +640,13 @@ const execute = ({
 			cmd = await makeStorePricingCmd(pnr, aliasData, true);
 			output = await runCommand(cmd);
 		}
-		return {calledCommands: [{cmd, output}]};
+		const calledCommands = [{cmd, output}];
+		if (stateful.getSessionData().isPnrStored) {
+			const login = getAgent().getLogin().toUpperCase();
+			const erCmdRec = await runCmd('RF' + login + ';ER');
+			calledCommands.push(erCmdRec);
+		}
+		return {calledCommands};
 	};
 
 	const priceAll = async (aliasData) => {
