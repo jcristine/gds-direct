@@ -899,33 +899,31 @@ const RunCmdRq = ({
 	};
 
 	const storePricing = async ($aliasData) => {
-		let $pnr, $cmd, $errors, $output, $calledCommands, $paxCmdPart;
+		const pnr = await getCurrentPnr();
+		let storeCmdRec = await makeStorePricingCmd(pnr, $aliasData, false);
 
-		$pnr = await getCurrentPnr();
-		$cmd = await makeStorePricingCmd($pnr, $aliasData, false);
-
-		$output = await runCommand($cmd['cmd'], true);
-		$calledCommands = [];
-		if (StringUtil.contains($output, 'PRIVATE FARE SELECTED')) {
-			if (await needsColonN($output, $pnr)) {
-				$cmd = await makeStorePricingCmd($pnr, $aliasData, true);
-				$output = await runCommand($cmd['cmd'], false);
-				$calledCommands.push({cmd: $cmd['cmd'], output: $output});
-			} else if (php.count($cmd['paxCmdParts']) > 1) {
-			// private fare can only be stored with a separate cmd per PTC
-				for ($paxCmdPart of Object.values($cmd['paxCmdParts'])) {
-					$cmd = 'FQP' + $paxCmdPart;
-					$output = await runCommand($cmd, false);
-					$calledCommands.push({cmd: $cmd, output: $output});
+		let output = await runCommand(storeCmdRec.cmd, true);
+		const calledCommands = [];
+		if (StringUtil.contains(output, 'PRIVATE FARE SELECTED')) {
+			if (await needsColonN(output, pnr)) {
+				storeCmdRec = await makeStorePricingCmd(pnr, $aliasData, true);
+				output = await runCommand(storeCmdRec.cmd, false);
+				calledCommands.push({cmd: storeCmdRec.cmd, output});
+			} else if (php.count(storeCmdRec.paxCmdParts) > 1) {
+				// private fare can only be stored with a separate cmd per PTC
+				for (const paxCmdPart of storeCmdRec.paxCmdParts) {
+					storeCmdRec = 'FQP' + paxCmdPart;
+					output = await runCommand(storeCmdRec, false);
+					calledCommands.push({cmd: storeCmdRec, output});
 				}
 			} else {
-				$calledCommands.push({cmd: $cmd['cmd'], output: $output});
+				calledCommands.push({cmd: storeCmdRec.cmd, output});
 			}
 		} else {
-			$calledCommands.push({cmd: $cmd['cmd'], output: $output});
+			calledCommands.push({cmd: storeCmdRec.cmd, output});
 		}
 
-		return {calledCommands: $calledCommands, errors: $errors};
+		return {calledCommands};
 	};
 
 	const priceAll = async (aliasData) => {
