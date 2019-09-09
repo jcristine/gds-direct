@@ -922,6 +922,11 @@ const RunCmdRq = ({
 		} else {
 			calledCommands.push({cmd: storeCmdRec.cmd, output});
 		}
+		if (stateful.getSessionData().isPnrStored) {
+			const login = stateful.getAgent().getLogin().toUpperCase();
+			const erCmdRec = await runCmd('R.' + login + '|ER');
+			calledCommands.push(erCmdRec);
+		}
 
 		return {calledCommands};
 	};
