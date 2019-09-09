@@ -9,9 +9,16 @@ const bookAm = async ({session, baseDate, itinerary}) => {
 	const built = await new AmadeusBuildItineraryAction({session, baseDate})
 		.execute(itinerary);
 	if (built.errorType) {
-		const msg = 'Could not rebuild PNR in Amadeus - ' +
-			built.errorType + ' ' + JSON.stringify(built.errorData);
-		return Rej.UnprocessableEntity(msg, built);
+		if (built.errorType === 'ERROR_NO_AVAIL') {
+			const cls = itinerary[0].bookingClass;
+			const from = itinerary[0].departureAirport;
+			const msg = 'No ' + cls + ' seats available for flights from ' + from;
+			return Rej.InsufficientStorage(msg, {isOk: true});
+		} else {
+			const msg = 'Could not rebuild PNR in Amadeus - ' +
+				built.errorType + ' ' + JSON.stringify(built.errorData);
+			return Rej.UnprocessableEntity(msg, built);
+		}
 	} else {
 		return Promise.resolve(built);
 	}
