@@ -15,6 +15,7 @@ const TicketDesignators = require('../Repositories/TicketDesignators.js');
 const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
 const ImportPqGalileoAction = require('../Transpiled/Rbs/GdsDirect/Actions/Galileo/ImportPqGalileoAction.js');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 const ImportPq = async ({
 	stateful, leadData, fetchOptionalFields = true,
@@ -59,12 +60,29 @@ const ImportPq = async ({
 		return php.array_merge($priorPricingCommands, $lastStateSafeCommands);
 	};
 
+	const isRegionChange = async (fcSegs) => {
+		const flagPromises = fcSegs.map(async fcSeg => {
+			const {departure, destination} = fcSeg;
+			const [depRegionId, desRegionId] = await Promise.all([
+				geo.getRegionId(departure),
+				geo.getRegionId(destination),
+			]);
+			return depRegionId != desRegionId;
+		});
+		const flags = await Promise.all(flagPromises);
+
+		return flags.some(f => f == true);
+	};
+
 	const extendPricingStore = async (store) => {
 		const correctCmds = new Set();
 		const pcc = store.pricingPcc || stateful.getSessionData()['pcc'];
 		for (const ptcBlock of store.pricingBlockList) {
+			const fcSegs = ptcBlock.fareInfo.fareConstruction.segments;
 			ptcBlock.fareType = await RbsUtils.getFareTypeV2(gds, pcc, ptcBlock);
-			for (const fcSeg of ptcBlock.fareInfo.fareConstruction.segments) {
+			ptcBlock.isRegionChange = await isRegionChange(fcSegs)
+				.catch(coverExc([Rej.list], exc => false));
+			for (const fcSeg of fcSegs) {
 				if (fcSeg.fare) {
 					const td = fcSeg.ticketDesignator;
 					const tdInfo = td && ['apollo', 'galileo'].includes(gds)
