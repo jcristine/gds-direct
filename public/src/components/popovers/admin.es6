@@ -1,7 +1,5 @@
 import Dom 			 from '../../helpers/dom.es6';
 import ButtonPopOver from '../../modules/buttonPopover.es6';
-import {CHANGE_STYLE} from "../../actions/settings";
-import Component from "../../modules/component";
 
 export default class Admin extends ButtonPopOver
 {

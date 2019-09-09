@@ -9,8 +9,10 @@ $D*DP3, $D*DF25.00                       |   fareSearchWithDecrease             
 $D/mix                                   |   fareSearchMultiPcc                        | X  | X  | X  | X  |           |                         
 $BS1+2&$BS3+4                            |   multiPriceItinerary                       | X  | X  | X  | X  |           |                         
 STORE{ptc}                               |   storePricing                              | X  | X  | X  | X  |           |                         
-PRICE{ptc}                               |   priceAll                                  | X  | X  | X  | X  |           |                         
-RE/2CV4/SS2                              |   rebookInPcc                               | X  | X  | X  | X  |           |                          
+STORE{ptc}/FXD/CUA                       |   storePricing                              | X  |    |    |    | GDSD-105  | exclude basic economy fares
+PRICE{ptc}                               |   priceAll                                  | X  | X  | X  | X  |           |
+$B/MIX                                   |   priceItinerary                            | X  | X  | X  | X  | GDSD-95   | price in multiple PCCs at once
+RE/2CV4/SS2                              |   rebookInPcc                               | X  | X  | X  | X  |           |
 A/T/20SEPNYCSFO/CHI/ATL/CLT/SEA/MSP+DL   |   multiDstAvail                             | X  |    |    |    | RSBS-298  |
 /GK                                      |   rebookAsGk                                | X  |    |    |    |           | rebook all as GK                         
 X1-2|3-4/0GK                             |   rebookAsGk                                | X  |    |    |    |           |                          
