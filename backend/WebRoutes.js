@@ -445,6 +445,7 @@ const routes = {
 	'/gdsDirect/keepAlive': withGdsSession(GdsSessionController.keepAliveCurrent),
 	'/terminal/addMpRemark': withGdsSession(GdsSessionController.addMpRemark),
 	'/terminal/goToPricing': withGdsSession(GdsSessionController.goToPricing),
+	'/terminal/addCrossRefOsi': withGdsSession(GdsSessionController.addCrossRefOsi),
 	'/api/js/admin/multi-pcc-tariff/list-rules': toHandleHttp(MultiPccTariffRules.getAll),
 	'/api/js/data/locations': toHandleHttp(Airports.getAllLocations),
 	'/api/js/admin/multi-pcc-tariff/store-rule': withRoleAuth([

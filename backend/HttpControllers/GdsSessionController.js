@@ -1,3 +1,4 @@
+const AddCrossRefOsi = require('../Actions/AddCrossRefOsi.js');
 const GoToPricing = require('../Actions/GoToPricing.js');
 const MaskFormUtils = require('../Actions/ManualPricing/TpMaskUtils.js');
 const CmdRqLog = require('../Repositories/CmdRqLog.js');
@@ -154,6 +155,20 @@ exports.goToPricing = async ({rqBody, ...controllerData}) => {
 			cmdRq: 'GOTOPRICEMIX',
 			gds: rqBody.pricingGds,
 			rbsResp: result,
+		}));
+};
+
+exports.addCrossRefOsi = async ({rqBody, ...controllerData}) => {
+	const stateful = await StatefulSession.makeFromDb(controllerData);
+	const {gds, recordLocator} = rqBody;
+	const gdsClients = GdsSession.makeLoggingGdsClients({
+		gds: controllerData.session.context.gds,
+		logId: controllerData.session.logId,
+	});
+	return AddCrossRefOsi({stateful, gds, recordLocator, gdsClients})
+		.then(result => CmdResultAdapter({
+			cmdRq: 'ADDCROSSREFOSI',
+			gds, rbsResp: result,
 		}));
 };
 
