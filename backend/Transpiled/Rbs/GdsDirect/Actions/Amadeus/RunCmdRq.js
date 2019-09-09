@@ -991,7 +991,7 @@ const execute = ({
 			return processSortItinerary();
 		} else if (reData = AliasParser.parseRe(cmd)) {
 			return processCloneItinerary(reData);
-		} else if (aliasData = await AliasParser.parseStore(cmd)) {
+		} else if (aliasData = await AliasParser.parseStore(cmd, PtcUtil)) {
 			return storePricing(aliasData);
 		} else if (aliasData = await AliasParser.parsePrice(cmd, stateful)) {
 			return priceAll(aliasData);

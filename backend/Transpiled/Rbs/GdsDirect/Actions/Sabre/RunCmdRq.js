@@ -203,11 +203,8 @@ const forgePccChangeOutput = ($calledCommands, $area) => {
 const execute = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
-	useXml = true,
 	gdsClients = GdsSession.makeGdsClients(),
 }) => {
-	const sabre = gdsClients.sabre;
-
 	const getRestrictedPccs =  () => {
 		return ['52ZG'];
 	};
@@ -937,7 +934,7 @@ const execute = ({
 			return changeArea(parsed['data']);
 		} else if (reData = AliasParser.parseRe(cmd)) {
 			return processCloneItinerary(reData);
-		} else if (aliasData = await AliasParser.parseStore(cmd)) {
+		} else if (aliasData = await AliasParser.parseStore(cmd, PtcUtil)) {
 			return storePricing(aliasData);
 		} else if (aliasData = await AliasParser.parsePrice(cmd, stateful)) {
 			return priceAll(aliasData);

@@ -75,7 +75,7 @@ class AliasParser {
 		};
 	}
 
-	static async parseStore(cmd) {
+	static async parseStore(cmd, PtcUtil = require('../Process/Common/PtcUtil.js')) {
 		let matches;
 		if (php.preg_match(/^STORE([A-Z0-9]{3}|)\/?(.*)$/, cmd, matches = [])) {
 			let [, ptc, modsPart] = matches;

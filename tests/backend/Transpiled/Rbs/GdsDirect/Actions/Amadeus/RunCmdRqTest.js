@@ -890,32 +890,14 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				'baseDate': '2018-02-22',
 			},
 			output: {
-				error: 'Error: No known Fare Families matched adult PTC MIL',
+				error: 'Error: Invalid PTC - MIL - no known fare families matched',
 			},
 			'sessionInfo': {
 				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState(), {
 					'hasPnr': true, 'lead_creator_id': 2838,
 				}),
 				'initialCommands': [],
-				'performedCommands': [
-					{
-						'cmd': 'RT',
-						'output': php.implode(php.PHP_EOL, [
-							'/$--- MSC ---',
-							'RP/SFO1S2195/',
-							'  1.LIBERMANE/LEPIN(C08)',
-							'  2.LIBERMANE/MARINA(INFLIBERMANE/ZIMICH/28DEC17)',
-							'  3  SU1845 M 10MAY 4*KIVSVO DK2  1250A 345A 10MAY  E  0 32A S',
-							'     SEE RTSVC',
-							'  4  SU2682 M 10MAY 4*SVORIX DK2   915A1050A 10MAY  E  0 73H S',
-							'     010 BT 7425',
-							'     SEE RTSVC',
-							'  5 SSR INFT SU NN1 LIBERMANE/ZIMICH 28DEC17/S3/P2',
-							'  6 SSR INFT SU NN1 LIBERMANE/ZIMICH 28DEC17/S4/P2',
-							' ',
-						]),
-					},
-				],
+				'performedCommands': [],
 			},
 		});
 
