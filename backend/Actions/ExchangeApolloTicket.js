@@ -35,6 +35,7 @@ const parseOutput = (output) => {
 		if (output.trim() === 'TAX CODE ERROR' ||
 			output.trim() === 'COMM ERR' ||
 			output.trim() === 'TKT/CPN NBR ERR' ||
+			output.trim() === 'PENALTY ERROR' ||
 			output.match(/^\s*TX\d+ ERROR\s*$/)
 		) {
 			// if agent accidentally entered amount
