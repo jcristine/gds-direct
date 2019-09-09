@@ -1,3 +1,5 @@
+const TranslatePricingCmd = require('../../../../../Actions/CmdTranslators/TranslatePricingCmd.js');
+const NormalizePricingCmd = require('gds-utils/src/cmd_translators/NormalizePricingCmd.js');
 const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
 const PricingCmdParser = require('../../../../Gds/Parsers/Sabre/Commands/PricingCmdParser.js');
 const BookViaGk_sabre = require('../../../../../Actions/BookViaGk/BookViaGk_sabre.js');
@@ -179,24 +181,6 @@ const parseMultiPriceItineraryAlias = ($cmd) => {
 		}
 	}
 	return null;
-};
-
-const transformBuildError = (result) => {
-	if (!result.success) {
-		return Errors.getMessage(result.errorType, result.errorData);
-	} else {
-		return null;
-	}
-};
-
-const translateApolloPricingModifier = (mod) => {
-	if (mod.type === 'validatingCarrier') {
-		return 'A' + mod.parsed;
-	} else if (mod.type === 'currency') {
-		return 'M' + mod.parsed;
-	} else {
-		return null;
-	}
 };
 
 /**
@@ -757,16 +741,24 @@ const execute = ({
 		return rbsInfo.isPrivateFare && rbsInfo.isBrokenFare;
 	};
 
-	const translateMods = async  (pricingModifiers) => {
+	const translateMods = async  (apolloPricingModifiers) => {
+		const normalized = NormalizePricingCmd.inApollo({
+			type: 'storePricing',
+			data: {
+				baseCmd: '$B',
+				pricingModifiers: apolloPricingModifiers,
+			},
+		});
+
 		const sabreRawMods = [];
-		for (const apolloMod of pricingModifiers) {
-			const translated = translateApolloPricingModifier(apolloMod);
+		for (const mod of normalized.pricingModifiers) {
+			const translated = TranslatePricingCmd.mod_sabre(mod);
 			if (translated) {
 				sabreRawMods.push(translated);
 			} else {
-				const msg = apolloMod.type
-					? 'Unsupported Apollo modifier - ' + apolloMod.type + ' - ' + apolloMod.raw
-					: 'Unsupported modifier - ' + apolloMod.raw;
+				const msg = mod.type
+					? 'Unsupported Apollo modifier - ' + mod.type + ' - ' + mod.raw
+					: 'Unsupported modifier - ' + mod.raw;
 				return Rej.NotImplemented(msg);
 			}
 		}

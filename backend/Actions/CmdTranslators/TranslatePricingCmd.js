@@ -327,6 +327,75 @@ const inGalileo = (norm) => {
 	return [effectiveBaseCmd, ...effectiveMods].join('/');
 };
 
+const mod_sabre = (mod) => {
+	const effectiveMods = [];
+	if (mod.type === 'currency') {
+		effectiveMods.push('M' + mod.parsed);
+	} else if (mod.type === 'validatingCarrier') {
+		effectiveMods.push('A' + mod.parsed);
+	} else if (mod.type === 'overrideCarrier') {
+		effectiveMods.push('C-' + mod.parsed);
+	} else if (mod.type === 'ticketingDate') {
+		effectiveMods.push('B' + mod.parsed.raw);
+	} else if (mod.type === 'cabinClass') {
+		const typeToLetter = php.array_flip(SabPricingCmdParser.cabinClassMapping);
+		const letter = typeToLetter[mod.parsed.parsed];
+		if (letter) {
+			effectiveMods.push('TC-' + letter);
+		} else if (mod.parsed.parsed === 'sameAsBooked') {
+			// Sabre does that by default
+		} else {
+			throw Rej.NotImplemented.makeExc('Unsupported cabin class ' + mod.parsed.parsed + ' - ' + mod.raw);
+		}
+	} else if (mod.type === 'segments') {
+		const bundles = mod.parsed.bundles;
+		let accountCodes = bundles.map(b => b.accountCode).filter(fb => fb);
+		accountCodes = [...new Set(accountCodes)];
+		if (accountCodes.length > 1) {
+			throw Rej.NotImplemented.makeExc('Account code can not be specified per segment in Sabre');
+		} else if (accountCodes.length === 1) {
+			// agent usually use RR*, though there is also AC*
+			// format, not sure which of them is the correct one...
+			effectiveMods.push('RR*' + accountCodes[0]);
+		}
+		let fareBases = bundles.map(b => b.fareBasis).filter(fb => fb);
+		fareBases = [...new Set(fareBases)];
+		const singleFb = fareBases.length !== 1 ? null : fareBases[0];
+		if (singleFb) {
+			effectiveMods.push('Q' + singleFb);
+		}
+		const selects = bundles.filter(b => b.fareBasis && b.segmentNumbers.length > 0);
+		const justNums = bundles.flatMap(b => b.fareBasis ? [] : b.segmentNumbers);
+		if (justNums.length > 0) {
+			// simplify: S1/2¥S5/6 -> S1/2/5/6
+			selects.push({segmentNumbers: justNums});
+		}
+		for (const bundle of selects) {
+			const segNums = bundle.segmentNumbers;
+			let mod = 'S' + shortenRanges(segNums, '/', '-');
+			if (!singleFb && bundle.fareBasis) {
+				mod += '*' + bundle.fareBasis;
+			}
+			effectiveMods.push(mod);
+		}
+	} else if (mod.type === 'fareType') {
+		if (mod.parsed === 'public') {
+			effectiveMods.push('PL');
+		} else if (PRIVATE_FARE_TYPES.includes(mod.parsed)) {
+			effectiveMods.push('PV');
+		} else {
+			throw Rej.NotImplemented.makeExc('Unsupported fare type ' + mod.parsed.parsed + ' - ' + mod.raw);
+		}
+	} else if (mod.type === 'commission') {
+		const {units, value} = mod.parsed;
+		const sabreMod = 'K' + (units === 'percent' ? 'P' : '') + value;
+		effectiveMods.push(sabreMod);
+	} else {
+		return null;
+	}
+	return effectiveMods;
+};
+
 const inSabre = (norm) => {
 	const {effectiveBaseCmd, effectiveMods, pushPaxMod} = init('sabre', norm);
 	if (!effectiveBaseCmd) {
@@ -337,71 +406,13 @@ const inSabre = (norm) => {
 	}
 	let postfix = '';
 	for (const mod of norm.pricingModifiers) {
+		let sabreMods;
 		if (mod.type === 'namePosition') {
 			pushPaxMod();
-		} else if (mod.type === 'currency') {
-			effectiveMods.push('M' + mod.parsed);
-		} else if (mod.type === 'validatingCarrier') {
-			effectiveMods.push('A' + mod.parsed);
-		} else if (mod.type === 'overrideCarrier') {
-			effectiveMods.push('C-' + mod.parsed);
-		} else if (mod.type === 'ticketingDate') {
-			effectiveMods.push('B' + mod.parsed.raw);
-		} else if (mod.type === 'cabinClass') {
-			const typeToLetter = php.array_flip(SabPricingCmdParser.cabinClassMapping);
-			const letter = typeToLetter[mod.parsed.parsed];
-			if (letter) {
-				effectiveMods.push('TC-' + letter);
-			} else if (mod.parsed.parsed === 'sameAsBooked') {
-				// Sabre does that by default
-			} else {
-				throw Rej.NotImplemented.makeExc('Unsupported cabin class ' + mod.parsed.parsed + ' - ' + mod.raw);
-			}
+		} else if (sabreMods = mod_sabre(mod)) {
+			effectiveMods.push(...sabreMods);
 		} else if (mod.type === 'accompaniedChild') {
 			// skip - Sabre does not require it if I remember right
-		} else if (mod.type === 'segments') {
-			const bundles = mod.parsed.bundles;
-			let accountCodes = bundles.map(b => b.accountCode).filter(fb => fb);
-			accountCodes = [...new Set(accountCodes)];
-			if (accountCodes.length > 1) {
-				throw Rej.NotImplemented.makeExc('Account code can not be specified per segment in Sabre');
-			} else if (accountCodes.length === 1) {
-				// agent usually use RR*, though there is also AC*
-				// format, not sure which of them is the correct one...
-				effectiveMods.push('RR*' + accountCodes[0]);
-			}
-			let fareBases = bundles.map(b => b.fareBasis).filter(fb => fb);
-			fareBases = [...new Set(fareBases)];
-			const singleFb = fareBases.length !== 1 ? null : fareBases[0];
-			if (singleFb) {
-				effectiveMods.push('Q' + singleFb);
-			}
-			const selects = bundles.filter(b => b.fareBasis && b.segmentNumbers.length > 0);
-			const justNums = bundles.flatMap(b => b.fareBasis ? [] : b.segmentNumbers);
-			if (justNums.length > 0) {
-				// simplify: S1/2¥S5/6 -> S1/2/5/6
-				selects.push({segmentNumbers: justNums});
-			}
-			for (const bundle of selects) {
-				const segNums = bundle.segmentNumbers;
-				let mod = 'S' + shortenRanges(segNums, '/', '-');
-				if (!singleFb && bundle.fareBasis) {
-					mod += '*' + bundle.fareBasis;
-				}
-				effectiveMods.push(mod);
-			}
-		} else if (mod.type === 'fareType') {
-			if (mod.parsed === 'public') {
-				effectiveMods.push('PL');
-			} else if (PRIVATE_FARE_TYPES.includes(mod.parsed)) {
-				effectiveMods.push('PV');
-			} else {
-				throw Rej.NotImplemented.makeExc('Unsupported fare type ' + mod.parsed.parsed + ' - ' + mod.raw);
-			}
-		} else if (mod.type === 'commission') {
-			const {units, value} = mod.parsed;
-			const sabreMod = 'K' + (units === 'percent' ? 'P' : '') + value;
-			effectiveMods.push(sabreMod);
 		} else if (mod.type === 'forceProperEconomy') {
 			effectiveMods.push('FXD');
 		} else if (mod.raw === 'MIX') {
@@ -521,6 +532,7 @@ const TranslatePricingCmd = ({
 // ... probably should start splitting GDS-es to separate files...
 TranslatePricingCmd.subMod_amadeus = subMod_amadeus;
 TranslatePricingCmd.mod_amadeus = mod_amadeus;
+TranslatePricingCmd.mod_sabre = mod_sabre;
 
 TranslatePricingCmd.fromData = fromData;
 TranslatePricingCmd.translatePaxes = translatePaxes;
