@@ -16,55 +16,53 @@ class ImportApolloPnrFormatAdapter
 	// =====================
 
 	/**
-     * @param $baseDate string - date that is between reservation and first segment
+     * @param baseDate string - date that is between reservation and first segment
      * @param array $parsedData = ApolloReservationParser::parse()
      */
-	static transformReservation($parsedData, $baseDate)  {
-		let $recentPast, $nearFuture, $nameRecords, $reservation, $pnrInfo;
-		if (php.isset($parsedData['error'])) {
-			return $parsedData;
+	static transformReservation(parsedData, baseDate)  {
+		if (php.isset(parsedData.error)) {
+			return parsedData;
 		}
-		$recentPast = !$baseDate ? null : php.date('Y-m-d', php.strtotime('-2 days', php.strtotime($baseDate))); // -2 for timezone error
-		$nearFuture = !$baseDate ? null : php.date('Y-m-d', php.strtotime('+2 days', php.strtotime($baseDate))); // +2 for timezone error
+		const recentPast = !baseDate ? null : php.date('Y-m-d', php.strtotime('-2 days', php.strtotime(baseDate))); // -2 for timezone error
+		const nearFuture = !baseDate ? null : php.date('Y-m-d', php.strtotime('+2 days', php.strtotime(baseDate))); // +2 for timezone error
 
-		$nameRecords = $parsedData['passengers']['passengerList'] || [];
-		$reservation = {};
-		$pnrInfo = !php.empty($parsedData['headerData']['reservationInfo'])
-			? this.transformPnrInfo($parsedData['headerData'], $nearFuture)
+		const $nameRecords = parsedData.passengers.passengerList || [];
+		const pnrInfo = !php.empty(parsedData.headerData.reservationInfo)
+			? this.transformPnrInfo(parsedData.headerData, nearFuture)
 			: null;
-		$reservation['pnrInfo'] = $pnrInfo;
-		$reservation['passengers'] = $nameRecords;
-		$reservation['itinerary'] = FormatAdapter.adaptApolloItineraryParseForClient($parsedData['itineraryData'] || [], $recentPast);
-		$reservation['remarks'] = FormatAdapter.transformApolloRemarks($parsedData['remarks'] || []);
-		$reservation['confirmationNumbers'] = Fp.map(($acknDataEl) => {
-			return {
-				airline: $acknDataEl['airline'],
-				confirmationNumber: $acknDataEl['confirmationNumber'],
-				segmentNumber: null,
-				date: {
-					raw: $acknDataEl['date']['raw'],
-					parsed: $acknDataEl['date']['parsed'],
-					full: $pnrInfo ? DateTime.decodeRelativeDateInFuture($acknDataEl['date']['parsed'],
-						$pnrInfo['reservationDate']['full']) : null,
-				},
-			};
-		}, $parsedData['acknData'] || []);
-		$reservation['dataExistsInfo'] = {
-			mileageProgramsExist: $parsedData['dataExistsInfo']['frequentFlyerDataExists'],
-			fareQuoteExists: $parsedData['dataExistsInfo']['linearFareDataExists'],
-			dividedBookingExists: $parsedData['dataExistsInfo']['dividedBookingExists'],
-			globalInformationExists: $parsedData['dataExistsInfo']['globalInformationExists'],
-			itineraryRemarksExist: $parsedData['dataExistsInfo']['itineraryRemarksExist'],
-			miscDocumentDataExists: $parsedData['dataExistsInfo']['miscDocumentDataExists'],
-			profileAssociationsExist: $parsedData['dataExistsInfo']['profileAssociationsExist'],
-			seatDataExists: $parsedData['dataExistsInfo']['seatDataExists'],
-			tinRemarksExist: $parsedData['dataExistsInfo']['tinRemarksExist'],
-			nmePricingRecordsExist: $parsedData['dataExistsInfo']['nmePricingRecordsExist'],
-			eTicketDataExists: $parsedData['dataExistsInfo']['eTicketDataExists'],
+		let reservation = {
+			pnrInfo: pnrInfo,
+			passengers: $nameRecords,
+			itinerary: FormatAdapter.adaptApolloItineraryParseForClient(parsedData.itineraryData || [], recentPast),
+			remarks: FormatAdapter.transformApolloRemarks(parsedData.remarks || []),
+			confirmationNumbers: (parsedData.acknData || [])
+				.map((acknDataEl) => ({
+					airline: acknDataEl.airline,
+					confirmationNumber: acknDataEl.confirmationNumber,
+					segmentNumber: null,
+					date: {
+						raw: acknDataEl.date.raw,
+						parsed: acknDataEl.date.parsed,
+						full: pnrInfo ? DateTime.addYear(acknDataEl.date.parsed,
+							pnrInfo.reservationDate.full) : null,
+					},
+				})),
+			dataExistsInfo: {
+				mileageProgramsExist: parsedData.dataExistsInfo.frequentFlyerDataExists,
+				fareQuoteExists: parsedData.dataExistsInfo.linearFareDataExists,
+				dividedBookingExists: parsedData.dataExistsInfo.dividedBookingExists,
+				globalInformationExists: parsedData.dataExistsInfo.globalInformationExists,
+				itineraryRemarksExist: parsedData.dataExistsInfo.itineraryRemarksExist,
+				miscDocumentDataExists: parsedData.dataExistsInfo.miscDocumentDataExists,
+				profileAssociationsExist: parsedData.dataExistsInfo.profileAssociationsExist,
+				seatDataExists: parsedData.dataExistsInfo.seatDataExists,
+				tinRemarksExist: parsedData.dataExistsInfo.tinRemarksExist,
+				nmePricingRecordsExist: parsedData.dataExistsInfo.nmePricingRecordsExist,
+				eTicketDataExists: parsedData.dataExistsInfo.eTicketDataExists,
+			},
 		};
-		$reservation['dumpNumbers'] = $parsedData['dumpNumbers'] || null;
-		$reservation = ImportPnrCommonFormatAdapter.addContextDataToPaxes($reservation);
-		return $reservation;
+		reservation = ImportPnrCommonFormatAdapter.addContextDataToPaxes(reservation);
+		return reservation;
 	}
 
 	static transformFormOfPaymentInfo($parsedData)  {
