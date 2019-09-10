@@ -4,7 +4,6 @@ const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const Lexeme = require('gds-utils/src/lexer/Lexeme.js');
 const Lexer = require('gds-utils/src/lexer/Lexer.js');
-const AtfqParser = require('../../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const php = require("klesun-node-tools/src/Transpiled/php.js");
 const CommonParserHelpers = require("./CommonParserHelpers");
 const {mkReg} = require('klesun-node-tools/src/Utils/Misc.js');
@@ -181,6 +180,42 @@ const parse_sell_openSegment = ($cmd) => {
 		return {
 			sellType: 'openSegment',
 			unparsed: match.groups.unparsed,
+		};
+	} else {
+		return null;
+	}
+};
+
+const regex_sell_directSell = mkReg([
+	'^0',
+	/(?<airline>[A-Z0-9]{2})/,
+	/(?<flightNumber>\d{1,4})/,
+	/(?<bookingClass>[A-Z])/,
+	/(?<departureDate>\d{1,2}[A-Z]{3})/,
+	/(?<departureAirport>[A-Z]{3})/,
+	/(?<destinationAirport>[A-Z]{3})/,
+	/(?<segmentStatus>[A-Z]{2})/,
+	/(?<seatCount>\d{0,2})/,
+	/(?<unparsed>.*?)/,
+	'\s*$',
+]);
+
+// '0SK93F8NOVLAXCPHNN2'
+const parse_sell_directSell = (cmd) => {
+	const match = cmd.match(regex_sell_directSell);
+	if (match) {
+		const groups = match.groups;
+		return {
+			sellType: 'directSell',
+			airline: groups.airline,
+			flightNumber: groups.flightNumber,
+			bookingClass: groups.bookingClass,
+			departureDate: {raw: groups.departureDate},
+			departureAirport: groups.departureAirport,
+			destinationAirport: groups.destinationAirport,
+			segmentStatus: groups.segmentStatus,
+			seatCount: php.intval(groups.seatCount),
+			unparsed: groups.unparsed,
 		};
 	} else {
 		return null;
@@ -412,39 +447,6 @@ class CommandParser {
 		return $result;
 	}
 
-	// '0SK93F8NOVLAXCPHNN2'
-	static parseDirectSell($cmd) {
-		let $regex, $matches;
-		$regex =
-			'/^0' +
-			'(?<airline>[A-Z0-9]{2})' +
-			'(?<flightNumber>\\d{1,4})' +
-			'(?<bookingClass>[A-Z])' +
-			'(?<departureDate>\\d{1,2}[A-Z]{3})' +
-			'(?<departureAirport>[A-Z]{3})' +
-			'(?<destinationAirport>[A-Z]{3})' +
-			'(?<segmentStatus>[A-Z]{2})' +
-			'(?<seatCount>\\d{0,2})' +
-			'(?<unparsed>.*?)' +
-			'\\s*$/';
-		if (php.preg_match($regex, $cmd, $matches = [])) {
-			return {
-				sellType: 'directSell',
-				airline: $matches['airline'],
-				flightNumber: $matches['flightNumber'],
-				bookingClass: $matches['bookingClass'],
-				departureDate: {raw: $matches['departureDate']},
-				departureAirport: $matches['departureAirport'],
-				destinationAirport: $matches['destinationAirport'],
-				segmentStatus: $matches['segmentStatus'],
-				seatCount: php.intval($matches['seatCount']),
-				unparsed: $matches['unparsed'],
-			};
-		} else {
-			return null;
-		}
-	}
-
 	// '1M|2B'
 	static parseRebookSelective($textLeft) {
 		let $segments, $rawSeg, $matches, $_, $segNum, $bookCls;
@@ -495,7 +497,7 @@ class CommandParser {
 			return parse_sell_availability(cmd)
 				|| this.parseRebookSelective($textLeft)
 				|| this.parseRebookAll($textLeft)
-				|| this.parseDirectSell(cmd) // TODO: optimize
+				|| parse_sell_directSell(cmd)
 				|| parse_sell_openSegment(cmd)
 				|| {sellType: null, raw: cmd};
 		} else if (php.trim(cmd) === 'Y') {
@@ -638,7 +640,7 @@ class CommandParser {
 		};
 	}
 
-	static parseTariffMods($modsPart) {
+	static parseTariffMods($modsPart) { // TODO: optimize
 		let $getFirst, $parseDate, $end, $lexer;
 		$getFirst = ($matches) => {
 			return $matches[1];
@@ -657,7 +659,7 @@ class CommandParser {
 				return this.getCabinClasses()[$matches['cabinClass']] || null;
 			}),
 			(new Lexeme('fareType', '/^:([A-Z])' + $end + '/')).preprocessData(($matches) => {
-				return AtfqParser.decodeFareType($matches[1]);
+				return PricingCmdParser.decodeFareType($matches[1]);
 			}),
 			(new Lexeme('ptc', '/^-([A-Z][A-Z0-9]{2})' + $end + '/')).preprocessData($getFirst),
 			(new Lexeme('bookingClass', '/^-([A-Z])' + $end + '/')).preprocessData($getFirst),
@@ -735,7 +737,7 @@ class CommandParser {
 		let matches;
 		if (php.preg_match(/^(HH\$?PR)(.*?)\s*$/, $cmd, matches = [])) {
 			const [_, baseCmd, modsStr] = matches;
-			const mods = AtfqParser.parsePricingModifiers(modsStr);
+			const mods = PricingCmdParser.parsePricingModifiers(modsStr);
 			return {
 				baseCmd: baseCmd,
 				pricingModifiers: mods,
