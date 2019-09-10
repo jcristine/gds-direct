@@ -197,9 +197,8 @@ class CommandParser {
 		return result;
 	}
 
-	static parseSearchPnr($cmd) {
-		let $filter, $matches;
-		$filter = '/' + php.implode('|', [
+	static parseSearchPnr(cmd) {
+		const filter = '/' + php.implode('|', [
 			// Not all formats are possible to display pnr
 			'^\\*-.*',
 			'^\\*[A-Z0-9]{2}\\d{1,4}[-\\\/].*',
@@ -207,86 +206,80 @@ class CommandParser {
 			'^\\*\\*\\d{1,3}-.*',
 			'^\\*(?:TKT|PTA-|TOD-)\\d+.*',
 		]) + '/';
-		if (php.preg_match($filter, $cmd, $matches = [])) {
-			return $matches[0];
+		let matches;
+		if (php.preg_match(filter, cmd, matches = [])) {
+			return matches[0];
 		} else {
 			return null;
 		}
 	}
 
 	static parseArea($cmd) {
-		let $filter, $matches;
-		$filter = /^(?:\¤|\[)([A-F])$/;
-		if (php.preg_match($filter, $cmd, $matches = [])) {
-			return $matches[1];
+		const filter = /^(?:\¤|\[)([A-F])$/;
+		let matches;
+		if (php.preg_match(filter, $cmd, matches = [])) {
+			return matches[1];
 		} else {
 			return null;
 		}
 	}
 
-	static parsePcc($cmd) {
-		let $filter, $matches;
-		$filter = /^AAA([A-Z0-9]{3,4})$/;
-		if (php.preg_match($filter, $cmd, $matches = [])) {
-			return $matches[1];
+	static parsePcc(cmd) {
+		const filter = /^AAA([A-Z0-9]{3,4})$/;
+		let matches;
+		if (php.preg_match(filter, cmd, matches = [])) {
+			return matches[1];
 		} else {
 			return null;
 		}
 	}
 
-	static parseWprd($cmd) {
-		let $command, $modsStr, $rawData;
-		$command = php.substr($cmd, 0, 5);
-		if ($command === 'WPRD*') {
-			$modsStr = php.substr($cmd, 5);
-			$rawData = $modsStr ? php.explode('¥', $modsStr) : [];
-			return {rawModifiers: $rawData};
+	static parseWprd(cmd) {
+		const command = cmd.slice(0, 5);
+		if (command === 'WPRD*') {
+			const modsStr = cmd.slice(5);
+			const rawModifiers = !modsStr ? [] : modsStr.split('¥');
+			return {rawModifiers};
 		} else {
 			return null;
 		}
 	}
 
-	/** @param $expr = '3' || '9-12' || '9,12' || '1-3,6-8,12'; */
-	static parseRemarkRanges($expr) {
-		let $parseRange;
-		if ($expr === '') {
+	/** @param expr = '3' || '9-12' || '9,12' || '1-3,6-8,12'; */
+	static parseRemarkRanges(expr) {
+		if (expr === '') {
 			return [{from: 1, to: 1}];
 		}
-		$parseRange = ($text) => {
-			let $pair;
-			$pair = php.explode('-', $text);
-			return {from: $pair[0], to: $pair[1] || $pair[0]};
+		const parseRange = (text) => {
+			const pair = text.split('-');
+			return {from: pair[0], to: pair[1] || pair[0]};
 		};
-		return Fp.map($parseRange, php.explode(',', php.trim($expr)));
+		return expr.trim().split(',').map(parseRange);
 	}
 
 	// '1.1', '3.1', '1.1-4.1', '1.1-1.3,1.5-2.3,3.2-4.0'
-	static parsePaxRanges($expr) {
-		let $parseRange;
-		$parseRange = ($text) => {
-			let $pair, $from, $fromFNum, $to, $toFNum;
-			$pair = php.explode('-', $text);
-			[$from, $fromFNum] = php.explode('.', $pair[0]);
-			[$to, $toFNum] = php.explode('.', $pair[1] || $pair[0]);
+	static parsePaxRanges(expr) {
+		const parseRange = (text) => {
+			const pair = text.split('-');
+			const [from, fromFNum] = pair[0].split('.');
+			const [to, toFNum] = (pair[1] || pair[0]).split('.');
 			return {
-				from: $from, fromMinor: $fromFNum,
-				to: $to, toMinor: $toFNum,
+				from: from, fromMinor: fromFNum,
+				to: to, toMinor: toFNum,
 			};
 		};
-		return Fp.map($parseRange, php.explode(',', php.trim($expr)));
+		return expr.trim().split(',').map(parseRange);
 	}
 
-	static flattenRange($expr) {
-		let $parseRange;
-		if (!$expr) {
+	static flattenRange(expr) {
+		if (!expr) {
 			return [];
 		}
-		$parseRange = ($text) => {
-			let $pair;
-			$pair = php.explode('-', $text);
-			return php.range($pair[0], $pair[1] || $pair[0]);
+		const parseRange = ($text) => {
+			const pair = $text.split('-');
+			return php.range(pair[0], pair[1] || pair[0]);
 		};
-		return Fp.flatten(Fp.map($parseRange, php.explode(',', php.trim($expr))));
+		return expr.trim().split(',').flatMap(parseRange);
 	}
 
 	/**
