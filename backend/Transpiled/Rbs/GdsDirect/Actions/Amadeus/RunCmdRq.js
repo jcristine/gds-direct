@@ -627,6 +627,11 @@ const execute = ({
 
 	const storePricing = async (aliasData) => {
 		const pnr = await getCurrentPnr();
+		if (pnr.getItinerary().length === 0) {
+			return Rej.BadRequest('No itinerary to price');
+		} else if (pnr.getPassengers().length === 0) {
+			return Rej.BadRequest('No passenger names in PNR');
+		}
 		const errors = CommonDataHelper.checkSeatCount(pnr);
 		if (!php.empty(errors)) {
 			return Rej.BadRequest('Invalid PNR - ' + errors.join('; '));

@@ -751,6 +751,11 @@ const RunCmdRq = ({
 	const storePricing = async (aliasData) => {
 		const messages = [];
 		const pnr = await getCurrentPnr();
+		if (pnr.getItinerary().length === 0) {
+			return Rej.BadRequest('No itinerary to price');
+		} else if (pnr.getPassengers().length === 0) {
+			return Rej.BadRequest('No passenger names in PNR');
+		}
 		const lastStore = ArrayUtil.getLast(pnr.getStoredPricingList());
 		const prevAtfqNum = lastStore ? lastStore.lineNumber : 0;
 		const newAtfqNum = +prevAtfqNum + 1;

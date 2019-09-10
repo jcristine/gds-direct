@@ -900,6 +900,11 @@ const RunCmdRq = ({
 
 	const storePricing = async ($aliasData) => {
 		const pnr = await getCurrentPnr();
+		if (pnr.getItinerary().length === 0) {
+			return Rej.BadRequest('No itinerary to price');
+		} else if (pnr.getPassengers().length === 0) {
+			return Rej.BadRequest('No passenger names in PNR');
+		}
 		let storeCmdRec = await makeStorePricingCmd(pnr, $aliasData, false);
 
 		let output = await runCommand(storeCmdRec.cmd, true);
