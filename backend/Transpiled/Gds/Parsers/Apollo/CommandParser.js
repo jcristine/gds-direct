@@ -14,10 +14,9 @@ const {mkReg} = require('klesun-node-tools/src/Utils/Misc.js');
  * this command, maybe description what it does, link to HELP, etc...
  */
 class CommandParser {
-	static detectCommandType($cmd) {
-		let $is, $startsWith, $regex, $pattern, $type, $name;
-		$cmd = php.strtoupper($cmd);
-		$is = {
+	static detectCommandType(cmd) {
+		cmd = php.strtoupper(cmd);
+		const is = {
 			'IR': 'ignoreKeepPnr',
 			'9D': 'requestedSeats',
 			'*MP': 'frequentFlyerData',
@@ -48,7 +47,7 @@ class CommandParser {
 			'F': 'fileDividedBooking',
 			'HHMCO': 'requestMcoMask',
 		};
-		$startsWith = {
+		const startsWith = {
 			'@LT': 'showTime',
 			'MU': 'moveUp',
 			'MD': 'moveDown',
@@ -118,48 +117,48 @@ class CommandParser {
 			'L@': 'availabilityThroughLink',
 			'DCT': 'minConnectionTimeTable',
 		};
-		$regex = {
-			[/^VIT[A-Z0-9]{2}\d+\/\d{1,2}[A-Z]{3}$/]: 'flightRoutingAndTimes', // flight routing and times
-			[/^FQN\d*$/]: 'fareList', // Fare Components For i-th ptc group in pricing
-			[/^FN\d+$/]: 'fareRulesMenu', // show available sections of i-th fare
-			[/^\$V\d+\/?$/]: 'fareRulesMenuFromTariff', // show available sections of i-th fare
-			[/^FN\d+\/S$/]: 'fareRulesSummary', // navigate through them with summary
-			[/^FN\d+(\/\d+(\-\d+)?|\/[A-Z]{3})+/]: 'fareRules', // get k-th fare rule section of i-th fare
-			[/^\$V(\/\d+(\-\d+)?|\/[A-Z]{3})+/]: 'fareRulesFromMenu',
-			[/^\$V\d+(\/\d+(\-\d+)?|\/[A-Z]{3})+/]: 'fareRulesFromTariff',
-			[/^T:V\d*$/]: 'restorePricing',
-			[/^\*R(\||$)/]: 'redisplayPnr', // ENTIRE RECORD
-			[/^\*I(\||$)/]: 'itinerary', // ITINERARY
-			[/^(?:\/\d+){2}(?:[|+-]\d+)*$/]: 'reorderSegments',
-			[/^(?:\/\d+)$/]: 'setNextFollowsSegment',
-			[/^FS\d*[A-Z]{3}(\d+[A-Z]{3}[A-Z]{3})+.*$/]: 'lowFareSearch', // HELP FSU (Unbooked)
-			[/^FS\d+$/]: 'sellFromLowFareSearch',
+		const regexTypes = [
+			[/^VIT[A-Z0-9]{2}\d+\/\d{1,2}[A-Z]{3}$/, 'flightRoutingAndTimes'], // flight routing and times
+			[/^FQN\d*$/, 'fareList'], // Fare Components For i-th ptc group in pricing
+			[/^FN\d+$/, 'fareRulesMenu'], // show available sections of i-th fare
+			[/^\$V\d+\/?$/, 'fareRulesMenuFromTariff'], // show available sections of i-th fare
+			[/^FN\d+\/S$/, 'fareRulesSummary'], // navigate through them with summary
+			[/^FN\d+(\/\d+(\-\d+)?|\/[A-Z]{3})+/, 'fareRules'], // get k-th fare rule section of i-th fare
+			[/^\$V(\/\d+(\-\d+)?|\/[A-Z]{3})+/, 'fareRulesFromMenu'],
+			[/^\$V\d+(\/\d+(\-\d+)?|\/[A-Z]{3})+/, 'fareRulesFromTariff'],
+			[/^T:V\d*$/, 'restorePricing'],
+			[/^\*R(\||$)/, 'redisplayPnr'], // ENTIRE RECORD
+			[/^\*I(\||$)/, 'itinerary'], // ITINERARY
+			[/^(?:\/\d+){2}(?:[|+-]\d+)*$/, 'reorderSegments'],
+			[/^(?:\/\d+)$/, 'setNextFollowsSegment'],
+			[/^FS\d*[A-Z]{3}(\d+[A-Z]{3}[A-Z]{3})+.*$/, 'lowFareSearch'], // HELP FSU (Unbooked)
+			[/^FS\d+$/, 'sellFromLowFareSearch'],
 			['/^(' + php.implode('|', [
 				'MORE\\*\\d+',// AT THE SAME PRICE AS PRICING OPTION \d
 				'FS\\*\\d+',// VIEW FARE DETAILS FOR PRICING OPTION \d
 				'FSMORE',// VIEW MORE PRICING OPTIONS
 				'\\*FS', // RETURN TO THE ORIGINAL PRICING OPTION SCREEN
 				'FS-', // RETURN TO THE PREVIOUS SCREEN
-			]) + ')$/']: 'lowFareSearchNavigation', // HELP FSN (Navigation)
-			[/^FS\/\/.*$/]: 'lowFareSearchFromPnr', // HELP FSA (Availabilities for current reservation)
+			]) + ')$/', 'lowFareSearchNavigation'], // HELP FSN (Navigation)
+			[/^FS\/\/.*$/, 'lowFareSearchFromPnr'], // HELP FSA (Availabilities for current reservation)
 			// there are also "HELP FSP and HELP FSC" for filters when working within a reservation,
 			// but i believe we don't use them much, please, add the regex-es here if i am wrong
-			[/^FS.*/]: 'lowFareSearchUnclassified',
-		};
-		$cmd = php.trim($cmd);
-		for ([$pattern, $type] of Object.entries($is)) {
-			if ($cmd === $pattern) {
-				return $type;
+			[/^FS.*/, 'lowFareSearchUnclassified'],
+		];
+		cmd = php.trim(cmd);
+		for (const [pattern, type] of Object.entries(is)) {
+			if (cmd === pattern) {
+				return type;
 			}
 		}
-		for ([$pattern, $type] of Object.entries($startsWith)) {
-			if (StringUtil.startsWith($cmd, $pattern)) {
-				return $type;
+		for (const [pattern, type] of Object.entries(startsWith)) {
+			if (cmd.startsWith(pattern)) {
+				return type;
 			}
 		}
-		for ([$pattern, $name] of Object.entries($regex)) {
-			if (php.preg_match($pattern, $cmd)) {
-				return $name;
+		for (const [pattern, name] of regexTypes) {
+			if (cmd.match(pattern)) {
+				return name;
 			}
 		}
 		return null;
