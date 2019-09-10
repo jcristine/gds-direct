@@ -1,3 +1,4 @@
+const Rej = require('klesun-node-tools/src/Rej.js');
 const Debug = require('klesun-node-tools/src/Debug.js');
 const Diag = require('../LibWrappers/Diag.js');
 const AddCrossRefOsi = require('../Actions/AddCrossRefOsi.js');
@@ -26,6 +27,7 @@ const SubmitTaxBreakdownMask = require('../Actions/ManualPricing/SubmitTaxBreakd
 const SubmitZpTaxBreakdownMask = require('../Actions/ManualPricing/SubmitZpTaxBreakdownMask.js');
 const SubmitFcMask = require('../Actions/ManualPricing/FcMaskSubmit.js');
 const GdsSessionManager = require('../GdsHelpers/GdsSessionManager.js');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 const initStateful = async (params) => {
 	const stateful = await StatefulSession.makeFromDb(params);
@@ -61,7 +63,8 @@ const runInSession = async (params) => {
 		rbsResp: rbsResult,
 		fullState: stateful.getFullState(),
 	}));
-	CmdRqLog.logProcess({params, whenCmdRqId, whenCmsResult});
+	CmdRqLog.logProcess({params, whenCmdRqId, whenCmsResult})
+		.catch(coverExc(Rej.list, exc => {}));
 	return whenCmsResult.then(cmsResult => ({...cmsResult, session}));
 };
 
