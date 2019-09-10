@@ -141,63 +141,60 @@ class CommandParser {
 	}
 
 	// 'E', 'ER', 'EM¥N2.1¥RR¥PH', 'EWR', 'ER*N*T*FF', 'ECR'
-	static parseStorePnr($cmd) {
-		let $result, $textLeft, $rawModifiers, $emailCode, $actionData;
-		$result = {keepPnr: false, sendEmail: false, cloneItinerary: false};
-		if (!StringUtil.startsWith($cmd, 'E')) {
+	static parseStorePnr(cmd) {
+		const result = {keepPnr: false, sendEmail: false, cloneItinerary: false};
+		if (!StringUtil.startsWith(cmd, 'E')) {
 			return null;
 		}
-		$textLeft = php.substr($cmd, 1);
-		if (StringUtil.startsWith($textLeft, 'C')) {
-			$result['cloneItinerary'] = true;
-			$textLeft = php.substr($textLeft, 1);
+		let textLeft = php.substr(cmd, 1);
+		if (StringUtil.startsWith(textLeft, 'C')) {
+			result.cloneItinerary = true;
+			textLeft = php.substr(textLeft, 1);
 			// $result['actionData'] = ['raw' => $textLeft];
-			$textLeft = '';
-		} else if (StringUtil.startsWith($textLeft, 'L')) {
+			textLeft = '';
+		} else if (StringUtil.startsWith(textLeft, 'L')) {
 			// $result['action'] = 'leaveOnQueue';
-			$textLeft = php.substr($textLeft, 1);
-		} else if (StringUtil.startsWith($textLeft, 'R')) {
-			$result['keepPnr'] = true;
-			$textLeft = php.substr($textLeft, 1);
-		} else if (StringUtil.startsWith($textLeft, 'W')) {
+			textLeft = php.substr(textLeft, 1);
+		} else if (StringUtil.startsWith(textLeft, 'R')) {
+			result.keepPnr = true;
+			textLeft = php.substr(textLeft, 1);
+		} else if (StringUtil.startsWith(textLeft, 'W')) {
 			// $result['action'] = 'updateScheduleChanges';
-			$textLeft = php.substr($textLeft, 1);
-			if (StringUtil.startsWith($textLeft, 'R')) {
-				$result['keepPnr'] = true;
-				$textLeft = php.substr($textLeft, 1);
+			textLeft = php.substr(textLeft, 1);
+			if (StringUtil.startsWith(textLeft, 'R')) {
+				result.keepPnr = true;
+				textLeft = php.substr(textLeft, 1);
 			}
-			$result['actionParams'] = {raw: $textLeft};
-		} else if (StringUtil.startsWith($textLeft, 'M')) {
-			$result['sendEmail'] = true;
-			$textLeft = php.substr($textLeft, 1);
-			$rawModifiers = php.explode('¥', $textLeft);
-			$emailCode = php.array_shift($rawModifiers);
-			if (StringUtil.endsWith($emailCode, 'R')) {
-				$result['keepPnr'] = true;
-				$emailCode = php.substr($emailCode, 0, -1);
+			result.actionParams = {raw: textLeft};
+		} else if (StringUtil.startsWith(textLeft, 'M')) {
+			result.sendEmail = true;
+			textLeft = php.substr(textLeft, 1);
+			const rawModifiers = textLeft.split('¥');
+			let emailCode = rawModifiers.shift();
+			if (StringUtil.endsWith(emailCode, 'R')) {
+				result.keepPnr = true;
+				emailCode = php.substr(emailCode, 0, -1);
 			}
-			$actionData = {
+			const actionData = {
 				type: {
-					raw: $emailCode,
+					raw: emailCode,
 					parsed: ({
 						'': 'general',
 						'I': 'invoice',
 						'T': 'tickets',
 						'X': 'pnrDump',
 						'XP': 'pnrDumpPdf',
-					} || {})[$emailCode],
+					} || {})[emailCode],
 				},
-				modifiers: Fp.map(($mod) => {
-					return {raw: $mod};
-				}, $rawModifiers),
+				modifiers: rawModifiers.map((mod) => ({raw: mod})),
 			};
 			// $result['actionData'] = $actionData;
-			$textLeft = '';
+			textLeft = '';
 		}
-		if ($textLeft) {
-			$result['unparsed'] = $textLeft;
+		if (textLeft) {
+			result.unparsed = textLeft;
 		}
-		return $result;
+		return result;
 	}
 
 	static parseSearchPnr($cmd) {
