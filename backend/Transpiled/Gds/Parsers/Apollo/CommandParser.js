@@ -367,6 +367,91 @@ const parse_changePnrRemarks = ($cmd) => {
 	}
 };
 
+const getCabinClasses = () => {
+	return {
+		W: 'premium_economy',
+		F: 'first',
+		P: 'premium_first',
+		C: 'business',
+		Y: 'economy',
+		U: 'upper',
+	};
+};
+
+const parseDate = (raw) => {
+	return !raw ? null : {
+		raw: raw,
+		partial: CommonParserHelpers.parsePartialDate(raw),
+		full: CommonParserHelpers.parseCurrentCenturyFullDate(raw)['parsed'],
+	};
+};
+
+let lexemes_fareSearch = null;
+const get_lexemes_fareSearch = () => {
+	if (lexemes_fareSearch == null) {
+		const end = '(?![A-Z0-9])';
+		lexemes_fareSearch = [
+			(new Lexeme('airlines', '/^(\\|[A-Z0-9]{2})+' + end + '/')).map(($matches) => {
+				return php.explode('|', php.ltrim($matches[0], '|'));
+			}),
+			(new Lexeme('currency', '/^:([A-Z]{3})' + end + '/')).map((m) => m[1]),
+			(new Lexeme('tripType', '/^:(RT|OW)' + end + '/')).map((m) => m[1]),
+			(new Lexeme('cabinClass', '/^(\\\/\\\/)?@(?<cabinClass>[A-Z])' + end + '/')).map(($matches) => {
+				return getCabinClasses()[$matches['cabinClass']] || null;
+			}),
+			(new Lexeme('fareType', '/^:([A-Z])' + end + '/')).map(($matches) => {
+				return PricingCmdParser.decodeFareType($matches[1]);
+			}),
+			(new Lexeme('ptc', '/^-([A-Z][A-Z0-9]{2})' + end + '/')).map((m) => m[1]),
+			(new Lexeme('bookingClass', '/^-([A-Z])' + end + '/')).map((m) => m[1]),
+			(new Lexeme('ticketingDate', '/^T(\\d{1,2}[A-Z]{3}\\d{2})' + end + '/')).map((m) => parseDate(m[1])),
+		];
+	}
+	return lexemes_fareSearch;
+
+};
+
+const parseTariffMods = ($modsPart) => {
+	const lexer = new Lexer(get_lexemes_fareSearch());
+	return lexer.lex($modsPart);
+};
+
+const parse_fareSearch = (cmd) => {
+	let returnDate, $matches, $_, departureAirport, destinationAirport, departureDate, $modsPart, $lexed;
+	returnDate = null;
+	// probably should parse token sequence with Lexer.js same as
+	// modifiers, as we know that they may come in nearly any order...
+	// the only rule I see here is that return date can only be specified with "V"-alidated indicator
+	if (php.preg_match(/^\$D([A-Z]{3})([A-Z]{3})(\d{1,2}[A-Z]{3}\d{0,2})(.*)$/, cmd, $matches = [])) {
+		// $DJFKMNL25MAY
+		[$_, departureAirport, destinationAirport, departureDate, $modsPart] = $matches;
+	} else if (php.preg_match(/^\$DV(\d{1,2}[A-Z]{3}\d{0,2})([A-Z]{3})([A-Z]{3})(\d{1,2}[A-Z]{3}\d{0,2})(.*)$/, cmd, $matches = [])) {
+		// $DV25MAYJFKMNL28MAY
+		[$_, departureDate, departureAirport, destinationAirport, returnDate, $modsPart] = $matches;
+	} else if (php.preg_match(/^\$DV?(\d{1,2}[A-Z]{3}\d{0,2})([A-Z]{3})([A-Z]{3})(.*)$/, cmd, $matches = [])) {
+		// $DV25MAYJFKMNL, $D25MAYJFKMNL
+		[$_, departureDate, departureAirport, destinationAirport, $modsPart] = $matches;
+	} else if (php.preg_match(/^\$D([A-Z]{3})([A-Z]{3})V(\d{1,2}[A-Z]{3})(\d{1,2}[A-Z]{3}){0,1}(.*)$/, cmd, $matches = [])) {
+		// $DJFKMNLV25MAY27MAY, $DJFKMNLV25MAY
+		[$_, departureAirport, destinationAirport, departureDate, returnDate, $modsPart] = $matches;
+	} else {
+		return null;
+	}
+
+	const lexed = parseTariffMods($modsPart);
+
+	return {
+		departureDate: parseDate(departureDate),
+		returnDate: parseDate(returnDate),
+		departureAirport: departureAirport,
+		destinationAirport: destinationAirport,
+		modifiers: lexed.lexemes.map((rec) => ({
+			type: rec.lexeme, raw: rec.raw, parsed: rec.data,
+		})),
+		unparsed: lexed.text,
+	};
+};
+
 /**
  * takes terminal command typed by a user and returns it's type
  * and probably some more info in future, like Sabre-version of
@@ -624,88 +709,11 @@ class CommandParser {
 	}
 
 	static getCabinClasses() {
-		return {
-			W: 'premium_economy',
-			F: 'first',
-			P: 'premium_first',
-			C: 'business',
-			Y: 'economy',
-			U: 'upper',
-		};
+		return getCabinClasses();
 	}
 
-	static parseDate($raw) {
-		return !$raw ? null : {
-			raw: $raw,
-			partial: CommonParserHelpers.parsePartialDate($raw),
-			full: CommonParserHelpers.parseCurrentCenturyFullDate($raw)['parsed'],
-		};
-	}
-
-	static parseTariffMods($modsPart) { // TODO: optimize
-		let $getFirst, $parseDate, $end, $lexer;
-		$getFirst = ($matches) => {
-			return $matches[1];
-		};
-		$parseDate = ($matches) => {
-			return this.parseDate($matches[1]);
-		};
-		$end = '(?![A-Z0-9])';
-		$lexer = new Lexer([
-			(new Lexeme('airlines', '/^(\\|[A-Z0-9]{2})+' + $end + '/')).preprocessData(($matches) => {
-				return php.explode('|', php.ltrim($matches[0], '|'));
-			}),
-			(new Lexeme('currency', '/^:([A-Z]{3})' + $end + '/')).preprocessData($getFirst),
-			(new Lexeme('tripType', '/^:(RT|OW)' + $end + '/')).preprocessData($getFirst),
-			(new Lexeme('cabinClass', '/^(\\\/\\\/)?@(?<cabinClass>[A-Z])' + $end + '/')).preprocessData(($matches) => {
-				return this.getCabinClasses()[$matches['cabinClass']] || null;
-			}),
-			(new Lexeme('fareType', '/^:([A-Z])' + $end + '/')).preprocessData(($matches) => {
-				return PricingCmdParser.decodeFareType($matches[1]);
-			}),
-			(new Lexeme('ptc', '/^-([A-Z][A-Z0-9]{2})' + $end + '/')).preprocessData($getFirst),
-			(new Lexeme('bookingClass', '/^-([A-Z])' + $end + '/')).preprocessData($getFirst),
-			(new Lexeme('ticketingDate', '/^T(\\d{1,2}[A-Z]{3}\\d{2})' + $end + '/')).preprocessData($parseDate),
-		]);
-		return $lexer.lex($modsPart);
-	}
-
-	static parseFareSearch($cmd) {
-		let $returnDate, $matches, $_, $departureAirport, $destinationAirport, $departureDate, $modsPart, $lexed;
-		$returnDate = null;
-		// probably should parse token sequence with Lexer.js same as
-		// modifiers, as we know that they may come in nearly any order...
-		// the only rule I see here is that return date can only be specified with "V"-alidated indicator
-		if (php.preg_match(/^\$D([A-Z]{3})([A-Z]{3})(\d{1,2}[A-Z]{3}\d{0,2})(.*)$/, $cmd, $matches = [])) {
-			// $DJFKMNL25MAY
-			[$_, $departureAirport, $destinationAirport, $departureDate, $modsPart] = $matches;
-		} else if (php.preg_match(/^\$DV(\d{1,2}[A-Z]{3}\d{0,2})([A-Z]{3})([A-Z]{3})(\d{1,2}[A-Z]{3}\d{0,2})(.*)$/, $cmd, $matches = [])) {
-			// $DV25MAYJFKMNL28MAY
-			[$_, $departureDate, $departureAirport, $destinationAirport, $returnDate, $modsPart] = $matches;
-		} else if (php.preg_match(/^\$DV?(\d{1,2}[A-Z]{3}\d{0,2})([A-Z]{3})([A-Z]{3})(.*)$/, $cmd, $matches = [])) {
-			// $DV25MAYJFKMNL, $D25MAYJFKMNL
-			[$_, $departureDate, $departureAirport, $destinationAirport, $modsPart] = $matches;
-		} else if (php.preg_match(/^\$D([A-Z]{3})([A-Z]{3})V(\d{1,2}[A-Z]{3})(\d{1,2}[A-Z]{3}){0,1}(.*)$/, $cmd, $matches = [])) {
-			// $DJFKMNLV25MAY27MAY, $DJFKMNLV25MAY
-			[$_, $departureAirport, $destinationAirport, $departureDate, $returnDate, $modsPart] = $matches;
-		} else {
-			return null;
-		}
-
-		$lexed = this.parseTariffMods($modsPart);
-
-		return {
-			departureDate: this.parseDate($departureDate),
-			returnDate: this.parseDate($returnDate),
-			departureAirport: $departureAirport,
-			destinationAirport: $destinationAirport,
-			modifiers: Fp.map(($rec) => {
-				return {
-					type: $rec['lexeme'], raw: $rec['raw'], parsed: $rec['data'],
-				};
-			}, $lexed['lexemes']),
-			unparsed: $lexed['text'],
-		};
+	static parseFareSearch(cmd) {
+		return parse_fareSearch(cmd);
 	}
 
 	static parseArea(cmd) {
@@ -889,7 +897,7 @@ class CommandParser {
 			type = 'deletePnrField';
 		} else if (data = this.parseInsertSegments(cmd)) {
 			type = 'insertSegments';
-		} else if (data = this.parseFareSearch(cmd)) {
+		} else if (data = parse_fareSearch(cmd)) {
 			type = 'fareSearch';
 		} else if (parsed = this.parseMpChange(cmd)) {
 			type = parsed.type;
