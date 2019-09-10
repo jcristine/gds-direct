@@ -127,13 +127,11 @@ const simpleTypeRegex = [
 	[/^(?:\/\d+)$/, 'setNextFollowsSegment'],
 	[/^FS\d*[A-Z]{3}(\d+[A-Z]{3}[A-Z]{3})+.*$/, 'lowFareSearch'], // HELP FSU (Unbooked)
 	[/^FS\d+$/, 'sellFromLowFareSearch'],
-	['/^(' + php.implode('|', [
-		'MORE\\*\\d+',// AT THE SAME PRICE AS PRICING OPTION \d
-		'FS\\*\\d+',// VIEW FARE DETAILS FOR PRICING OPTION \d
-		'FSMORE',// VIEW MORE PRICING OPTIONS
-		'\\*FS', // RETURN TO THE ORIGINAL PRICING OPTION SCREEN
-		'FS-', // RETURN TO THE PREVIOUS SCREEN
-	]) + ')$/', 'lowFareSearchNavigation'], // HELP FSN (Navigation)
+	[/^MORE\*\d+$/, 'lowFareSearchNavigation'],// AT THE SAME PRICE AS PRICING OPTION \d
+	[/^FS\*\d+$/, 'lowFareSearchNavigation'],// VIEW FARE DETAILS FOR PRICING OPTION \d
+	[/^FSMORE$/, 'lowFareSearchNavigation'],// VIEW MORE PRICING OPTIONS
+	[/^\*FS$/, 'lowFareSearchNavigation'], // RETURN TO THE ORIGINAL PRICING OPTION SCREEN
+	[/^FS-$/, 'lowFareSearchNavigation'], // RETURN TO THE PREVIOUS SCREEN
 	[/^FS\/\/.*$/, 'lowFareSearchFromPnr'], // HELP FSA (Availabilities for current reservation)
 	// there are also "HELP FSP and HELP FSC" for filters when working within a reservation,
 	// but i believe we don't use them much, please, add the regex-es here if i am wrong

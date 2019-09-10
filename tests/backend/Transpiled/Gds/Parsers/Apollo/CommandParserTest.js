@@ -664,6 +664,12 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 		}]);
 		$list.push(['FSRIX10DECKIV', {'type': 'lowFareSearch'}]);
 		$list.push(['FS03', {'type': 'sellFromLowFareSearch'}]);
+		$list.push(['MORE*6', {'type': 'lowFareSearchNavigation'}]);
+		$list.push(['FS*5', {'type': 'lowFareSearchNavigation'}]);
+		$list.push(['FSMORE', {'type': 'lowFareSearchNavigation'}]);
+		$list.push(['*FS', {'type': 'lowFareSearchNavigation'}]);
+		$list.push(['FS-', {'type': 'lowFareSearchNavigation'}]);
+
 		$list.push(['DN3', {'type': 'divideBooking'}]);
 		$list.push(['DN1-2|2', {'type': 'divideBooking'}]);
 		$list.push(['DN1-2', {'type': 'divideBooking'}]);
@@ -1211,7 +1217,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 	testParserOutputAgainstTree($dump, $expected) {
 		let $actual;
 		$actual = CommandParser.parse($dump);
-		this.assertArrayElementsSubset($expected, $actual);
+		this.assertArrayElementsSubset($expected, $actual, '>' + $dump + ';\n');
 	}
 
 	testParseParseFareSearch({input, output}) {
