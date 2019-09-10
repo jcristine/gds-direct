@@ -4,7 +4,7 @@ const Errors = require("./Errors");
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
-const ApoCmdParser = require('../../Gds/Parsers/Apollo/CommandParser.js');
+const ApoCmdParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 const GalCmdParser = require('../../Gds/Parsers/Galileo/CommandParser.js');
 const SabCmdParser = require('../../Gds/Parsers/Sabre/CommandParser.js');
 const AmaCmdParser = require('../../Gds/Parsers/Amadeus/CommandParser.js');

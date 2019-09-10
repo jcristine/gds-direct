@@ -42,7 +42,7 @@ const DisplayHistoryActionHelper = require('./DisplayHistoryActionHelper.js');
 
 // parsers
 const ItineraryParser = require('../../../../Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
-const CommandParser = require('../../../../Gds/Parsers/Apollo/CommandParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 const TApolloSavePnr = require('../../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
 const AliasParser = require('../../../../Rbs/GdsDirect/AliasParser.js');
 const ApoAliasParser = require('../../../../../Parsers/Apollo/AliasParser.js');

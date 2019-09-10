@@ -2,7 +2,7 @@
 
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
-const CommandParser = require('../../../Gds/Parsers/Apollo/CommandParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class CmsApolloTerminal

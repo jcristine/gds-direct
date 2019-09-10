@@ -6,7 +6,7 @@ const StringUtil = require('../../../../../Lib/Utils/StringUtil.js');
 const AirAvailabilityParser = require('../../../../../Gds/Parsers/Apollo/AirAvailabilityParser.js');
 const CmsApolloTerminal = require('../../../GdsInterface/CmsApolloTerminal.js');
 const php = require('../../../../../../../tests/backend/Transpiled/php.js');
-const CommandParser = require('../../../../../Gds/Parsers/Apollo/CommandParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 const ApoAliasParser = require('../../../../../../Parsers/Apollo/AliasParser.js');
 
 /** @return bool - true if not error response, false otherwise */

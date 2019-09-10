@@ -3,7 +3,7 @@ const StringUtil = require('../../../../../Lib/Utils/StringUtil.js');
 const CommonDataHelper = require('../../../CommonDataHelper.js');
 const php = require('../../../../../../../tests/backend/Transpiled/php.js');
 const Fp = require('../../../../../Lib/Utils/Fp.js');
-const CommandParser = require('../../../../../Gds/Parsers/Apollo/CommandParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 const {fetchAll, extractPager} = require('../../../../../../GdsHelpers/TravelportUtils.js');
 
 const shouldAddPsRemark = async ($msg, $cmdLog) => {

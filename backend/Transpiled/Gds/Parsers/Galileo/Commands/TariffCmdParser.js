@@ -1,5 +1,5 @@
 const AtfqParser = require("../../Apollo/Pnr/AtfqParser");
-const ApoCmdParser = require("../../Apollo/CommandParser");
+const ApoCmdParser = require("gds-utils/src/text_format_processing/apollo/commands/CmdParser");
 const CommonParserHelpers = require('../../Apollo/CommonParserHelpers.js');
 const Lexeme = require('gds-utils/src/lexer/Lexeme.js');
 const Lexer = require('gds-utils/src/lexer/Lexer.js');

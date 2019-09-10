@@ -3,7 +3,7 @@ const RepriceInAnotherPccAction = require('../../Transpiled/Rbs/GdsDirect/Action
 
 const AliasParser = require('../../Transpiled/Rbs/GdsDirect/AliasParser.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const CommandParser = require('../../Transpiled/Gds/Parsers/Apollo/CommandParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 
 //parse: A/T/20SEPNYCSFO/CHI/ATL/CLT/SEA/MSP+DL
 const matchMultipleCityAvailabilityCmd = ($cmd) => {

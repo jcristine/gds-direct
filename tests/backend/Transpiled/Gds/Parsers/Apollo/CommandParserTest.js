@@ -1,7 +1,7 @@
 
 // add this to generated require() - '../../backend/Transpiled/'
 
-let CommandParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Apollo/CommandParser.js');
+let CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 
 class CommandParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js') {
 	provideTestDumpList() {

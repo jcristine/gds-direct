@@ -11,7 +11,7 @@ const RetrieveApolloTicketsAction = require('../../../../Process/Apollo/ImportPn
 const GetCurrentPnr = require('../../../../../../Actions/GetCurrentPnr.js');
 const GenericRemarkParser = require('../../../../../Gds/Parsers/Common/GenericRemarkParser.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
-const CommandParser = require('../../../../../Gds/Parsers/Apollo/CommandParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 const {fetchAll, extractPager} = require('../../../../../../GdsHelpers/TravelportUtils.js');
 const PnrParser = require('../../../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
 
