@@ -1,11 +1,9 @@
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 const PricingCmdParser = require('gds-utils/src/text_format_processing/apollo/commands/PricingCmdParser.js');
 
-const Fp = require('../../../Lib/Utils/Fp.js');
-const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const Lexeme = require('gds-utils/src/lexer/Lexeme.js');
 const Lexer = require('gds-utils/src/lexer/Lexer.js');
 const php = require("klesun-node-tools/src/Transpiled/php.js");
-const CommonParserHelpers = require("./CommonParserHelpers");
 const {mkReg} = require('klesun-node-tools/src/Utils/Misc.js');
 
 const simpleTypeExact = {
@@ -241,7 +239,7 @@ const parse_airAvailability = (cmd) => {
 			seatCount: groups.seatCount,
 			departureDate: {
 				raw: groups.departureDate,
-				parsed: CommonParserHelpers.parsePartialDate(groups.departureDate),
+				parsed: ParserUtil.parsePartialDate(groups.departureDate),
 			},
 			departureAirport: groups.departureAirport,
 			destinationAirport: groups.destinationAirport,
@@ -392,7 +390,6 @@ const regex_changeMp_pax = mkReg([
 // '*UA12345678910', 'N1*@LH12345678910',
 // 'N2-1*@AA4346366363*@BA2315488786*@DL7845453554'
 const parse_changeMp_pax = ($paxPart) => {
-	let $regex, $matches;
 	const match = $paxPart.match(regex_changeMp_pax);
 	if (match) {
 		const groups = match.groups;
@@ -415,21 +412,22 @@ const parse_changeMp_pax = ($paxPart) => {
 // 'MP*UA12345678910', 'MPN1*@LH12345678910', 'MP/X/N1*DL|2*AA'
 // 'MPN1-1*@AA8853315554*@BA9742123848*@DL3158746568|N2-1*@AA4346366363*@BA2315488786*@DL7845453554'
 const parse_changeMp = (cmd) => {
-	let $matches, $_, $xMark, $paxPart, $mpPaxes, $paxParts;
-	if (php.preg_match(/^MP(\/X\/|)(.*)$/, cmd, $matches = [])) {
-		[$_, $xMark, $paxPart] = $matches;
-		if ($paxPart === '*ALL') {
-			$mpPaxes = [];
+	let matches;
+	if (php.preg_match(/^MP(\/X\/|)(.*)$/, cmd, matches = [])) {
+		const [, xMark, paxPart] = matches;
+		let mpPaxes;
+		if (paxPart === '*ALL') {
+			mpPaxes = [];
 		} else {
-			$paxParts = php.explode('|', $paxPart);
-			$mpPaxes = php.array_map(a => parse_changeMp_pax(a), $paxParts);
+			const paxParts = paxPart.split('|');
+			mpPaxes = php.array_map(a => parse_changeMp_pax(a), paxParts);
 		}
-		if (Fp.any('is_null', $mpPaxes)) {
+		if (mpPaxes.some(mpPax => !mpPax)) {
 			return null;
 		} else {
 			return {
-				type: $xMark ? 'changeFrequentFlyerNumber' : 'addFrequentFlyerNumber',
-				data: {passengers: $mpPaxes},
+				type: xMark ? 'changeFrequentFlyerNumber' : 'addFrequentFlyerNumber',
+				data: {passengers: mpPaxes},
 			};
 		}
 	} else {
@@ -452,8 +450,8 @@ const getCabinClasses = () => {
 const parseDate = (raw) => {
 	return !raw ? null : {
 		raw: raw,
-		partial: CommonParserHelpers.parsePartialDate(raw),
-		full: CommonParserHelpers.parseCurrentCenturyFullDate(raw)['parsed'],
+		partial: ParserUtil.parsePartialDate(raw),
+		full: ParserUtil.parse2kDate(raw)['parsed'],
 	};
 };
 
@@ -570,33 +568,32 @@ class CommandParser {
 			|| null;
 	}
 
-	static parseStorePnr($cmd) {
-		let $result, $textLeft;
-		$result = {keepPnr: false, sendEmail: false};
-		if (!StringUtil.startsWith($cmd, 'E')) {
+	static parseStorePnr(cmd) {
+		const result = {keepPnr: false, sendEmail: false};
+		if (!cmd.startsWith('E')) {
 			return null;
 		}
-		$textLeft = php.substr($cmd, 1);
-		if (StringUtil.startsWith($textLeft, 'R')) {
-			$result['keepPnr'] = true;
-			$textLeft = php.substr($textLeft, 1);
-		} else if (StringUtil.startsWith($textLeft, 'C')) {
+		let textLeft = cmd.slice(1);
+		if (textLeft.startsWith('R')) {
+			result.keepPnr = true;
+			textLeft = php.substr(textLeft, 1);
+		} else if (textLeft.startsWith('C')) {
 			// store "cruise" PNR, works with normal PNR-s too
-			$textLeft = php.substr($textLeft, 1);
-		} else if (StringUtil.startsWith($textLeft, 'L')) {
+			textLeft = textLeft.slice(1);
+		} else if (textLeft.startsWith('L')) {
 			// store and show similar name list
-			$textLeft = php.substr($textLeft, 1);
+			textLeft = textLeft.slice(1);
 		}
-		if (StringUtil.startsWith($textLeft, 'M')) {
-			$result['sendEmail'] = true;
-			$textLeft = php.substr($textLeft, 1);
+		if (textLeft.startsWith('M')) {
+			result.sendEmail = true;
+			textLeft = php.substr(textLeft, 1);
 			// $result['actionData'] = ['raw' => $textLeft];
-			$textLeft = '';
+			textLeft = '';
 		}
-		if ($textLeft) {
-			$result['unparsed'] = $textLeft;
+		if (textLeft) {
+			result.unparsed = textLeft;
 		}
-		return $result;
+		return result;
 	}
 
 	// '1M|2B'
@@ -644,7 +641,7 @@ class CommandParser {
 
 	static parseSell(cmd) {
 		let $textLeft;
-		if (StringUtil.startsWith(cmd, '0')) {
+		if (cmd.startsWith('0')) {
 			$textLeft = php.substr(cmd, 1);
 			return parse_sell_availability(cmd)
 				|| this.parseRebookSelective($textLeft)
@@ -665,14 +662,14 @@ class CommandParser {
 	}
 
 	// 'XI', 'XA', 'X5', 'X1|4', 'X1-3|5', 'X2/01B1', 'X4/0SK93F8NOVLAXCPHNN2'
-	static parseDeletePnrField($cmd) {
+	static parseDeletePnrField(cmd) {
 		let $textLeft, $matches, $_, $range, $applyToAllAir, $segmentNumbers;
-		if (StringUtil.startsWith($cmd, 'XX') ||
-			!StringUtil.startsWith($cmd, 'X')
+		if (cmd.startsWith('XX') ||
+			!cmd.startsWith('X')
 		) {
 			return null;
 		}
-		$textLeft = php.substr($cmd, 1);
+		$textLeft = php.substr(cmd, 1);
 		if (php.preg_match(/^([AI]|\d[\-\|\d]*)(\/.*|)$/, $textLeft, $matches = [])) {
 			[$_, $range, $textLeft] = $matches;
 			if ($range === 'I' || $range === 'A') {
@@ -756,11 +753,10 @@ class CommandParser {
 		}
 	}
 
-	static parseStorePricing($cmd) {
-		let $pricingCmd;
-		if (StringUtil.startsWith($cmd, 'T:$B')) {
-			$pricingCmd = php.substr($cmd, php.strlen('T:'));
-			return this.parsePriceItinerary($pricingCmd);
+	static parseStorePricing(cmd) {
+		if (cmd.startsWith('T:$B')) {
+			const pricingCmd = php.substr(cmd, php.strlen('T:'));
+			return this.parsePriceItinerary(pricingCmd);
 		} else {
 			return null;
 		}
@@ -808,37 +804,32 @@ class CommandParser {
 		}
 	}
 
-	static parseShowPnrFieldsCmd($cmd) {
-		let $availableCommands, $parts, $substr, $subCommand, $data, $checkCmd;
-		if (StringUtil.startsWith($cmd, '*')) {
-			$availableCommands = [
+	static parseShowPnrFieldsCmd(cmd) {
+		if (cmd.startsWith('*')) {
+			const availableCommands = [
 				'IA', 'IX', 'I', 'IC', 'IH', 'I', 'IN', 'IT',
 				'PW', 'PC', 'PD', 'R', 'N', 'PO', 'P', 'PP',
 				'P1', 'QM', 'PR', 'PRH', 'PS', 'PT', 'T',
 			];
-			$parts = [];
-			$substr = php.explode('|', php.substr($cmd, 1));
+			const items = [];
+			const substr = cmd.slice(1).split('|');
 
-			for ($subCommand of $substr) {
-				if ($data = php.explode('/', $subCommand)) {
-					$checkCmd = php.array_shift($data);
-
-					if (php.in_array($checkCmd, $availableCommands)) {
-						$parts.push({
-							field: $checkCmd,
-							modifiers: $data,
-						});
+			for (const subCommand of substr) {
+				const modifiers = subCommand.split('/');
+				if (modifiers.length > 0) {
+					const field = modifiers.shift();
+					if (availableCommands.includes(field)) {
+						items.push({field, modifiers});
 					} else {
 						return null;
 					}
 				}
 			}
-
-			if (!php.empty($parts)) {
+			if (items.length > 0) {
 				return {
-					cmd: $cmd,
+					cmd: cmd,
 					type: 'showPnrFields',
-					data: $parts,
+					data: items,
 				};
 			}
 		}
