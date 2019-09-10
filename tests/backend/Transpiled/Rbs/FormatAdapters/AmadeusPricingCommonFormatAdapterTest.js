@@ -2,7 +2,7 @@
 
 const StringUtil = require('../../../../../backend/Transpiled/Lib/Utils/StringUtil.js');
 const CommandParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus/CommandParser.js');
-const FxParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus/Pricing/FxParser.js');
+const FxParser = require('gds-utils/src/text_format_processing/amadeus/FxParser.js');
 const PnrParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 
 const php = require('../../php.js');

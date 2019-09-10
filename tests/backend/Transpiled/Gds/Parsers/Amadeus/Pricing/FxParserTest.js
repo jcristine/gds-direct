@@ -1,7 +1,7 @@
 
 
 const php = require('../../../../php.js');
-const FxParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Amadeus/Pricing/FxParser");
+const FxParser = require("gds-utils/src/text_format_processing/amadeus/FxParser");
 
 class FxParserTest extends require('../../../../Lib/TestCase.js')
 {
