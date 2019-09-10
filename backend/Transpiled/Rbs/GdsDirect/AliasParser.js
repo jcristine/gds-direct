@@ -85,16 +85,25 @@ class AliasParser {
 				modsPart = modsPart ? 'FXD/' + modsPart : 'FXD';
 				ptc = '';
 			}
+			const inputMods = AtfqParser.parsePricingModifiers(modsPart);
+			const pricingModifiers = [];
+			for (const mod of inputMods) {
+				if (!ptc && mod.type === 'passengers' &&
+					!mod.parsed.passengersSpecified &&
+					mod.parsed.passengerProperties[0].ptc
+				) {
+					ptc = mod.parsed.passengerProperties[0].ptc;
+				} else {
+					pricingModifiers.push(mod);
+				}
+			}
 			if (ptc) {
 				const ptcFareType = await PtcUtil.getFareType(ptc);
 				if (!ptcFareType) {
 					return Rej.BadRequest('Invalid PTC - ' + ptc + ' - no known fare families matched');
 				}
 			}
-			return {
-				ptc: ptc,
-				pricingModifiers: AtfqParser.parsePricingModifiers(modsPart),
-			};
+			return {ptc, pricingModifiers};
 		} else {
 			return null;
 		}
@@ -132,7 +141,7 @@ class AliasParser {
 		const inputMods = AtfqParser.parsePricingModifiers(modsPart);
 		const pricingModifiers = [];
 		for (const mod of inputMods) {
-			if (mod.type === 'passengers' &&
+			if (!inputPtc && mod.type === 'passengers' &&
 				!mod.parsed.passengersSpecified &&
 				mod.parsed.passengerProperties[0].ptc
 			) {
