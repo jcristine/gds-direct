@@ -1,6 +1,6 @@
 
 const php = require('../../../php.js');
-const FareConstructionParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
+const FareConstructionParser = require('gds-utils/src/text_format_processing/agnostic/fare_calculation/FcParser.js');
 
 class FareConstructionParserTest extends require('../../../Lib/TestCase.js') {
 	provideDumpsAndFullOutputs() {

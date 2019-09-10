@@ -1,5 +1,5 @@
 const Fp = require('../../../../Lib/Utils/Fp.js');
-const FareConstructionParser = require('../../../../Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
+const FareConstructionParser = require('gds-utils/src/text_format_processing/agnostic/fare_calculation/FcParser.js');
 
 /**
  * this class contains logic for parsing common sections in both >WP and *PQ

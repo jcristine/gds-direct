@@ -3,7 +3,7 @@ const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const PnrFieldLineParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrFieldLineParser.js');
 const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
-const FareConstructionParser = require('../../../Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
+const FareConstructionParser = require('gds-utils/src/text_format_processing/agnostic/fare_calculation/FcParser.js');
 const BagAllowanceParser = require('../../../Gds/Parsers/Sabre/BagAllowanceParser.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');

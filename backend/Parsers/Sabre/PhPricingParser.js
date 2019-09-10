@@ -5,7 +5,7 @@ const {parseSequence} = require('gds-utils/src/text_format_processing/agnostic/P
 const CommonParserHelpers = require('../../Transpiled/Gds/Parsers/Apollo/CommonParserHelpers.js');
 const {matchAll} = require('../../Utils/Str.js');
 const PricingCommonHelper = require('../../Transpiled/Gds/Parsers/Sabre/Pricing/PricingCommonHelper.js');
-const FareConstructionParser = require("../../Transpiled/Gds/Parsers/Common/FareConstruction/FareConstructionParser");
+const FareConstructionParser = require("gds-utils/src/text_format_processing/agnostic/fare_calculation/FcParser");
 const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
 const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
 

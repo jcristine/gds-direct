@@ -7,7 +7,7 @@ const ApoPnrParser = require('../Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser.js'
 
 const SabPricingParser = require('../Transpiled/Gds/Parsers/Sabre/Pricing/SabrePricingParser.js');
 
-const FareConstructionParser = require('../Transpiled/Gds/Parsers/Common/FareConstruction/FareConstructionParser.js');
+const FareConstructionParser = require('gds-utils/src/text_format_processing/agnostic/fare_calculation/FcParser.js');
 const {safe} = require('../Utils/TmpLib.js');
 
 exports.parseAnything = (rqBody) => {
