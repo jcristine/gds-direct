@@ -1,3 +1,5 @@
+const Debug = require('klesun-node-tools/src/Debug.js');
+const Diag = require('../LibWrappers/Diag.js');
 const AddCrossRefOsi = require('../Actions/AddCrossRefOsi.js');
 const GoToPricing = require('../Actions/GoToPricing.js');
 const MaskFormUtils = require('../Actions/ManualPricing/TpMaskUtils.js');
@@ -27,12 +29,23 @@ const GdsSessionManager = require('../GdsHelpers/GdsSessionManager.js');
 
 const initStateful = async (params) => {
 	const stateful = await StatefulSession.makeFromDb(params);
-	stateful.addPnrSaveHandler(recordLocator => RbsClient.reportCreatedPnr({
-		recordLocator: recordLocator,
-		gds: params.session.context.gds,
-		pcc: stateful.getSessionData().pcc,
-		agentId: params.session.context.agentId,
-	}));
+	stateful.addPnrSaveHandler(recordLocator => {
+		RbsClient.reportCreatedPnr({
+			recordLocator: recordLocator,
+			gds: params.session.context.gds,
+			pcc: stateful.getSessionData().pcc,
+			agentId: params.session.context.agentId,
+		}).then(rs => {
+			stateful.logit('INFO: Successfully reported created PNR to RBS');
+		}).catch(exc => {
+			const msg = 'Failed to report created PNR to RBS';
+			stateful.logExc('ERROR: ' + msg, exc);
+			const excData = Debug.getExcData(exc, {
+				session: stateful.getSessionRecord(),
+			});
+			Diag.logExc(msg, excData);
+		});
+	});
 	return stateful;
 };
 
