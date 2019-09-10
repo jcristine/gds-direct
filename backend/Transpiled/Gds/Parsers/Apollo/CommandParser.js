@@ -173,6 +173,20 @@ const parse_sell_availability = (cmd) => {
 	}
 };
 
+// '0XXOPENYSLCCVGNO1'
+const parse_sell_openSegment = ($cmd) => {
+	const regex = /^0XXOPEN(?<unparsed>.*?)\s*$/;
+	const match = $cmd.match(regex);
+	if (match) {
+		return {
+			sellType: 'openSegment',
+			unparsed: match.groups.unparsed,
+		};
+	} else {
+		return null;
+	}
+};
+
 const regex_airAvailability = mkReg([
 	/^A/,
 	/(?:\/(?<sameCabin>\*)?(?<bookingClass>[A-Z])(?<seatCount>\d+)?\/)?/,
@@ -365,7 +379,7 @@ class CommandParser {
 				};
 			}
 		}
-		return this.parseChangePnrRemarks($cmd)
+		return this.parseChangePnrRemarks($cmd) // TODO: optimize
 			|| null;
 	}
 
@@ -474,34 +488,17 @@ class CommandParser {
 		};
 	}
 
-	// '0XXOPENYSLCCVGNO1'
-	static parseOpenSell($cmd) {
-		let $regex, $matches;
-		$regex =
-			'/^0XXOPEN' +
-			'(?<unparsed>.*?)' +
-			'\\s*$/';
-		if (php.preg_match($regex, $cmd, $matches = [])) {
-			return {
-				sellType: 'openSegment',
-				unparsed: $matches['unparsed'],
-			};
-		} else {
-			return null;
-		}
-	}
-
-	static parseSell($cmd) {
+	static parseSell(cmd) {
 		let $textLeft;
-		if (StringUtil.startsWith($cmd, '0')) {
-			$textLeft = php.substr($cmd, 1);
-			return parse_sell_availability($cmd)
+		if (StringUtil.startsWith(cmd, '0')) {
+			$textLeft = php.substr(cmd, 1);
+			return parse_sell_availability(cmd)
 				|| this.parseRebookSelective($textLeft)
 				|| this.parseRebookAll($textLeft)
-				|| this.parseDirectSell($cmd) // TODO: optimize
-				|| this.parseOpenSell($cmd) // TODO: optimize
-				|| {sellType: null, raw: $cmd};
-		} else if (php.trim($cmd) === 'Y') {
+				|| this.parseDirectSell(cmd) // TODO: optimize
+				|| parse_sell_openSegment(cmd)
+				|| {sellType: null, raw: cmd};
+		} else if (php.trim(cmd) === 'Y') {
 			return {
 				sellType: 'arrivalUnknown',
 				segments: [
@@ -893,7 +890,7 @@ class CommandParser {
 		} else if (parsed = this.parseMpChange(cmd)) {
 			type = parsed.type;
 			data = parsed.data;
-		} else if (parsed = parse_seatChange(cmd)) { // TODO: optimize
+		} else if (parsed = parse_seatChange(cmd)) {
 			type = parsed.type;
 			data = parsed.data;
 		} else if (data = this.parseStorePnr(cmd)) {
