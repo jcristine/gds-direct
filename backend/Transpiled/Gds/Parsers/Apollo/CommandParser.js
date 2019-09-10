@@ -367,6 +367,76 @@ const parse_changePnrRemarks = ($cmd) => {
 	}
 };
 
+// '@AA4346366363', 'UA12345678910'
+const parseMpAir = ($airPart) => {
+	let $matches, $_, $at, $air, $code;
+	if (php.preg_match(/^(@|)([A-Z0-9]{2})([A-Z0-9]*)$/, $airPart, $matches = [])) {
+		[$_, $at, $air, $code] = $matches;
+		return {
+			withAllPartners: $at ? true : false,
+			airline: $air,
+			code: $code,
+		};
+	} else {
+		return null;
+	}
+};
+
+const regex_changeMp_pax = mkReg([
+	/^/,
+	/(N?(?<majorPaxNum>\d+)(-(?<minorPaxNum>\d+))?)?/,
+	/\*(?<airPart>.*)/,
+	/$/,
+]);
+
+// '*UA12345678910', 'N1*@LH12345678910',
+// 'N2-1*@AA4346366363*@BA2315488786*@DL7845453554'
+const parse_changeMp_pax = ($paxPart) => {
+	let $regex, $matches;
+	const match = $paxPart.match(regex_changeMp_pax);
+	if (match) {
+		const groups = match.groups;
+		const airParts = groups.airPart.split('*');
+		const mpAirs = airParts.map(a => parseMpAir(a));
+		if (mpAirs.some(a => !a)) {
+			return null;
+		} else {
+			return {
+				majorPaxNum: groups.majorPaxNum || '',
+				minorPaxNum: groups.minorPaxNum || '',
+				mileagePrograms: mpAirs,
+			};
+		}
+	} else {
+		return null;
+	}
+};
+
+// 'MP*UA12345678910', 'MPN1*@LH12345678910', 'MP/X/N1*DL|2*AA'
+// 'MPN1-1*@AA8853315554*@BA9742123848*@DL3158746568|N2-1*@AA4346366363*@BA2315488786*@DL7845453554'
+const parse_changeMp = (cmd) => {
+	let $matches, $_, $xMark, $paxPart, $mpPaxes, $paxParts;
+	if (php.preg_match(/^MP(\/X\/|)(.*)$/, cmd, $matches = [])) {
+		[$_, $xMark, $paxPart] = $matches;
+		if ($paxPart === '*ALL') {
+			$mpPaxes = [];
+		} else {
+			$paxParts = php.explode('|', $paxPart);
+			$mpPaxes = php.array_map(a => parse_changeMp_pax(a), $paxParts);
+		}
+		if (Fp.any('is_null', $mpPaxes)) {
+			return null;
+		} else {
+			return {
+				type: $xMark ? 'changeFrequentFlyerNumber' : 'addFrequentFlyerNumber',
+				data: {passengers: $mpPaxes},
+			};
+		}
+	} else {
+		return null;
+	}
+};
+
 /** note: different case from PricingCmdParser */
 const getCabinClasses = () => {
 	return {
@@ -637,72 +707,6 @@ class CommandParser {
 		}
 	}
 
-	// '@AA4346366363', 'UA12345678910'
-	static parseMpAir($airPart) {
-		let $matches, $_, $at, $air, $code;
-		if (php.preg_match(/^(@|)([A-Z0-9]{2})([A-Z0-9]*)$/, $airPart, $matches = [])) {
-			[$_, $at, $air, $code] = $matches;
-			return {
-				withAllPartners: $at ? true : false,
-				airline: $air,
-				code: $code,
-			};
-		} else {
-			return null;
-		}
-	}
-
-	// '*UA12345678910', 'N1*@LH12345678910',
-	// 'N2-1*@AA4346366363*@BA2315488786*@DL7845453554'
-	static parseMpPax($paxPart) {
-		let $regex, $matches, $airParts, $mpAirs;
-		$regex =
-			'/^' +
-			'(N?(?<majorPaxNum>\\d+)(-(?<minorPaxNum>\\d+))?)?' +
-			'\\*(?<airPart>.*)' +
-			'$/';
-		if (php.preg_match($regex, $paxPart, $matches = [])) {
-			$airParts = php.explode('*', $matches['airPart']);
-			$mpAirs = php.array_map(a => this.parseMpAir(a), $airParts);
-			if (Fp.any('is_null', $mpAirs)) {
-				return null;
-			} else {
-				return {
-					majorPaxNum: $matches['majorPaxNum'] || '',
-					minorPaxNum: $matches['minorPaxNum'] || '',
-					mileagePrograms: $mpAirs,
-				};
-			}
-		} else {
-			return null;
-		}
-	}
-
-	// 'MP*UA12345678910', 'MPN1*@LH12345678910', 'MP/X/N1*DL|2*AA'
-	// 'MPN1-1*@AA8853315554*@BA9742123848*@DL3158746568|N2-1*@AA4346366363*@BA2315488786*@DL7845453554'
-	static parseMpChange($cmd) {
-		let $matches, $_, $xMark, $paxPart, $mpPaxes, $paxParts;
-		if (php.preg_match(/^MP(\/X\/|)(.*)$/, $cmd, $matches = [])) {
-			[$_, $xMark, $paxPart] = $matches;
-			if ($paxPart === '*ALL') {
-				$mpPaxes = [];
-			} else {
-				$paxParts = php.explode('|', $paxPart);
-				$mpPaxes = php.array_map(a => this.parseMpPax(a), $paxParts);
-			}
-			if (Fp.any('is_null', $mpPaxes)) {
-				return null;
-			} else {
-				return {
-					type: $xMark ? 'changeFrequentFlyerNumber' : 'addFrequentFlyerNumber',
-					data: {passengers: $mpPaxes},
-				};
-			}
-		} else {
-			return null;
-		}
-	}
-
 	static getCabinClasses() {
 		return getCabinClasses();
 	}
@@ -894,7 +898,7 @@ class CommandParser {
 			type = 'insertSegments';
 		} else if (data = parse_fareSearch(cmd)) {
 			type = 'fareSearch';
-		} else if (parsed = this.parseMpChange(cmd)) {
+		} else if (parsed = parse_changeMp(cmd)) {
 			type = parsed.type;
 			data = parsed.data;
 		} else if (parsed = parse_changeSeats(cmd)) {
