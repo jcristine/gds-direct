@@ -675,11 +675,10 @@ class CommandParser {
 		};
 	}
 
-	static parseArea($cmd) {
-		let $filter, $matches;
-		$filter = /^S([A-E])$/;
-		if (php.preg_match($filter, $cmd, $matches = [])) {
-			return $matches[1];
+	static parseArea(cmd) {
+		const matches = cmd.match(/^S([A-E])$/);
+		if (matches) {
+			return matches[1];
 		} else {
 			return null;
 		}
@@ -874,13 +873,13 @@ class CommandParser {
 			$type = 'changeArea';
 		} else if ($data = this.parsePcc($cmd)) {
 			$type = 'changePcc';
-		} else if ($data = this.parsePriceItinerary($cmd)) {
+		} else if ($data = this.parsePriceItinerary($cmd)) { // TODO: optimize
 			$type = 'priceItinerary';
 		} else if ($data = this.parsePriceItineraryManually($cmd)) {
 			$type = 'priceItineraryManually';
 		} else if ($data = this.parseStorePricing($cmd)) {
 			$type = 'storePricing';
-		} else if ($data = this.parseSell($cmd)) {
+		} else if ($data = this.parseSell($cmd)) { // TODO: optimize
 			$type = 'sell';
 		} else if ($data = this.parseDeletePnrField($cmd)) {
 			$type = 'deletePnrField';
@@ -891,7 +890,7 @@ class CommandParser {
 		} else if ($parsed = this.parseMpChange($cmd)) {
 			$type = $parsed['type'];
 			$data = $parsed['data'];
-		} else if ($parsed = this.parseSeatChange($cmd)) {
+		} else if ($parsed = this.parseSeatChange($cmd)) { // TODO: optimize
 			$type = $parsed['type'];
 			$data = $parsed['data'];
 		} else if ($data = this.parseStorePnr($cmd)) {
@@ -899,7 +898,7 @@ class CommandParser {
 				storePnrSendEmail: $data['sendEmail'],
 				storeKeepPnr: $data['keepPnr'],
 			}))[0] || 'storePnr';
-		} else if ($data = this.parse_airAvailability($cmd)) {
+		} else if ($data = this.parse_airAvailability($cmd)) { // TODO: optimize
 			$type = 'airAvailability';
 		} else if ($data = this.parse_moreAirAvailability($cmd)) {
 			$type = 'moreAirAvailability';
