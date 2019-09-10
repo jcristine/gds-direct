@@ -367,6 +367,7 @@ const parse_changePnrRemarks = ($cmd) => {
 	}
 };
 
+/** note: different case from PricingCmdParser */
 const getCabinClasses = () => {
 	return {
 		W: 'premium_economy',
@@ -386,33 +387,23 @@ const parseDate = (raw) => {
 	};
 };
 
-let lexemes_fareSearch = null;
-const get_lexemes_fareSearch = () => {
-	if (lexemes_fareSearch == null) {
-		const end = '(?![A-Z0-9])';
-		lexemes_fareSearch = [
-			(new Lexeme('airlines', '/^(\\|[A-Z0-9]{2})+' + end + '/')).map(($matches) => {
-				return php.explode('|', php.ltrim($matches[0], '|'));
-			}),
-			(new Lexeme('currency', '/^:([A-Z]{3})' + end + '/')).map((m) => m[1]),
-			(new Lexeme('tripType', '/^:(RT|OW)' + end + '/')).map((m) => m[1]),
-			(new Lexeme('cabinClass', '/^(\\\/\\\/)?@(?<cabinClass>[A-Z])' + end + '/')).map(($matches) => {
-				return getCabinClasses()[$matches['cabinClass']] || null;
-			}),
-			(new Lexeme('fareType', '/^:([A-Z])' + end + '/')).map(($matches) => {
-				return PricingCmdParser.decodeFareType($matches[1]);
-			}),
-			(new Lexeme('ptc', '/^-([A-Z][A-Z0-9]{2})' + end + '/')).map((m) => m[1]),
-			(new Lexeme('bookingClass', '/^-([A-Z])' + end + '/')).map((m) => m[1]),
-			(new Lexeme('ticketingDate', '/^T(\\d{1,2}[A-Z]{3}\\d{2})' + end + '/')).map((m) => parseDate(m[1])),
-		];
-	}
-	return lexemes_fareSearch;
-
-};
+const end = /(?![A-Z0-9])/;
+let lexemes_fareSearch = [
+	new Lexeme('airlines', mkReg([/^(\|[A-Z0-9]{2})+/, end]))
+		.map((matches) => php.ltrim(matches[0], '|').split('|')),
+	new Lexeme('currency', mkReg([/^:([A-Z]{3})/, end])).map((m) => m[1]),
+	new Lexeme('tripType', mkReg([/^:(RT|OW)/, end])).map((m) => m[1]),
+	new Lexeme('cabinClass', mkReg([/^(\/\/)?@(?<cabinClass>[A-Z])/, end]))
+		.map((matches) => getCabinClasses()[matches.cabinClass] || null),
+	new Lexeme('fareType', mkReg([/^:([A-Z])/, end]))
+		.map((matches) => PricingCmdParser.decodeFareType(matches[1])),
+	new Lexeme('ptc', mkReg([/^-([A-Z][A-Z0-9]{2})/, end])).map((m) => m[1]),
+	new Lexeme('bookingClass', mkReg([/^-([A-Z])/, end])).map((m) => m[1]),
+	new Lexeme('ticketingDate', mkReg([/^T(\d{1,2}[A-Z]{3}\d{2})/, end])).map((m) => parseDate(m[1])),
+];
 
 const parseTariffMods = ($modsPart) => {
-	const lexer = new Lexer(get_lexemes_fareSearch());
+	const lexer = new Lexer(lexemes_fareSearch);
 	return lexer.lex($modsPart);
 };
 
