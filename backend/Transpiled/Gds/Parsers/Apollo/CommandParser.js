@@ -388,7 +388,7 @@ const parseDate = (raw) => {
 };
 
 const end = /(?![A-Z0-9])/;
-let lexemes_fareSearch = [
+const lexemes_fareSearch = [
 	new Lexeme('airlines', mkReg([/^(\|[A-Z0-9]{2})+/, end]))
 		.map((matches) => php.ltrim(matches[0], '|').split('|')),
 	new Lexeme('currency', mkReg([/^:([A-Z]{3})/, end])).map((m) => m[1]),
