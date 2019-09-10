@@ -465,6 +465,10 @@ class CommandParser {
 		return null;
 	}
 
+	static parseRange(expr, delim, thru) {
+		return parseRange(expr, delim, thru);
+	}
+
 	static parseChainableCmd(cmd) {
 		const simplePatterns = [
 			[/^@:5(.+?)(\||$)/, 'addRemark'],
