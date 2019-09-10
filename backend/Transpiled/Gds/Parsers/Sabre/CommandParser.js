@@ -1,7 +1,5 @@
 const AvailCmdParser = require('./Commands/AvailCmdParser.js');
 
-const Fp = require('../../../Lib/Utils/Fp.js');
-const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const TariffCmdParser = require('../../../Gds/Parsers/Sabre/Commands/TariffCmdParser.js');
 
 /**
@@ -56,7 +54,7 @@ const simpleTypeStart = {
 	'QP': 'movePnrToQueue',
 	'Q': 'openQueue',
 	'X': 'deletePnrField',
-	'W\/TA': 'branchTo', // branch between pcc's set up
+	'W/TA': 'branchTo', // branch between pcc's set up
 	'HB': 'createAgent',
 	'H*CST': 'agentList', // full agent lists
 	// >PE*6IIF
@@ -65,8 +63,8 @@ const simpleTypeStart = {
 	'FQ': 'fareSearch',
 	'WETR*': 'ticketMask', // show i-th ticket mask
 	'WP*': 'redisplayPriceItinerary',
-	'W\/*': 'decodeOrEncode', // decode airline or city
-	'W\/-': 'decodeOrEncode', // encode airline or city
+	'W/*': 'decodeOrEncode', // decode airline or city
+	'W/-': 'decodeOrEncode', // encode airline or city
 	'2': 'operationalInfo',
 	'1*': 'moreAirAvailability',
 	'1': 'airAvailability',
@@ -118,7 +116,7 @@ class CommandParser {
 			// put longest start patterns first
 			.sort((a,b) => b[0].length - a[0].length);
 		for (const [pattern, type] of startTuples) {
-			if (StringUtil.startsWith(cmd, pattern)) {
+			if (cmd.startsWith(pattern)) {
 				return type;
 			}
 		}
@@ -143,37 +141,37 @@ class CommandParser {
 	// 'E', 'ER', 'EM¥N2.1¥RR¥PH', 'EWR', 'ER*N*T*FF', 'ECR'
 	static parseStorePnr(cmd) {
 		const result = {keepPnr: false, sendEmail: false, cloneItinerary: false};
-		if (!StringUtil.startsWith(cmd, 'E')) {
+		if (!cmd.startsWith('E')) {
 			return null;
 		}
-		let textLeft = php.substr(cmd, 1);
-		if (StringUtil.startsWith(textLeft, 'C')) {
+		let textLeft = cmd.slice(1);
+		if (textLeft.startsWith('C')) {
 			result.cloneItinerary = true;
-			textLeft = php.substr(textLeft, 1);
+			textLeft = textLeft.slice(1);
 			// $result['actionData'] = ['raw' => $textLeft];
 			textLeft = '';
-		} else if (StringUtil.startsWith(textLeft, 'L')) {
+		} else if (textLeft.startsWith('L')) {
 			// $result['action'] = 'leaveOnQueue';
-			textLeft = php.substr(textLeft, 1);
-		} else if (StringUtil.startsWith(textLeft, 'R')) {
+			textLeft = textLeft.slice(1);
+		} else if (textLeft.startsWith('R')) {
 			result.keepPnr = true;
-			textLeft = php.substr(textLeft, 1);
-		} else if (StringUtil.startsWith(textLeft, 'W')) {
+			textLeft = textLeft.slice(1);
+		} else if (textLeft.startsWith('W')) {
 			// $result['action'] = 'updateScheduleChanges';
-			textLeft = php.substr(textLeft, 1);
-			if (StringUtil.startsWith(textLeft, 'R')) {
+			textLeft = textLeft.slice(1);
+			if (textLeft.startsWith('R')) {
 				result.keepPnr = true;
-				textLeft = php.substr(textLeft, 1);
+				textLeft = textLeft.slice(1);
 			}
 			result.actionParams = {raw: textLeft};
-		} else if (StringUtil.startsWith(textLeft, 'M')) {
+		} else if (textLeft.startsWith('M')) {
 			result.sendEmail = true;
-			textLeft = php.substr(textLeft, 1);
+			textLeft = textLeft.slice(1);
 			const rawModifiers = textLeft.split('¥');
 			let emailCode = rawModifiers.shift();
-			if (StringUtil.endsWith(emailCode, 'R')) {
+			if (emailCode.endsWith('R')) {
 				result.keepPnr = true;
-				emailCode = php.substr(emailCode, 0, -1);
+				emailCode = emailCode.slice(0, -1);
 			}
 			const actionData = {
 				type: {
@@ -288,10 +286,10 @@ class CommandParser {
 	 * '5TEST' => 'addRemark',
 	 * '5¤TEST' => 'changePnrRemarks',
 	 */
-	static parseRemarkCmd($cmd) {
+	static parseRemarkCmd(cmd) {
 		let $content, $matches, $_, $rangesRaw, $newText, $type, $data;
-		if (StringUtil.startsWith($cmd, '5')) {
-			$content = php.substr($cmd, 1);
+		if (cmd.startsWith('5')) {
+			$content = cmd.slice(1);
 			if (php.preg_match(/^([-,\d]+|)¤(.*)$/, $content, $matches = [])) {
 				[$_, $rangesRaw, $newText] = $matches;
 				$type = 'changePnrRemarks';
