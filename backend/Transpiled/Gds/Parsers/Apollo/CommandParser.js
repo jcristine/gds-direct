@@ -283,7 +283,7 @@ const regex_seatChange = mkReg([
 ]);
 
 // '9S/S2/17A18C', '9S/N1/S2/A', '9S/S2/17AB'
-const parse_seatChange = (cmd) => {
+const parse_changeSeats = (cmd) => {
 	const match = cmd.match(regex_seatChange);
 	if (match) {
 		const groups = match.groups;
@@ -317,6 +317,56 @@ const parse_seatChange = (cmd) => {
 	}
 };
 
+/** @param expr = '2-4*7*9-13' || '' || '2-*'; */
+const parseRemarkRanges = (expr) => {
+	let rangeType, matches;
+	const ranges = [];
+	if (!expr) {
+		rangeType = 'notSpecified';
+		ranges.push({from: 1, to: 1});
+	} else if (php.preg_match(/^(\d+)-\*$/, expr, matches = [])) {
+		rangeType = 'everythingAfter';
+		ranges.push({from: matches[1]});
+	} else {
+		rangeType = 'explicitEnds';
+		for (const rawRange of php.explode('*', php.trim(expr))) {
+			const pair = php.explode('-', rawRange);
+			ranges.push({from: pair[0], to: pair[1] || pair[0]});
+		}
+	}
+	return {rangeType, ranges};
+};
+
+const regex_changePnrRemarks = mkReg([
+	'^',
+	'(?<cmd>',
+	/C:/,
+	/(?<ranges>[0-9\-*]*)@:5/,
+	/(?<newText>[^|]*)/,
+	')',
+	/(\|(?<textLeft>.*)|$)/,
+]);
+
+const parse_changePnrRemarks = ($cmd) => {
+	const match = $cmd.match(regex_changePnrRemarks);
+	if (match) {
+		const groups = match.groups;
+		const rangesData = parseRemarkRanges(groups.ranges);
+		return {
+			cmd: groups['cmd'],
+			type: 'changePnrRemarks',
+			data: {
+				rangeType: rangesData.rangeType,
+				ranges: rangesData.ranges,
+				newText: groups.newText,
+			},
+			textLeft: groups.textLeft || '',
+		};
+	} else {
+		return null;
+	}
+};
+
 /**
  * takes terminal command typed by a user and returns it's type
  * and probably some more info in future, like Sabre-version of
@@ -339,55 +389,7 @@ class CommandParser {
 		return null;
 	}
 
-	/** @param $expr = '2-4*7*9-13' || '' || '2-*'; */
-	static parseRemarkRanges($expr) {
-		let $ranges, $rangeType, $matches, $rawRange, $pair;
-		$ranges = [];
-		if (!$expr) {
-			$rangeType = 'notSpecified';
-			$ranges.push({from: 1, to: 1});
-		} else if (php.preg_match(/^(\d+)-\*$/, $expr, $matches = [])) {
-			$rangeType = 'everythingAfter';
-			$ranges.push({from: $matches[1]});
-		} else {
-			$rangeType = 'explicitEnds';
-			for ($rawRange of php.explode('*', php.trim($expr))) {
-				$pair = php.explode('-', $rawRange);
-				$ranges.push({from: $pair[0], to: $pair[1] || $pair[0]});
-			}
-		}
-		return {rangeType: $rangeType, ranges: $ranges};
-	}
-
-	static parseChangePnrRemarks($cmd) {
-		let $regex, $matches, $rangesData;
-		$regex =
-			'/^' +
-			'(?<cmd>' +
-			'C:' +
-			'(?<ranges>[\\-\\d\\*]*)@:5' +
-			'(?<newText>[^\\|]*)' +
-			')' +
-			'(\\|(?<textLeft>.*)|$)' +
-			'/';
-		if (php.preg_match($regex, $cmd, $matches = [])) {
-			$rangesData = this.parseRemarkRanges($matches['ranges']);
-			return {
-				cmd: $matches['cmd'],
-				type: 'changePnrRemarks',
-				data: {
-					rangeType: $rangesData['rangeType'],
-					ranges: $rangesData['ranges'],
-					newText: $matches['newText'],
-				},
-				textLeft: $matches['textLeft'] || '',
-			};
-		} else {
-			return null;
-		}
-	}
-
-	static parseChainableCmd($cmd) {
+	static parseChainableCmd(cmd) {
 		const simplePatterns = [
 			[/^@:5(.+?)(\||$)/, 'addRemark'],
 			[/^PS-(.+?)(\||$)/, 'psRemark'],
@@ -403,18 +405,18 @@ class CommandParser {
 			[/^\*\*([^|]*?-[A-Z][^|]*?)(\||$)/, 'searchPnr'],
 		];
 		for (const [pattern, name] of simplePatterns) {
-			const matches = $cmd.match(pattern);
+			const matches = cmd.match(pattern);
 			if (matches) {
 				const [raw, data] = matches;
 				return {
 					cmd: php.rtrim(raw, '|'),
 					type: name,
 					data: data || null,
-					textLeft: php.mb_substr($cmd, php.mb_strlen(raw)),
+					textLeft: php.mb_substr(cmd, php.mb_strlen(raw)),
 				};
 			}
 		}
-		return this.parseChangePnrRemarks($cmd) // TODO: optimize
+		return parse_changePnrRemarks(cmd)
 			|| null;
 	}
 
@@ -892,7 +894,7 @@ class CommandParser {
 		} else if (parsed = this.parseMpChange(cmd)) {
 			type = parsed.type;
 			data = parsed.data;
-		} else if (parsed = parse_seatChange(cmd)) {
+		} else if (parsed = parse_changeSeats(cmd)) {
 			type = parsed.type;
 			data = parsed.data;
 		} else if (data = this.parseStorePnr(cmd)) {
