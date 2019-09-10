@@ -429,27 +429,22 @@ class CommandParser {
 				segments.push({segmentNumber: i, bookingClass: cls});
 			}
 		}
-		return {
-			segments: segments,
-		};
+		return {segments};
 	}
 
-	static parseBulkCommand($cmd) {
-		let $parsedCommands, $strCmd, $exploded, $key, $command, $parsed, $firstCmd;
-		$parsedCommands = [];
-		$strCmd = $cmd;
-		$exploded = php.explode('\u00A7', $strCmd);
-		for ([$key, $command] of Object.entries($exploded)) {
-			$parsed = this.parseSingleCommand($command) || {
+	static parseBulkCommand(cmd) {
+		const parsedCommands = [];
+		for (const subCmd of cmd.split('§')) {
+			const parsed = this.parseSingleCommand(subCmd) || {
 				type: null,
 				data: null,
 			};
-			$parsed['cmd'] = $command;
-			$parsedCommands.push($parsed);
+			parsed.cmd = subCmd;
+			parsedCommands.push(parsed);
 		}
-		$firstCmd = php.array_shift($parsedCommands) || {type: null, data: null};
-		$firstCmd['followingCommands'] = $parsedCommands;
-		return $firstCmd;
+		const firstCmd = parsedCommands.shift() || {type: null, data: null};
+		firstCmd.followingCommands = parsedCommands;
+		return firstCmd;
 	}
 
 	/** @param {String} $cmd */
@@ -457,57 +452,53 @@ class CommandParser {
 		return this.parseBulkCommand($cmd);
 	}
 
-	static parseSingleCommand($cmd) {
-		let $data, $type, $parsed, $matches;
-		if ($data = this.parseOpenPnr($cmd)) {
-			$type = 'openPnr';
-		} else if ($data = this.parseArea($cmd)) {
-			$type = 'changeArea';
-		} else if ($data = this.parsePcc($cmd)) {
-			$type = 'changePcc';
-		} else if ($data = this.parseSearchPnr($cmd)) {
-			$type = 'searchPnr';
-		} else if ($data = this.parseWprd($cmd)) {
-			$type = 'fareList';
-		} else if ($data = TariffCmdParser.parse($cmd)) {
-			$type = 'fareSearch';
-		} else if ($data = AvailCmdParser.parse($cmd)) {
-			$type = 'airAvailability';
-		} else if ($parsed = this.parseRemarkCmd($cmd)) {
-			$type = $parsed['type'];
-			$data = $parsed['data'];
-		} else if ($data = this.parseStorePnr($cmd)) {
-			$type = (php.array_keys(php.array_filter({
-				storePnrSendEmail: $data['sendEmail'],
-				storeKeepPnr: $data['keepPnr'],
-				storeAndCopyPnr: $data['cloneItinerary'],
+	static parseSingleCommand(cmd) {
+		let data, type, parsed, matches;
+		if (data = this.parseOpenPnr(cmd)) {
+			type = 'openPnr';
+		} else if (data = this.parseArea(cmd)) {
+			type = 'changeArea';
+		} else if (data = this.parsePcc(cmd)) {
+			type = 'changePcc';
+		} else if (data = this.parseSearchPnr(cmd)) {
+			type = 'searchPnr';
+		} else if (data = this.parseWprd(cmd)) {
+			type = 'fareList';
+		} else if (data = TariffCmdParser.parse(cmd)) {
+			type = 'fareSearch';
+		} else if (data = AvailCmdParser.parse(cmd)) {
+			type = 'airAvailability';
+		} else if (parsed = this.parseRemarkCmd(cmd)) {
+			type = parsed.type;
+			data = parsed.data;
+		} else if (data = this.parseStorePnr(cmd)) {
+			type = (php.array_keys(php.array_filter({
+				storePnrSendEmail: data.sendEmail,
+				storeKeepPnr: data.keepPnr,
+				storeAndCopyPnr: data.cloneItinerary,
 			})) || {})[0] || 'storePnr';
-		} else if ($parsed = this.parseFfChange($cmd)) {
-			$type = $parsed['type'];
-			$data = $parsed['data'];
-		} else if ($parsed = this.parseSeatChange($cmd)) {
-			$type = $parsed['type'];
-			$data = $parsed['data'];
-		} else if ($data = this.parseChangeBookingClasses($cmd)) {
-			$type = 'changeBookingClass';
-		} else if (php.preg_match(/^DK(.+)$/, $cmd, $matches = [])) {
-			$type = 'addDkNumber';
-			$data = $matches[1];
-		} else if ($type = this.detectCommandType($cmd)) {
-			$data = null;
-		} else if ($data = PricingCmdParser.parse($cmd)) {
+		} else if (parsed = this.parseFfChange(cmd)) {
+			type = parsed.type;
+			data = parsed.data;
+		} else if (parsed = this.parseSeatChange(cmd)) {
+			type = parsed.type;
+			data = parsed.data;
+		} else if (data = this.parseChangeBookingClasses(cmd)) {
+			type = 'changeBookingClass';
+		} else if (php.preg_match(/^DK(.+)$/, cmd, matches = [])) {
+			type = 'addDkNumber';
+			data = matches[1];
+		} else if (type = this.detectCommandType(cmd)) {
+			data = null;
+		} else if (data = PricingCmdParser.parse(cmd)) {
 			// Sabre's pricing command starts with WP, but since there are a lot of
 			// other Sabre commands that start with WP, like WPRD* or WPNI, we should
 			// match command as "priceItinerary" only if none of the other matched
-			$type = 'priceItinerary';
+			type = 'priceItinerary';
 		} else {
 			return null;
 		}
-		return {
-			cmd: $cmd,
-			type: $type,
-			data: $data,
-		};
+		return {cmd, type, data};
 	}
 }
 
