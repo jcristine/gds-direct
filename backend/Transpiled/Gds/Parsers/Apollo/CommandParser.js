@@ -150,7 +150,7 @@ const regex_sell_availability = mkReg([
 ]);
 
 // '01Y1Y2', '02S3*BK', '01Y11Y22'
-const parseAvailabilitySell = (cmd) => {
+const parse_sell_availability = (cmd) => {
 	const match = cmd.match(regex_sell_availability);
 	if (match) {
 		const groups = match.groups;
@@ -172,6 +172,36 @@ const parseAvailabilitySell = (cmd) => {
 	}
 };
 
+const regex_airAvailability = mkReg([
+	/^A/,
+	/(?:\/(?<sameCabin>\*)?(?<bookingClass>[A-Z])(?<seatCount>\d+)?\/)?/,
+	/(?<departureDate>\d{1,2}[A-Z]{3})/,
+	/(?<departureAirport>[A-Z]{3})/,
+	/(?<destinationAirport>[A-Z]{3})/,
+	/(?<unparsed>.*)/,
+]);
+
+const parse_airAvailability = (cmd) => {
+	const match = cmd.match(regex_airAvailability);
+	if (match) {
+		const groups = match.groups;
+		return {
+			similarClass: groups.sameCabin === '*',
+			bookingClass: groups.bookingClass,
+			seatCount: groups.seatCount,
+			departureDate: {
+				raw: groups.departureDate,
+				parsed: CommonParserHelpers.parsePartialDate(groups.departureDate),
+			},
+			departureAirport: groups.departureAirport,
+			destinationAirport: groups.destinationAirport,
+			unparsed: groups.unparsed,
+		};
+	} else {
+		return null;
+	}
+};
+
 /**
  * takes terminal command typed by a user and returns it's type
  * and probably some more info in future, like Sabre-version of
@@ -181,11 +211,6 @@ class CommandParser {
 	static detectCommandType(cmd) {
 		cmd = php.strtoupper(cmd);
 		cmd = php.trim(cmd);
-		for (const [pattern, type] of Object.entries(simpleTypeExact)) {
-			if (cmd === pattern) {
-				return type;
-			}
-		}
 		for (const [pattern, type] of Object.entries(simpleTypeStart)) {
 			if (cmd.startsWith(pattern)) {
 				return type;
@@ -427,7 +452,7 @@ class CommandParser {
 		let $textLeft;
 		if (StringUtil.startsWith($cmd, '0')) {
 			$textLeft = php.substr($cmd, 1);
-			return parseAvailabilitySell($cmd)
+			return parse_sell_availability($cmd)
 				|| this.parseRebookSelective($textLeft)
 				|| this.parseRebookAll($textLeft)
 				|| this.parseDirectSell($cmd) // TODO: optimize
@@ -734,34 +759,6 @@ class CommandParser {
 		}
 	}
 
-	static parse_airAvailability(cmd) {
-		const match = cmd.match(mkReg([
-			/^A/,
-			/(?:\/(?<sameCabin>\*)?(?<bookingClass>[A-Z])(?<seatCount>\d+)?\/)?/,
-			/(?<departureDate>\d{1,2}[A-Z]{3})/,
-			/(?<departureAirport>[A-Z]{3})/,
-			/(?<destinationAirport>[A-Z]{3})/,
-			/(?<unparsed>.*)/,
-		]));
-		if (match) {
-			const groups = match.groups;
-			return {
-				similarClass: groups.sameCabin === '*',
-				bookingClass: groups.bookingClass,
-				seatCount: groups.seatCount,
-				departureDate: {
-					raw: groups.departureDate,
-					parsed: CommonParserHelpers.parsePartialDate(groups.departureDate),
-				},
-				departureAirport: groups.departureAirport,
-				destinationAirport: groups.destinationAirport,
-				unparsed: groups.unparsed,
-			};
-		} else {
-			return null;
-		}
-	}
-
 	static parse_moreAirAvailability(cmd) {
 		let match;
 		if (!cmd.startsWith('A*')) {
@@ -874,7 +871,9 @@ class CommandParser {
 
 	static parseSingleCommand($cmd) {
 		let $data, $type, $parsed;
-		if ($data = this.parseArea($cmd)) {
+		if ($type = simpleTypeExact[$cmd]) {
+			$data = null;
+		} else if ($data = this.parseArea($cmd)) {
 			$type = 'changeArea';
 		} else if ($data = this.parsePcc($cmd)) {
 			$type = 'changePcc';
@@ -903,7 +902,7 @@ class CommandParser {
 				storePnrSendEmail: $data['sendEmail'],
 				storeKeepPnr: $data['keepPnr'],
 			}))[0] || 'storePnr';
-		} else if ($data = this.parse_airAvailability($cmd)) { // TODO: optimize
+		} else if ($data = parse_airAvailability($cmd)) {
 			$type = 'airAvailability';
 		} else if ($data = this.parse_moreAirAvailability($cmd)) {
 			$type = 'moreAirAvailability';
