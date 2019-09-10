@@ -124,10 +124,25 @@ class AliasParser {
 			modsPart = modsPart ? 'FXD/' + modsPart : 'FXD';
 			inputPtc = '';
 		}
-		const isAll = inputPtc === 'ALL';
-		if (!inputPtc || isAll) {
-			inputPtc = 'ADT';
+		let isAll = false;
+		if (inputPtc === 'ALL') {
+			isAll = true;
+			inputPtc = '';
 		}
+		const inputMods = AtfqParser.parsePricingModifiers(modsPart);
+		const pricingModifiers = [];
+		for (const mod of inputMods) {
+			if (mod.type === 'passengers' &&
+				!mod.parsed.passengersSpecified &&
+				mod.parsed.passengerProperties[0].ptc
+			) {
+				inputPtc = mod.parsed.passengerProperties[0].ptc;
+			} else {
+				pricingModifiers.push(mod);
+			}
+		}
+		inputPtc = inputPtc || 'ADT';
+
 		const ptcs = [];
 		for (const group of requestedAgeGroups) {
 			const ptc = await PtcUtil.convertPtcByAgeGroup(inputPtc, group.ageGroup, 7)
@@ -141,10 +156,8 @@ class AliasParser {
 		return {
 			ptc: inputPtc,
 			isMix: mix ? true : false,
-			isAll: isAll,
-			requestedAgeGroups: requestedAgeGroups,
-			ptcs: ptcs,
-			pricingModifiers: AtfqParser.parsePricingModifiers(modsPart),
+			isAll, requestedAgeGroups,
+			ptcs, pricingModifiers,
 		};
 	}
 
