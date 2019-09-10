@@ -356,6 +356,105 @@ const provide_call = () => {
 		],
 	});
 
+	testCases.push({
+		title: 'rebookAsGk example, uses exposed parseRange() function from CommandParser.js, should not fail after refactoring',
+		startDt: '2019-08-13 13:12:00',
+		input: {
+			cmdRq: 'X1-2/0SGK',
+		},
+		output: {
+			status: 'executed',
+			calledCommands: [
+				{cmd: '*R', output: [
+					"NO NAMES",
+					" 1 AV 211S 10DEC JFKBOG GK1   105P  705P           TU",
+					"         OPERATED BY AVIANCA",
+					" 2 AV9217S 10DEC BOGCLO GK1   816P  924P           TU",
+					"         OPERATED BY AVIANCA",
+					"",
+				].join('\n')},
+			],
+		},
+		httpRequests: [
+			{
+				"cmd": "*R",
+				"rq": [
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+					"\t<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://webservices.galileo.com\"><SOAP-ENV:Body><ns1:SubmitTerminalTransaction><ns1:Token>soap-unit-test-blabla-123</ns1:Token><ns1:Request>*R</ns1:Request><ns1:IntermediateResponse></ns1:IntermediateResponse></ns1:SubmitTerminalTransaction></SOAP-ENV:Body></SOAP-ENV:Envelope>"
+				].join("\n"),
+				"rs": [
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+					"<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">",
+					" <soapenv:Body><SubmitTerminalTransactionResponse xmlns=\"http://webservices.galileo.com\"><SubmitTerminalTransactionResult USM=\"false\">NO NAMES",
+					" 1 AV 211Y 10DEC JFKBOG SS1   105P  705P *         TU   E  1",
+					"         OPERATED BY AVIANCA",
+					" 2 AV9217Y 10DEC BOGCLO SS1   816P  924P *         TU   E  1",
+					"         OPERATED BY AVIANCA",
+					"&gt;&lt;</SubmitTerminalTransactionResult></SubmitTerminalTransactionResponse> </soapenv:Body>",
+					"</soapenv:Envelope>"
+				].join("\n")
+			},
+			{
+				"cmd": "X1|2",
+				"rq": [
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+					"\t<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://webservices.galileo.com\"><SOAP-ENV:Body><ns1:SubmitTerminalTransaction><ns1:Token>soap-unit-test-blabla-123</ns1:Token><ns1:Request>X1|2</ns1:Request><ns1:IntermediateResponse></ns1:IntermediateResponse></ns1:SubmitTerminalTransaction></SOAP-ENV:Body></SOAP-ENV:Envelope>"
+				].join("\n"),
+				"rs": [
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+					"<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">",
+					" <soapenv:Body><SubmitTerminalTransactionResponse xmlns=\"http://webservices.galileo.com\"><SubmitTerminalTransactionResult USM=\"false\">CNLD FROM  1",
+					"&gt;&lt;</SubmitTerminalTransactionResult></SubmitTerminalTransactionResponse> </soapenv:Body>",
+					"</soapenv:Envelope>"
+				].join("\n")
+			},
+			{
+				"cmd": "<PNRBFManagement_51/>",
+				"rq": [
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+					"\t\t<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://webservices.galileo.com\">",
+					"\t\t\t<SOAP-ENV:Body>",
+					"\t\t\t\t<ns1:SubmitXmlOnSession>",
+					"\t\t\t\t\t<ns1:Token>soap-unit-test-blabla-123</ns1:Token>",
+					"\t\t\t\t\t<ns1:Request>",
+					"\t\t\t\t\t\t<PNRBFManagement_51>",
+					"\t\t\t\t\t\t\t<SessionMods><AreaInfoReq/></SessionMods><AirSegSellMods><AirSegSell><Vnd>AV</Vnd><FltNum>0211</FltNum><Class>S</Class><StartDt>20191210</StartDt><StartAirp>JFK</StartAirp><EndAirp>BOG</EndAirp><Status>GK</Status><NumPsgrs>1</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell><AirSegSell><Vnd>AV</Vnd><FltNum>9217</FltNum><Class>S</Class><StartDt>20191210</StartDt><StartAirp>BOG</StartAirp><EndAirp>CLO</EndAirp><Status>GK</Status><NumPsgrs>1</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell></AirSegSellMods><PNRBFRetrieveMods><CurrentPNR/></PNRBFRetrieveMods><FareRedisplayMods><DisplayAction/><FareNumInfo><FareNumAry><FareNum>1</FareNum></FareNumAry></FareNumInfo></FareRedisplayMods><FareRedisplayMods><DisplayAction/><FareNumInfo><FareNumAry><FareNum>2</FareNum></FareNumAry></FareNumInfo></FareRedisplayMods><FareRedisplayMods><DisplayAction/><FareNumInfo><FareNumAry><FareNum>3</FareNum></FareNumAry></FareNumInfo></FareRedisplayMods><FareRedisplayMods><DisplayAction/><FareNumInfo><FareNumAry><FareNum>4</FareNum></FareNumAry></FareNumInfo></FareRedisplayMods><FareRedisplayMods><DisplayAction/><FareNumInfo><FareNumAry><FareNum>5</FareNum></FareNumAry></FareNumInfo></FareRedisplayMods><FareRedisplayMods><DisplayAction/><FareNumInfo><FareNumAry><FareNum>6</FareNum></FareNumAry></FareNumInfo></FareRedisplayMods><FareRedisplayMods><DisplayAction/><FareNumInfo><FareNumAry><FareNum>7</FareNum></FareNumAry></FareNumInfo></FareRedisplayMods><FareRedisplayMods><DisplayAction/><FareNumInfo><FareNumAry><FareNum>8</FareNum></FareNumAry></FareNumInfo></FareRedisplayMods>",
+					"\t\t\t\t\t\t</PNRBFManagement_51>",
+					"\t\t\t\t\t</ns1:Request>",
+					"\t\t\t\t\t<ns1:Filter>",
+					"\t\t\t\t\t\t<_/>",
+					"\t\t\t\t\t</ns1:Filter>",
+					"\t\t\t\t</ns1:SubmitXmlOnSession>",
+					"\t\t\t</SOAP-ENV:Body>",
+					"\t\t</SOAP-ENV:Envelope>"
+				].join("\n"),
+				"rs": [
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+					"<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">",
+					" <soapenv:Body><SubmitXmlOnSessionResponse xmlns=\"http://webservices.galileo.com\"><SubmitXmlOnSessionResult><PNRBFManagement_51 xmlns=\"\"><SessionInfo><AreaInfoResp><Sys>1V</Sys><Processor>B</Processor><GrpModeActivatedInd>N</GrpModeActivatedInd><AAAAreaAry><AAAAreaInfo><AAAArea>A</AAAArea><ActiveInd>Y</ActiveInd><AAACity>QSB</AAACity><AAADept>YC</AAADept><SONCity>QSB</SONCity><SONDept>YC</SONDept><AgntID>ZDPBVWS</AgntID><ChkDigit/><AgntInitials>WS</AgntInitials><Duty>AG</Duty><AgncyPCC>2F3K</AgncyPCC><DomMode>BASIC</DomMode><IntlMode>US-ECAC</IntlMode><PNRDataInd>Y</PNRDataInd><PNRName>NO NAMES</PNRName><GrpModeActiveInd>A</GrpModeActiveInd><GrpModeDutyCode/><GrpModePCC/><GrpModeDataInd/><GrpModeName/></AAAAreaInfo><AAAAreaInfo><AAAArea>B</AAAArea><ActiveInd>A</ActiveInd><AAACity>QSB</AAACity><AAADept>YC</AAADept><SONCity>QSB</SONCity><SONDept>YC</SONDept><AgntID>ZDPBVWS</AgntID><ChkDigit/><AgntInitials/><Duty/><AgncyPCC/><DomMode/><IntlMode/><PNRDataInd>N</PNRDataInd><PNRName/><GrpModeActiveInd>A</GrpModeActiveInd><GrpModeDutyCode/><GrpModePCC/><GrpModeDataInd/><GrpModeName/></AAAAreaInfo><AAAAreaInfo><AAAArea>C</AAAArea><ActiveInd>A</ActiveInd><AAACity>QSB</AAACity><AAADept>YC</AAADept><SONCity>QSB</SONCity><SONDept>YC</SONDept><AgntID>ZDPBVWS</AgntID><ChkDigit/><AgntInitials/><Duty/><AgncyPCC/><DomMode/><IntlMode/><PNRDataInd>N</PNRDataInd><PNRName/><GrpModeActiveInd>A</GrpModeActiveInd><GrpModeDutyCode/><GrpModePCC/><GrpModeDataInd/><GrpModeName/></AAAAreaInfo><AAAAreaInfo><AAAArea>D</AAAArea><ActiveInd>A</ActiveInd><AAACity>QSB</AAACity><AAADept>YC</AAADept><SONCity>QSB</SONCity><SONDept>YC</SONDept><AgntID>ZDPBVWS</AgntID><ChkDigit/><AgntInitials/><Duty/><AgncyPCC/><DomMode/><IntlMode/><PNRDataInd>N</PNRDataInd><PNRName/><GrpModeActiveInd>A</GrpModeActiveInd><GrpModeDutyCode/><GrpModePCC/><GrpModeDataInd/><GrpModeName/></AAAAreaInfo><AAAAreaInfo><AAAArea>E</AAAArea><ActiveInd>A</ActiveInd><AAACity>QSB</AAACity><AAADept>YC</AAADept><SONCity>QSB</SONCity><SONDept>YC</SONDept><AgntID>ZDPBVWS</AgntID><ChkDigit/><AgntInitials/><Duty/><AgncyPCC/><DomMode/><IntlMode/><PNRDataInd>N</PNRDataInd><PNRName/><GrpModeActiveInd>A</GrpModeActiveInd><GrpModeDutyCode/><GrpModePCC/><GrpModeDataInd/><GrpModeName/></AAAAreaInfo></AAAAreaAry></AreaInfoResp></SessionInfo><AirSegSell><AirSell><DisplaySequenceNumber/><Vnd>AV</Vnd><FltNum>211</FltNum><OpSuf/><Class>S</Class><StartDt>20191210</StartDt><DtChg>0</DtChg><StartAirp>JFK</StartAirp><EndAirp>BOG</EndAirp><StartTm>1305</StartTm><EndTm>1905</EndTm><Status>GK</Status><NumPsgrs>1</NumPsgrs><SellType/><SellValidityPeriod/><MarriageNum/><SuccessInd>Y</SuccessInd><COG>N</COG><TklessInd>N</TklessInd><FareQuoteTkIgnInd/><StopoverInd/><AvailyBypassInd/><OpAirV/></AirSell><TextMsg><Txt>OPERATED BY AVIANCA</Txt></TextMsg><TextMsg><Txt><![CDATA[DEPARTS JFK TERMINAL 4  - ARRIVES BOG TERMINAL 1]]></Txt></TextMsg><AirSell><DisplaySequenceNumber/><Vnd>AV</Vnd><FltNum>9217</FltNum><OpSuf/><Class>S</Class><StartDt>20191210</StartDt><DtChg>0</DtChg><StartAirp>BOG</StartAirp><EndAirp>CLO</EndAirp><StartTm>2016</StartTm><EndTm>2124</EndTm><Status>GK</Status><NumPsgrs>1</NumPsgrs><SellType/><SellValidityPeriod/><MarriageNum/><SuccessInd>Y</SuccessInd><COG>N</COG><TklessInd>N</TklessInd><FareQuoteTkIgnInd/><StopoverInd/><AvailyBypassInd/><OpAirV/></AirSell><TextMsg><Txt><![CDATA[OFFER CAR/HOTEL    |CAL\t     |HOA\t]]></Txt></TextMsg><TextMsg><Txt>OPERATED BY AVIANCA</Txt></TextMsg><TextMsg><Txt>DEPARTS BOG TERMINAL 1</Txt></TextMsg><TextMsg><Txt>ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS</Txt></TextMsg><TextMsg><Txt>PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION</Txt></TextMsg><TextMsg><Txt>WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES</Txt></TextMsg><TextMsg><Txt>FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES</Txt></TextMsg></AirSegSell><PNRBFRetrieve><Control><KLRCnt>7</KLRCnt><KlrAry><Klr><ID>BP08</ID><NumOccur>1</NumOccur></Klr><Klr><ID>IT01</ID><NumOccur>2</NumOccur></Klr><Klr><ID>IT02</ID><NumOccur>2</NumOccur></Klr></KlrAry></Control><GenPNRInfo><FileAddr/><CodeCheck/><RecLoc/><Ver>0</Ver><OwningCRS>1V</OwningCRS><OwningAgncyName>INTERNATIONAL TRAVEL NET</OwningAgncyName><OwningAgncyPCC>2F3K</OwningAgncyPCC><CreationDt/><CreatingAgntSignOn/><CreatingAgntDuty/><CreatingAgncyIATANum/><OrigBkLocn/><SATONum/><PTAInd>N</PTAInd><InUseInd/><SimultaneousUpdInd/><BorrowedInd>N</BorrowedInd><GlobInd>N</GlobInd><ReadOnlyInd>N</ReadOnlyInd><FareDataExistsInd>N</FareDataExistsInd><PastDtQuickInd>N</PastDtQuickInd><CurAgncyPCC>2F3K</CurAgncyPCC><QInd>N</QInd><TkNumExistInd>N</TkNumExistInd><IMUdataexists>Y</IMUdataexists><ETkDataExistInd>N</ETkDataExistInd><CurDtStamp>20190910</CurDtStamp><CurTmStamp>103019</CurTmStamp><CurAgntSONID>DPBVWS</CurAgntSONID><TravInsuranceInd>N</TravInsuranceInd><PNRBFTicketedInd>N</PNRBFTicketedInd><ZeppelinAgncyInd>N</ZeppelinAgncyInd><AgncyAutoServiceInd>N</AgncyAutoServiceInd><AgncyAutoNotifyInd>N</AgncyAutoNotifyInd><ZeppelinPNRInd>N</ZeppelinPNRInd><PNRAutoServiceInd>N</PNRAutoServiceInd><PNRNotifyInd/><SuperPNRInd>N</SuperPNRInd><PNRBFPurgeDt>NO PURGE</PNRBFPurgeDt><PNRBFChangeInd>Y</PNRBFChangeInd><MCODataExists>N</MCODataExists><OrigRcvdField/><IntContExists/><AllDataAllTime>N</AllDataAllTime><LastActAgntID/><TransPCCName>INTERNATIONAL TRAVEL NET</TransPCCName><URrecordLoc/><UROSindLoc>N</UROSindLoc><URRCBInd>N</URRCBInd><GMTPNRBFCreationDt/><PricingRecordExist>N</PricingRecordExist><ArchivedFeeDataExists>N</ArchivedFeeDataExists><LeisureshopperDataExists>N</LeisureshopperDataExists><SeatDataExists>N</SeatDataExists><FrequentFlyerDataExists>N</FrequentFlyerDataExists><NetTicketDataExists>N</NetTicketDataExists><TinsRemarksExist>N</TinsRemarksExist><ElectronicDataExists>N</ElectronicDataExists><AdditionalItineraryDataExists>N</AdditionalItineraryDataExists><GroupAllocationFileExists>N</GroupAllocationFileExists><ProfileAssociationsExist>N</ProfileAssociationsExist><VendorLocatorDataExists>N</VendorLocatorDataExists><BookingCodeDataExists/><ArneDataExists>N</ArneDataExists><TimaticDataExists>N</TimaticDataExists><LinearFareDataExists>N</LinearFareDataExists><ItineraryRemarksExist>N</ItineraryRemarksExist><IdentificationFieldExists>N</IdentificationFieldExists><EmailAddressExists>N</EmailAddressExists><RuleDataExists>N</RuleDataExists><LSVendorConfirmationExists>N</LSVendorConfirmationExists><AdditionalSrvcs>N</AdditionalSrvcs><ElectronicMiscDocumentList>N</ElectronicMiscDocumentList><TDSProfileExists>N</TDSProfileExists><ServiceInformationExists/><FiledFareDataExists/><VendorRemarksDataExists/><MembershipDataExists/><DividedBookingsExist>N</DividedBookingsExist><ClientFileReferencesExist/><CustomCheckRulesExist/><PassengerInformationExists/><GUID/><ARCNewPNR/><ARCFares/><ARCTicketed/><ARCSplitDivide/><ARCNameAdd/><ARCNameDelete/><ARCItinAdd/><ARCItinDEL/><ARCPhoneAdd/><ARCPhoneDel/><ARCFOPAdd/><ARCFOPDelete/><ARCSSRAdd/><ARCSSRDel/><ARCOSIAdd/><ARCOSIDel/><ReasonCodesspares/></GenPNRInfo><AirSeg><SegNum>1</SegNum><Status>GK</Status><Dt>20191210</Dt><DayChg>00</DayChg><AirV>AV</AirV><NumPsgrs>1</NumPsgrs><StartAirp>JFK</StartAirp><EndAirp>BOG</EndAirp><StartTm>1305</StartTm><EndTm>1905</EndTm><BIC>S</BIC><FltNum>211</FltNum><OpSuf/><COG>N</COG><TklessInd>N</TklessInd><ConxInd>N</ConxInd><FltFlownInd>N</FltFlownInd><MarriageNum/><SellType/><StopoverIgnoreInd/><TDSValidateInd>N</TDSValidateInd><NonBillingInd>N</NonBillingInd><PrevStatusCode>GK</PrevStatusCode><ScheduleValidationInd/><VndLocInd/><OpAirVInd>Y</OpAirVInd></AirSeg><AirSegOpAirV><OpAirVInfoAry><OpAirVInfo><StartAirp>JFK</StartAirp><EndAirp>BOG</EndAirp><AirV/><AirVName>AVIANCA</AirVName></OpAirVInfo></OpAirVInfoAry></AirSegOpAirV><AirSeg><SegNum>2</SegNum><Status>GK</Status><Dt>20191210</Dt><DayChg>00</DayChg><AirV>AV</AirV><NumPsgrs>1</NumPsgrs><StartAirp>BOG</StartAirp><EndAirp>CLO</EndAirp><StartTm>2016</StartTm><EndTm>2124</EndTm><BIC>S</BIC><FltNum>9217</FltNum><OpSuf/><COG>N</COG><TklessInd>N</TklessInd><ConxInd>Y</ConxInd><FltFlownInd>N</FltFlownInd><MarriageNum/><SellType/><StopoverIgnoreInd/><TDSValidateInd>N</TDSValidateInd><NonBillingInd>N</NonBillingInd><PrevStatusCode>GK</PrevStatusCode><ScheduleValidationInd/><VndLocInd/><OpAirVInd>Y</OpAirVInd></AirSeg><AirSegOpAirV><OpAirVInfoAry><OpAirVInfo><StartAirp>BOG</StartAirp><EndAirp>CLO</EndAirp><AirV/><AirVName>AVIANCA</AirVName></OpAirVInfo></OpAirVInfoAry></AirSegOpAirV></PNRBFRetrieve><DocProdDisplayStoredQuote><ErrText><Err>D0002308</Err><KlrInErr>0000</KlrInErr><InsertedTextAry></InsertedTextAry><Text>NO STORED FARES EXIST</Text></ErrText></DocProdDisplayStoredQuote><DocProdDisplayStoredQuote><ErrText><Err>D0002308</Err><KlrInErr>0000</KlrInErr><InsertedTextAry></InsertedTextAry><Text>NO STORED FARES EXIST</Text></ErrText></DocProdDisplayStoredQuote><DocProdDisplayStoredQuote><ErrText><Err>D0002308</Err><KlrInErr>0000</KlrInErr><InsertedTextAry></InsertedTextAry><Text>NO STORED FARES EXIST</Text></ErrText></DocProdDisplayStoredQuote><DocProdDisplayStoredQuote><ErrText><Err>D0002308</Err><KlrInErr>0000</KlrInErr><InsertedTextAry></InsertedTextAry><Text>NO STORED FARES EXIST</Text></ErrText></DocProdDisplayStoredQuote><DocProdDisplayStoredQuote><ErrText><Err>D0002308</Err><KlrInErr>0000</KlrInErr><InsertedTextAry></InsertedTextAry><Text>NO STORED FARES EXIST</Text></ErrText></DocProdDisplayStoredQuote><DocProdDisplayStoredQuote><ErrText><Err>D0002308</Err><KlrInErr>0000</KlrInErr><InsertedTextAry></InsertedTextAry><Text>NO STORED FARES EXIST</Text></ErrText></DocProdDisplayStoredQuote><DocProdDisplayStoredQuote><ErrText><Err>D0002308</Err><KlrInErr>0000</KlrInErr><InsertedTextAry></InsertedTextAry><Text>NO STORED FARES EXIST</Text></ErrText></DocProdDisplayStoredQuote><DocProdDisplayStoredQuote><ErrText><Err>D0002308</Err><KlrInErr>0000</KlrInErr><InsertedTextAry></InsertedTextAry><Text>NO STORED FARES EXIST</Text></ErrText></DocProdDisplayStoredQuote></PNRBFManagement_51></SubmitXmlOnSessionResult></SubmitXmlOnSessionResponse></soapenv:Body></soapenv:Envelope>"
+				].join("\n")
+			},
+			{
+				"cmd": "*R",
+				"rq": [
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+					"\t<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://webservices.galileo.com\"><SOAP-ENV:Body><ns1:SubmitTerminalTransaction><ns1:Token>soap-unit-test-blabla-123</ns1:Token><ns1:Request>*R</ns1:Request><ns1:IntermediateResponse></ns1:IntermediateResponse></ns1:SubmitTerminalTransaction></SOAP-ENV:Body></SOAP-ENV:Envelope>"
+				].join("\n"),
+				"rs": [
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+					"<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">",
+					" <soapenv:Body><SubmitTerminalTransactionResponse xmlns=\"http://webservices.galileo.com\"><SubmitTerminalTransactionResult USM=\"false\">NO NAMES",
+					" 1 AV 211S 10DEC JFKBOG GK1   105P  705P           TU",
+					"         OPERATED BY AVIANCA",
+					" 2 AV9217S 10DEC BOGCLO GK1   816P  924P           TU",
+					"         OPERATED BY AVIANCA",
+					"&gt;&lt;</SubmitTerminalTransactionResult></SubmitTerminalTransactionResponse> </soapenv:Body>",
+					"</soapenv:Envelope>"
+				].join("\n")
+			},
+		],
+	});
+
 	return testCases.map(c => [c]);
 };
 
