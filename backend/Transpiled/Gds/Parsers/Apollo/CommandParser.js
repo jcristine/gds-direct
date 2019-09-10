@@ -203,6 +203,71 @@ const parse_airAvailability = (cmd) => {
 	}
 };
 
+const parsePaxRanges = (expr) => {
+	return expr.split('|').map((num) => {
+		const lNum = num.split('-')[0];
+		const fNum = num.split('-')[1] || null;
+		return {
+			from: lNum, fromMinor: fNum,
+			to: lNum, toMinor: fNum,
+		};
+	});
+};
+
+// '1|3-5'
+const parseRange = (expr, delim, thru) => {
+	const parseRange = (text) => {
+		const pair = text.split(thru);
+		return php.range(pair[0], pair[1] || pair[0]);
+	};
+	return expr.trim().split(delim).flatMap(parseRange);
+};
+
+const regex_seatChange = mkReg([
+	'^',
+	/(?<baseCmd>9S|9X)/,
+	/(\/N(?<paxNums>\d+[-|\d]*))?/,
+	/(\/S(?<segNums>\d+[*|\d]*))?/,
+	/(\/(?<aisleMark>A))?/,
+	/(\/(?<seatCodes>(\d+[A-Z]+)+))?/,
+	'$',
+]);
+
+// '9S/S2/17A18C', '9S/N1/S2/A', '9S/S2/17AB'
+const parse_seatChange = (cmd) => {
+	const match = cmd.match(regex_seatChange);
+	if (match) {
+		const groups = match.groups;
+		const seatCodesStr = groups.seatCodes || '';
+		let seatMatches;
+		php.preg_match_all(/(\d+)([A-Z]+)/, seatCodesStr, seatMatches = [], php.PREG_SET_ORDER);
+		const seatCodes = [];
+		for (const [, $rowNumber, $letters] of seatMatches) {
+			for (const letter of php.str_split($letters, 1)) {
+				seatCodes.push($rowNumber + letter);
+			}
+		}
+		return {
+			type: {
+				'9S': 'requestSeats',
+				'9X': 'cancelSeats',
+			}[groups['baseCmd']] || null,
+			data: {
+				paxRanges: php.empty(groups.paxNums) ? [] :
+					parsePaxRanges(groups.paxNums),
+				segNums: php.empty(groups.segNums) ? [] :
+					parseRange(groups.segNums, '|', '*'),
+				location: php.empty(groups.aisleMark) ? null :
+					{raw: groups.aisleMark, parsed: 'aisle'},
+				zone: null,
+				seatCodes: seatCodes,
+			},
+		};
+	} else {
+		return null;
+	}
+};
+
 /**
  * takes terminal command typed by a user and returns it's type
  * and probably some more info in future, like Sabre-version of
@@ -225,17 +290,6 @@ class CommandParser {
 		return null;
 	}
 
-	// '1|3-5'
-	static parseRange($expr, $delim, $thru) {
-		let $parseRange;
-		$parseRange = ($text) => {
-			let $pair;
-			$pair = php.explode($thru, $text);
-			return php.range($pair[0], $pair[1] || $pair[0]);
-		};
-		return Fp.flatten(Fp.map($parseRange, php.explode($delim, php.trim($expr))));
-	}
-
 	/** @param $expr = '2-4*7*9-13' || '' || '2-*'; */
 	static parseRemarkRanges($expr) {
 		let $ranges, $rangeType, $matches, $rawRange, $pair;
@@ -254,18 +308,6 @@ class CommandParser {
 			}
 		}
 		return {rangeType: $rangeType, ranges: $ranges};
-	}
-
-	static parsePaxRanges($expr) {
-		return Fp.map(($num) => {
-			let $lNum, $fNum;
-			$lNum = php.explode('-', $num)[0];
-			$fNum = php.explode('-', $num)[1] || null;
-			return {
-				from: $lNum, fromMinor: $fNum,
-				to: $lNum, toMinor: $fNum,
-			};
-		}, php.explode('|', $expr));
 	}
 
 	static parseChangePnrRemarks($cmd) {
@@ -487,7 +529,7 @@ class CommandParser {
 				$segmentNumbers = [];
 			} else {
 				$applyToAllAir = false;
-				$segmentNumbers = this.parseRange($range, '|', '-');
+				$segmentNumbers = parseRange($range, '|', '-');
 			}
 			return {
 				field: 'itinerary',
@@ -575,47 +617,6 @@ class CommandParser {
 					data: {passengers: $mpPaxes},
 				};
 			}
-		} else {
-			return null;
-		}
-	}
-
-	// '9S/S2/17A18C', '9S/N1/S2/A', '9S/S2/17AB'
-	static parseSeatChange($cmd) {
-		let $regex, $matches, $seatCodesStr, $seatMatches, $seatCodes, $_, $rowNumber, $letters, $letter;
-		$regex =
-			'/^' +
-			'(?<baseCmd>9S|9X)' +
-			'(\\/N(?<paxNums>\\d+[-|\\d]*))?' +
-			'(\\/S(?<segNums>\\d+[*|\\d]*))?' +
-			'(\\/(?<aisleMark>A))?' +
-			'(\\/(?<seatCodes>(\\d+[A-Z]+)+))?' +
-			'$/';
-		if (php.preg_match($regex, $cmd, $matches = [])) {
-			$seatCodesStr = $matches['seatCodes'] || '';
-			php.preg_match_all(/(\d+)([A-Z]+)/, $seatCodesStr, $seatMatches = [], php.PREG_SET_ORDER);
-			$seatCodes = [];
-			for ([$_, $rowNumber, $letters] of $seatMatches) {
-				for ($letter of php.str_split($letters, 1)) {
-					$seatCodes.push($rowNumber + $letter);
-				}
-			}
-			return {
-				type: {
-					'9S': 'requestSeats',
-					'9X': 'cancelSeats',
-				}[$matches['baseCmd']] || null,
-				data: {
-					paxRanges: php.empty($matches['paxNums']) ? [] :
-						this.parsePaxRanges($matches['paxNums']),
-					segNums: php.empty($matches['segNums']) ? [] :
-						this.parseRange($matches['segNums'], '|', '*'),
-					location: php.empty($matches['aisleMark']) ? null :
-						{raw: $matches['aisleMark'], parsed: 'aisle'},
-					zone: null,
-					seatCodes: $seatCodes,
-				},
-			};
 		} else {
 			return null;
 		}
@@ -890,15 +891,15 @@ class CommandParser {
 		} else if (data = this.parseFareSearch(cmd)) {
 			type = 'fareSearch';
 		} else if (parsed = this.parseMpChange(cmd)) {
-			type = parsed['type'];
-			data = parsed['data'];
-		} else if (parsed = this.parseSeatChange(cmd)) { // TODO: optimize
-			type = parsed['type'];
-			data = parsed['data'];
+			type = parsed.type;
+			data = parsed.data;
+		} else if (parsed = parse_seatChange(cmd)) { // TODO: optimize
+			type = parsed.type;
+			data = parsed.data;
 		} else if (data = this.parseStorePnr(cmd)) {
 			type = php.array_keys(php.array_filter({
-				storePnrSendEmail: data['sendEmail'],
-				storeKeepPnr: data['keepPnr'],
+				storePnrSendEmail: data.sendEmail,
+				storeKeepPnr: data.keepPnr,
 			}))[0] || 'storePnr';
 		} else if (data = parse_airAvailability(cmd)) {
 			type = 'airAvailability';
