@@ -1,3 +1,4 @@
+const PricingCmdParser = require('gds-utils/src/text_format_processing/apollo/commands/PricingCmdParser.js');
 
 const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
@@ -725,11 +726,8 @@ class CommandParser {
 	}
 
 	static parsePriceItinerary($cmd) {
-		let $data;
-		if (php.preg_match(/^\$B{1,2}/, $cmd) &&
-			($data = AtfqParser.parsePricingCommand($cmd))
-		) {
-			return $data;
+		if ($cmd.match(/^\$B{1,2}/)) {
+			return PricingCmdParser.parse($cmd);
 		} else {
 			return null;
 		}
@@ -869,58 +867,54 @@ class CommandParser {
 		return this.parseBulkCommand($cmd);
 	}
 
-	static parseSingleCommand($cmd) {
-		let $data, $type, $parsed;
-		if ($type = simpleTypeExact[$cmd]) {
-			$data = null;
-		} else if ($data = this.parseArea($cmd)) {
-			$type = 'changeArea';
-		} else if ($data = this.parsePcc($cmd)) {
-			$type = 'changePcc';
-		} else if ($data = this.parsePriceItinerary($cmd)) { // TODO: optimize
-			$type = 'priceItinerary';
-		} else if ($data = this.parsePriceItineraryManually($cmd)) {
-			$type = 'priceItineraryManually';
-		} else if ($data = this.parseStorePricing($cmd)) {
-			$type = 'storePricing';
-		} else if ($data = this.parseSell($cmd)) {
-			$type = 'sell';
-		} else if ($data = this.parseDeletePnrField($cmd)) {
-			$type = 'deletePnrField';
-		} else if ($data = this.parseInsertSegments($cmd)) {
-			$type = 'insertSegments';
-		} else if ($data = this.parseFareSearch($cmd)) {
-			$type = 'fareSearch';
-		} else if ($parsed = this.parseMpChange($cmd)) {
-			$type = $parsed['type'];
-			$data = $parsed['data'];
-		} else if ($parsed = this.parseSeatChange($cmd)) { // TODO: optimize
-			$type = $parsed['type'];
-			$data = $parsed['data'];
-		} else if ($data = this.parseStorePnr($cmd)) {
-			$type = php.array_keys(php.array_filter({
-				storePnrSendEmail: $data['sendEmail'],
-				storeKeepPnr: $data['keepPnr'],
+	static parseSingleCommand(cmd) {
+		let data, type, parsed;
+		if (type = simpleTypeExact[cmd]) {
+			data = null;
+		} else if (data = this.parseArea(cmd)) {
+			type = 'changeArea';
+		} else if (data = this.parsePcc(cmd)) {
+			type = 'changePcc';
+		} else if (data = this.parsePriceItinerary(cmd)) { // TODO: optimize
+			type = 'priceItinerary';
+		} else if (data = this.parsePriceItineraryManually(cmd)) {
+			type = 'priceItineraryManually';
+		} else if (data = this.parseStorePricing(cmd)) {
+			type = 'storePricing';
+		} else if (data = this.parseSell(cmd)) {
+			type = 'sell';
+		} else if (data = this.parseDeletePnrField(cmd)) {
+			type = 'deletePnrField';
+		} else if (data = this.parseInsertSegments(cmd)) {
+			type = 'insertSegments';
+		} else if (data = this.parseFareSearch(cmd)) {
+			type = 'fareSearch';
+		} else if (parsed = this.parseMpChange(cmd)) {
+			type = parsed['type'];
+			data = parsed['data'];
+		} else if (parsed = this.parseSeatChange(cmd)) { // TODO: optimize
+			type = parsed['type'];
+			data = parsed['data'];
+		} else if (data = this.parseStorePnr(cmd)) {
+			type = php.array_keys(php.array_filter({
+				storePnrSendEmail: data['sendEmail'],
+				storeKeepPnr: data['keepPnr'],
 			}))[0] || 'storePnr';
-		} else if ($data = parse_airAvailability($cmd)) {
-			$type = 'airAvailability';
-		} else if ($data = this.parse_moreAirAvailability($cmd)) {
-			$type = 'moreAirAvailability';
-		} else if ($parsed = this.parseChainableCmd($cmd)) {
-			return $parsed;
-		} else if ($type = this.detectCommandType($cmd)) {
-			$data = null;
-		} else if ($parsed = this.parseShowPnrFieldsCmd($cmd)) {
+		} else if (data = parse_airAvailability(cmd)) {
+			type = 'airAvailability';
+		} else if (data = this.parse_moreAirAvailability(cmd)) {
+			type = 'moreAirAvailability';
+		} else if (parsed = this.parseChainableCmd(cmd)) {
+			return parsed;
+		} else if (type = this.detectCommandType(cmd)) {
+			data = null;
+		} else if (parsed = this.parseShowPnrFieldsCmd(cmd)) {
 			// for rest PNR fields we gave no explicit names to
-			return $parsed;
+			return parsed;
 		} else {
 			return null;
 		}
-		return {
-			cmd: $cmd,
-			type: $type,
-			data: $data,
-		};
+		return {cmd: cmd, type: type, data: data};
 	}
 }
 
