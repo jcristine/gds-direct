@@ -36,7 +36,7 @@ const initStateful = async (params) => {
 			pcc: stateful.getSessionData().pcc,
 			agentId: params.session.context.agentId,
 		}).then(rs => {
-			stateful.logit('INFO: Successfully reported created PNR to RBS');
+			stateful.logit('INFO: Successfully reported created PNR to RBS', rs);
 		}).catch(exc => {
 			const msg = 'Failed to report created PNR to RBS';
 			stateful.logExc('ERROR: ' + msg, exc);
