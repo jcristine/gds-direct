@@ -138,6 +138,40 @@ const simpleTypeRegex = [
 	[/^FS.*/, 'lowFareSearchUnclassified'],
 ];
 
+const regex_sell_availability_seg = /([A-Z])(\d{1,2})/;
+
+const regex_sell_availability = mkReg([
+	'^0',
+	/(?<seatCount>\d+)/,
+	'(?<segments>(', regex_sell_availability_seg, ')+)',
+	/(?<includeConnections>\*?)/,
+	/(?<segmentStatus>[A-Z]{2}|)/,
+	'$',
+]);
+
+// '01Y1Y2', '02S3*BK', '01Y11Y22'
+const parseAvailabilitySell = (cmd) => {
+	const match = cmd.match(regex_sell_availability);
+	if (match) {
+		const groups = match.groups;
+		const segments = [];
+		let tuples;
+		php.preg_match_all(regex_sell_availability_seg, groups.segments, tuples = [], php.PREG_SET_ORDER);
+		for (const [, $bookingClass, $lineNumber] of tuples) {
+			segments.push({bookingClass: $bookingClass, lineNumber: $lineNumber});
+		}
+		return {
+			sellType: 'availability',
+			seatCount: groups.seatCount,
+			segments: segments,
+			includeConnections: groups.includeConnections === '*',
+			segmentStatus: groups.segmentStatus,
+		};
+	} else {
+		return null;
+	}
+};
+
 /**
  * takes terminal command typed by a user and returns it's type
  * and probably some more info in future, like Sabre-version of
@@ -296,35 +330,6 @@ class CommandParser {
 		return $result;
 	}
 
-	// '01Y1Y2', '02S3*BK', '01Y11Y22'
-	static parseAvailabilitySell($cmd) {
-		let $segmentPattern, $regex, $matches, $segments, $tuples, $_, $bookingClass, $lineNumber;
-		$segmentPattern = '([A-Z])(\\d{1,2})';
-		$regex =
-			'/^0' +
-			'(?<seatCount>\\d+)' +
-			'(?<segments>(' + $segmentPattern + ')+)' +
-			'(?<includeConnections>\\*?)' +
-			'(?<segmentStatus>[A-Z]{2}|)' +
-			'$/';
-		if (php.preg_match($regex, $cmd, $matches = [])) {
-			$segments = [];
-			php.preg_match_all('/' + $segmentPattern + '/', $matches['segments'], $tuples = [], php.PREG_SET_ORDER);
-			for ([$_, $bookingClass, $lineNumber] of $tuples) {
-				$segments.push({bookingClass: $bookingClass, lineNumber: $lineNumber});
-			}
-			return {
-				sellType: 'availability',
-				seatCount: $matches['seatCount'],
-				segments: $segments,
-				includeConnections: $matches['includeConnections'] === '*',
-				segmentStatus: $matches['segmentStatus'],
-			};
-		} else {
-			return null;
-		}
-	}
-
 	// '0SK93F8NOVLAXCPHNN2'
 	static parseDirectSell($cmd) {
 		let $regex, $matches;
@@ -422,11 +427,11 @@ class CommandParser {
 		let $textLeft;
 		if (StringUtil.startsWith($cmd, '0')) {
 			$textLeft = php.substr($cmd, 1);
-			return this.parseAvailabilitySell($cmd)
+			return parseAvailabilitySell($cmd)
 				|| this.parseRebookSelective($textLeft)
 				|| this.parseRebookAll($textLeft)
-				|| this.parseDirectSell($cmd)
-				|| this.parseOpenSell($cmd)
+				|| this.parseDirectSell($cmd) // TODO: optimize
+				|| this.parseOpenSell($cmd) // TODO: optimize
 				|| {sellType: null, raw: $cmd};
 		} else if (php.trim($cmd) === 'Y') {
 			return {
@@ -879,7 +884,7 @@ class CommandParser {
 			$type = 'priceItineraryManually';
 		} else if ($data = this.parseStorePricing($cmd)) {
 			$type = 'storePricing';
-		} else if ($data = this.parseSell($cmd)) { // TODO: optimize
+		} else if ($data = this.parseSell($cmd)) {
 			$type = 'sell';
 		} else if ($data = this.parseDeletePnrField($cmd)) {
 			$type = 'deletePnrField';
