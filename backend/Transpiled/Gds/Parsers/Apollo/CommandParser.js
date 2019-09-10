@@ -237,29 +237,29 @@ class CommandParser {
 	}
 
 	static parseChainableCmd($cmd) {
-		let $simplePatterns, $pattern, $name, $matches, $raw, $data;
-		$simplePatterns = {
-			[/^@:5(.+?)(\||$)/]: 'addRemark',
-			[/^PS-(.+?)(\||$)/]: 'psRemark',
-			[/^I(\||$)/]: 'ignore',
-			[/^P:(.*?)(\||$)/]: 'addAgencyPhone',
-			[/^R:(.*?)(\||$)/]: 'addReceivedFrom',
-			[/^N:(.*?)(\||$)/]: 'addName',
-			[/^T:TAU\/(.*?)(\||$)/]: 'addTicketingDateLimit',
-			[/^T-(.*?)(\||$)/]: 'addAccountingLine',
-			[/^\*\s*([A-Z0-9]{6})(\||$)/]: 'openPnr',
-			[/^C:(\d+)@:3(\||$)/]: 'cancelSsr',
-			[/^\*(\d{1,3})(\||$)/]: 'displayPnrFromList',
-			[/^\*\*([^|]*?-[A-Z][^|]*?)(\||$)/]: 'searchPnr',
-		};
-		for ([$pattern, $name] of Object.entries($simplePatterns)) {
-			if (php.preg_match($pattern, $cmd, $matches = [])) {
-				[$raw, $data] = $matches;
+		const simplePatterns = [
+			[/^@:5(.+?)(\||$)/, 'addRemark'],
+			[/^PS-(.+?)(\||$)/, 'psRemark'],
+			[/^I(\||$)/, 'ignore'],
+			[/^P:(.*?)(\||$)/, 'addAgencyPhone'],
+			[/^R:(.*?)(\||$)/, 'addReceivedFrom'],
+			[/^N:(.*?)(\||$)/, 'addName'],
+			[/^T:TAU\/(.*?)(\||$)/, 'addTicketingDateLimit'],
+			[/^T-(.*?)(\||$)/, 'addAccountingLine'],
+			[/^\*\s*([A-Z0-9]{6})(\||$)/, 'openPnr'],
+			[/^C:(\d+)@:3(\||$)/, 'cancelSsr'],
+			[/^\*(\d{1,3})(\||$)/, 'displayPnrFromList'],
+			[/^\*\*([^|]*?-[A-Z][^|]*?)(\||$)/, 'searchPnr'],
+		];
+		for (const [pattern, name] of simplePatterns) {
+			const matches = $cmd.match(pattern);
+			if (matches) {
+				const [raw, data] = matches;
 				return {
-					cmd: php.rtrim($raw, '|'),
-					type: $name,
-					data: $data || null,
-					textLeft: php.mb_substr($cmd, php.mb_strlen($raw)),
+					cmd: php.rtrim(raw, '|'),
+					type: name,
+					data: data || null,
+					textLeft: php.mb_substr($cmd, php.mb_strlen(raw)),
 				};
 			}
 		}
