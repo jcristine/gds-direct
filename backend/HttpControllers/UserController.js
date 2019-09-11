@@ -1,3 +1,5 @@
+const MaskUtil = require('../Transpiled/Lib/Utils/MaskUtil.js');
+const Agent = require('../DataFormats/Wrappers/Agent.js');
 const MultiLevelMap = require('../Utils/MultiLevelMap.js');
 const Db = require('../Utils/Db.js');
 const TerminalSettings = require('../Transpiled/App/Models/Terminal/TerminalSettings.js');
@@ -36,12 +38,16 @@ exports.getView = (reqBody, emcResult) => {
 
 				settings.gds[gds].fullState = state;
 			}
+			let buffer = bufferMap.root;
+			if (!Agent(emcResult.user).canSeeCcNumbers()) {
+				buffer = MaskUtil.maskCcNumbers(buffer);
+			}
 
 			return {
 				enabled: true,
 				disableReason: '',
 				settings: settings,
-				buffer: bufferMap.root,
+				buffer: buffer,
 				auth: emcResult.user,
 			};
 		})
