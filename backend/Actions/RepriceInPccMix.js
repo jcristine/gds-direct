@@ -117,7 +117,16 @@ const RepriceInPccMix = async ({
 			gds, pcc, itinerary, pricingCmd, baseDate,
 		}).then(async pccResult => {
 			for (const ptcBlock of pccResult.pricingBlockList || []) {
-				ptcBlock.fareType = await RbsUtils.getFareTypeV2(gds, pcc, ptcBlock);
+				try {
+					ptcBlock.fareType = await RbsUtils.getFareTypeV2(gds, pcc, ptcBlock);
+				} catch (exc) {
+					/** @debug */
+					exc = exc || new Error('(empty error)');
+					exc.data = exc.data || {};
+					exc.data.session = stateful.getSessionRecord();
+					exc.data.pccResult = pccResult;
+					return Promise.reject(exc);
+				}
 			}
 			return {cmdRqId, rulePricingCmd: pricingCmd, gds, pcc, ...pccResult};
 		}).catch(coverExc(Rej.list, exc => {
