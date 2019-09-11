@@ -28,6 +28,9 @@ const OpenPnr = ({gdsSession, gds, recordLocator}) => {
 	};
 
 	const main = async () => {
+		if (!recordLocator.match(/^[A-Z0-9]{6}$/)) {
+			return Rej.BadRequest('Invalid Record Locator, not 6 alphanumeric characters - ' + recordLocator);
+		}
 		const pnr = await fetchPnr();
 		if (pnr.getPassengers().length === 0) {
 			const msg = 'Could not open PNR ' +
