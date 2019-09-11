@@ -81,7 +81,10 @@ class PricingParser
 					$text = $res['textLeft'];
 				} else if ($res = NextToken.matchTicketingWithinHoursLine($text)) {
 					$text = $res['textLeft'];
-				} else if (match = $text.match(/^ROUND THE WORLD FARES QUOTED-AGENT MUST VERIFY RULES\s*\n/)) {
+				} else if (
+					match = $text.match(/^ROUND THE WORLD FARES QUOTED-AGENT MUST VERIFY RULES\s*\n/) ||
+							$text.match(/^\s*INFORMATION ONLY - BOOKING DATE MODIFIED\s*/)
+				) {
 					// ignore
 					$text = $text.slice(match[0].length);
 				} else if ($res = NextToken.matchFareGuaranteedAtTicketIssuanceStatement($text)) {
