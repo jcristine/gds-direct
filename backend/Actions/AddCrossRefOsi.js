@@ -36,14 +36,12 @@ const AddCrossRefOsi = ({
 		const coveredAirlines = new Set();
 		for (const numRec of numRecs) {
 			const {airline, confirmationNumber} = numRec;
+			const recordLocator = confirmationNumber;
 			if (airlines.includes(airline)) {
 				coveredAirlines.add(airline);
-				writeOsiRecs.push({
-					airline: airline,
-					recordLocator: confirmationNumber,
-				});
+				writeOsiRecs.push({airline, recordLocator});
 			} else {
-				codeShareNumRecs.push(numRec);
+				codeShareNumRecs.push({airline, recordLocator});
 			}
 		}
 		const airlinesLeftSet = new Set(airlines.filter(a => !coveredAirlines.has(a)));
@@ -52,14 +50,23 @@ const AddCrossRefOsi = ({
 			for (const numRec of codeShareNumRecs) {
 				writeOsiRecs.push({
 					airline: airline,
-					recordLocator: numRec.confirmationNumber,
+					recordLocator: numRec.recordLocator,
 				});
+			}
+		} else if (
+			airlinesLeftSet.size === codeShareNumRecs.length &&
+			_.uniqBy(codeShareNumRecs, r => JSON.stringify(r)).length === 1
+		) {
+			// different airlines on same 1A record locator, for example LX and LH
+			const {recordLocator} = codeShareNumRecs[0];
+			for (const airline of airlinesLeftSet) {
+				writeOsiRecs.push({airline, recordLocator});
 			}
 		} else if (airlinesLeftSet.size > 1 && codeShareNumRecs.length > 0) {
 			// could eventually ask user to assign which number
 			// belongs to which airline... if he can himself
 			const msg = 'Could not deduct actual airlines among ' + [...airlinesLeftSet].join(',') +
-				' for ' + codeShareNumRecs.map(r => r.airline + r.confirmationNumber).join(',');
+				' for ' + codeShareNumRecs.map(r => r.airline + '-' + r.recordLocator).join(',');
 			return Rej.UnprocessableEntity(msg);
 		}
 		writeOsiRecs = _.uniqBy(writeOsiRecs, r => JSON.stringify(r));
