@@ -409,7 +409,6 @@ gdses.forEach( gds => {
 		width: 200,
 		title: gds,
 		editable: (d, row) => {
-			const patternRec = row.gds[gds];
 			const val     = row['gds'] ? (row['gds'][gds]['pattern'] != null ? row['gds'][gds]['pattern'] : '') : '';
 			const isError = row['gds'] ? (row['gds'][gds]['regexError'] ? 'text-danger' : '') : '';
 
@@ -419,7 +418,11 @@ gdses.forEach( gds => {
 
 			const span = document.createElement('span');
 			span.appendChild(input);
-			addSampleControl(patternRec, input, span);
+
+			const patternRec = (row.gds || {})[gds];
+			if (patternRec) {
+				addSampleControl(patternRec, input, span);
+			}
 
 			return span;
 		},
