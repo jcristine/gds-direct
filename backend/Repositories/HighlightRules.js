@@ -124,7 +124,19 @@ const invalidateCache = async () => {
  * @param {ISaveHighlightRuleParams} rqBody
  * @param {IEmcResult} emcResult
  */
-const saveRule = (rqBody, emcResult) => Db.with(db => {
+const saveRule = (rqBody, emcResult, routeParams, request) => Db.with(db => {
+	// datatables legacy
+	if (rqBody.removeData == 1) {
+		// TODO: delete orphaned records in other tables as well
+		return db.delete({
+			table: TABLE,
+			where: [['id', '=', rqBody.id]],
+		}).then(sqlRs => ({
+			message: 'Deleted successfully ' +
+				sqlRs.affectedRows + ' rows',
+		}));
+	}
+
 	const decoration = [];
 	for (const [key, value] of Object.entries(rqBody.decorationFlags || {})) {
 		if (+value) {

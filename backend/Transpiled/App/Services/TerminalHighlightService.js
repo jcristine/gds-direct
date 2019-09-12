@@ -14,7 +14,7 @@ const getCmdPatterns = (HighlightRules) =>
 		.then((rules) => {
 			const cmdPatterns = [];
 			for (const rule of Object.values(rules)) {
-				cmdPatterns.push(...rule.cmdPatterns);
+				cmdPatterns.push(...(rule.cmdPatterns || []));
 			}
 			return cmdPatterns;
 		})
