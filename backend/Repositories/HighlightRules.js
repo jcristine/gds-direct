@@ -3,7 +3,7 @@ const Db = require("../Utils/Db.js");
 const Redis = require('../LibWrappers/Redis.js');
 const MultiLevelMap = require('../Utils/MultiLevelMap.js');
 const Rej = require('klesun-node-tools/src/Lang.js');
-const _ = require('lodash');;
+const _ = require('lodash');
 
 const TABLE = 'highlightRules';
 const TABLE_CMD = 'highlightCmdPatterns';
@@ -120,21 +120,25 @@ const invalidateCache = async () => {
 	return redis.set(key, Date.now());
 };
 
+const deleteRule = (db, id) => {
+	return Promise.all([
+		db.delete({table: TABLE, where: [['id', '=', id]]}),
+		db.delete({table: TABLE_CMD, where: [['ruleId', '=', id]]}),
+		db.delete({table: TABLE_OUTPUT, where: [['ruleId', '=', id]]}),
+	]).then(results => ({
+		message: 'Deleted successfully - ' +
+			JSON.stringify(results),
+	}));
+};
+
 /**
  * @param {ISaveHighlightRuleParams} rqBody
  * @param {IEmcResult} emcResult
  */
-const saveRule = (rqBody, emcResult, routeParams, request) => Db.with(db => {
+const saveRule = (rqBody, emcResult) => Db.with(db => {
 	// datatables legacy
 	if (rqBody.removeData == 1) {
-		// TODO: delete orphaned records in other tables as well
-		return db.delete({
-			table: TABLE,
-			where: [['id', '=', rqBody.id]],
-		}).then(sqlRs => ({
-			message: 'Deleted successfully ' +
-				sqlRs.affectedRows + ' rows',
-		}));
+		return deleteRule(db, rqBody.id);
 	}
 
 	const decoration = [];
