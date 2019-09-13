@@ -6,6 +6,19 @@ const SimplePatternTranslator = require("./SimplePatternTranslator");
 const PatternTranslator = require("./PatternTranslator");
 const AvailCmdParser = require("../../../Gds/Parsers/Sabre/Commands/AvailCmdParser");
 
+const agnosticMap = {
+	'PRICEAL': 'PRICEALL',
+	'PRICEALLJCB': 'PRICEJCB',
+	'PRICEJCBALL': 'PRICEJCB',
+	'PRICELAL': 'PRICEALL',
+	'PRICEALL*JCB': 'PRICEJCB',
+	'PRICEALL*JC': 'PRICEJCB',
+	'PRICECJB': 'PRICEJCB',
+	'PRICEBJC': 'PRICEJCB',
+	'PRICEFXD': 'PRICEALL/FXD',
+	'STOREALL': 'STORE',
+};
+
 /**
  * CommandCorrector::correct('BB', 'apollo');
  * ==> '$BB'
@@ -247,14 +260,6 @@ class CommandCorrector {
 				{mistake: '§D', correct: 'MD'},
 				{mistake: 'MMD', correct: 'MD'},
 				{mistake: 'MMDA', correct: 'MDA'},
-				{mistake: 'PRICELAL', correct: 'PRICEALL'},
-				{mistake: 'PRICEALLJCB', correct: 'PRICEJCB'},
-				{mistake: 'PRICEALL*JCB', correct: 'PRICEJCB'},
-				{mistake: 'PRICEALL*JC', correct: 'PRICEJCB'},
-				{mistake: 'PRICECJB', correct: 'PRICEJCB'},
-				{mistake: 'PRICEBJC', correct: 'PRICEJCB'},
-				{mistake: 'PRICEFXD', correct: 'PRICEALL/FXD'},
-				{mistake: 'STOREALL', correct: 'STORE'},
 			],
 
 			sabre: [
@@ -560,7 +565,13 @@ class CommandCorrector {
 	}
 
 	execute($input, $dialect) {
-		let $addNoteCorrected, $output, $legend, $patternData, $mistake, $correct, $result;
+		let $addNoteCorrected, $output, $legend, $patternData, $mistake, $correct;
+
+		const agnosticCmd = agnosticMap[$input];
+		if (agnosticCmd) {
+			this.$messages.push('CORRECTED >' + agnosticCmd);
+			return agnosticCmd;
+		}
 
 		$addNoteCorrected = false;
 		$output = this.correctTyposWithReplace($dialect, $input);

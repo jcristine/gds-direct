@@ -165,6 +165,7 @@ class CommandCorrectorTest extends require('../../../Lib/TestCase.js') {
 			['apollo', 'PRICEBJC', 'PRICEJCB'],
 			['apollo', 'PRICEFXD', 'PRICEALL/FXD'],
 			['apollo', 'STOREALL', 'STORE'],
+			['sabre', 'PRICEALLJCB', 'PRICEJCB'],
 		];
 	}
 
