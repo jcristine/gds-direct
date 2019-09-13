@@ -37,16 +37,16 @@ const paxToTsaTrCmp = (pax, paxes) => {
 			}),
 		]),
 		Cmp('td').attach([
-			Cmp('input', {
-				type: 'checkbox', name: 'isInfant',
-				...(numRec.isInfant ? {checked: 'checked'} : {}),
-			}),
-		]),
-		Cmp('td').attach([
 			Cmp('select', {name: 'gender'}).attach([
 				Cmp('option[male]'),
 				Cmp('option[female]'),
 			]),
+		]),
+		Cmp('td').attach([
+			Cmp('input', {
+				type: 'checkbox', name: 'isInfant',
+				...(numRec.isInfant ? {checked: 'checked'} : {}),
+			}),
 		]),
 		Cmp('td').attach([
 			Cmp('input', {name: 'lastName', type: 'text', value: pax.lastName}),
@@ -135,8 +135,8 @@ const makeSectionsSwitchCmp = () => {
 						Cmp('tr').attach([
 							Cmp('th[#]'),
 							Cmp('th[Date of Birth]'),
-							Cmp('th[Inf]'),
 							Cmp('th[Gender]'),
+							Cmp('th[Inf]'),
 							Cmp('th[Last Name]'),
 							Cmp('th[First Name]'),
 							Cmp('th[Middle Name]'),
