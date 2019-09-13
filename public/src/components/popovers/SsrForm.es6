@@ -19,7 +19,9 @@ const paxToTsaTrCmp = (pax, paxes) => {
 			}));
 	};
 	const numRec = pax.nameNumber;
-	const [firstName, middleName] = pax.firstName.split(/(?<=^\w+)\s+/);
+	const nameParts = pax.firstName.split(' ');
+	const firstName = nameParts[0];
+	const middleName = nameParts.slice(1).join(' ');
 	return Cmp('tr').attach([
 		Cmp('td').attach([
 			Cmp('select', {name: 'nameNumber'})
