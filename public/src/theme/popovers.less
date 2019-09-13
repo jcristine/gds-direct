@@ -472,3 +472,55 @@
 .go-to-pricing-in-progress td.net-price span {
   pointer-events: none;
 }
+.pnr-services-form {
+  .section-switch > .sections > * {
+    display: none;
+    padding: 4px;
+    padding-top: 16px;
+  }
+  .section-switch > .sections[data-active-section="tsa"]            > [data-section="tsa"]            { display: block; }
+  .section-switch > .sections[data-active-section="apis"]           > [data-section="apis"]           { display: block; }
+  .section-switch > .sections[data-active-section="frequent-flyer"] > [data-section="frequent-flyer"] { display: block; }
+  .section-switch > .sections[data-active-section="ktn"]            > [data-section="ktn"]            { display: block; }
+  .section-switch > .sections[data-active-section="meal"]           > [data-section="meal"]           { display: block; }
+  .section-switch > .sections[data-active-section="osi"]            > [data-section="osi"]            { display: block; }
+  .section-switch > .sections[data-active-section="redress-number"] > [data-section="redress-number"] { display: block; }
+  .section-switch > .sections[data-active-section="phone-number"]   > [data-section="phone-number"]   { display: block; }
+  .section-switch > .sections[data-active-section="email"]          > [data-section="email"]          { display: block; }
+  .section-switch > .sections[data-active-section="assistance"]     > [data-section="assistance"]     { display: block; }
+
+  .switch-buttons > * {
+    padding-left: 3px;
+    padding-right: 3px;
+    border: solid grey 1px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .switch-buttons > :not(.active-section-btn) {
+    border-top: none;
+  }
+  .switch-buttons > .active-section-btn {
+    color: #4cffe6;
+    border-bottom: none;
+  }
+  .status-holder[data-status="error"] {
+    color: red;
+  }
+  .passenger-list-block {
+    font-family: monospace;
+    white-space: pre;
+    padding: 8px;
+  }
+  .segment-list-block {
+    font-family: monospace;
+    white-space: pre;
+    padding: 8px;
+  }
+  th {
+    color: #47aadf;
+  }
+  td {
+    padding: 2px;
+  }
+}

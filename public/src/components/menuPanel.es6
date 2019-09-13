@@ -11,7 +11,7 @@ import {Quotes}                 from "./menu/quotes";
 import {MenuHideButton}         from "./menu/hideMenu";
 import {PQ_MODAL_PROVIDED}         from "./../actions/priceQuoutes.es6";
 let Help = require('./popovers/help.es6').default;
-let PnrServices = require('./popovers/PnrServices.es6').default;
+let PnrTools = require('./popovers/PnrTools.es6').default;
 
 export default class MenuPanel extends Component
 {
@@ -65,7 +65,7 @@ export default class MenuPanel extends Component
 		this.observe(
 			new Component('article')
 				.attach([
-					new PnrServices({
+					new PnrTools({
 						icon: '<i class="fa t-f-size-14">Tools</i>',
 					}).getTrigger(),
 				])

@@ -1,10 +1,10 @@
 const applyProperties = (node, list) => {
 	Object.keys(list).map(function (index) {
-		if (index === 'style')
-		{
+		if (index === 'style') {
 			node.setAttribute('style' , list[index]);
-		} else
-		{
+		} else if (index.startsWith('data-')) {
+			node.setAttribute(index, list[index]);
+		} else {
 			node[index] = list[index];
 		}
 	});
