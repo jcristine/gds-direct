@@ -26,13 +26,13 @@ class ImportApolloPnrFormatAdapter
 		const recentPast = !baseDate ? null : php.date('Y-m-d', php.strtotime('-2 days', php.strtotime(baseDate))); // -2 for timezone error
 		const nearFuture = !baseDate ? null : php.date('Y-m-d', php.strtotime('+2 days', php.strtotime(baseDate))); // +2 for timezone error
 
-		const $nameRecords = parsedData.passengers.passengerList || [];
+		const passengers = parsedData.passengers.passengerList || [];
 		const pnrInfo = !php.empty(parsedData.headerData.reservationInfo)
 			? this.transformPnrInfo(parsedData.headerData, nearFuture)
 			: null;
 		let reservation = {
 			pnrInfo: pnrInfo,
-			passengers: $nameRecords,
+			passengers: passengers,
 			itinerary: FormatAdapter.adaptApolloItineraryParseForClient(parsedData.itineraryData || [], recentPast),
 			remarks: FormatAdapter.transformApolloRemarks(parsedData.remarks || []),
 			confirmationNumbers: (parsedData.acknData || [])
