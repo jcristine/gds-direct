@@ -2,16 +2,9 @@
 
 <form id="filter-criteria">
     <label>JSON params:</label><br/>
-    <textarea name="jsonParams" rows="10" cols="100">{
-    "whereOr": [
-        [
-            ["gds", "=", "apollo"],
-            ["type", "=", "priceItinerary"]
-        ]
-    ]
-}</textarea><br/>
+    <textarea name="jsonParams" rows="10" cols="100"></textarea><br/>
     <datalist id="model-names"></datalist>
-    <label>model:<input name="model" required="required" list="model-names" value="terminal_command_log"/></label>
+    <label>model:<input name="model" required="required" list="model-names" value="terminal_sessions"/></label>
     <label>orderBy:<input name="orderBy" value="id DESC"/></label>
     <label>skip:<input type="number" name="skip" value="0" min="0" max="10000"/></label>
     <label>limit:<input type="number" name="limit" value="100" min="0" max="10000"/></label>
@@ -52,13 +45,28 @@
 
 <script>
 window.GdsDirectPlusPage.whenEmcSessionId.then(emcSessionId => {
+	let jsonParamsFld = document.querySelector('textarea[name="jsonParams"]');
+	let yesterdayObj = new Date();
+    yesterdayObj.setDate(yesterdayObj.getDate() - 1);
+    jsonParamsFld.value = [
+        '{',
+        '    "fields": ["count(*) as cnt"],',
+        '    "whereOr": [',
+        '        [',
+        '            ["created_dt", ">", "' + yesterdayObj.toISOString().slice(0, 10) + '"],',
+        '            ["closed_dt", "is", null],',
+        '            ["gds", "=", "apollo"]',
+        '        ]',
+        '    ]',
+        '}',
+    ].join('\n');
 	let filterForm = document.querySelector('#filter-criteria');
 	let colTr = document.querySelector('#column-header');
 	let rowTbody = document.querySelector('#value-rows');
 	let reverseFlag = document.querySelector('input[name="reverse"]');
 	let noHtmlFlag = document.querySelector('input[name="noHtml"]');
 	let send = () => {
-		let jsonParamsStr = document.querySelector('textarea[name="jsonParams"]').value || null;
+		let jsonParamsStr = jsonParamsFld.value || null;
 		let params = {
 			emcSessionId: emcSessionId,
 			model: document.querySelector('input[name="model"]').value || null,
