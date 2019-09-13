@@ -1,3 +1,4 @@
+const GetCurrentPnr = require('../Actions/GetCurrentPnr.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const Debug = require('klesun-node-tools/src/Debug.js');
 const Diag = require('../LibWrappers/Diag.js');
@@ -186,6 +187,12 @@ exports.addCrossRefOsi = async ({rqBody, ...controllerData}) => {
 			cmdRq: 'ADDCROSSREFOSI',
 			gds, rbsResp: result,
 		}));
+};
+
+exports.getCurrentPnr = async ({rqBody, ...controllerData}) => {
+	const stateful = await StatefulSession.makeFromDb(controllerData);
+	const pnr = await GetCurrentPnr(stateful);
+	return pnr.getReservation(stateful.getStartDt());
 };
 
 exports.makeMco = async ({rqBody, session, emcUser}) => {
