@@ -10,24 +10,15 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
  */
 class ImportPnrCommonFormatAdapter
 {
-	/** @param $reservation = IGdsPnrFieldsProvider::getReservation() */
-	static addContextDataToPaxes($reservation)  {
-		let $tripEndDt;
-		const lastSeg = ($reservation['itinerary'] || []).slice(-1)[0];
-		$tripEndDt = lastSeg ? lastSeg['departureDt']['full'] : null;
-		$reservation['passengers'] = Fp.map(($pax) => {
-			let $first, $middle;
-			$pax['ageGroup'] = PtcUtil.getPaxAgeGroup($pax, $tripEndDt);
-			[$first, $middle] = php.array_pad(php.explode(' ', $pax['firstName']), 2, '');
-			if (php.in_array($middle, ['MR', 'MS', 'MRS', 'MSTR', 'MISS'])) {
-				$pax['firstName'] = $first;
-				$pax['title'] = $middle;
-			} else {
-				$pax['title'] = '';
-			}
-			return $pax;
-		}, $reservation['passengers'] || []);
-		return $reservation;
+	/** @param reservation = IGdsPnrFieldsProvider::getReservation() */
+	static addContextDataToPaxes(reservation)  {
+		const lastSeg = (reservation.itinerary || []).slice(-1)[0];
+		const tripEndDt = lastSeg ? lastSeg.departureDt.full : null;
+		reservation.passengers = (reservation.passengers || []).map((pax) => {
+			pax.ageGroup = PtcUtil.getPaxAgeGroup(pax, tripEndDt);
+			return pax;
+		});
+		return reservation;
 	}
 
 	/**
