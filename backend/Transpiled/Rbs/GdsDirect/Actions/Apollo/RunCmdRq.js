@@ -727,7 +727,7 @@ const RunCmdRq = ({
 	};
 
 	/** @param cmd = 'T:$B/N1|2*C05/:N/FXD' */
-	const invokeStorePricingCmd = async (cmd) => {
+	const invokeStorePricingCmd = async (cmd, pnr) => {
 		const cmdData = AtfqParser.parsePricingCommand(cmd.slice('T:'.length));
 		const result = await travelport.processPnr(stateful.getGdsData(), {
 			storePricingParams: {
@@ -735,13 +735,22 @@ const RunCmdRq = ({
 				pricingModifiers: cmdData.pricingModifiers,
 			},
 		});
-		const error = result.currentPricing.error;
+		let error = result.currentPricing.error;
 		if (error) {
-			const isBadRequest =
-				error.includes('DUPLICATE NAME/SEGMENT COMBINATION') ||
-				error.includes('ATFQ ALREADY EXISTS');
-
-			const reject = isBadRequest ? Rej.BadRequest : Rej.UnprocessableEntity;
+			let reject = Rej.UnprocessableEntity;
+			if (error.includes('DUPLICATE NAME/SEGMENT COMBINATION') ||
+				error.includes('ATFQ ALREADY EXISTS')
+			) {
+				reject = Rej.BadRequest;
+			} else if (error.includes('ERROR MESSAGE NOT DEFINED')) {
+				const isCa197 = s => s.airline === 'CA' && +s.flightNumber === 179;
+				if (pnr.getItinerary().some(isCa197)) {
+					// dunno why, but any itinerary with this segment in any GDS results in
+					// various forms of "UNKNOWN ERROR", some problems in airline database perhaps
+					reject = Rej.ServiceUnavailable;
+					error = 'CA179 flight airline DB issues, store manually - ' + error;
+				}
+			}
 			return reject('Failed to >' + cmd + '; - ' + error);
 		} else {
 			return Promise.resolve(result);
@@ -760,13 +769,13 @@ const RunCmdRq = ({
 		const prevAtfqNum = lastStore ? lastStore.lineNumber : 0;
 		const newAtfqNum = +prevAtfqNum + 1;
 		let cmd = await makeStorePricingCmd(pnr, aliasData, false);
-		let result = await invokeStorePricingCmd(cmd);
+		let result = await invokeStorePricingCmd(cmd, pnr);
 		if (result.currentPricing.pricingBlockList.some(b => b.hasPrivateFaresSelectedMessage)) {
 			if (needsColonN(result, pnr)) {
 				// delete ATFQ we just created and store a correct one, with /:N/ mod
 				await runCommand('XT' + newAtfqNum, false);
 				cmd = await makeStorePricingCmd(pnr, aliasData, true);
-				result = await invokeStorePricingCmd(cmd, false);
+				result = await invokeStorePricingCmd(cmd, pnr);
 			}
 		}
 		const hasFxd = AtfqParser.parsePricingCommand(cmd.slice('T:'.length))
