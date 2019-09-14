@@ -30,10 +30,9 @@ const ApolloPricingAdapter = ({
 
 	const modsHelper = makeHelper(parsed);
 
-	/** @param fc = require('FareConstructionParser.js').parse() */
+	/** @param fc = require('FcParser.js').parse().parsed */
 	const transformFareInfo = (fc) => {
 		fc = JSON.parse(JSON.stringify(fc));
-
 		const result = {};
 		result.baseFare = {
 			currency: fc.fareAndMarkup.currency,
