@@ -197,12 +197,12 @@ const ImportPq = async ({
 			return {userMessages: ['Invalid PQ state'].concat(stateErrors)};
 		}
 		const cmdRecs = await getCurrentStateCommands();
-		const imported = await importAct
+		importAct
 			.setPreCalledCommandsFromDb(cmdRecs, stateful.getSessionData())
 			.setLeadData(leadData)
 			.setSession(stateful)
-			.fetchOptionalFields(fetchOptionalFields)
-			.execute();
+			.fetchOptionalFields(fetchOptionalFields);
+		const imported = await importAct.execute();
 		const userMessages = [];
 		let status = GdsDirect.STATUS_EXECUTED;
 		if (imported.error) {
