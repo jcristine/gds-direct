@@ -3,6 +3,31 @@
 const php = require('../../../../php.js');
 const FxParser = require("gds-utils/src/text_format_processing/amadeus/FxParser");
 
+const provide_unwrapFcLine = () => {
+	const testCases = [];
+
+	testCases.push({
+		input: {
+			lines: [
+				"04DEC19ORL KE X/NYC KE X/SEL KE CEB345.00",
+				"TKE0ZNML KE X/SEL KE X/BOS KE ORL420.00QKE",
+				"0ZMML NUC765.00END ROE1.000000",
+			],
+			segments: [
+				{"fareBasis":"TKE0ZNML","destinationCity":"NYC","airline":"KE"},
+				{"fareBasis":"TKE0ZNML","destinationCity":"SEL","airline":"KE"},
+				{"fareBasis":"TKE0ZNML","destinationCity":"CEB","airline":"KE"},
+				{"fareBasis":"QKE0ZMML","destinationCity":"SEL","airline":"KE"},
+				{"fareBasis":"QKE0ZMML","destinationCity":"BOS","airline":"KE"},
+				{"fareBasis":"QKE0ZMML","destinationCity":"ORL","airline":"KE"},
+			],
+		},
+		output: '04DEC19ORL KE X/NYC KE X/SEL KE CEB345.00TKE0ZNML KE X/SEL KE X/BOS KE ORL420.00QKE0ZMML NUC765.00END ROE1.000000',
+	});
+
+	return testCases.map(a => [a]);
+};
+
 class FxParserTest extends require('../../../../Lib/TestCase.js')
 {
 	provideDumps()  {
@@ -1704,20 +1729,82 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
 			},
 		]);
 
+		// failed to parse FC, likely because of wrapped 'QKE' + '0ZMML' fare basis
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				"FQQ1",
+				"",
+				"01 P1",
+				"NO REBOOKING REQUIRED FOR LOWEST AVAILABLE FARE",
+				"LAST TKT DTE 04DEC19 - DATE OF ORIGIN",
+				"------------------------------------------------------------",
+				"     AL FLGT  BK   DATE  TIME  FARE BASIS      NVB  NVA   BG",
+				" ORL",
+				"XNYC KE  7538 T    04DEC 0732  TKE0ZNML             04JUN 2P",
+				"XSEL KE    82 T    04DEC 1200  TKE0ZNML             04JUN 2P",
+				" CEB KE   631 T    05DEC 1850  TKE0ZNML             04JUN 2P",
+				"XSEL KE   632 Q    29MAY 0100  QKE0ZMML             04JUN 2P",
+				"XBOS KE    91 Q    29MAY 0930  QKE0ZMML             04JUN 2P",
+				" ORL KE  3970 Q    29MAY 1538  QKE0ZMML             04JUN 2P",
+				"",
+				"USD   765.00      04DEC19ORL KE X/NYC KE X/SEL KE CEB345.00",
+				"                  TKE0ZNML KE X/SEL KE X/BOS KE ORL420.00QKE",
+				"USD     5.40-YQ   0ZMML NUC765.00END ROE1.000000",
+				"USD   130.00-YR   XT USD 3.96-XA USD 7.00-XY USD 5.77-YC USD",
+				"USD   111.91-XT   18.60-US USD 18.60-US USD 11.20-AY USD",
+				"USD  1012.31      16.90-BP USD 16.38-LI USD 13.50-XF MCO4.50",
+				"                  JFK4.50BOS4.50",
+				"BAG/SEAT/SERVICES AT A CHARGE MAY BE AVAILABLE-ENTER FXK",
+				"TICKET STOCK RESTRICTION",
+				"BG CXR: KE",
+				"PRICED WITH VALIDATING CARRIER KE - REPRICE IF DIFFERENT VC",
+				"TICKETS ARE NON-REFUNDABLE",
+				"ENDOS NONENDS. NO RFND. RISS CHRG APPLY-USD300. NO MILE UG.",
+				"      -BG:KE",
+				"ATTN* CABIN Y(M)/S1-6",
+				"14SEP19 PER GAF REQUIREMENTS FARE NOT VALID UNTIL TICKETED",
+			]),
+			{
+				commandCopy: 'FQQ1',
+				data: {
+					fareConstruction: {
+						parsed: {
+							segments: [
+								{destination: 'NYC'},
+								{destination: 'SEL'},
+								{destination: 'CEB'},
+								{destination: 'SEL'},
+								{destination: 'BOS'},
+								{destination: 'ORL', fare: '420.00', fareBasis: 'QKE0ZMML'},
+							],
+							fare: '765.00',
+						},
+					},
+				},
+			},
+		]);
+
 		return $list;
+	}
+
+	test_unwrapFcLine({input, output}) {
+		const {lines, segments} = input;
+		const actual = FxParser.unwrapFcLine(lines, segments);
+		this.assertEquals(output, actual);
 	}
 
 	/**
      * @test
      * @dataProvider provideDumps
      */
-	testParser(dump, expected)  {
+	testParser(dump, expected) {
 		const actual = FxParser.parse(dump);
 		this.assertArrayElementsSubset(expected, actual);
 	}
 
 	getTestMapping() {
 		return [
+			[provide_unwrapFcLine, this.test_unwrapFcLine],
 			[this.provideDumps, this.testParser],
 		];
 	}
