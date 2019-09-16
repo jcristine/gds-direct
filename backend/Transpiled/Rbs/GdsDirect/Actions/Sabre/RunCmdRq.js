@@ -518,35 +518,34 @@ const execute = ({
 		}
 	};
 
-	const processCloneItinerary = async  ($aliasData) => {
-		let $pcc, $newStatus, $seatNumber, $oldSegments, $isAa, $keepOriginal, $pccResult, $errors, $desiredSegments,
-			$fallbackToGk;
-
-		$pcc = $aliasData['pcc'];
-		$newStatus = $aliasData['segmentStatus'] || 'GK';
-		$seatNumber = $aliasData['seatCount'] || 0;
-		if (php.empty($oldSegments = (await getCurrentPnr()).getItinerary())) {
+	const processCloneItinerary = async (aliasData) => {
+		const pcc = aliasData.pcc;
+		const newStatus = aliasData.segmentStatus || 'GK';
+		const seatNumber = aliasData.seatCount || 0;
+		const takenSegments = (await getCurrentPnr()).getItinerary();
+		if (php.empty(takenSegments)) {
 			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
 		}
-		$isAa = ($seg) => $seg['airline'] === 'AA';
-		$keepOriginal = $aliasData['keepOriginal'] ||
-		$newStatus === 'GK' && !Fp.any($isAa, $oldSegments);
-		$pccResult = await emulateInFreeArea($pcc, $keepOriginal);
-		if (!php.empty($errors = $pccResult['errors'] || [])) {
-			return {errors: $errors};
+		const isAa = ($seg) => $seg.airline === 'AA';
+		const keepOriginal = aliasData.keepOriginal ||
+		newStatus === 'GK' && !takenSegments.some(isAa);
+		const pccResult = await emulateInFreeArea(pcc, keepOriginal);
+		const errors = pccResult.errors || [];
+		if (!php.empty(errors)) {
+			return {errors};
 		}
-		$desiredSegments = $oldSegments.map(($seg) => {
-			$seg['seatCount'] = $seatNumber || $seg['seatCount'];
-			$seg['segmentStatus'] = $newStatus;
-			return $seg;
-		});
-		$fallbackToGk = $newStatus === 'SS';
-		return bookItinerary($desiredSegments, $fallbackToGk);
+		const desiredSegments = takenSegments.map((seg) => ({
+			...seg,
+			seatCount: seatNumber || seg.seatCount,
+			segmentStatus: newStatus,
+		}));
+		const fallbackToGk = newStatus === 'SS';
+		return bookItinerary(desiredSegments, fallbackToGk);
 	};
 
 	const bookPassengers = async  (passengers) => {
-	// note that Amadeus has different format instead of 'remark', so a
-	// better approach would be to generate command for pure parsed dob/ptc
+		// note that Amadeus has different format instead of 'remark', so a
+		// better approach would be to generate command for pure parsed dob/ptc
 		const cmd = passengers
 			.map(pax => '-' + pax.lastName + '/' + pax.firstName +
 			(!pax.remark ? '' : '*' + pax.remark))
