@@ -137,43 +137,46 @@ const makeLoggingGdsClients = ({
 };
 
 const withSession = ({
-	gds, pcc, action,
+	gds, pcc = null, action,
 	gdsClients = GdsSession.makeGdsClients(),
 }) => {
 	if (gds === 'apollo') {
 		const profileName = GdsProfiles.TRAVELPORT.DynApolloProd_2F3K;
 		return gdsClients.travelport.withSession({profileName}, async gdsSession => {
-			const semRs = await gdsSession.runCmd('SEM/' + pcc + '/AG');
-			if (!CmsApolloTerminal.isSuccessChangePccOutput(semRs.output)) {
-				const msg = 'Could not emulate ' + pcc + ' - ' + semRs.output.trim();
-				return Rej.Forbidden(msg);
-			} else {
-				return action(gdsSession);
+			if (pcc) {
+				const semRs = await gdsSession.runCmd('SEM/' + pcc + '/AG');
+				if (!CmsApolloTerminal.isSuccessChangePccOutput(semRs.output)) {
+					const msg = 'Could not emulate ' + pcc + ' - ' + semRs.output.trim();
+					return Rej.Forbidden(msg);
+				}
 			}
+			return action(gdsSession);
 		});
 	} else if (gds === 'galileo') {
 		const profileName = GdsProfiles.TRAVELPORT.DynGalileoProd_711M;
 		return gdsClients.travelport.withSession({profileName}, async gdsSession => {
-			const semRs = await gdsSession.runCmd('SEM/' + pcc + '/AG');
-			if (!UpdateGalileoState.wasPccChangedOk(semRs.output)) {
-				const msg = 'Could not emulate ' + pcc + ' - ' + semRs.output.trim();
-				return Rej.Forbidden(msg);
-			} else {
-				return action(gdsSession);
+			if (pcc) {
+				const semRs = await gdsSession.runCmd('SEM/' + pcc + '/AG');
+				if (!UpdateGalileoState.wasPccChangedOk(semRs.output)) {
+					const msg = 'Could not emulate ' + pcc + ' - ' + semRs.output.trim();
+					return Rej.Forbidden(msg);
+				}
 			}
+			return action(gdsSession);
 		});
 	} else if (gds === 'sabre') {
 		return gdsClients.sabre.withSession({}, async gdsSession => {
-			const aaaRs = await gdsSession.runCmd('AAA' + pcc);
-			if (!CmsSabreTerminal.isSuccessChangePccOutput(aaaRs.output, pcc)) {
-				const msg = 'Could not emulate ' + pcc + ' - ' + aaaRs.output.trim();
-				return Rej.Forbidden(msg);
-			} else {
-				return action(gdsSession);
+			if (pcc) {
+				const aaaRs = await gdsSession.runCmd('AAA' + pcc);
+				if (!CmsSabreTerminal.isSuccessChangePccOutput(aaaRs.output, pcc)) {
+					const msg = 'Could not emulate ' + pcc + ' - ' + aaaRs.output.trim();
+					return Rej.Forbidden(msg);
+				}
 			}
+			return action(gdsSession);
 		});
 	} else if (gds === 'amadeus') {
-		const profileName = GdsProfiles.chooseAmaProfile(pcc);
+		const profileName = !pcc ? null : GdsProfiles.chooseAmaProfile(pcc);
 		return gdsClients.amadeus.withSession({profileName, pcc}, action);
 	} else {
 		return Rej.NotImplemented('Unsupported GDS - ' + gds);
