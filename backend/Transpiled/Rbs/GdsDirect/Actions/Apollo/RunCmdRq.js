@@ -450,39 +450,38 @@ const RunCmdRq = ({
 		return bookItinerary($itinerary, true);
 	};
 
-	const rebookAsGk = async ($data) => {
-		let $segNums, $bookingClass, $departureDate, $newSegments, $seg, $xOutput;
-		$segNums = $data['segmentNumbers'];
-		$bookingClass = $data['bookingClass'] || null;
-		$departureDate = $data['departureDate'] || null;
+	const rebookAsGk = async (data) => {
+		let segNums = data.segmentNumbers;
+		const bookingClass = data.bookingClass || null;
+		const departureDate = data.departureDate || null;
 		const pnr = await getCurrentPnr();
 		const itinerary = pnr.getItinerary();
-		$segNums = $segNums.length > 0 ? $segNums :
+		segNums = segNums.length > 0 ? segNums :
 			itinerary.map(s => s.segmentNumber);
-		$newSegments = [];
-		for ($seg of itinerary) {
-			if (php.in_array($seg['segmentNumber'], $segNums)) {
-				if ($bookingClass) {
-					$seg['bookingClass'] = $bookingClass;
+		const newSegments = [];
+		for (const seg of itinerary) {
+			if (php.in_array(seg.segmentNumber, segNums)) {
+				if (bookingClass) {
+					seg.bookingClass = bookingClass;
 				}
-				if ($departureDate) {
-					$seg['departureDate'] = $departureDate;
+				if (departureDate) {
+					seg.departureDate = departureDate;
 				}
-				$seg['segmentStatus'] = 'GK';
-				$newSegments.push($seg);
+				seg.segmentStatus = 'GK';
+				newSegments.push(seg);
 			}
 		}
 		stateful.flushCalledCommands();
-		$xOutput = await runCommand('X' + php.implode('|', $segNums));
-		if (!isSuccessXiOutput($xOutput) &&
-			!php.preg_match(/^\s*NEXT REPLACES\s*\d+\s*(><)?$/, $xOutput)
+		const xOutput = await runCommand('X' + php.implode('|', segNums));
+		if (!isSuccessXiOutput(xOutput) &&
+			!php.preg_match(/^\s*NEXT REPLACES\s*\d+\s*(><)?$/, xOutput)
 		) {
 			return {
-				errors: ['Could not cancel segments - ' + php.trim($xOutput)],
+				errors: ['Could not cancel segments - ' + php.trim(xOutput)],
 				calledCommands: stateful.flushCalledCommands(),
 			};
 		}
-		return bookItinerary($newSegments, false);
+		return bookItinerary(newSegments, false);
 	};
 
 	const emulatePcc = async ($pcc, $recoveryPcc) => {
