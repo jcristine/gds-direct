@@ -6,29 +6,29 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /** @implements {IPnr} */
 class ApolloPnr {
-	static makeFromDump($dump) {
+	static makeFromDump(dump) {
 		let $obj;
 		$obj = new this();
-		$obj.$dump = $dump;
-		$obj.$parsed = PnrParser.parse($dump);
+		$obj.dump = dump;
+		$obj.parsed = PnrParser.parse(dump);
 		return $obj;
 	}
 
 	constructor() {
-		this.$dump = null;
-		this.$parsed = null;
+		this.dump = null;
+		this.parsed = null;
 	}
 
 	getDump() {
-		return this.$dump;
+		return this.dump;
 	}
 
 	getParsedData() {
-		return this.$parsed;
+		return this.parsed;
 	}
 
 	getRecordLocator() {
-		return ((this.$parsed['headerData'] || {})['reservationInfo'] || {})['recordLocator'] || null;
+		return ((this.parsed['headerData'] || {})['reservationInfo'] || {})['recordLocator'] || null;
 	}
 
 	getGdsName() {
@@ -37,8 +37,8 @@ class ApolloPnr {
 
 	getCreatorFpInitials() {
 		let $agentToken, $fpInitials;
-		$agentToken = (this.$parsed['headerData']['reservationInfo'] || {})['agentToken'];
-		$fpInitials = (this.$parsed['headerData']['reservationInfo'] || {})['focalPointInitials'];
+		$agentToken = (this.parsed['headerData']['reservationInfo'] || {})['agentToken'];
+		$fpInitials = (this.parsed['headerData']['reservationInfo'] || {})['focalPointInitials'];
 		if (!$agentToken) {
 			return $fpInitials;
 		} else if (php.preg_match(/^0\d{2}$/, $agentToken)) {
@@ -55,7 +55,7 @@ class ApolloPnr {
 	wasCreatedInGdsDirect() {
 		let $initials, $homePcc;
 		$initials = this.getAgentInitials();
-		$homePcc = (this.$parsed['headerData']['reservationInfo'] || {})['agencyToken'] || null;
+		$homePcc = (this.parsed['headerData']['reservationInfo'] || {})['agencyToken'] || null;
 		return $homePcc === 'DPB' && php.in_array($initials, ['WS', 'VWS']);
 	}
 
@@ -72,8 +72,8 @@ class ApolloPnr {
 	 * team that is shown in ticketing itinitals field
 	 */
 	getRsprTeam() {
-		if (php.mb_strlen(this.$parsed['headerData']['reservationInfo']['agentToken']) == 3) {
-			return (this.$parsed['headerData']['reservationInfo'] || {})['focalPointInitials'];
+		if (php.mb_strlen(this.parsed['headerData']['reservationInfo']['agentToken']) == 3) {
+			return (this.parsed['headerData']['reservationInfo'] || {})['focalPointInitials'];
 		} else {
 			return null;
 		}
@@ -84,7 +84,7 @@ class ApolloPnr {
 	 * @see GdsPassengerBlockParser::parsePassengerToken()
 	 */
 	getPassengers() {
-		return this.$parsed['passengers']['passengerList'];
+		return this.parsed['passengers']['passengerList'];
 	}
 
 	/**
@@ -96,11 +96,11 @@ class ApolloPnr {
 	}
 
 	getReservation(baseDate) {
-		return ImportApolloPnrFormatAdapter.transformReservation(this.$parsed, baseDate);
+		return ImportApolloPnrFormatAdapter.transformReservation(this.parsed, baseDate);
 	}
 
 	getSegmentsWithType($types) {
-		return this.$parsed.itineraryData.filter(seg => $types.includes(seg.segmentType));
+		return this.parsed.itineraryData.filter(seg => $types.includes(seg.segmentType));
 	}
 
 	/**
@@ -108,15 +108,15 @@ class ApolloPnr {
 	 * @see SsrBlockParser::parse()
 	 */
 	getSsrList() {
-		return this.$parsed['ssrData'] || [];
+		return this.parsed['ssrData'] || [];
 	}
 
 	getStoredPricingList() {
-		return this.$parsed.atfqData || [];
+		return this.parsed.atfqData || [];
 	}
 
 	getRemarks() {
-		return this.$parsed['remarks'] || [];
+		return this.parsed['remarks'] || [];
 	}
 
 	getValidatingCarrier() {
@@ -154,45 +154,45 @@ class ApolloPnr {
 	}
 
 	hasEtickets() {
-		return this.$parsed['dataExistsInfo']['eTicketDataExists'] || this.$parsed['dataExistsInfo']['tinRemarksExist'];
+		return this.parsed['dataExistsInfo']['eTicketDataExists'] || this.parsed['dataExistsInfo']['tinRemarksExist'];
 	}
 
 	hasLinearFare() {
-		return this.$parsed['dataExistsInfo']['linearFareDataExists'] ? true : false;
+		return this.parsed['dataExistsInfo']['linearFareDataExists'] ? true : false;
 	}
 
 	hasFrequentFlyerInfo() {
-		return this.$parsed['dataExistsInfo']['frequentFlyerDataExists'] ? true : false;
+		return this.parsed['dataExistsInfo']['frequentFlyerDataExists'] ? true : false;
 	}
 
 	hasSeatInfo() {
-		return this.$parsed['dataExistsInfo']['seatDataExists'] ? true : false;
+		return this.parsed['dataExistsInfo']['seatDataExists'] ? true : false;
 	}
 
 	hasMcoInfo() {
-		return this.$parsed['dataExistsInfo']['miscDocumentDataExists'] ? true : false;
+		return this.parsed['dataExistsInfo']['miscDocumentDataExists'] ? true : false;
 	}
 
 	belongsToItn() {
 		let $homePcc;
-		$homePcc = (this.$parsed['headerData']['reservationInfo'] || {})['agencyToken'];
+		$homePcc = (this.parsed['headerData']['reservationInfo'] || {})['agencyToken'];
 		return php.in_array($homePcc, ['DYB', 'DPB']);
 	}
 
-	static checkDumpIsRestricted($dump) {
-		$dump = php.preg_replace(/\s*(><)?\s*$/, '', $dump);
-		return php.preg_match(/^RESTRICTED PNR-CALL HELP DESK$/, php.trim($dump))
-			|| php.preg_match(/^RESTRICTED PNR$/, php.trim($dump))
-			|| php.preg_match(/^AG - DUTY CODE NOT AUTH FOR CRT - APOLLO$/, php.trim($dump))
-			|| php.preg_match(/^NO AGREEMENT EXISTS FOR PSEUDO CITY.*$/, php.trim($dump))
-			|| php.preg_match(/^PROVIDER PSEUDO CITY DOES NOT HAVE AGREEMENT WITH.*$/, php.trim($dump));
+	static checkDumpIsRestricted(dump) {
+		dump = php.preg_replace(/\s*(><)?\s*$/, '', dump);
+		return php.preg_match(/^RESTRICTED PNR-CALL HELP DESK$/, php.trim(dump))
+			|| php.preg_match(/^RESTRICTED PNR$/, php.trim(dump))
+			|| php.preg_match(/^AG - DUTY CODE NOT AUTH FOR CRT - APOLLO$/, php.trim(dump))
+			|| php.preg_match(/^NO AGREEMENT EXISTS FOR PSEUDO CITY.*$/, php.trim(dump))
+			|| php.preg_match(/^PROVIDER PSEUDO CITY DOES NOT HAVE AGREEMENT WITH.*$/, php.trim(dump));
 	}
 
-	static checkDumpIsNotExisting($dump) {
-		$dump = php.preg_replace(/\s*(><)?\s*$/, '', $dump);
-		return php.preg_match(/^INVLD ADRS/, php.trim($dump))
-			|| php.preg_match(/^INVALID RECORD LOCATOR$/, php.trim($dump))
-			|| php.preg_match(/^UTR PNR \/ INVALID RECORD LOCATOR$/, php.trim($dump));
+	static checkDumpIsNotExisting(dump) {
+		dump = php.preg_replace(/\s*(><)?\s*$/, '', dump);
+		return php.preg_match(/^INVLD ADRS/, php.trim(dump))
+			|| php.preg_match(/^INVALID RECORD LOCATOR$/, php.trim(dump))
+			|| php.preg_match(/^UTR PNR \/ INVALID RECORD LOCATOR$/, php.trim(dump));
 	}
 
 	isRestricted() {
@@ -211,7 +211,7 @@ class ApolloPnr {
 
 	/** @return string|null - PCC this PNR was created in or null if it is current PCC */
 	getControlPcc() {
-		return this.$parsed['headerData']['shopInfo']['pcc'] || null;
+		return this.parsed['headerData']['shopInfo']['pcc'] || null;
 	}
 }
 
