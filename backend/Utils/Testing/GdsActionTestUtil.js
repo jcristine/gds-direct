@@ -13,17 +13,16 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
  * repeat testAction() implementation in each test
  */
 
-exports.testGdsAction = async (unit, $testCase, $getActual) => {
-	let $input, $expectedOutput, $calledCommands, $stubSession, $actual, $commandsLeft;
-	$input = $testCase['input'];
-	$expectedOutput = $testCase['output'];
-	$calledCommands = $testCase['calledCommands'];
-	$stubSession = new AnyGdsStubSession($calledCommands);
-	$actual = await $getActual($stubSession, $input);
-	$commandsLeft = $stubSession.getCommandsLeft();
-	unit.assertArrayElementsSubset($expectedOutput, $actual);
-	unit.assertEmpty($commandsLeft, 'There are some expected commands left that '+
-		'were not used - '+php.implode(', ', php.array_column($commandsLeft, 'cmd')));
+exports.testGdsAction = async (unit, testCase, getActual) => {
+	const input = testCase.input;
+	const expectedOutput = testCase.output;
+	const calledCommands = testCase.calledCommands;
+	const stubSession = new AnyGdsStubSession(calledCommands);
+	const actual = await getActual(stubSession, input);
+	const commandsLeft = stubSession.getCommandsLeft();
+	unit.assertArrayElementsSubset(expectedOutput, actual);
+	unit.assertEmpty(commandsLeft, 'There are some expected commands left that '+
+		'were not used - '+php.implode(', ', php.array_column(commandsLeft, 'cmd')));
 };
 
 exports.testHttpGdsAction = async ({unit, testCase, getActual}) => {

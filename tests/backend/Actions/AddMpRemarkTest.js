@@ -1,6 +1,5 @@
 const GdsDirectDefaults = require('../Transpiled/Rbs/TestUtils/GdsDirectDefaults.js');
 const AddMpRemark = require('../../../backend/Actions/AddMpRemark.js');
-const Rej = require('klesun-node-tools/src/Rej.js');
 
 const provide_call = () => {
 	let list = [];
