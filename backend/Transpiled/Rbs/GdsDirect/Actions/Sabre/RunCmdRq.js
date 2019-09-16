@@ -752,6 +752,10 @@ const execute = ({
 			const translated = TranslatePricingCmd.mod_sabre(mod);
 			if (translated) {
 				sabreRawMods.push(translated);
+			} else if (mod.raw === 'FXD') {
+				const msg = 'Bad modifier /FXD/ - Sabre does not ' +
+					'have a direct format to exclude basic economy';
+				return Rej.BadRequest(msg);
 			} else {
 				const msg = mod.type
 					? 'Unsupported Apollo modifier - ' + mod.type + ' - ' + mod.raw
