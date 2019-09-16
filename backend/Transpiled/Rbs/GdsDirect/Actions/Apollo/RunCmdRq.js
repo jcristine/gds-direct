@@ -307,7 +307,7 @@ const RunCmdRq = ({
 			if (!isSuccessRebookOutput(chgClsOutput)) {
 				failedSegNums.push(...segs.map(s => s.segmentNumber));
 				const isAvail = chgClsOutput.length > 150 ||
-					chgClsOutput.startsWith('0 AVAIL/WL CLOSED');
+					chgClsOutput.startsWith('0 AVAIL/WL'); // may be followed by either "OPEN" or "CLOSED"
 				if (!isAvail) {
 					errors.push(chgClsOutput.replace(/^\s*([\s\S]*?)\s*(><)?$/, '$1'));
 				}
@@ -759,8 +759,8 @@ const RunCmdRq = ({
 			) {
 				reject = Rej.BadRequest;
 			} else if (error.includes('ERROR MESSAGE NOT DEFINED')) {
-				const isCa197 = s => s.airline === 'CA' && +s.flightNumber === 179;
-				if (pnr.getItinerary().some(isCa197)) {
+				const isCa179 = s => s.airline === 'CA' && +s.flightNumber === 179;
+				if (pnr.getItinerary().some(isCa179)) {
 					// dunno why, but any itinerary with this segment in any GDS results in
 					// various forms of "UNKNOWN ERROR", some problems in airline database perhaps
 					reject = Rej.ServiceUnavailable;
