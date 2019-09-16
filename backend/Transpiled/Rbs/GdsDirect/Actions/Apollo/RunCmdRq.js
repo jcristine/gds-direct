@@ -57,9 +57,12 @@ const TicketHistoryParser = require("../../../../Gds/Parsers/Apollo/TicketHistor
 
 // 'SEGMENTS CANCELLED - NEXT REPLACES  1'
 // 'CNLD FROM  1'
-const isSuccessXiOutput = ($output) => {
-	return php.preg_match(/^\s*SEGMENTS CANCELLED - NEXT REPLACES\s*\d+\s*(><)?$/, $output)
-		|| php.preg_match(/^\s*CNLD FROM\s*\d+\s*(><)?$/, $output);
+const isSuccessXiOutput = (output) => {
+	return php.preg_match(/^\s*SEGMENTS CANCELLED - NEXT REPLACES\s*\d+\s*(><)?$/, output)
+		|| php.preg_match(/^\s*CNLD FROM\s*\d+\s*(><)?$/, output)
+		|| php.preg_match(/^\s*NEXT REPLACES\s*\d+\s*(><)?$/, output)
+		|| output.match(/^\s*CANCEL REQUEST COMPLETED\s*(><)?$/) // 12NJ
+	;
 };
 
 const isScrollingAvailable = (dumpPage) => {
@@ -473,9 +476,7 @@ const RunCmdRq = ({
 		}
 		stateful.flushCalledCommands();
 		const xOutput = await runCommand('X' + php.implode('|', segNums));
-		if (!isSuccessXiOutput(xOutput) &&
-			!php.preg_match(/^\s*NEXT REPLACES\s*\d+\s*(><)?$/, xOutput)
-		) {
+		if (!isSuccessXiOutput(xOutput)) {
 			return {
 				errors: ['Could not cancel segments - ' + php.trim(xOutput)],
 				calledCommands: stateful.flushCalledCommands(),

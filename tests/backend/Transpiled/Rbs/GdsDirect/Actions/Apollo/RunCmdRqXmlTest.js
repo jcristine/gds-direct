@@ -455,6 +455,111 @@ const provide_call = () => {
 		],
 	});
 
+	testCases.push({
+		title: 'rebookAsGk 12NJ PCC specific XI response format',
+		startDt: '2019-09-16 19:58:38',
+		input: {
+			cmdRq: 'X3-4/0LGK',
+		},
+		output: {
+			status: 'executed',
+			calledCommands: [
+				{cmd: '*R', output: [
+					"NO NAMES",
+					" 1 UA8612W 13DEC YULBRU SS1   725P  810A|*      FR/SA   E",
+					"         OPERATED BY AIR CANADA",
+					" 2 SN 357Q 14DEC BRUFIH SS1  1050A  655P *         SA   E",
+					" 3 LH 599L 21DEC ADDFRA GK1  1150P  520A|       SA/SU",
+					"         OPERATED BY LUFTHANSA CITYLINE GMBH",
+					" 4 AC 875L 22DEC FRAYUL GK1  1005A 1205P           SU",
+					"",
+				].join('\n')},
+			],
+		},
+		httpRequests: [
+			{
+			   "cmd": "*R",
+			   "rq": [
+				   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+				   "\t<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://webservices.galileo.com\"><SOAP-ENV:Body><ns1:SubmitTerminalTransaction><ns1:Token>soap-unit-test-blabla-123</ns1:Token><ns1:Request>*R</ns1:Request><ns1:IntermediateResponse></ns1:IntermediateResponse></ns1:SubmitTerminalTransaction></SOAP-ENV:Body></SOAP-ENV:Envelope>"
+			   ].join("\n"),
+			   "rs": [
+				   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+				   "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">",
+				   " <soapenv:Body><SubmitTerminalTransactionResponse xmlns=\"http://webservices.galileo.com\"><SubmitTerminalTransactionResult USM=\"false\">NO NAMES",
+				   " 1 UA8612W 13DEC YULBRU SS1   725P  810A|*      FR/SA   E",
+				   "         OPERATED BY AIR CANADA",
+				   " 2 SN 357Q 14DEC BRUFIH SS1  1050A  655P *         SA   E",
+				   " 3 LH 599V 21DEC ADDFRA SS1  1150P  520A|*      SA/SU   E",
+				   "         OPERATED BY LUFTHANSA CITYLINE GMBH",
+				   " 4 AC 875V 22DEC FRAYUL SS1  1005A 1205P *         SU   E",
+				   "&gt;&lt;</SubmitTerminalTransactionResult></SubmitTerminalTransactionResponse> </soapenv:Body>",
+				   "</soapenv:Envelope>"
+			   ].join("\n")
+		   },
+		   {
+			   "cmd": "X3|4",
+			   "rq": [
+				   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+				   "\t<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://webservices.galileo.com\"><SOAP-ENV:Body><ns1:SubmitTerminalTransaction><ns1:Token>soap-unit-test-blabla-123</ns1:Token><ns1:Request>X3|4</ns1:Request><ns1:IntermediateResponse></ns1:IntermediateResponse></ns1:SubmitTerminalTransaction></SOAP-ENV:Body></SOAP-ENV:Envelope>"
+			   ].join("\n"),
+			   "rs": [
+				   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+				   "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">",
+				   " <soapenv:Body><SubmitTerminalTransactionResponse xmlns=\"http://webservices.galileo.com\"><SubmitTerminalTransactionResult USM=\"false\">CANCEL REQUEST COMPLETED",
+				   "&gt;&lt;</SubmitTerminalTransactionResult></SubmitTerminalTransactionResponse> </soapenv:Body>",
+				   "</soapenv:Envelope>"
+			   ].join("\n")
+		   },
+		   {
+			   "cmd": "<PNRBFManagement_51/>",
+			   "rq": [
+				   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+				   "\t\t<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://webservices.galileo.com\">",
+				   "\t\t\t<SOAP-ENV:Body>",
+				   "\t\t\t\t<ns1:SubmitXmlOnSession>",
+				   "\t\t\t\t\t<ns1:Token>soap-unit-test-blabla-123</ns1:Token>",
+				   "\t\t\t\t\t<ns1:Request>",
+				   "\t\t\t\t\t\t<PNRBFManagement_51>",
+				   "\t\t\t\t\t\t\t<SessionMods><AreaInfoReq/></SessionMods><AirSegSellMods><AirSegSell><Vnd>LH</Vnd><FltNum>0599</FltNum><Class>L</Class><StartDt>20191221</StartDt><StartAirp>ADD</StartAirp><EndAirp>FRA</EndAirp><Status>GK</Status><NumPsgrs>1</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell><AirSegSell><Vnd>AC</Vnd><FltNum>0875</FltNum><Class>L</Class><StartDt>20191222</StartDt><StartAirp>FRA</StartAirp><EndAirp>YUL</EndAirp><Status>GK</Status><NumPsgrs>1</NumPsgrs><StartTm/><EndTm/><DtChg/><AvailDispType>G</AvailDispType></AirSegSell></AirSegSellMods><PNRBFRetrieveMods><CurrentPNR/></PNRBFRetrieveMods><FareRedisplayMods><DisplayAction/><FareNumInfo><FareNumAry><FareNum>1</FareNum></FareNumAry></FareNumInfo></FareRedisplayMods><FareRedisplayMods><DisplayAction/><FareNumInfo><FareNumAry><FareNum>2</FareNum></FareNumAry></FareNumInfo></FareRedisplayMods><FareRedisplayMods><DisplayAction/><FareNumInfo><FareNumAry><FareNum>3</FareNum></FareNumAry></FareNumInfo></FareRedisplayMods><FareRedisplayMods><DisplayAction/><FareNumInfo><FareNumAry><FareNum>4</FareNum></FareNumAry></FareNumInfo></FareRedisplayMods><FareRedisplayMods><DisplayAction/><FareNumInfo><FareNumAry><FareNum>5</FareNum></FareNumAry></FareNumInfo></FareRedisplayMods><FareRedisplayMods><DisplayAction/><FareNumInfo><FareNumAry><FareNum>6</FareNum></FareNumAry></FareNumInfo></FareRedisplayMods><FareRedisplayMods><DisplayAction/><FareNumInfo><FareNumAry><FareNum>7</FareNum></FareNumAry></FareNumInfo></FareRedisplayMods><FareRedisplayMods><DisplayAction/><FareNumInfo><FareNumAry><FareNum>8</FareNum></FareNumAry></FareNumInfo></FareRedisplayMods>",
+				   "\t\t\t\t\t\t</PNRBFManagement_51>",
+				   "\t\t\t\t\t</ns1:Request>",
+				   "\t\t\t\t\t<ns1:Filter>",
+				   "\t\t\t\t\t\t<_/>",
+				   "\t\t\t\t\t</ns1:Filter>",
+				   "\t\t\t\t</ns1:SubmitXmlOnSession>",
+				   "\t\t\t</SOAP-ENV:Body>",
+				   "\t\t</SOAP-ENV:Envelope>"
+			   ].join("\n"),
+			   "rs": [
+				   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+				   "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">",
+				   " <soapenv:Body><SubmitXmlOnSessionResponse xmlns=\"http://webservices.galileo.com\"><SubmitXmlOnSessionResult><PNRBFManagement_51 xmlns=\"\"><SessionInfo><AreaInfoResp><Sys>1V</Sys><Processor>C</Processor><GrpModeActivatedInd>N</GrpModeActivatedInd><AAAAreaAry><AAAAreaInfo><AAAArea>A</AAAArea><ActiveInd>Y</ActiveInd><AAACity>QSB</AAACity><AAADept>YC</AAADept><SONCity>QSB</SONCity><SONDept>YC</SONDept><AgntID>ZDPBVWS</AgntID><ChkDigit/><AgntInitials>WS</AgntInitials><Duty>AG</Duty><AgncyPCC>12NJ</AgncyPCC><DomMode>BASIC</DomMode><IntlMode>ECAC</IntlMode><PNRDataInd>Y</PNRDataInd><PNRName>NO NAMES</PNRName><GrpModeActiveInd>A</GrpModeActiveInd><GrpModeDutyCode/><GrpModePCC/><GrpModeDataInd/><GrpModeName/></AAAAreaInfo><AAAAreaInfo><AAAArea>B</AAAArea><ActiveInd>A</ActiveInd><AAACity>QSB</AAACity><AAADept>YC</AAADept><SONCity>QSB</SONCity><SONDept>YC</SONDept><AgntID>ZDPBVWS</AgntID><ChkDigit/><AgntInitials/><Duty/><AgncyPCC/><DomMode/><IntlMode/><PNRDataInd>N</PNRDataInd><PNRName/><GrpModeActiveInd>A</GrpModeActiveInd><GrpModeDutyCode/><GrpModePCC/><GrpModeDataInd/><GrpModeName/></AAAAreaInfo><AAAAreaInfo><AAAArea>C</AAAArea><ActiveInd>A</ActiveInd><AAACity>QSB</AAACity><AAADept>YC</AAADept><SONCity>QSB</SONCity><SONDept>YC</SONDept><AgntID>ZDPBVWS</AgntID><ChkDigit/><AgntInitials/><Duty/><AgncyPCC/><DomMode/><IntlMode/><PNRDataInd>N</PNRDataInd><PNRName/><GrpModeActiveInd>A</GrpModeActiveInd><GrpModeDutyCode/><GrpModePCC/><GrpModeDataInd/><GrpModeName/></AAAAreaInfo><AAAAreaInfo><AAAArea>D</AAAArea><ActiveInd>A</ActiveInd><AAACity>QSB</AAACity><AAADept>YC</AAADept><SONCity>QSB</SONCity><SONDept>YC</SONDept><AgntID>ZDPBVWS</AgntID><ChkDigit/><AgntInitials/><Duty/><AgncyPCC/><DomMode/><IntlMode/><PNRDataInd>N</PNRDataInd><PNRName/><GrpModeActiveInd>A</GrpModeActiveInd><GrpModeDutyCode/><GrpModePCC/><GrpModeDataInd/><GrpModeName/></AAAAreaInfo><AAAAreaInfo><AAAArea>E</AAAArea><ActiveInd>A</ActiveInd><AAACity>QSB</AAACity><AAADept>YC</AAADept><SONCity>QSB</SONCity><SONDept>YC</SONDept><AgntID>ZDPBVWS</AgntID><ChkDigit/><AgntInitials/><Duty/><AgncyPCC/><DomMode/><IntlMode/><PNRDataInd>N</PNRDataInd><PNRName/><GrpModeActiveInd>A</GrpModeActiveInd><GrpModeDutyCode/><GrpModePCC/><GrpModeDataInd/><GrpModeName/></AAAAreaInfo></AAAAreaAry></AreaInfoResp></SessionInfo><AirSegSell><AirSell><DisplaySequenceNumber/><Vnd>LH</Vnd><FltNum>599</FltNum><OpSuf/><Class>L</Class><StartDt>20191221</StartDt><DtChg>1</DtChg><StartAirp>ADD</StartAirp><EndAirp>FRA</EndAirp><StartTm>2350</StartTm><EndTm>520</EndTm><Status>GK</Status><NumPsgrs>1</NumPsgrs><SellType/><SellValidityPeriod/><MarriageNum/><SuccessInd>Y</SuccessInd><COG>N</COG><TklessInd>N</TklessInd><FareQuoteTkIgnInd/><StopoverInd/><AvailyBypassInd/><OpAirV>CL</OpAirV></AirSell><TextMsg><Txt>OPERATED BY LUFTHANSA CITYLINE GMBH</Txt></TextMsg><TextMsg><Txt><![CDATA[DEPARTS ADD TERMINAL 2  - ARRIVES FRA TERMINAL 1]]></Txt></TextMsg><AirSell><DisplaySequenceNumber/><Vnd>AC</Vnd><FltNum>875</FltNum><OpSuf/><Class>L</Class><StartDt>20191222</StartDt><DtChg>0</DtChg><StartAirp>FRA</StartAirp><EndAirp>YUL</EndAirp><StartTm>1005</StartTm><EndTm>1205</EndTm><Status>GK</Status><NumPsgrs>1</NumPsgrs><SellType/><SellValidityPeriod/><MarriageNum/><SuccessInd>Y</SuccessInd><COG>N</COG><TklessInd>N</TklessInd><FareQuoteTkIgnInd/><StopoverInd/><AvailyBypassInd/><OpAirV/></AirSell><TextMsg><Txt><![CDATA[OFFER CAR/HOTEL    |CAL\t     |HOA\t]]></Txt></TextMsg><TextMsg><Txt>DEPARTS FRA TERMINAL 1</Txt></TextMsg><TextMsg><Txt>ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS</Txt></TextMsg><TextMsg><Txt>PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION</Txt></TextMsg><TextMsg><Txt>WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES</Txt></TextMsg><TextMsg><Txt>FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES</Txt></TextMsg></AirSegSell><PNRBFRetrieve><Control><KLRCnt>9</KLRCnt><KlrAry><Klr><ID>BP08</ID><NumOccur>1</NumOccur></Klr><Klr><ID>IT01</ID><NumOccur>4</NumOccur></Klr><Klr><ID>IT02</ID><NumOccur>2</NumOccur></Klr></KlrAry></Control><GenPNRInfo><FileAddr/><CodeCheck/><RecLoc/><Ver>0</Ver><OwningCRS>1V</OwningCRS><OwningAgncyName>AVIAJET INTL TVL NETWORK</OwningAgncyName><OwningAgncyPCC>12NJ</OwningAgncyPCC><CreationDt/><CreatingAgntSignOn/><CreatingAgntDuty/><CreatingAgncyIATANum/><OrigBkLocn/><SATONum/><PTAInd>N</PTAInd><InUseInd/><SimultaneousUpdInd/><BorrowedInd>N</BorrowedInd><GlobInd>N</GlobInd><ReadOnlyInd>N</ReadOnlyInd><FareDataExistsInd>N</FareDataExistsInd><PastDtQuickInd>N</PastDtQuickInd><CurAgncyPCC>12NJ</CurAgncyPCC><QInd>N</QInd><TkNumExistInd>N</TkNumExistInd><IMUdataexists>Y</IMUdataexists><ETkDataExistInd>N</ETkDataExistInd><CurDtStamp>20190916</CurDtStamp><CurTmStamp>105728</CurTmStamp><CurAgntSONID>DPBVWS</CurAgntSONID><TravInsuranceInd>N</TravInsuranceInd><PNRBFTicketedInd>N</PNRBFTicketedInd><ZeppelinAgncyInd>N</ZeppelinAgncyInd><AgncyAutoServiceInd>N</AgncyAutoServiceInd><AgncyAutoNotifyInd>N</AgncyAutoNotifyInd><ZeppelinPNRInd>N</ZeppelinPNRInd><PNRAutoServiceInd>N</PNRAutoServiceInd><PNRNotifyInd/><SuperPNRInd>N</SuperPNRInd><PNRBFPurgeDt>NO PURGE</PNRBFPurgeDt><PNRBFChangeInd>Y</PNRBFChangeInd><MCODataExists>N</MCODataExists><OrigRcvdField/><IntContExists/><AllDataAllTime>N</AllDataAllTime><LastActAgntID/><TransPCCName>AVIAJET INTL TVL NETWORK</TransPCCName><URrecordLoc/><UROSindLoc>N</UROSindLoc><URRCBInd>N</URRCBInd><GMTPNRBFCreationDt/><PricingRecordExist>N</PricingRecordExist><ArchivedFeeDataExists>N</ArchivedFeeDataExists><LeisureshopperDataExists>N</LeisureshopperDataExists><SeatDataExists>N</SeatDataExists><FrequentFlyerDataExists>N</FrequentFlyerDataExists><NetTicketDataExists>N</NetTicketDataExists><TinsRemarksExist>N</TinsRemarksExist><ElectronicDataExists>N</ElectronicDataExists><AdditionalItineraryDataExists>N</AdditionalItineraryDataExists><GroupAllocationFileExists>N</GroupAllocationFileExists><ProfileAssociationsExist>N</ProfileAssociationsExist><VendorLocatorDataExists>N</VendorLocatorDataExists><BookingCodeDataExists/><ArneDataExists>N</ArneDataExists><TimaticDataExists>N</TimaticDataExists><LinearFareDataExists>N</LinearFareDataExists><ItineraryRemarksExist>N</ItineraryRemarksExist><IdentificationFieldExists>N</IdentificationFieldExists><EmailAddressExists>N</EmailAddressExists><RuleDataExists>N</RuleDataExists><LSVendorConfirmationExists>N</LSVendorConfirmationExists><AdditionalSrvcs>N</AdditionalSrvcs><ElectronicMiscDocumentList>N</ElectronicMiscDocumentList><TDSProfileExists>N</TDSProfileExists><ServiceInformationExists/><FiledFareDataExists/><VendorRemarksDataExists/><MembershipDataExists/><DividedBookingsExist>N</DividedBookingsExist><ClientFileReferencesExist/><CustomCheckRulesExist/><PassengerInformationExists/><GUID/><ARCNewPNR/><ARCFares/><ARCTicketed/><ARCSplitDivide/><ARCNameAdd/><ARCNameDelete/><ARCItinAdd/><ARCItinDEL/><ARCPhoneAdd/><ARCPhoneDel/><ARCFOPAdd/><ARCFOPDelete/><ARCSSRAdd/><ARCSSRDel/><ARCOSIAdd/><ARCOSIDel/><ReasonCodesspares/></GenPNRInfo><AirSeg><SegNum>1</SegNum><Status>SS</Status><Dt>20191213</Dt><DayChg>01</DayChg><AirV>UA</AirV><NumPsgrs>1</NumPsgrs><StartAirp>YUL</StartAirp><EndAirp>BRU</EndAirp><StartTm>1925</StartTm><EndTm>810</EndTm><BIC>W</BIC><FltNum>8612</FltNum><OpSuf/><COG>N</COG><TklessInd>Y</TklessInd><ConxInd>N</ConxInd><FltFlownInd>N</FltFlownInd><MarriageNum/><SellType>L</SellType><StopoverIgnoreInd/><TDSValidateInd>N</TDSValidateInd><NonBillingInd>N</NonBillingInd><PrevStatusCode>NN</PrevStatusCode><ScheduleValidationInd/><VndLocInd/><OpAirVInd>N</OpAirVInd></AirSeg><AirSegOpAirV><OpAirVInfoAry><OpAirVInfo><StartAirp>YUL</StartAirp><EndAirp>BRU</EndAirp><AirV>AC</AirV><AirVName>AIR CANADA</AirVName></OpAirVInfo></OpAirVInfoAry></AirSegOpAirV><AirSeg><SegNum>2</SegNum><Status>SS</Status><Dt>20191214</Dt><DayChg>00</DayChg><AirV>SN</AirV><NumPsgrs>1</NumPsgrs><StartAirp>BRU</StartAirp><EndAirp>FIH</EndAirp><StartTm>1050</StartTm><EndTm>1855</EndTm><BIC>Q</BIC><FltNum>357</FltNum><OpSuf/><COG>N</COG><TklessInd>Y</TklessInd><ConxInd>Y</ConxInd><FltFlownInd>N</FltFlownInd><MarriageNum/><SellType>L</SellType><StopoverIgnoreInd/><TDSValidateInd>N</TDSValidateInd><NonBillingInd>N</NonBillingInd><PrevStatusCode>NN</PrevStatusCode><ScheduleValidationInd/><VndLocInd/><OpAirVInd/></AirSeg><AirSeg><SegNum>3</SegNum><Status>GK</Status><Dt>20191221</Dt><DayChg>01</DayChg><AirV>LH</AirV><NumPsgrs>1</NumPsgrs><StartAirp>ADD</StartAirp><EndAirp>FRA</EndAirp><StartTm>2350</StartTm><EndTm>520</EndTm><BIC>L</BIC><FltNum>599</FltNum><OpSuf/><COG>N</COG><TklessInd>N</TklessInd><ConxInd>N</ConxInd><FltFlownInd>N</FltFlownInd><MarriageNum/><SellType/><StopoverIgnoreInd/><TDSValidateInd>N</TDSValidateInd><NonBillingInd>N</NonBillingInd><PrevStatusCode>GK</PrevStatusCode><ScheduleValidationInd/><VndLocInd/><OpAirVInd>Y</OpAirVInd></AirSeg><AirSegOpAirV><OpAirVInfoAry><OpAirVInfo><StartAirp>ADD</StartAirp><EndAirp>FRA</EndAirp><AirV>CL</AirV><AirVName>LUFTHANSA CITYLINE GMBH</AirVName></OpAirVInfo></OpAirVInfoAry></AirSegOpAirV><AirSeg><SegNum>4</SegNum><Status>GK</Status><Dt>20191222</Dt><DayChg>00</DayChg><AirV>AC</AirV><NumPsgrs>1</NumPsgrs><StartAirp>FRA</StartAirp><EndAirp>YUL</EndAirp><StartTm>1005</StartTm><EndTm>1205</EndTm><BIC>L</BIC><FltNum>875</FltNum><OpSuf/><COG>N</COG><TklessInd>N</TklessInd><ConxInd>Y</ConxInd><FltFlownInd>N</FltFlownInd><MarriageNum/><SellType/><StopoverIgnoreInd/><TDSValidateInd>N</TDSValidateInd><NonBillingInd>N</NonBillingInd><PrevStatusCode>GK</PrevStatusCode><ScheduleValidationInd/><VndLocInd/><OpAirVInd/></AirSeg></PNRBFRetrieve><DocProdDisplayStoredQuote><ErrText><Err>D0002308</Err><KlrInErr>0000</KlrInErr><InsertedTextAry></InsertedTextAry><Text>NO STORED FARES EXIST</Text></ErrText></DocProdDisplayStoredQuote><DocProdDisplayStoredQuote><ErrText><Err>D0002308</Err><KlrInErr>0000</KlrInErr><InsertedTextAry></InsertedTextAry><Text>NO STORED FARES EXIST</Text></ErrText></DocProdDisplayStoredQuote><DocProdDisplayStoredQuote><ErrText><Err>D0002308</Err><KlrInErr>0000</KlrInErr><InsertedTextAry></InsertedTextAry><Text>NO STORED FARES EXIST</Text></ErrText></DocProdDisplayStoredQuote><DocProdDisplayStoredQuote><ErrText><Err>D0002308</Err><KlrInErr>0000</KlrInErr><InsertedTextAry></InsertedTextAry><Text>NO STORED FARES EXIST</Text></ErrText></DocProdDisplayStoredQuote><DocProdDisplayStoredQuote><ErrText><Err>D0002308</Err><KlrInErr>0000</KlrInErr><InsertedTextAry></InsertedTextAry><Text>NO STORED FARES EXIST</Text></ErrText></DocProdDisplayStoredQuote><DocProdDisplayStoredQuote><ErrText><Err>D0002308</Err><KlrInErr>0000</KlrInErr><InsertedTextAry></InsertedTextAry><Text>NO STORED FARES EXIST</Text></ErrText></DocProdDisplayStoredQuote><DocProdDisplayStoredQuote><ErrText><Err>D0002308</Err><KlrInErr>0000</KlrInErr><InsertedTextAry></InsertedTextAry><Text>NO STORED FARES EXIST</Text></ErrText></DocProdDisplayStoredQuote><DocProdDisplayStoredQuote><ErrText><Err>D0002308</Err><KlrInErr>0000</KlrInErr><InsertedTextAry></InsertedTextAry><Text>NO STORED FARES EXIST</Text></ErrText></DocProdDisplayStoredQuote></PNRBFManagement_51></SubmitXmlOnSessionResult></SubmitXmlOnSessionResponse></soapenv:Body></soapenv:Envelope>"
+			   ].join("\n")
+		   },
+		   {
+			   "cmd": "*R",
+			   "rq": [
+				   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+				   "\t<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://webservices.galileo.com\"><SOAP-ENV:Body><ns1:SubmitTerminalTransaction><ns1:Token>soap-unit-test-blabla-123</ns1:Token><ns1:Request>*R</ns1:Request><ns1:IntermediateResponse></ns1:IntermediateResponse></ns1:SubmitTerminalTransaction></SOAP-ENV:Body></SOAP-ENV:Envelope>"
+			   ].join("\n"),
+			   "rs": [
+				   "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+				   "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">",
+				   " <soapenv:Body><SubmitTerminalTransactionResponse xmlns=\"http://webservices.galileo.com\"><SubmitTerminalTransactionResult USM=\"false\">NO NAMES",
+				   " 1 UA8612W 13DEC YULBRU SS1   725P  810A|*      FR/SA   E",
+				   "         OPERATED BY AIR CANADA",
+				   " 2 SN 357Q 14DEC BRUFIH SS1  1050A  655P *         SA   E",
+				   " 3 LH 599L 21DEC ADDFRA GK1  1150P  520A|       SA/SU",
+				   "         OPERATED BY LUFTHANSA CITYLINE GMBH",
+				   " 4 AC 875L 22DEC FRAYUL GK1  1005A 1205P           SU",
+				   "&gt;&lt;</SubmitTerminalTransactionResult></SubmitTerminalTransactionResponse> </soapenv:Body>",
+				   "</soapenv:Envelope>"
+			   ].join("\n")
+		   },
+		],
+	});
+
 	return testCases.map(c => [c]);
 };
 
