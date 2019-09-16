@@ -1,3 +1,4 @@
+const CmsApolloTerminal = require('../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
 const AmadeusPnr = require('../Transpiled/Rbs/TravelDs/AmadeusPnr.js');
 const SabrePnr = require('../Transpiled/Rbs/TravelDs/SabrePnr.js');
 const GalileoPnr = require('../Transpiled/Rbs/TravelDs/GalileoPnr.js');
@@ -11,14 +12,21 @@ const OpenPnr = ({gdsSession, gds, recordLocator, allowPccChange = false}) => {
 		const cmd = '*' + recordLocator;
 		let cmdRec = await TravelportUtils.fetchAll(cmd, gdsSession);
 		const changePccMatch = cmdRec.output.match(/^NO AGREEMENT EXISTS FOR PSEUDO CITY - ([A-Z0-9]{3,4})/);
+		let pcc = null;
 		if (changePccMatch && allowPccChange) {
-			const semCmd = 'SEM/' + changePccMatch[1] + '/AG';
-			await TravelportUtils.fetchAll(semCmd, gdsSession);
+			pcc = changePccMatch[1];
+			const semCmd = 'SEM/' + pcc + '/AG';
+			const semCmdRec = await TravelportUtils.fetchAll(semCmd, gdsSession);
+			if (!CmsApolloTerminal.isSuccessChangePccOutput(semCmdRec.output, pcc)) {
+				const msg = 'Failed to emulate ' + pcc + ' - ' + semCmdRec.output.trim();
+				return Rej.NotAuthorized(msg);
+			}
 			cmdRec = await TravelportUtils.fetchAll(cmd, gdsSession);
 		}
-		return gds === 'apollo'
+		const pnr = gds === 'apollo'
 			? ApolloPnr.makeFromDump(cmdRec.output)
 			: GalileoPnr.makeFromDump(cmdRec.output);
+		return {pcc, pnr};
 	};
 
 	const fetchPnr = async () => {
@@ -27,11 +35,13 @@ const OpenPnr = ({gdsSession, gds, recordLocator, allowPccChange = false}) => {
 		} else if (gds === 'sabre') {
 			const cmd = '*' + recordLocator;
 			const cmdRec = await gdsSession.runCmd(cmd);
-			return SabrePnr.makeFromDump(cmdRec.output);
+			const pnr = SabrePnr.makeFromDump(cmdRec.output);
+			return {pnr};
 		} else if (gds === 'amadeus') {
 			const cmd = 'RT' + recordLocator;
 			const cmdRec = await AmadeusUtils.fetchAllRt(cmd, gdsSession);
-			return AmadeusPnr.makeFromDump(cmdRec.output);
+			const pnr = AmadeusPnr.makeFromDump(cmdRec.output);
+			return {pnr};
 		} else {
 			return Rej.NotImplemented('Unsupported GDS for full output retrieval - ' + gds);
 		}
@@ -41,13 +51,13 @@ const OpenPnr = ({gdsSession, gds, recordLocator, allowPccChange = false}) => {
 		if (!recordLocator.match(/^[A-Z0-9]{6}$/)) {
 			return Rej.BadRequest('Invalid Record Locator, not 6 alphanumeric characters - ' + recordLocator);
 		}
-		const pnr = await fetchPnr();
+		const {pcc, pnr} = await fetchPnr();
 		if (pnr.getPassengers().length === 0) {
 			const msg = 'Could not open PNR ' +
 				recordLocator + ' - ' + pnr.getDump().trim();
 			return Rej.NotFound(msg);
 		} else {
-			return Promise.resolve({pnr});
+			return Promise.resolve({pcc, pnr});
 		}
 	};
 
