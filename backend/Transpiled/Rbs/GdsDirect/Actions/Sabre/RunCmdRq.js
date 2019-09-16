@@ -526,7 +526,7 @@ const execute = ({
 		if (php.empty(takenSegments)) {
 			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
 		}
-		const isAa = ($seg) => $seg.airline === 'AA';
+		const isAa = (seg) => seg.airline === 'AA';
 		const keepOriginal = aliasData.keepOriginal ||
 		newStatus === 'GK' && !takenSegments.some(isAa);
 		const pccResult = await emulateInFreeArea(pcc, keepOriginal);

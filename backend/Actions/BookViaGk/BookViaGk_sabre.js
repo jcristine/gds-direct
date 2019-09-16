@@ -11,13 +11,24 @@ const bookSa = async ({sabre, session, baseDate, itinerary}) => {
 	const action = new SabreBuildItineraryAction(params);
 	const built = await action.execute(itinerary);
 	if (built.errorType) {
+		const cls = itinerary[0].bookingClass;
+		const air = itinerary[0].airline;
+		const fnum = itinerary[0].flightNumber;
+		const from = itinerary[0].departureAirport;
+		const to = itinerary[0].destinationAirport;
+
 		if (built.errorType === Errors.REBUILD_MULTISEGMENT &&
 			(built.errorData.response || '').match('UNABLE 00 AVAILABLE')
 		) {
-			const cls = itinerary[0].bookingClass;
-			const from = itinerary[0].departureAirport;
 			const msg = 'No ' + cls + ' seats available for flights from ' + from;
 			return Rej.InsufficientStorage(msg, {isOk: true});
+		} else if (
+			built.errorType === Errors.REBUILD_MULTISEGMENT &&
+			(built.errorData.response || '').match(/^\s*Sabre warning - No PNR in AAA/)
+		) {
+			const flightStr = air + fnum + from + to;
+			const msg = 'Can not rebuild, is flight operating? ' + flightStr;
+			return Rej.UnprocessableEntity(msg, built);
 		} else {
 			const msg = Errors.getMessage(built.errorType, built.errorData);
 			return Rej.UnprocessableEntity(msg, built);
@@ -27,6 +38,10 @@ const bookSa = async ({sabre, session, baseDate, itinerary}) => {
 	}
 };
 
+/**
+ * @param itinerary = require('ItineraryParser.js').parse()
+ *  				|| require('FormatAdapter.js').adaptSabreItineraryParseForClient()
+ */
 const BookViaGk_sabre = ({
 	bookRealSegments = false,
 	withoutRebook = false,
