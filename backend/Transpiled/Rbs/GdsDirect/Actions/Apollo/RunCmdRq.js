@@ -671,6 +671,10 @@ const RunCmdRq = ({
 		for (const mod of aliasData.pricingModifiers) {
 			if (mod.type === 'passengers') {
 				adultPtc = mod.parsed.passengerProperties[0].ptc;
+			} else if (mod.type === 'currency') {
+				const msg = 'Point of Sale modifier /' + mod.raw + '/ is not allowed in T:$B. ' +
+					'To store pricing in desired currency, emulate to respective PCC (for example 2BQ6 for CAD)';
+				return Rej.BadRequest(msg);
 			} else {
 				mods.push(mod);
 			}
