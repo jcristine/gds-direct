@@ -258,23 +258,23 @@ class AmadeusPricingCommonFormatAdapter {
 		return {
 			ptcInfo: ptcInfo,
 			passengerNameNumbers: nameNumbers,
-			validatingCarrier: (parsed['additionalInfo'] || {})['validatingCarrier'],
+			validatingCarrier: (parsed.additionalInfo || {}).validatingCarrier,
 			fareInfo: {
-				baseFare: parsed['baseFare'],
-				fareEquivalent: parsed['fareEquivalent'],
-				totalFare: parsed['netPrice'],
-				taxList: this.joinTaxes(parsed['mainTaxes'], parsed['xtTaxes']),
-				fareConstruction: parsed['fareConstruction']['parsed'],
-				fareConstructionRaw: parsed['fareConstruction']['raw'],
+				baseFare: parsed.baseFare,
+				fareEquivalent: parsed.fareEquivalent,
+				totalFare: parsed.netPrice,
+				taxList: this.joinTaxes(parsed.mainTaxes, parsed.xtTaxes),
+				fareConstruction: parsed.fareConstruction.parsed,
+				fareConstructionRaw: parsed.fareConstruction.raw,
 			},
-			endorsementBoxLines: (parsed['additionalInfo'] || {})['endorsementLines'] || [],
-			hasPrivateFaresSelectedMessage: (parsed['additionalInfo'] || {})['hasNegotiatedFaresMessage'] || false,
+			endorsementBoxLines: (parsed.additionalInfo || {}).endorsementLines || [],
+			hasPrivateFaresSelectedMessage: (parsed.additionalInfo || {}).hasNegotiatedFaresMessage || false,
 			privateFareType: null,
 			tourCode: null,
-			lastDateToPurchase: !php.isset(parsedFx['wholeMessages']['lastDateToPurchase']) ? null : {
-				raw: parsedFx['wholeMessages']['lastDateToPurchase']['raw'],
-				parsed: parsedFx['wholeMessages']['lastDateToPurchase']['parsed'],
-				full: parsedFx['wholeMessages']['lastDateToPurchase']['parsed'],
+			lastDateToPurchase: !php.isset(parsedFx.wholeMessages.lastDateToPurchase) ? null : {
+				raw: parsedFx.wholeMessages.lastDateToPurchase.raw,
+				parsed: parsedFx.wholeMessages.lastDateToPurchase.parsed,
+				full: parsedFx.wholeMessages.lastDateToPurchase.parsed,
 			},
 			/**
 			 * note, unlike other GDS-es, this one holds actual segments here:
