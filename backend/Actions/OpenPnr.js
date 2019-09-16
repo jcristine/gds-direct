@@ -6,14 +6,24 @@ const AmadeusUtils = require('../GdsHelpers/AmadeusUtils.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const TravelportUtils = require('../GdsHelpers/TravelportUtils.js');
 
-const OpenPnr = ({gdsSession, gds, recordLocator}) => {
+const OpenPnr = ({gdsSession, gds, recordLocator, allowPccChange = false}) => {
+	const fetchPnr_travelport = async () => {
+		const cmd = '*' + recordLocator;
+		let cmdRec = await TravelportUtils.fetchAll(cmd, gdsSession);
+		const changePccMatch = cmdRec.output.match(/^NO AGREEMENT EXISTS FOR PSEUDO CITY - ([A-Z0-9]{3,4})/);
+		if (changePccMatch && allowPccChange) {
+			const semCmd = 'SEM/' + changePccMatch[1] + '/AG';
+			await TravelportUtils.fetchAll(semCmd, gdsSession);
+			cmdRec = await TravelportUtils.fetchAll(cmd, gdsSession);
+		}
+		return gds === 'apollo'
+			? ApolloPnr.makeFromDump(cmdRec.output)
+			: GalileoPnr.makeFromDump(cmdRec.output);
+	};
+
 	const fetchPnr = async () => {
 		if (['galileo', 'apollo'].includes(gds)) {
-			const cmd = '*' + recordLocator;
-			const cmdRec = await TravelportUtils.fetchAll(cmd, gdsSession);
-			return gds === 'apollo'
-				? ApolloPnr.makeFromDump(cmdRec.output)
-				: GalileoPnr.makeFromDump(cmdRec.output);
+			return fetchPnr_travelport();
 		} else if (gds === 'sabre') {
 			const cmd = '*' + recordLocator;
 			const cmdRec = await gdsSession.runCmd(cmd);
@@ -37,7 +47,7 @@ const OpenPnr = ({gdsSession, gds, recordLocator}) => {
 				recordLocator + ' - ' + pnr.getDump().trim();
 			return Rej.NotFound(msg);
 		} else {
-			return Promise.resolve(pnr);
+			return Promise.resolve({pnr});
 		}
 	};
 

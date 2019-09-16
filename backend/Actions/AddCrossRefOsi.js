@@ -93,15 +93,15 @@ const AddCrossRefOsi = ({
 	};
 
 	const main = async () => {
-		const refPcc = stateful.getSessionData().pcc;
 		const whenPnr = GetCurrentPnr(stateful);
 		const {otherPnr, otherCalledCommands} = await GdsSession.withSession({
-			gds, pcc: refPcc, gdsClients,
+			gds, gdsClients,
 			action: async gdsSession => {
 				const capturing = CommonUtils.withCapture(gdsSession);
-				const otherPnr = await OpenPnr({
-					gdsSession: capturing, gds, recordLocator,
-				});
+				const otherPnr = (await OpenPnr({
+					gdsSession: capturing, gds,
+					recordLocator, allowPccChange: true,
+				})).pnr;
 				const currentPnr = await whenPnr;
 				await copyCrossRef(capturing, currentPnr);
 				const otherCalledCommands = capturing.getCalledCommands();
