@@ -291,23 +291,29 @@ const RunCmdRq = ({
 	};
 
 	/** replace GK segments with $segments */
-	const rebookGkSegments = async ($segments, reservation = null) => {
-		const $marriageToSegs = Fp.groupMap(($seg) => $seg['marriage'], $segments);
-		let $failedSegNums = [];
-		for (const [, $segs] of $marriageToSegs) {
-			const records = $segs.map(gkSeg => {
+	const rebookGkSegments = async (segments, reservation = null) => {
+		const marriageToSegs = Fp.groupMap(($seg) => $seg['marriage'], segments);
+		const failedSegNums = [];
+		const errors = [];
+		for (const [, segs] of marriageToSegs) {
+			const records = segs.map(gkSeg => {
 				const cls = gkSeg.bookingClass;
 				return {segNum: findSegmentNumberInPnr(gkSeg, reservation && reservation.itinerary), cls};
 			});
-			const $chgClsCmd =
+			const chgClsCmd =
 				'X' + php.implode('+', records.map(r => r.segNum)) + '/' +
 				'0' + php.implode('+', records.map(r => r.segNum + r.cls));
-			const $chgClsOutput = (await runCmd($chgClsCmd, true)).output;
-			if (!isSuccessRebookOutput($chgClsOutput)) {
-				$failedSegNums = php.array_merge($failedSegNums, php.array_column($segs, 'segmentNumber'));
+			const chgClsOutput = (await runCmd(chgClsCmd, true)).output;
+			if (!isSuccessRebookOutput(chgClsOutput)) {
+				failedSegNums.push(...segs.map(s => s.segmentNumber));
+				const isAvail = chgClsOutput.length > 150 ||
+					chgClsOutput.startsWith('0 AVAIL/WL CLOSED');
+				if (!isAvail) {
+					errors.push(chgClsOutput.replace(/^\s*([\s\S]*?)\s*(><)?$/, '$1'));
+				}
 			}
 		}
-		return {failedSegmentNumbers: $failedSegNums};
+		return {failedSegmentNumbers: failedSegNums, errors};
 	};
 
 	const buildItinerary = async ({itinerary}) => {
@@ -363,9 +369,15 @@ const RunCmdRq = ({
 		} else {
 			const gkRebook = await rebookGkSegments(gkSegments, result.reservation);
 			const errors = [];
-			const failedSegNums = gkRebook['failedSegmentNumbers'];
+			const failedSegNums = gkRebook.failedSegmentNumbers;
 			if (!php.empty(failedSegNums)) {
-				errors.push(Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, {segNums: php.implode(',', failedSegNums)}));
+				if (gkRebook.errors.length === 0) {
+					const errorData = {segNums: php.implode(',', failedSegNums)};
+					const msg = Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, errorData);
+					errors.push(msg);
+				} else {
+					errors.push(...gkRebook.errors);
+				}
 			}
 			stateful.flushCalledCommands();
 			const sortResult = await processSortItinerary()
