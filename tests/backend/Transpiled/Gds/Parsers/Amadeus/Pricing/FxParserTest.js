@@ -1784,6 +1784,62 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
 			},
 		]);
 
+		// same fare basis issue, fails on FC again
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				"FXA/K",
+				"",
+				"01 P1",
+				"NO REBOOKING REQUIRED FOR LOWEST AVAILABLE FARE",
+				"LAST TKT DTE 07MAY20 - DATE OF ORIGIN",
+				"------------------------------------------------------------",
+				"     AL FLGT  BK   DATE  TIME  FARE BASIS      NVB  NVA   BG",
+				" BNA",
+				"XCHI AA  3361 N    07MAY 0915  QKE0ZNML             07MAY 2P",
+				"XSEL KE    38 Q    07MAY 1225  QKE0ZNML             07MAY 2P",
+				" CEB KE   631 Q    08MAY 2005  QKE0ZNML             07MAY 2P",
+				"XSEL KE   632 Q    27MAY 0100  QKE0ZNML             07MAY 2P",
+				"XDFW KE    31 Q    27MAY 0920  QKE0ZNML             07MAY 2P",
+				" BNA AA  2502 Q    27MAY 1100  QKE0ZNML             07MAY 2P",
+				"",
+				"USD   890.00      07MAY20BNA AA X/CHI KE X/SEL KE CEB445.00",
+				"                  QKE0ZNML KE X/SEL KE X/DFW AA BNA445.00QKE",
+				"USD     3.60-YQ   0ZNML NUC890.00END ROE1.000000",
+				"USD   130.00-YR   XT USD 3.96-XA USD 7.00-XY USD 5.77-YC USD",
+				"USD   111.91-XT   18.60-US USD 18.60-US USD 11.20-AY USD",
+				"USD  1135.51      16.90-BP USD 16.38-LI USD 13.50-XF BNA4.50",
+				"                  ORD4.50DFW4.50",
+				"BAG/SEAT/SERVICES AT A CHARGE MAY BE AVAILABLE-ENTER FXK",
+				"TICKET STOCK RESTRICTION",
+				"BG CXR: AA",
+				"PRICED WITH VALIDATING CARRIER KE - REPRICE IF DIFFERENT VC",
+				"350.00 USD PENALTY APPLIES",
+				"ENDOS NONENDS. RFND PNTY APPLY-USD350. RISS CHRG APPLY-USD30",
+				"      0. NO MILE UG. -BG:AA",
+				"ATTN* CABIN Y(M)/S1-6",
+				"16SEP19 PER GAF REQUIREMENTS FARE NOT VALID UNTIL TICKETED",
+			]),
+			{
+				commandCopy: 'FXA/K',
+				data: {
+					fareConstruction: {
+						raw: '07MAY20BNA AA X/CHI KE X/SEL KE CEB445.00QKE0ZNML KE X/SEL KE X/DFW AA BNA445.00QKE0ZNML NUC890.00END ROE1.000000',
+						parsed: {
+							segments: [
+								{destination: 'CHI'},
+								{destination: 'SEL'},
+								{destination: 'CEB'},
+								{destination: 'SEL'},
+								{destination: 'DFW'},
+								{destination: 'BNA', fare: '445.00', fareBasis: 'QKE0ZNML'},
+							],
+							fare: '890.00',
+						},
+					},
+				},
+			},
+		]);
+
 		return $list;
 	}
 
