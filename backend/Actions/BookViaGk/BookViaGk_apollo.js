@@ -1,3 +1,4 @@
+const Errors = require('../../Transpiled/Rbs/GdsDirect/Errors.js');
 const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
 const ItineraryParser = require('../../Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
 const TravelportUtils = require('../../GdsHelpers/TravelportUtils.js');
@@ -9,8 +10,8 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 const bookTp = async (params) => {
 	const built = await TravelportBuildItineraryActionViaXml(params);
 	if (built.errorType) {
-		return Rej.UnprocessableEntity('Could not rebuild PNR in Apollo - '
-			+ built.errorType + ' ' + JSON.stringify(built.errorData));
+		const msg = Errors.getMessage(built.errorType, built.errorData);
+		return Rej.UnprocessableEntity(msg, built);
 	} else {
 		return Promise.resolve(built);
 	}
