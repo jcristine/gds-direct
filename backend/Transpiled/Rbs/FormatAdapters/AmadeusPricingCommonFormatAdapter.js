@@ -264,7 +264,8 @@ class AmadeusPricingCommonFormatAdapter {
 				fareEquivalent: parsed.fareEquivalent,
 				totalFare: parsed.netPrice,
 				taxList: this.joinTaxes(parsed.mainTaxes, parsed.xtTaxes),
-				fareConstruction: parsed.fareConstruction.parsed,
+				// if `parsed` is undefined, `fareConstruction` contains meta info of the error
+				fareConstruction: parsed.fareConstruction.parsed || parsed.fareConstruction,
 				fareConstructionRaw: parsed.fareConstruction.raw,
 			},
 			endorsementBoxLines: (parsed.additionalInfo || {}).endorsementLines || [],
