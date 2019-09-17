@@ -765,6 +765,11 @@ const RunCmdRq = ({
 					// various forms of "UNKNOWN ERROR", some problems in airline database perhaps
 					reject = Rej.ServiceUnavailable;
 					error = 'CA179 flight airline DB issues, store manually - ' + error;
+				} else {
+					// when there are segments without times in itinerary, like
+					// ' 4 DL  26Y 08JAN ICNATL GK1   805P  734P           WE'
+					// ' 5 DL2521Y 08JAN ATLLEX GK1                        WE'
+					error = 'Some flights are not operable - ' + error;
 				}
 			}
 			return reject('Failed to >' + cmd + '; - ' + error);
