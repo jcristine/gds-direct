@@ -567,12 +567,6 @@ class CommandCorrector {
 	execute($input, $dialect) {
 		let $addNoteCorrected, $output, $legend, $patternData, $mistake, $correct;
 
-		const agnosticCmd = agnosticMap[$input];
-		if (agnosticCmd) {
-			this.$messages.push('CORRECTED >' + agnosticCmd);
-			return agnosticCmd;
-		}
-
 		$addNoteCorrected = false;
 		$output = this.correctTyposWithReplace($dialect, $input);
 
@@ -611,15 +605,23 @@ class CommandCorrector {
 		return $output;
 	}
 
-	static correct($input, $dialect) {
-		let $self, $output;
+	static correct(input, dialect) {
+		const agnosticCmd = agnosticMap[input];
+		if (agnosticCmd) {
+			return {
+				isAgnostic: true,
+				output: agnosticCmd,
+				messages: ['CORRECTED >' + agnosticCmd],
+				errors: [],
+			};
+		}
 
-		$self = new this();
-		$output = $self.execute($input, $dialect);
+		const self = new this();
+		const output = self.execute(input, dialect);
 		return {
-			output: $output,
-			messages: $self.$messages,
-			errors: $self.$errors,
+			output: output,
+			messages: self.$messages,
+			errors: self.$errors,
 		};
 	}
 

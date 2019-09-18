@@ -146,6 +146,8 @@ const translateCmd = (fromGds, toGds, inputCmd) => {
 	let resultCmd;
 	if (translated.output) {
 		resultCmd = translated.output;
+	} else if (corrected.isAgnostic) {
+		resultCmd = corrected.output;
 	} else {
 		// command not translated, likely because it was a native command
 		resultCmd = decodeCmsInput(inputCmd, toGds);

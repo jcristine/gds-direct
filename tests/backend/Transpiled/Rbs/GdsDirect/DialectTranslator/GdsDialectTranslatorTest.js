@@ -3155,6 +3155,8 @@ class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
 			['apollo', 'galileo', '$B/FXD', 'FQ/FXD'],
 			['sabre', 'apollo', 'WPFXD', '$B/FXD'],
 			['apollo', 'amadeus', '$BBS2//@C', 'FXA/S2/KC'],
+			// should not change that
+			['apollo', 'sabre', 'PRICEALLJCB', null],
 		];
 
 		return $tests;
