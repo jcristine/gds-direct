@@ -120,15 +120,15 @@ class ApolloPnr {
 	}
 
 	getValidatingCarrier() {
-		let $isValidatingCarrierMod, $getValue, $list, $pricing;
-		$isValidatingCarrierMod = ($mod) => $mod['type'] === 'validatingCarrier';
-		$getValue = ($mod) => $mod['parsed'];
-		$list = [];
-		for ($pricing of this.getStoredPricingList()) {
-			$list = php.array_merge($list, Fp.map($getValue, Fp.filter($isValidatingCarrierMod, $pricing['pricingModifiers'])));
+		let list = [];
+		for (const store of this.getStoredPricingList()) {
+			const moreItems = store.pricingModifiers
+				.filter(mod => mod.type === 'validatingCarrier')
+				.map(mod => mod.parsed);
+			list.push(...moreItems);
 		}
-		$list = php.array_unique(php.array_filter($list));
-		return (php.count($list) === 1) ? $list[0] : null;
+		list = php.array_unique(php.array_filter(list));
+		return (php.count(list) === 1) ? list[0] : null;
 	}
 
 	hasItinerary() {
