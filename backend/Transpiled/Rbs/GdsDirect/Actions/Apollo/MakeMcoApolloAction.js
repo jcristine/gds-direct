@@ -18,35 +18,31 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
  */
 class MakeMcoApolloAction extends AbstractGdsAction
 {
-	static async getMcoParams($pnr, $mcoMask)  {
-		let $validatingCarrier, $hub, $fop, $expirationDate;
-		$validatingCarrier = $pnr.getValidatingCarrier();
-		$hub = await Airlines.findByCode($validatingCarrier)
+	static async getMcoParams(pnr, mcoMask)  {
+		const validatingCarrier = pnr.getValidatingCarrier();
+		const hub = await Airlines.findByCode(validatingCarrier)
 			.then(r => r.hub).catch(() => null);
-		if (!$validatingCarrier) {
+		if (!validatingCarrier) {
 			return Rej.BadRequest('Validating carrier must be present in ATFQ');
 		}
-		const $storedParams = McoMaskParser.parse($mcoMask);
-		if ($storedParams.error) {
-			return Rej.UnprocessableEntity('Failed to parse MCO mask - ' + $storedParams.error);
+		const storedParams = McoMaskParser.parse(mcoMask);
+		if (storedParams.error) {
+			return Rej.UnprocessableEntity('Failed to parse MCO mask - ' + storedParams.error);
 		}
-		$fop = $storedParams['formOfPayment']['raw'];
-		$expirationDate = ($storedParams['expirationYear'] && $storedParams['expirationMonth'])
-			? '20'+$storedParams['expirationYear']+'-'+$storedParams['expirationMonth']+'-01'
+		let fop = storedParams.formOfPayment.raw;
+		const expirationDate = (storedParams.expirationYear && storedParams.expirationMonth)
+			? '20' + storedParams.expirationYear + '-' + storedParams.expirationMonth + '-01'
 			: null;
-		if (!$fop || !$expirationDate || !$storedParams['approvalCode']) {
+		if (!fop || !expirationDate || !storedParams.approvalCode) {
 			return Rej.BadRequest('Approved FOP must be present');
 		}
-		if (!StringUtil.endsWith($fop, '/OK')) {
-			$fop += '/OK';
+		if (!StringUtil.endsWith(fop, '/OK')) {
+			fop += '/OK';
 		}
-		return {
-			validatingCarrier: $validatingCarrier,
-			hub: $hub,
-			fop: $fop,
-			expirationDate: $expirationDate,
-			approvalCode: $storedParams['approvalCode'] || null,
-		};
+		return Promise.resolve({
+			validatingCarrier, hub, fop, expirationDate,
+			approvalCode: storedParams.approvalCode || null,
+		});
 	}
 
 	async getPnrMcoData()  {
