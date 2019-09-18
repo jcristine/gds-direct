@@ -91,24 +91,22 @@ class AtfqParser {
 	// "ATFQ-REPR/$B*IF53/-*115Q/:A/Z$53.00/GB/ET/TA115Q/CUA"
 	// "1/ATFQ-OK/$BN1*IF91/-*1O3K/:P/Z$91.00/GB/TA1O3K/CET/ET"
 	// "2/ATFQ-REPR/N2/ITNG13796/Z$29.00/GBG2PC|EBNONEND-TK@ONLY|TDFB14|B/FEX/ET/CTK"
-	static parseAtfqLine($line) {
-		let $regex, $matches, $parsedCommand, $pricingModifiers;
-		$regex = '/^' +
+	static parseAtfqLine(line) {
+		const regex = '/^' +
 			'((?<lineNumber>\\d+)\\\/|)' +
 			'(?<atfqType>ATFQ-[A-Z]+)\/' +
 			'(?<pricingCommand>.+?)' +
 			'\\s*$/';
-		if (php.preg_match($regex, $line, $matches = [])) {
-			if ($parsedCommand = this.parsePricingCommand($matches['pricingCommand'])) {
-
-				$pricingModifiers = $parsedCommand['pricingModifiers'];
-
+		let matches;
+		if (php.preg_match(regex, line, matches = [])) {
+			const parsedCommand = this.parsePricingCommand(matches.pricingCommand);
+			if (parsedCommand) {
 				return {
-					lineNumber: $matches['lineNumber'] || 1,
-					atfqType: $matches['atfqType'],
-					isManualPricingRecord: $parsedCommand['isManualPricingRecord'],
-					baseCmd: $parsedCommand['baseCmd'],
-					pricingModifiers: $pricingModifiers,
+					lineNumber: matches.lineNumber || 1,
+					atfqType: matches.atfqType,
+					isManualPricingRecord: parsedCommand.isManualPricingRecord,
+					baseCmd: parsedCommand.baseCmd,
+					pricingModifiers: parsedCommand.pricingModifiers,
 				};
 			}
 		}
