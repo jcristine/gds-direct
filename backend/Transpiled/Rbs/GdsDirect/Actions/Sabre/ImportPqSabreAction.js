@@ -156,20 +156,19 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		};
 	}
 
-	processPricingOutput($output, $cmd, reservation) {
-		let $errors, $result;
-
-		$errors = GetPqItineraryAction.checkPricingOutput('sabre', $output, this.$leadData);
-		if (!php.empty($errors)) {
-			$result = {error: 'Invalid pricing data - ' + php.implode(';', $errors)};
-		} else {
-			$result = this.parsePricing($output, reservation.passengers, $cmd);
+	/** parse the dump, validate the data fro PQ creation */
+	async processPricingOutput(output, cmd, reservation) {
+		const errors = GetPqItineraryAction.checkPricingOutput('sabre', output, this.$leadData);
+		if (!php.empty(errors)) {
+			const msg = 'Invalid pricing data - ' + php.implode(';', errors);
+			return Rej.BadRequest(msg);
 		}
-		$result['pricingPart'] = $result['pricingPart'] || {};
-		$result['pricingPart']['cmd'] = $cmd;
-		$result['pricingPart']['raw'] = $output;
+		const result = this.parsePricing(output, reservation.passengers, cmd);
+		result.pricingPart = result.pricingPart || {};
+		result.pricingPart.cmd = cmd;
+		result.pricingPart.raw = output;
 
-		return $result;
+		return Promise.resolve(result);
 	}
 
 	/** @param parsedCmd = {data: require('PricingCmdParser.js').parse()} */
@@ -254,7 +253,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 				result.error = 'Invalid pricing command - ' + cmd + ' - ' + php.implode(';', errors);
 				return result;
 			}
-			const processed = this.processPricingOutput(cmdRec.output, cmd, reservation);
+			const processed = await this.processPricingOutput(cmdRec.output, cmd, reservation);
 			if (processed.error) {
 				result.error = processed.error;
 				return result;
