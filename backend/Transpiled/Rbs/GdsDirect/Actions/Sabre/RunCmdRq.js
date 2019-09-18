@@ -824,7 +824,8 @@ const execute = ({
 			output = await runCommand(cmd);
 		}
 		const calledCommands = [{cmd, output}];
-		if (stateful.getSessionData().isPnrStored) {
+		const isSuccess = output.length > 150;
+		if (isSuccess && stateful.getSessionData().isPnrStored) {
 			const login = getAgent().getLogin().toUpperCase();
 			const erCmdRec = await runCmd('6' + login + '§ER');
 			calledCommands.push(erCmdRec);
