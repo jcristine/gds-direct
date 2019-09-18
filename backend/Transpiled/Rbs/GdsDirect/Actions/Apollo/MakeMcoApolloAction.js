@@ -25,6 +25,10 @@ class MakeMcoApolloAction extends AbstractGdsAction
 		if (!validatingCarrier) {
 			return Rej.BadRequest('Validating carrier must be present in ATFQ');
 		}
+		const match = mcoMask.match(/^\s*(SIMULTANEOUS CHANGES\/IGNORE)\s*(><)?$/);
+		if (match) {
+			return Rej.Conflict(match[1]);
+		}
 		const storedParams = McoMaskParser.parse(mcoMask);
 		if (storedParams.error) {
 			return Rej.UnprocessableEntity('Failed to parse MCO mask - ' + storedParams.error);
