@@ -179,9 +179,14 @@ class AliasParser {
 		}
 	}
 
-	static async parseCmdAsPnr($cmd, $session) {
-		let $guess;
-		const fromCms = await this.parseCmsRebuild($cmd);
+	/**
+	 * @return {Promise<Object|null>} - reservation in importPnr format if
+	 *  cmd is valid PNR dump, null if cmd is not a PNR dump, Promise.reject() if cmd
+	 *  is a PNR dump, but there were issues parsing it, like invalid tokens caused by
+	 *  manual changes to the text or it referencing a non-existing CMS PQ
+	 */
+	static async parseCmdAsPnr(cmd, session) {
+		const fromCms = await this.parseCmsRebuild(cmd);
 		if (fromCms) {
 			return {
 				pcc: fromCms.pcc,
@@ -189,23 +194,32 @@ class AliasParser {
 				itinerary: fromCms.segments,
 			};
 		}
-		if (!$session.getAgent().canPasteItinerary()) {
+		if (!session.getAgent().canPasteItinerary()) {
 			return null;
 		}
-		$guess = (new ParsersController()).guessDumpType({
-			dump: $cmd,
-			creationDate: $session.getStartDt(),
-		})['result'] || null;
+		const guess = (new ParsersController()).guessDumpType({
+			dump: cmd,
+			creationDate: session.getStartDt(),
+		}).result || null;
 
-		const passengers = ($guess.data || {}).passengers || [];
-		const itinerary = ($guess.data || {}).itinerary || [];
+		const passengers = (guess.data || {}).passengers || [];
+		const itinerary = (guess.data || {}).itinerary || [];
 
-		if (ParsersController.PNR_DUMP_TYPES.includes($guess['type']) &&
+		for (let i = 0; i < itinerary.length; ++i) {
+			const seg = itinerary[i];
+			if (!seg.departureDt || !seg.departureDt.full) {
+				const raw = (seg.departureDt || {}).raw || (seg.departureDate || {}).raw;
+				const msg = 'Segment #' + (i + 1) + ' has invalid date' + (!raw ? '' : ' - ' + raw);
+				return Rej.BadRequest(msg, itinerary);
+			}
+		}
+
+		if (ParsersController.PNR_DUMP_TYPES.includes(guess['type']) &&
 			itinerary.length > 0 || passengers.length > 0
 		) {
-			return $guess['data'];
+			return Promise.resolve(guess.data);
 		} else {
-			return null;
+			return Promise.resolve(null);
 		}
 	}
 
