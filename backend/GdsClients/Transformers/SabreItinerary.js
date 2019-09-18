@@ -51,12 +51,12 @@ module.exports.parseItineraryXmlResponse = (dom, params) => {
 	const pnrItinerary = parseReservations(body.querySelector('ReservationItems'));
 
 	if (newAirSegments.length < params.addAirSegments.length) {
-		let postfix = `starting from ${newAirSegments.length}-th`;
+		let postfix = `starting from #${newAirSegments.length + 1}`;
 		if (newAirSegments.length === 0) {
 			// sometimes Sabre returns no newAirSegments,
 			// despite some segments _being_ added...
 			postfix = !pnrItinerary.length ?  '(nothing added)' :
-				`starting from ${pnrItinerary.length + 1}-th`;
+				`starting from #${pnrItinerary.length + 1}`;
 		}
 		errors.push(`Failed to add segments ${postfix}`);
 	}
