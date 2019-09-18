@@ -47,16 +47,24 @@ module.exports.parseItineraryXmlResponse = (dom, params) => {
 	const errors = _.map(body.querySelectorAll('EnhancedAirBookRS > ApplicationResults > Warning'),
 		el => `Sabre warning - ${getValueOrNullFromDomElement(el, 'SystemSpecificResults > Message') || '(no message)'}`);
 
-	const airSegments = _.map(body.querySelectorAll('EnhancedAirBookRS > OTA_AirBookRS > OriginDestinationOption > FlightSegment'), transformSegment);
+	const newAirSegments = _.map(body.querySelectorAll('EnhancedAirBookRS > OTA_AirBookRS > OriginDestinationOption > FlightSegment'), transformSegment);
+	const pnrItinerary = parseReservations(body.querySelector('ReservationItems'));
 
-	if (airSegments.length < params.addAirSegments.length) {
-		errors.push(`Failed to add segments starting from ${airSegments.length}-th`);
+	if (newAirSegments.length < params.addAirSegments.length) {
+		let postfix = `starting from ${newAirSegments.length}-th`;
+		if (newAirSegments.length === 0) {
+			// sometimes Sabre returns no newAirSegments,
+			// despite some segments _being_ added...
+			postfix = !pnrItinerary.length ?  '(nothing added)' :
+				`starting from ${pnrItinerary.length + 1}-th`;
+		}
+		errors.push(`Failed to add segments ${postfix}`);
 	}
 
 	return {
 		binarySecurityToken: getValueOrNullFromDomElement(header, 'wsse\\:Security > wsse\\:BinarySecurityToken'),
-		newAirSegments: airSegments,
-		reservations: parseReservations(body.querySelector('ReservationItems')),
+		newAirSegments: newAirSegments,
+		reservations: pnrItinerary,
 		error: errors.length ? errors.join('; ') : null,
 	};
 };
@@ -67,8 +75,8 @@ const transformSegment = el => ({
 	airline: getValueOrNullFromDomAttribute(el, 'MarketingAirline', 'Code'),
 	flightNumber: el.getAttribute('FlightNumber'),
 	bookingClass: el.getAttribute('ResBookDesigCode'),
-	destinationAirport: getValueOrNullFromDomAttribute(el, 'DestinationLocation', 'LocationCode'),
 	departureAirport: getValueOrNullFromDomAttribute(el, 'OriginLocation', 'LocationCode'),
+	destinationAirport: getValueOrNullFromDomAttribute(el, 'DestinationLocation', 'LocationCode'),
 	segmentStatus: el.getAttribute('Status'),
 	seatCount: el.getAttribute('NumberInParty'),
 	eticket: el.getAttribute('eTicket') === 'true',
