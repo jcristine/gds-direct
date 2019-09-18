@@ -104,8 +104,8 @@ const CmdResultAdapter = ({
 				output = appendOutput(output, messages);
 				const cmdTimes = rbsResp.calledCommands.map(rec => rec.duration).filter(a => a);
 				return {
+					sessionInfo: sessionInfo,
 					output: output || rbsResp.status,
-					appliedRules: appliedRules,
 					tabCommands: calledCommands
 						.map(call => call.tabCommands || [])
 						.reduce((a,b) => a.concat(b), [])
@@ -116,10 +116,10 @@ const CmdResultAdapter = ({
 					gdsTime: cmdTimes.length > 0 ? cmdTimes.reduce((a,b) => a + b) : null,
 
 					...sessionInfo,
-					sessionInfo: sessionInfo,
 					userMessages: typeToMsgs['pop_up'] ? typeToMsgs['pop_up'] : null,
 					calledCommands: rbsResp.calledCommands,
 					actions: rbsResp.actions || [],
+					appliedRules: appliedRules,
 				};
 			});
 	};
