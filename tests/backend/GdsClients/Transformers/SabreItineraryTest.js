@@ -253,7 +253,7 @@ const provide_parseXml = () => {
 				seatCount: '001',
 				eticket: true,
 			}],
-			error: 'Failed to add segments starting from 1-th',
+			error: 'Failed to add segments starting from #2',
 		},
 	});
 
