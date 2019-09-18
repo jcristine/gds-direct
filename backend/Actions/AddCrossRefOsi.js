@@ -45,6 +45,7 @@ const AddCrossRefOsi = ({
 			}
 		}
 		const airlinesLeftSet = new Set(airlines.filter(a => !coveredAirlines.has(a)));
+		const codeShareNumRecsUniq = _.uniqBy(codeShareNumRecs, r => JSON.stringify(r));
 		if (airlinesLeftSet.size === 1) {
 			const airline = [...airlinesLeftSet][0];
 			for (const numRec of codeShareNumRecs) {
@@ -55,7 +56,7 @@ const AddCrossRefOsi = ({
 			}
 		} else if (
 			airlinesLeftSet.size === codeShareNumRecs.length &&
-			_.uniqBy(codeShareNumRecs, r => JSON.stringify(r)).length === 1
+			codeShareNumRecsUniq.length === 1
 		) {
 			// different airlines on same 1A record locator, for example LX and LH
 			const {recordLocator} = codeShareNumRecs[0];
@@ -66,7 +67,7 @@ const AddCrossRefOsi = ({
 			// could eventually ask user to assign which number
 			// belongs to which airline... if he can himself
 			const msg = 'Could not deduct actual airlines among ' + [...airlinesLeftSet].join(',') +
-				' for ' + codeShareNumRecs.map(r => r.airline + '-' + r.recordLocator).join(',');
+				' for ' + codeShareNumRecsUniq.map(r => r.airline + '-' + r.recordLocator).join(',');
 			return Rej.UnprocessableEntity(msg);
 		}
 		writeOsiRecs = _.uniqBy(writeOsiRecs, r => JSON.stringify(r));
