@@ -4,7 +4,6 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const ApolloAddCustomSegmentAction = require('../../../Rbs/GdsAction/ApolloAddCustomSegmentAction.js');
 const ApolloBuildItineraryAction = require('../../GdsAction/ApolloBuildItinerary.js');
 const TApolloSavePnr = require('../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
-const CanCreatePqRules = require('./CanCreatePqRules.js');
 const CmsApolloTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
 const PnrParser = require('../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
 const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
@@ -25,16 +24,16 @@ class UpdateApolloState {
 		return !$tooShortToBeValid;
 	}
 
-	static isValidPricing($cmd, $output) {
-		let $type, $errors;
-		$type = CommandParser.parse($cmd)['type'];
-		if (!['priceItinerary', 'storePricing'].includes($type) ||
-			!this.isValidPricingOutput($output)
+	static isValidPricing(cmd, output) {
+		const type = CommandParser.parse(cmd).type;
+		if (!['priceItinerary', 'storePricing'].includes(type) ||
+			!this.isValidPricingOutput(output)
 		) {
 			return false;
 		} else {
-			$errors = CanCreatePqRules.checkPricingCommandObviousRules('apollo', $cmd);
-			return php.count($errors) === 0;
+			const errorRecs = CmsApolloTerminal
+				.checkPricingCmdObviousPqRuleRecords(cmd);
+			return php.count(errorRecs) === 0;
 		}
 	}
 
