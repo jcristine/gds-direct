@@ -48,7 +48,7 @@ module.exports.parseItineraryXmlResponse = (dom, params) => {
 		el => `Sabre warning - ${getValueOrNullFromDomElement(el, 'SystemSpecificResults > Message') || '(no message)'}`);
 
 	const newAirSegments = _.map(body.querySelectorAll('EnhancedAirBookRS > OTA_AirBookRS > OriginDestinationOption > FlightSegment'), transformSegment);
-	const pnrItinerary = parseReservations(body.querySelector('ReservationItems'));
+	const pnrItinerary = parsePnrSegments(body.querySelector('ReservationItems'));
 
 	if (newAirSegments.length < params.addAirSegments.length) {
 		let postfix = `starting from #${newAirSegments.length + 1}`;
@@ -177,9 +177,9 @@ const combineReservation = segments => {
 	});
 };
 
-const parseReservations = items => {
+const parsePnrSegments = items => {
 	if (!items) {
-		return null;
+		return [];
 	}
 
 	return _.map(items.querySelectorAll('Item'), item => {
