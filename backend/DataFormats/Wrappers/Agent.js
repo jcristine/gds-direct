@@ -32,6 +32,7 @@ const Agent = (emcUser) => {
 		canPasteItinerary              : () => true, // hasRole('NEW_GDS_DIRECT_PASTE_ITINERARY'),
 		canUseMco                      : () => hasRole('NEW_GDS_DIRECT_HHMCO'),
 
+		hasRole: (role) => hasRole(role),
 		getRoles: () => roles,
 		hasGroup: (groupName) => {
 			const groups = (emcUser.groups || []);

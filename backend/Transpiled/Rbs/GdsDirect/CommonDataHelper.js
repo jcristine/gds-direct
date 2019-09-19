@@ -34,7 +34,7 @@ class CommonDataHelper {
 	static getTicketingCommands() {
 		return [
 			'issueTickets', 'voidTicket', 'exchangeTicket', 'refundTicket', 'changeTickets',
-			'unvoidPaperTicket', 'revalidateTicket', 'soldTicketsDailyReport',
+			'unvoidPaperTicket', 'revalidateTicket',
 		];
 	}
 
