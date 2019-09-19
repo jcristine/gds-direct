@@ -4,7 +4,7 @@ const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const LocationGeographyProvider = require('../../../../Rbs/DataProviders/LocationGeographyProvider.js');
 const AmadeusPnrCommonFormatAdapter = require('../../../../Rbs/FormatAdapters/AmadeusPnrCommonFormatAdapter.js');
-const GetPqItineraryAction = require('../../SessionStateProcessor/CanCreatePqRules.js');
+const CanCreatePqRules = require('../../SessionStateProcessor/CanCreatePqRules.js');
 const CommandParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js');
 const PricingCmdParser = require('../../../../Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
 const FlightInfoParser = require('../../../../Gds/Parsers/Amadeus/FlightInfoParser.js');
@@ -168,7 +168,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		}
 		$common = AmadeusPnrCommonFormatAdapter.transform($parsed, this.getBaseDate());
 		$result['parsed'] = $common;
-		if (!php.empty($errors = GetPqItineraryAction.checkPnrData($common))) {
+		if (!php.empty($errors = CanCreatePqRules.checkPnrData($common))) {
 			return Rej.BadRequest('Invalid PNR data - ' + php.implode(';', $errors));
 		}
 		return $result;
@@ -332,8 +332,8 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			const {cmd, output, fqqCmdRecs} = cmdRec;
 			this.$allCommands.push({cmd, output});
 			const errors = php.array_merge(
-				GetPqItineraryAction.checkPricingCommand('amadeus', cmd, this.$leadData),
-				GetPqItineraryAction.checkPricingOutput('amadeus', output, this.$leadData)
+				CanCreatePqRules.checkPricingCommand('amadeus', cmd, this.$leadData),
+				CanCreatePqRules.checkPricingOutput('amadeus', output, this.$leadData)
 			);
 			if (!php.empty(errors)) {
 				return Rej.BadRequest('Invalid pricing - ' + cmd + ' - ' + php.implode(';', errors));

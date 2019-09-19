@@ -2,7 +2,7 @@
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const AbstractGdsAction = require('../../../../Rbs/GdsAction/AbstractGdsAction.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const GetPqItineraryAction = require('../../SessionStateProcessor/CanCreatePqRules.js');
+const CanCreatePqRules = require('../../SessionStateProcessor/CanCreatePqRules.js');
 const CmsSabreTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsSabreTerminal.js');
 const CommandParser = require('../../../../Gds/Parsers/Sabre/CommandParser.js');
 const SabrePricingParser = require('../../../../Gds/Parsers/Sabre/Pricing/SabrePricingParser.js');
@@ -97,7 +97,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		} else {
 			$result['parsed'] = $common;
 		}
-		if (!php.empty($errors = GetPqItineraryAction.checkPnrData($common))) {
+		if (!php.empty($errors = CanCreatePqRules.checkPnrData($common))) {
 			return Rej.BadRequest('Invalid PNR data - ' + php.implode(';', $errors));
 		}
 		return $result;
@@ -158,7 +158,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 
 	/** parse the dump, validate the data fro PQ creation */
 	async processPricingOutput(output, cmd, reservation) {
-		const errors = GetPqItineraryAction.checkPricingOutput('sabre', output, this.$leadData);
+		const errors = CanCreatePqRules.checkPricingOutput('sabre', output, this.$leadData);
 		if (!php.empty(errors)) {
 			const msg = 'Invalid pricing data - ' + php.implode(';', errors);
 			return Rej.BadRequest(msg);
@@ -248,7 +248,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 			const cmd = cmdRec.cmd;
 			this.$allCommands.push(cmdRec);
 
-			const errors = GetPqItineraryAction.checkPricingCommand('sabre', cmd, this.$leadData);
+			const errors = CanCreatePqRules.checkPricingCommand('sabre', cmd, this.$leadData);
 			if (errors.length > 0) {
 				result.error = 'Invalid pricing command - ' + cmd + ' - ' + php.implode(';', errors);
 				return result;

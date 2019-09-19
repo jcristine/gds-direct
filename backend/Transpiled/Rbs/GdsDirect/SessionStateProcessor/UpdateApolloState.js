@@ -4,7 +4,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const ApolloAddCustomSegmentAction = require('../../../Rbs/GdsAction/ApolloAddCustomSegmentAction.js');
 const ApolloBuildItineraryAction = require('../../GdsAction/ApolloBuildItinerary.js');
 const TApolloSavePnr = require('../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
-const GetPqItineraryAction = require('./CanCreatePqRules.js');
+const CanCreatePqRules = require('./CanCreatePqRules.js');
 const CmsApolloTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
 const PnrParser = require('../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
 const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
@@ -33,7 +33,7 @@ class UpdateApolloState {
 		) {
 			return false;
 		} else {
-			$errors = GetPqItineraryAction.checkPricingCommandObviousRules('apollo', $cmd);
+			$errors = CanCreatePqRules.checkPricingCommandObviousRules('apollo', $cmd);
 			return php.count($errors) === 0;
 		}
 	}

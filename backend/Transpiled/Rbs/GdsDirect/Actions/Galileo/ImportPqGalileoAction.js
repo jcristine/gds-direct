@@ -6,7 +6,7 @@ const CmsGalileoTerminal = require("../../GdsInterface/CmsGalileoTerminal");
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
 const PnrParser = require("../../../../Gds/Parsers/Galileo/Pnr/PnrParser");
 const GalileoPnrCommonFormatAdapter = require("../../../FormatAdapters/GalileoPnrCommonFormatAdapter");
-const GetPqItineraryAction = require("../../SessionStateProcessor/CanCreatePqRules");
+const CanCreatePqRules = require("../../SessionStateProcessor/CanCreatePqRules");
 const FqParser = require("../../../../Gds/Parsers/Galileo/Pricing/FqParser");
 const LinearFareParser = require("../../../../Gds/Parsers/Galileo/Pricing/LinearFareParser");
 const {fetchAll, joinFullOutput, collectCmdToFullOutput} = require('../../../../../GdsHelpers/TravelportUtils.js');
@@ -77,7 +77,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		} else {
 			$result['parsed'] = $common;
 		}
-		if (!php.empty($errors = GetPqItineraryAction.checkPnrData($common))) {
+		if (!php.empty($errors = CanCreatePqRules.checkPnrData($common))) {
 			$result['error'] = 'Invalid PNR data - ' + php.implode(';', $errors);
 			return $result;
 		}
@@ -233,7 +233,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 			this.$allCommands.push({cmd, output});
 			this.$allCommands.push({cmd: 'F*Q', output: linearOutput});
 
-			const errors = GetPqItineraryAction.checkPricingCommand('galileo', cmd, this.$leadData);
+			const errors = CanCreatePqRules.checkPricingCommand('galileo', cmd, this.$leadData);
 			if (errors.length > 0) {
 				result.error = 'Invalid pricing command - ' + cmd + ' - ' + php.implode(';', errors);
 				return result;
