@@ -1,5 +1,4 @@
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
-const DateTime = require('../../../Transpiled/Lib/Utils/DateTime');
 const ItineraryParser = require('../../Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
 const AirAvailabilityParser = require("../../Gds/Parsers/Apollo/AirAvailabilityParser");
 const {fetchAll} = require("../../../GdsHelpers/TravelportUtils.js");
@@ -24,19 +23,18 @@ const isAvailabilityOutput = ($output) => {
 	return AirAvailabilityParser.parse($output)['flights'].length > 0;
 };
 
-const makeDirectSellCmd = ($segment) => {
-	let $date, $pattern;
-	$date = $segment['departureDate']['raw'];
-	$pattern = '0{airline}{flightNumber}{bookingClass}{departureDate}{departureAirport}{destinationAirport}{segmentStatus}{seatCount}';
-	return StringUtil.format($pattern, {
-		airline: $segment['airline'],
-		flightNumber: $segment['flightNumber'],
-		bookingClass: $segment['bookingClass'],
-		departureDate: $date,
-		departureAirport: $segment['departureAirport'],
-		destinationAirport: $segment['destinationAirport'],
-		segmentStatus: $segment['segmentStatus'],
-		seatCount: $segment['seatCount'],
+const makeDirectSellCmd = (segment) => {
+	const date = segment.departureDate.raw;
+	const pattern = '0{airline}{flightNumber}{bookingClass}{departureDate}{departureAirport}{destinationAirport}{segmentStatus}{seatCount}';
+	return StringUtil.format(pattern, {
+		airline: segment.airline,
+		flightNumber: segment.flightNumber,
+		bookingClass: segment.bookingClass,
+		departureDate: date,
+		departureAirport: segment.departureAirport,
+		destinationAirport: segment.destinationAirport,
+		segmentStatus: segment.segmentStatus,
+		seatCount: segment.seatCount,
 	});
 };
 
@@ -93,7 +91,7 @@ const ApolloBuildItinerary = ({
 
 		const soldCount = result.segments.filter(seg => seg.success).length;
 
-		if(result.success) {
+		if (result.success) {
 			return {
 				success: true,
 				segmentsSold: soldCount,
