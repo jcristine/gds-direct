@@ -13,7 +13,7 @@ class SessionStateProcessor
 	static updateStateSafe($cmd, $output, gds, $sessionState, $getAreaData)  {
 		const $getAreaDataNorm = (letter) => ({...$getAreaData(letter)});
 		if (gds === 'apollo') {
-			const UpdateApolloSessionStateAction = require('./UpdateApolloState.js');
+			const UpdateApolloSessionStateAction = require('./UpdateState_apollo.js');
 			return UpdateApolloSessionStateAction.execute($cmd, $output, $sessionState, $getAreaDataNorm);
 		} else if (gds === 'sabre') {
 			const UpdateSabreSessionStateAction = require('./UpdateSabreState.js');
