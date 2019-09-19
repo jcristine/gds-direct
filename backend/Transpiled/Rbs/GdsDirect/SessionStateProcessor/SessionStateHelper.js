@@ -17,13 +17,12 @@ class SessionStateHelper
 		]);
 	}
 
-	static async makeSessionInfo($cmdLog, $leadData)  {
-		let $row;
-		$row = $cmdLog.getSessionData();
+	static async makeSessionInfo(cmdLog, leadData)  {
+		let row = cmdLog.getSessionData();
 		return {
-			...$row,
-			canCreatePqErrors: await this.checkCanCreatePq($cmdLog, $leadData),
-			canCreatePqFor: await this.getPricedAgeGroups($cmdLog),
+			...row,
+			canCreatePqErrors: await this.checkCanCreatePq(cmdLog, leadData),
+			canCreatePqFor: await this.getPricedAgeGroups(cmdLog),
 		};
 	}
 
@@ -51,31 +50,30 @@ class SessionStateHelper
 		}
 	}
 
-	static async checkCanCreatePq($cmdLog, $leadData)  {
-		let $errors, $gds, $gdsInterface, $cmdList, $cmdPricing, $cmdItinerary, $cmdRecord;
-		$errors = [];
-		$gds = $cmdLog.getSessionData()['gds'];
-		$gdsInterface = CommonDataHelper.makeIfcByGds($gds);
-		$cmdList = await $cmdLog.getLastCommandsOfTypes(this.getCanCreatePqSafeTypes());
-		$cmdPricing = await this.getPricingCmdRow($cmdLog);
-		$cmdItinerary = null;
-		for ($cmdRecord of Object.values($cmdList)) {
-			if (php.in_array($cmdRecord['type'], ['redisplayPnr', 'itinerary']) && !$cmdRecord.is_mr) {
-				$cmdItinerary = $cmdRecord;
-			}}
-		if (!$cmdPricing) {
-			$errors.push(Errors.getMessage(Errors.NO_RECENT_PRICING));
+	static async checkCanCreatePq(cmdLog, leadData, agent = null)  {
+		let errors = [];
+		const gds = cmdLog.getSessionData().gds;
+		const cmdList = await cmdLog.getLastCommandsOfTypes(this.getCanCreatePqSafeTypes());
+		const cmdPricing = await this.getPricingCmdRow(cmdLog);
+		let cmdItinerary = null;
+		for (const cmdRec of cmdList) {
+			if (php.in_array(cmdRec.type, ['redisplayPnr', 'itinerary']) && !cmdRec.is_mr) {
+				cmdItinerary = cmdRec;
+			}
+		}
+		if (!cmdPricing) {
+			errors.push(Errors.getMessage(Errors.NO_RECENT_PRICING));
 		} else {
-			$errors = php.array_merge($errors, CanCreatePqRules.checkPricingOutput($gds, $cmdPricing['output'], $leadData));
-			$errors = php.array_merge($errors, CanCreatePqRules.checkPricingCommand($gds, $cmdPricing['cmd'], $leadData));
+			errors = php.array_merge(errors, CanCreatePqRules.checkPricingOutput(gds, cmdPricing.output, leadData));
+			errors = php.array_merge(errors, CanCreatePqRules.checkPricingCommand(gds, cmdPricing.cmd, leadData, agent));
 			// prevent duplicate errors from entered cmd and cmd in pricing output
-			$errors = php.array_values(php.array_unique($errors));
+			errors = php.array_values(php.array_unique(errors));
 		}
-		if ($cmdItinerary) {
-			const reservation = CommonDataHelper.parsePnrByGds($gds, $cmdItinerary['output']);
-			$errors = php.array_merge($errors, CanCreatePqRules.checkPnrData(reservation));
+		if (cmdItinerary) {
+			const reservation = CommonDataHelper.parsePnrByGds(gds, cmdItinerary.output);
+			errors = php.array_merge(errors, CanCreatePqRules.checkPnrData(reservation));
 		}
-		return $errors;
+		return errors;
 	}
 }
 
