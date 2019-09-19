@@ -156,75 +156,77 @@ const RunRealCmd = ({
 			&& !stateful.getAgent().canPerformAnyPccAvailability();
 	};
 
-	const checkIsForbidden = async ($cmd) => {
-		let $errors, $parsedCmd, $flatCmds, $type, $agent, $isQueueCmd, $pnr, $canChange, $remark,
-			$pnrCreationPcc, $currentPcc, $flatCmd;
-		$errors = [];
-		$parsedCmd = CommandParser.parse($cmd);
-		$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
-		$type = $parsedCmd['type'];
-		$agent = stateful.getAgent();
-		$isQueueCmd =
-			php.in_array($type, CommonDataHelper.getQueueCommands()) ||
-			StringUtil.startsWith($cmd, 'Q');
-		if (php.in_array($type, CommonDataHelper.getTicketingCommands())) {
-			if (!$agent.canIssueTickets()) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type}));
+	const checkIsForbidden = async (cmd) => {
+		const errors = [];
+		const parsedCmd = CommandParser.parse(cmd);
+		const flatCmds = php.array_merge([parsedCmd], parsedCmd.followingCommands || []);
+		const type = parsedCmd.type;
+		const agent = stateful.getAgent();
+		const isQueueCmd =
+			php.in_array(type, CommonDataHelper.getQueueCommands()) ||
+			StringUtil.startsWith(cmd, 'Q');
+		if (php.in_array(type, CommonDataHelper.getTicketingCommands())) {
+			if (!agent.canIssueTickets()) {
+				errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd, type}));
 			}
-		} else if (php.in_array($type, CommonDataHelper.getCountedFsCommands())) {
-			const totalAllowed = $agent.getFsLimit();
+		} else if (php.in_array(type, CommonDataHelper.getCountedFsCommands())) {
+			const totalAllowed = agent.getFsLimit();
 			if (!totalAllowed) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type}));
+				errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd, type}));
 			} else {
-				const {cnt, minDt} = await $agent.getFsCallsUsedRec();
+				const {cnt, minDt} = await agent.getFsCallsUsedRec();
 				if (cnt >= totalAllowed) {
-					$errors.push(Errors.getMessage(Errors.FS_LIMIT_EXHAUSTED, {totalAllowed, callsUsed: cnt, minDt}));
+					errors.push(Errors.getMessage(Errors.FS_LIMIT_EXHAUSTED, {totalAllowed, callsUsed: cnt, minDt}));
 				}
 			}
-		} else if ($isQueueCmd && !php.in_array($type, ['movePnrToQueue', 'qmdr'])) {
-			if (!$agent.canProcessQueues()) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type || 'queueOperation'}));
+		} else if (isQueueCmd && !php.in_array(type, ['movePnrToQueue', 'qmdr'])) {
+			if (!agent.canProcessQueues()) {
+				errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd, type: type || 'queueOperation'}));
 			}
-		} else if ($type === 'searchPnr') {
-			if (!$agent.canSearchPnr()) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type}));
+		} else if (type === 'searchPnr') {
+			if (!agent.canSearchPnr()) {
+				errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd, type}));
 			}
-		} else if (php.in_array($type, CommonDataHelper.getTotallyForbiddenCommands())) {
-			$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type}));
-		} else if ($type === 'airAvailability' && isForbiddenBaAvailability($cmd)) {
-			$errors.push('NO BA AVAILABILITY IN THIS PCC. PLEASE CHECK IN 2G2H');
+		} else if (php.in_array(type, CommonDataHelper.getTotallyForbiddenCommands())) {
+			errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd, type}));
+		} else if (type === 'airAvailability' && isForbiddenBaAvailability(cmd)) {
+			errors.push('NO BA AVAILABILITY IN THIS PCC. PLEASE CHECK IN 2G2H');
 		}
-		if (php.in_array('deletePnrField', php.array_column($flatCmds, 'type'))) {
-			if (!$agent.canEditTicketedPnr()) {
-				if ($pnr = await getStoredPnr()) {
-					$canChange = !$pnr.hasEtickets()
-						|| $agent.canEditVoidTicketedPnr()
+		if (php.in_array('deletePnrField', php.array_column(flatCmds, 'type'))) {
+			if (!agent.canEditTicketedPnr()) {
+				const pnr = await getStoredPnr();
+				if (pnr) {
+					const canChange = !pnr.hasEtickets()
+						|| agent.canEditVoidTicketedPnr()
 						&& await areAllCouponsVoided();
-					if (!$canChange) {
-						$errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
+					if (!canChange) {
+						errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
 					}
 				}
 			}
 		}
-		if (doesStorePnr($cmd)) {
-			if ($pnr = await getStoredPnr()) {
-				for ($remark of Object.values($pnr.getRemarks())) {
-					if ($remark['remarkType'] !== GenericRemarkParser.CMS_LEAD_REMARK) continue;
-					if (!($pnrCreationPcc = $remark['data']['pcc'] || null)) continue;
-					$currentPcc = stateful.getSessionData()['pcc'];
-					$errors = php.array_merge($errors, checkSavePcc($pnrCreationPcc, $currentPcc));
+		if (doesStorePnr(cmd)) {
+			const pnr = await getStoredPnr();
+			if (pnr) {
+				for (const remark of Object.values(pnr.getRemarks())) {
+					if (GenericRemarkParser.CMS_LEAD_REMARK !== remark.remarkType) continue;
+					const pnrCreationPcc = remark.data.pcc || null;
+					if (!pnrCreationPcc) continue;
+
+					const currentPcc = stateful.getSessionData().pcc;
+					errors.push(...checkSavePcc(pnrCreationPcc, currentPcc));
 				}
 			}
 		}
-		if ($type === 'changePcc') {
-			$errors = php.array_merge($errors, checkEmulatedPcc($parsedCmd['data']));
+		if (type === 'changePcc') {
+			errors.push(...checkEmulatedPcc(parsedCmd.data));
 		}
-		for ($flatCmd of Object.values($flatCmds)) {
-			if ($flatCmd['type'] === 'changePnrRemarks') {
-				$errors = php.array_merge($errors, await checkChangeRemarks($flatCmd['data']));
+		for (const flatCmd of Object.values(flatCmds)) {
+			if (flatCmd.type === 'changePnrRemarks') {
+				errors.push(...(await checkChangeRemarks(flatCmd.data)));
 			}
 		}
-		return $errors;
+		return errors;
 	};
 
 	const callImplicitCommandsBefore = async ($cmd) => {
