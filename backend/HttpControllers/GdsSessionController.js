@@ -140,6 +140,8 @@ exports.getPqItinerary = async ({rqBody, session, emcUser}) => {
 	if (imported.status === GdsDirect.STATUS_EXECUTED) {
 		sendPqToPqt({stateful, leadData, imported});
 	}
+	// I suspect that sessionInfo returned here is not used,
+	// as frontend expects data in CmdResultAdapter.js format...
 	return imported;
 };
 
