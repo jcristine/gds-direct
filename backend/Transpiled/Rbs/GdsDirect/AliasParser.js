@@ -60,10 +60,10 @@ class AliasParser {
 
 	static parseMda($cmd) {
 		let $matches, $realCmd, $limit;
-		if (php.preg_match(/^(.*)\/MDA(\d*)$/, $cmd, $matches = [])) {
+		if (php.preg_match(/^(.*)\/MDA([1-9]\d*|)$/, $cmd, $matches = [])) {
 			$realCmd = $matches[1];
 			$limit = $matches[2];
-		} else if (php.preg_match(/^MDA(\d*)$/, $cmd, $matches = [])) {
+		} else if (php.preg_match(/^MDA([1-9]\d*|)$/, $cmd, $matches = [])) {
 			$realCmd = '';
 			$limit = $matches[1];
 		} else {
