@@ -87,31 +87,33 @@ class CmsApolloTerminal
 		}
 	}
 
-	static checkPricingCmdObviousPqRuleRecords($pricingCmd)  {
-		let $errorRecords, $cmdData, $mods, $sMod, $bundles, $fareBases;
-		$errorRecords = [];
-		$cmdData = CommandParser.parse($pricingCmd)['data'] || null;
-		if (!$cmdData) {
-			$errorRecords.push({type: Errors.CUSTOM, data: {text: 'Failed to parse pricing command - >' + $pricingCmd + '; for PQ validation'}});
-			return $errorRecords;
+	/** @param {Object|null} agent = require('Agent.js')() */
+	static checkPricingCmdObviousPqRuleRecords(pricingCmd, agent)  {
+		const errorRecords = [];
+		const cmdData = CommandParser.parse(pricingCmd).data || null;
+		if (!cmdData) {
+			const text = 'Failed to parse pricing command - >' + pricingCmd + '; for PQ validation';
+			errorRecords.push({type: Errors.CUSTOM, data: {text}});
+			return errorRecords;
 		}
-		$mods = $cmdData['pricingModifiers'] || [];
-		$mods = php.array_combine(php.array_column($mods, 'type'), $mods);
-		if ($sMod = $mods['segments'] || null) {
-			$bundles = $sMod['parsed']['bundles'];
-			$fareBases = php.array_filter(php.array_column($bundles, 'fareBasis'));
-			const bookingClasses = php.array_filter(php.array_column($bundles, 'bookingClass'));
-			if ($fareBases.length > 0) {
-				$errorRecords.push({type: Errors.BAD_MOD_BASIS_OVERRIDE, data: {modifier: '/@'+php.implode('@', $fareBases)+'/'}});
+		let mods = cmdData.pricingModifiers || [];
+		mods = php.array_combine(php.array_column(mods, 'type'), mods);
+		const sMod = mods.segments || null;
+		if (sMod) {
+			const bundles = sMod.parsed.bundles;
+			const fareBases = php.array_filter(php.array_column(bundles, 'fareBasis'));
+			const bookingClasses = php.array_filter(php.array_column(bundles, 'bookingClass'));
+			if (fareBases.length > 0) {
+				errorRecords.push({type: Errors.BAD_MOD_BASIS_OVERRIDE, data: {modifier: '/@'+php.implode('@', fareBases)+'/'}});
 			}
 			if (bookingClasses.length > 0) {
-				$errorRecords.push({type: Errors.BAD_MOD_BOKING_CLASS_OVERRIDE, data: {modifier: '/.' + bookingClasses.join('.') + '/'}});
+				errorRecords.push({type: Errors.BAD_MOD_BOKING_CLASS_OVERRIDE, data: {modifier: '/.' + bookingClasses.join('.') + '/'}});
 			}
 		}
-		if ($cmdData['baseCmd'] === '$BBA') {
-			$errorRecords.push({type: Errors.BAD_MOD_IGNORE_AVAILABILITY, data: {modifier: '$BBA/'}});
+		if (cmdData.baseCmd === '$BBA') {
+			errorRecords.push({type: Errors.BAD_MOD_IGNORE_AVAILABILITY, data: {modifier: '$BBA/'}});
 		}
-		return $errorRecords;
+		return errorRecords;
 	}
 
 	static isScrollingAvailable($dumpPage)  {
