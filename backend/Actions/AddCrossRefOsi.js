@@ -54,10 +54,9 @@ const AddCrossRefOsi = ({
 					recordLocator: numRec.recordLocator,
 				});
 			}
-		} else if (
-			airlinesLeftSet.size === codeShareNumRecs.length &&
-			codeShareNumRecsUniq.length === 1
-		) {
+		// possibly should also check that number of ACKN records
+		// matches the number of airlines left, but not sure...
+		} else if (codeShareNumRecsUniq.length === 1) {
 			// different airlines on same 1A record locator, for example LX and LH
 			const {recordLocator} = codeShareNumRecs[0];
 			for (const airline of airlinesLeftSet) {
@@ -98,12 +97,12 @@ const AddCrossRefOsi = ({
 		const {otherPnr, otherCalledCommands} = await GdsSession.withSession({
 			gds, gdsClients,
 			action: async gdsSession => {
-				const capturing = CommonUtils.withCapture(gdsSession);
 				const otherPnr = (await OpenPnr({
-					gdsSession: capturing, gds,
+					gdsSession, gds,
 					recordLocator, allowPccChange: true,
 				})).pnr;
 				const currentPnr = await whenPnr;
+				const capturing = CommonUtils.withCapture(gdsSession);
 				await copyCrossRef(capturing, currentPnr);
 				const otherCalledCommands = capturing.getCalledCommands();
 
