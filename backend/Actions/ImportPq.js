@@ -17,12 +17,14 @@ const GdsDirect = require("../Transpiled/Rbs/GdsDirect/GdsDirect");
 const ImportPqGalileoAction = require('../Transpiled/Rbs/GdsDirect/Actions/Galileo/ImportPqGalileoAction.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
+/** @param stateful = require('StatefulSession.js')() */
 const ImportPq = async ({
 	stateful, leadData, fetchOptionalFields = true,
 	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
 }) => {
 	const gds = stateful.gds;
 	const geo = new LocationGeographyProvider();
+	const agent = stateful.getAgent();
 
 	const getCurrentStateCommands = async () => {
 		let $cmdTypes, $mixed, $priorPricingCommands, $lastStateSafeCommands, $isPricingMd, $cmdRow, $belongsToPricing;
@@ -181,7 +183,7 @@ const ImportPq = async ({
 		let importAct;
 		const travelport = TravelportClient({PersistentHttpRq});
 		if (gds === 'apollo') {
-			importAct = new ImportPqApolloAction({travelport});
+			importAct = new ImportPqApolloAction({travelport, agent});
 		} else if (gds === 'sabre') {
 			importAct = new ImportPqSabreAction();
 		} else if (gds === 'galileo') {
@@ -192,7 +194,7 @@ const ImportPq = async ({
 		} else {
 			return Rej.NotImplemented('Unsupported GDS for importPq - ' + gds);
 		}
-		const stateErrors = await SessionStateHelper.checkCanCreatePq(stateful.getLog(), leadData);
+		const stateErrors = await SessionStateHelper.checkCanCreatePq(stateful.getLog(), leadData, agent);
 		if (stateErrors.length > 0) {
 			return {userMessages: ['Invalid PQ state'].concat(stateErrors)};
 		}

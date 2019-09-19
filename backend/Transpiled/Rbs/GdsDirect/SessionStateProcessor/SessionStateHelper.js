@@ -64,7 +64,7 @@ class SessionStateHelper
 		if (!cmdPricing) {
 			errors.push(Errors.getMessage(Errors.NO_RECENT_PRICING));
 		} else {
-			errors = php.array_merge(errors, CanCreatePqRules.checkPricingOutput(gds, cmdPricing.output, leadData));
+			errors = php.array_merge(errors, CanCreatePqRules.checkPricingOutput(gds, cmdPricing.output, leadData, agent));
 			errors = php.array_merge(errors, CanCreatePqRules.checkPricingCommand(gds, cmdPricing.cmd, leadData, agent));
 			// prevent duplicate errors from entered cmd and cmd in pricing output
 			errors = php.array_values(php.array_unique(errors));

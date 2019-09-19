@@ -25,9 +25,10 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	constructor({
 		useXml = true,
 		travelport = TravelportClient(),
+		agent = null,
 	}) {
 		super();
-		this.$leadData = {};
+		this.leadData = {};
 		this.$fetchOptionalFields = true;
 		this.$baseDate = null;
 		this.$cmdToFullOutput = {};
@@ -35,10 +36,11 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		this.$preCalledCommands = [];
 		this.useXml = useXml;
 		this.travelport = travelport;
+		this.agent = agent;
 	}
 
 	setLeadData($leadData) {
-		this.$leadData = $leadData;
+		this.leadData = $leadData;
 		return this;
 	}
 
@@ -133,28 +135,28 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		};
 	}
 
-	processPricingOutput($output, $cmd, $nameRecords) {
-		let $errors, $result;
-		$errors = CanCreatePqRules.checkPricingOutput('apollo', $output, this.$leadData);
-		if (!php.empty($errors)) {
-			$result = {error: 'Invalid pricing data on >' + $cmd + '; - ' + php.implode(';', $errors)};
+	processPricingOutput(output, cmd, nameRecords) {
+		let result;
+		const errors = CanCreatePqRules.checkPricingOutput('apollo', output, this.leadData, this.agent);
+		if (!php.empty(errors)) {
+			result = {error: 'Invalid pricing data on >' + cmd + '; - ' + php.implode(';', errors)};
 		} else {
-			$result = this.constructor.parsePricing($output, $nameRecords, $cmd);
+			result = this.constructor.parsePricing(output, nameRecords, cmd);
 		}
-		if (!$result.error && $cmd === '$BBQ01') {
-			for (const mod of $result.store.pricingModifiers) {
+		if (!result.error && cmd === '$BBQ01') {
+			for (const mod of result.store.pricingModifiers) {
 				// note that $BBQ01 command copy has "*" characters cut out, so some
 				// modifiers, like /*JCB/ or /-*2CV4/ would not be parsed correctly...
 				if (mod.type === 'segments') {
 					for (const bundle of mod.parsed.bundles) {
 						if (!php.empty(bundle.segmentNumbers)) {
-							$result.error = 'Can not create PQ from $BBQ01 with segment select - /' + mod.raw + '/, please run clean $B';
+							result.error = 'Can not create PQ from $BBQ01 with segment select - /' + mod.raw + '/, please run clean $B';
 						}
 					}
 				}
 			}
 		}
-		return $result;
+		return result;
 	}
 
 	static calcPricedSegments($segmentsLeft, $cmdRecord, $followingCommands) {
@@ -237,7 +239,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		};
 		for ([$i, $cmdRecord] of Object.entries($cmdRecords)) {
 			$pricingCommand = $cmdRecord['cmd'];
-			$errors = CanCreatePqRules.checkPricingCommand('apollo', $pricingCommand, this.$leadData);
+			$errors = CanCreatePqRules.checkPricingCommand('apollo', $pricingCommand, this.leadData, this.agent);
 			if (!php.empty($errors)) {
 				const error = 'Invalid pricing command - ' +
 					$pricingCommand + ' - ' + php.implode(';', $errors);

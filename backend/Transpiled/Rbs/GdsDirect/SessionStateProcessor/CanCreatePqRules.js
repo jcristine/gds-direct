@@ -19,7 +19,7 @@ const CommonDataHelper = require("../CommonDataHelper");
  * some pricing commands, like $BBQ01 or T:V1 reuse modifiers from previous commands,
  * so we have to check both the entered command and command copy in pricing output
  */
-const checkCmdInPartialApolloPricingDump = (output, leadData) => {
+const checkCmdInPartialApolloPricingDump = (output, leadData, agent = null) => {
 	const errors = [];
 	const lines = StringUtil.lines(output);
 	let cmdLine = php.array_shift(lines);
@@ -35,7 +35,7 @@ const checkCmdInPartialApolloPricingDump = (output, leadData) => {
 		// $BB0 does not include modifiers
 		// in the output, so we can't check them
 		if (cmd !== '$BB0') {
-			const cmdErrors = CanCreatePqRules.checkPricingCommand('apollo', cmd, leadData);
+			const cmdErrors = CanCreatePqRules.checkPricingCommand('apollo', cmd, leadData, agent);
 			errors.push(...cmdErrors);
 		}
 	} else {
@@ -94,7 +94,7 @@ class CanCreatePqRules {
 		return errors;
 	}
 
-	static checkPricingOutput(gds, output, leadData) {
+	static checkPricingOutput(gds, output, leadData, agent = null) {
 		const errors = [];
 		const tooShortToBeValid = !php.preg_match(/\n.*\n/, StringUtil.wrapLinesAt(output, 64));
 		if (tooShortToBeValid) {
@@ -105,7 +105,7 @@ class CanCreatePqRules {
 		let needsRebook = false;
 		if (gds == 'apollo') {
 			needsRebook = php.preg_match(/REBOOK PNR SEGMENT/, output);
-			errors.push(...checkCmdInPartialApolloPricingDump(output, leadData));
+			errors.push(...checkCmdInPartialApolloPricingDump(output, leadData, agent));
 		} else if (gds == 'sabre') {
 			needsRebook = php.preg_match(/CHANGE BOOKING CLASS/, output);
 		} else if (gds == 'amadeus') {
