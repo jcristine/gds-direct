@@ -123,35 +123,34 @@ class CanCreatePqRules {
 		return errors;
 	}
 
-	static checkPricingCommand($gds, $cmd, $leadData) {
-		let $errors, $priced, $ptcErrors, $ageGroups, $paxNumInfants, $paxNumChildren, $ageGroupsPlural;
-		$errors = this.checkPricingCommandObviousRules($gds, $cmd);
-		const ifc = CommonDataHelper.makeIfcByGds($gds);
-		$priced = ifc.getPricedPtcs($cmd);
-		if (!php.empty($ptcErrors = $priced['errors'] || [])) {
-			$errors = php.array_merge($errors, $ptcErrors);
+	static checkPricingCommand(gds, cmd, leadData) {
+		const errors = this.checkPricingCommandObviousRules(gds, cmd);
+		const ifc = CommonDataHelper.makeIfcByGds(gds);
+		const priced = ifc.getPricedPtcs(cmd);
+		if (!php.empty(priced.errors || [])) {
+			errors.push(...(priced.errors || []));
 		} else {
-			$ageGroups = this.ptcsToAgeGroups($priced['ptcs']);
-			$errors = php.array_merge($errors, this.checkPricedAgeGroups($ageGroups, $leadData));
+			const ageGroups = this.ptcsToAgeGroups(priced.ptcs);
+			errors.push(...this.checkPricedAgeGroups(ageGroups, leadData));
 		}
-		$paxNumInfants = $leadData['paxNumInfants'] || 0;
-		$paxNumChildren = $leadData['paxNumChildren'] || 0;
-		if ($gds == 'apollo') {
+		const paxNumInfants = leadData.paxNumInfants || 0;
+		const paxNumChildren = leadData.paxNumChildren || 0;
+		if (gds == 'apollo') {
 			// If I'm not mistaken, we do this because Apollo may
 			// price child and adult in different booking classes
-			if (StringUtil.startsWith($cmd, '$BB')) {
-				$ageGroupsPlural = php.array_filter([
-					$paxNumChildren > 0 ? 'children' : null,
-					$paxNumInfants > 0 ? 'infants' : null,
+			if (StringUtil.startsWith(cmd, '$BB')) {
+				const ageGroupsPlural = php.array_filter([
+					paxNumChildren > 0 ? 'children' : null,
+					paxNumInfants > 0 ? 'infants' : null,
 				]);
-				if (php.count($ageGroupsPlural) > 0) {
-					$errors.push(Errors.getMessage(Errors.BAD_MOD_LOW_FARE_CHILD, {
-						ageGroupsPlural: php.implode(', ', $ageGroupsPlural), modifier: '$BB', alternative: '$B',
+				if (php.count(ageGroupsPlural) > 0) {
+					errors.push(Errors.getMessage(Errors.BAD_MOD_LOW_FARE_CHILD, {
+						ageGroupsPlural: php.implode(', ', ageGroupsPlural), modifier: '$BB', alternative: '$B',
 					}));
 				}
 			}
 		}
-		return $errors;
+		return errors;
 	}
 
 	static ptcsToAgeGroups($pricedPtcs) {
