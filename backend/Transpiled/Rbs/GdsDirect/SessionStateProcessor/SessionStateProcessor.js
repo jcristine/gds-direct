@@ -1,6 +1,6 @@
 
-
 const SessionStateHelper = require('./SessionStateHelper.js');
+const UpdateState_apollo = require('./UpdateState_apollo.js');
 
 /**
  * takes called command, output and previous state,
@@ -10,22 +10,21 @@ const SessionStateHelper = require('./SessionStateHelper.js');
 class SessionStateProcessor
 {
 	/** "safe" means it does not write to DB */
-	static updateStateSafe($cmd, $output, gds, $sessionState, $getAreaData)  {
-		const $getAreaDataNorm = (letter) => ({...$getAreaData(letter)});
+	static updateStateSafe(cmd, output, gds, sessionState, getAreaData)  {
+		const getAreaDataNorm = (letter) => ({...getAreaData(letter)});
 		if (gds === 'apollo') {
-			const UpdateApolloSessionStateAction = require('./UpdateState_apollo.js');
-			return UpdateApolloSessionStateAction.execute($cmd, $output, $sessionState, $getAreaDataNorm);
+			return UpdateState_apollo({cmd, output, sessionState, getAreaData: getAreaDataNorm});
 		} else if (gds === 'sabre') {
 			const UpdateSabreSessionStateAction = require('./UpdateSabreState.js');
-			return UpdateSabreSessionStateAction.execute($cmd, $output, $sessionState, $getAreaDataNorm);
+			return UpdateSabreSessionStateAction.execute(cmd, output, sessionState, getAreaDataNorm);
 		} else if (gds === 'amadeus') {
 			const UpdateAmadeusSessionStateAction = require('./UpdateAmadeusState.js');
-			return UpdateAmadeusSessionStateAction.execute($cmd, $output, $sessionState, $getAreaDataNorm).toArray();
+			return UpdateAmadeusSessionStateAction.execute(cmd, output, sessionState, getAreaDataNorm).toArray();
 		} else if (gds === 'galileo') {
 			const UpdateGalileoSessionStateAction = require('./UpdateGalileoState.js');
-			return UpdateGalileoSessionStateAction.execute($cmd, $output, $sessionState, $getAreaDataNorm).toArray();
+			return UpdateGalileoSessionStateAction.execute(cmd, output, sessionState, getAreaDataNorm).toArray();
 		} else {
-			throw new Error('Session State Processor is not implemented for '+$sessionState['gds']+' GDS yet');
+			throw new Error('Session State Processor is not implemented for '+sessionState['gds']+' GDS yet');
 		}
 	}
 
