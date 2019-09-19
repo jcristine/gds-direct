@@ -9,13 +9,15 @@
  * @param {{rq: string, rs: string}[]} httpRequests
  */
 const PersistentHttpRqStub = (httpRequests, normalizer = normalizeXmlBody) => {
+	let i = 0;
 	const PersistentHttpRq = ({url, headers, body}) => {
 		const nextResult = httpRequests.shift();
 		if (!nextResult) {
 			throw new Error('Tried to make http request when all stub values were exhausted: ' + url + '\n' + body);
 		} else if (normalizer(body) !== normalizer(nextResult.rq)) {
-			throw new Error('Tried to make unexpected http request ' + url + '.\nExpected:\n' + nextResult.rq + '\nActual:\n' + body);
+			throw new Error('Tried to make unexpected ' + i + '-th http request ' + url + '.\nExpected:\n' + nextResult.rq + '\nActual:\n' + body);
 		} else {
+			++i;
 			return Promise.resolve({
 				headers: {},
 				body: nextResult.rs,
