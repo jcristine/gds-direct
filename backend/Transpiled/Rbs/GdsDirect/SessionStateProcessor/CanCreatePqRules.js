@@ -103,25 +103,24 @@ class CanCreatePqRules {
 	 * Bruce asked to separate these rules from the rest because they are "obvious for a sales agent"
 	 * Eldar asked to return them nonetheless - they will likely appear if you hover on disabled button
 	 */
-	static checkPricingCommandObviousRules($gds, $pricingCmd) {
-		let $errors, $errorRecords, $errorRec, $cmdParsed;
-		$errors = [];
-		if ($gds == 'apollo') {
-			$errorRecords = CmsApolloTerminal.checkPricingCmdObviousPqRuleRecords($pricingCmd);
-			for ($errorRec of Object.values($errorRecords)) {
-				$errors.push(Errors.getMessage($errorRec['type'], $errorRec['data'] || null));
+	static checkPricingCommandObviousRules(gds, pricingCmd) {
+		const errors = [];
+		if (gds == 'apollo') {
+			const errorRecs = CmsApolloTerminal.checkPricingCmdObviousPqRuleRecords(pricingCmd);
+			for (const errorRec of errorRecs) {
+				errors.push(Errors.getMessage(errorRec.type, errorRec.data || null));
 			}
-		} else if ($gds === 'sabre') {
-			$cmdParsed = SabCmdParser.parse($pricingCmd);
-			$errors = php.array_merge($errors, CmsSabreTerminal.checkPricingCmdObviousPqRules($cmdParsed['data']));
-		} else if ($gds === 'amadeus') {
-			$cmdParsed = AmaCmdParser.parse($pricingCmd);
-			$errors = php.array_merge($errors, CmsAmadeusTerminal.checkPricingCommandObviousPqRules($cmdParsed['data']));
-		} else if ($gds === 'galileo') {
-			$cmdParsed = GalCmdParser.parse($pricingCmd);
-			$errors = php.array_merge($errors, CmsGalileoTerminal.checkPricingCmdObviousPqRules($cmdParsed['data']));
+		} else if (gds === 'sabre') {
+			const cmdParsed = SabCmdParser.parse(pricingCmd);
+			errors.push(...CmsSabreTerminal.checkPricingCmdObviousPqRules(cmdParsed.data));
+		} else if (gds === 'amadeus') {
+			const cmdParsed = AmaCmdParser.parse(pricingCmd);
+			errors.push(...CmsAmadeusTerminal.checkPricingCommandObviousPqRules(cmdParsed.data));
+		} else if (gds === 'galileo') {
+			const cmdParsed = GalCmdParser.parse(pricingCmd);
+			errors.push(...CmsGalileoTerminal.checkPricingCmdObviousPqRules(cmdParsed.data));
 		}
-		return $errors;
+		return errors;
 	}
 
 	static checkPricingCommand($gds, $cmd, $leadData) {
