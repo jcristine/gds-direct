@@ -31,6 +31,7 @@ const Agent = (emcUser) => {
 		canUseMultiPccTariffDisplay    : () => hasRole('NEW_GDS_DIRECT_MULTI_PCC_TARIFF_DISPLAY'),
 		canPasteItinerary              : () => true, // hasRole('NEW_GDS_DIRECT_PASTE_ITINERARY'),
 		canUseMco                      : () => hasRole('NEW_GDS_DIRECT_HHMCO'),
+		canAddPqWithForcedFare         : () => hasRole('can_add_pq_with_forced_fare'),
 
 		hasRole: (role) => hasRole(role),
 		getRoles: () => roles,

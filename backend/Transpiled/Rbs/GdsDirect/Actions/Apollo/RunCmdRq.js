@@ -93,7 +93,7 @@ const parseStringNumbersList = (numberString) => {
 		const diapason = php.explode('-', number);
 		if (php.isset(diapason[1])) {
 			list[key] = diapason[0];
-			for (const i = diapason[0]; i < diapason[1]; i++) {
+			for (let i = diapason[0]; i < diapason[1]; i++) {
 				php.array_push(list, i + 1);
 			}
 		}
@@ -265,15 +265,14 @@ const RunCmdRq = ({
 		});
 	};
 
-	const shouldFetchAll = ($cmd) => {
-		let $type, $isConsidered, $errorRecords, $consideredErrors;
-		$type = CommandParser.parse($cmd)['type'];
-		if (StringUtil.startsWith($cmd, '$B') || $type === 'storePricing') {
-			$isConsidered = ($errRec) => $errRec['type'] === Errors.BAD_MOD_IGNORE_AVAILABILITY;
-			$errorRecords = CmsApolloTerminal.checkPricingCmdObviousPqRuleRecords($cmd);
-			$consideredErrors = Fp.filter($isConsidered, $errorRecords);
-			return php.empty($consideredErrors);
-		} else if (php.in_array($type, ['ticketList', 'ticketMask'])) {
+	const shouldFetchAll = async (cmd) => {
+		const type = CommandParser.parse(cmd).type;
+		if (StringUtil.startsWith(cmd, '$B') || type === 'storePricing') {
+			const isConsidered = (errRec) => errRec.type === Errors.BAD_MOD_IGNORE_AVAILABILITY;
+			const errorRecords = CmsApolloTerminal.checkPricingCmdObviousPqRuleRecords(cmd);
+			const consideredErrors = errorRecords.filter(isConsidered);
+			return php.empty(consideredErrors);
+		} else if (['ticketList', 'ticketMask'].includes(type)) {
 			return true;
 		} else {
 			return false;
@@ -1357,7 +1356,7 @@ const RunCmdRq = ({
 			return fareSearchValidatedChangeCity(alias.realCmd);
 		} else {
 			cmd = alias['realCmd'];
-			const fetchAll = shouldFetchAll(cmd);
+			const fetchAll = await shouldFetchAll(cmd);
 			cmd = await preprocessCommand(cmd);
 			const {cmdRec, userMessages, performanceDebug} = await processRealCommand(cmd, fetchAll);
 			return {calledCommands: [cmdRec], userMessages, performanceDebug};
