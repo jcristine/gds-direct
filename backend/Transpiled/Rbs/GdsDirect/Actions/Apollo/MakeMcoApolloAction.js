@@ -27,7 +27,7 @@ class MakeMcoApolloAction extends AbstractGdsAction
 		}
 		const match = mcoMask.match(/^\s*(SIMULTANEOUS CHANGES\/IGNORE)\s*(><)?$/);
 		if (match) {
-			return Rej.Conflict(match[1]);
+			return Rej.Conflict(match[1], {isOk: true});
 		}
 		const storedParams = McoMaskParser.parse(mcoMask);
 		if (storedParams.error) {
