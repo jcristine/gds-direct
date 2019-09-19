@@ -570,6 +570,15 @@ module.exports.migrations = [
 		},
 	},
 	{
+		name: 'GRECT/2019.09.16001-add-role-can_add_pq_with_forced_fare',
+		perform: async (db) => {
+			const emc = await Emc.getClient();
+			return emc.addRole([
+				{"name": "can_add_pq_with_forced_fare", "project": "GDSD", "description": "Allows creating PQ from a pricing with explicit fare basis, like $B¤KWX45H6"},
+			]);
+		},
+	},
+	{
 		name: 'GRECT/2019.07.30001-create-local-diag-table-2',
 		perform: async (db) => db.query([
 			'CREATE TABLE local_diag (',
