@@ -16,8 +16,8 @@ class UpdateState_apollo {
 		this.getAreaData = getAreaData;
 	}
 
-	static isValidPricingOutput($output) {
-		const tooShortToBeValid = !php.preg_match(/\n.*\n.*\n/, $output);
+	static isValidPricingOutput(output) {
+		const tooShortToBeValid = !output.match(/\n.*\n.*\n/);
 		return !tooShortToBeValid;
 	}
 
@@ -30,12 +30,12 @@ class UpdateState_apollo {
 		} else {
 			const errorRecs = CmsApolloTerminal
 				.checkPricingCmdObviousPqRuleRecords(cmd);
-			return php.count(errorRecs) === 0;
+			return errorRecs.length === 0;
 		}
 	}
 
 	static handleApolloCopyPnr(sessionData, output) {
-		output = php.preg_replace(/\)?><$/, '', output);
+		output = output.replace(/\)?><$/, '');
 		const parsed = PnrParser.parse(output);
 		const sections = PnrParser.splitToSections(output);
 		delete (sections['HEAD']);
@@ -48,7 +48,7 @@ class UpdateState_apollo {
 			sessionData.recordLocator = '';
 			sessionData.isPnrStored = false;
 			sessionData.hasPnr = true;
-		} else if (php.preg_match(/^\s*MODIFY\s*(><)?$/, output)) {
+		} else if (output.match(/^\s*MODIFY\s*(><)?$/)) {
 			// nothing happened
 		} else {
 			// everything else probably is error (typo, etc...)
@@ -57,14 +57,14 @@ class UpdateState_apollo {
 	}
 
 	static isPnrListOutput(output) {
-		output = php.preg_replace(/\)?><$/, '', output);
+		output = output.replace(/\)?><$/, '');
 		const regex = /^([A-Z0-9]{3,4})-(.+?)\s*(\d{1,3} NAMES ON LIST)/;
-		return php.preg_match(regex, output)
+		return output.match(regex)
 			|| output.trim() === 'NO NAMES';
 	}
 
 	static wasSinglePnrOpenedFromSearch(output) {
-		output = php.preg_replace(/><$/, '', output);
+		output = output.replace(/><$/, '');
 		return !this.isPnrListOutput(output)
 			&& output.trim() !== 'FIN OR IGN'
 			&& output.trim() !== 'AG - DUTY CODE NOT AUTH FOR CRT - APOLLO'
@@ -72,14 +72,14 @@ class UpdateState_apollo {
 	}
 
 	static wasPnrOpenedFromList(output) {
-		output = php.preg_replace(/><$/, '', output);
+		output = output.replace(/><$/, '');
 		return output.trim() !== 'FIN OR IGN'
 			&& output.trim() !== 'AG - DUTY CODE NOT AUTH FOR CRT - APOLLO'
 			&& output.trim() !== 'INVLD';
 	}
 
-	static wasIgnoredOk($output) {
-		return php.preg_match(/^\s*IGND\s*(><)?\s*$/, $output);
+	static wasIgnoredOk(output) {
+		return output.match(/^\s*IGND\s*(><)?\s*$/);
 	}
 
 	updateState($cmd, output, sessionState) {
@@ -177,19 +177,19 @@ class UpdateState_apollo {
 		return sessionState;
 	}
 
-	/** @param {IAreaState} $sessionData
-	 * @param {function(string): IAreaState} $getAreaData */
-	static execute($cmd, $output, $sessionData, $getAreaData) {
-		$sessionData = {...$sessionData};
-		const $getAreaDataNorm = (letter) => ({...$getAreaData(letter)});
-		const self = new this($getAreaDataNorm);
+	/** @param {IAreaState} sessionData
+	 * @param {function(string): IAreaState} getAreaData */
+	static execute($cmd, $output, sessionData, getAreaData) {
+		sessionData = {...sessionData};
+		const getAreaDataNorm = (letter) => ({...getAreaData(letter)});
+		const self = new this(getAreaDataNorm);
 		const cmdParsed = CmdParser.parse($cmd);
 		const flatCmds = php.array_merge([cmdParsed], cmdParsed.followingCommands || []);
 		for (const cmdRec of flatCmds) {
-			$sessionData = self.updateState(cmdRec.cmd, $output, $sessionData);
+			sessionData = self.updateState(cmdRec.cmd, $output, sessionData);
 		}
-		$sessionData.cmdType = cmdParsed ? cmdParsed.type : null;
-		return $sessionData;
+		sessionData.cmdType = cmdParsed ? cmdParsed.type : null;
+		return sessionData;
 	}
 }
 
