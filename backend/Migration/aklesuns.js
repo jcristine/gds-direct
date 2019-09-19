@@ -561,6 +561,15 @@ module.exports.migrations = [
 		},
 	},
 	{
+		name: 'GRECT/2019.09.16001-add-role-soldTicketsDailyReport',
+		perform: async (db) => {
+			const emc = await Emc.getClient();
+			return emc.addRole([
+				{"name": "CMD_soldTicketsDailyReport", "project": "GDSD", "description": "Allows using HMPR and other HMP* formats"},
+			]);
+		},
+	},
+	{
 		name: 'GRECT/2019.07.30001-create-local-diag-table-2',
 		perform: async (db) => db.query([
 			'CREATE TABLE local_diag (',
