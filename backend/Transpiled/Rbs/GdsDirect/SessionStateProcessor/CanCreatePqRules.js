@@ -103,21 +103,21 @@ class CanCreatePqRules {
 	 * Bruce asked to separate these rules from the rest because they are "obvious for a sales agent"
 	 * Eldar asked to return them nonetheless - they will likely appear if you hover on disabled button
 	 */
-	static checkPricingCommandObviousRules(gds, pricingCmd) {
+	static checkPricingCommandObviousRules(gds, cmd) {
 		const errors = [];
 		if (gds == 'apollo') {
-			const errorRecs = CmsApolloTerminal.checkPricingCmdObviousPqRuleRecords(pricingCmd);
+			const errorRecs = CmsApolloTerminal.checkPricingCmdObviousPqRuleRecords(cmd);
 			for (const errorRec of errorRecs) {
 				errors.push(Errors.getMessage(errorRec.type, errorRec.data || null));
 			}
 		} else if (gds === 'sabre') {
-			const cmdParsed = SabCmdParser.parse(pricingCmd);
+			const cmdParsed = SabCmdParser.parse(cmd);
 			errors.push(...CmsSabreTerminal.checkPricingCmdObviousPqRules(cmdParsed.data));
 		} else if (gds === 'amadeus') {
-			const cmdParsed = AmaCmdParser.parse(pricingCmd);
+			const cmdParsed = AmaCmdParser.parse(cmd);
 			errors.push(...CmsAmadeusTerminal.checkPricingCommandObviousPqRules(cmdParsed.data));
 		} else if (gds === 'galileo') {
-			const cmdParsed = GalCmdParser.parse(pricingCmd);
+			const cmdParsed = GalCmdParser.parse(cmd);
 			errors.push(...CmsGalileoTerminal.checkPricingCmdObviousPqRules(cmdParsed.data));
 		}
 		return errors;
@@ -138,7 +138,7 @@ class CanCreatePqRules {
 		if (gds == 'apollo') {
 			// If I'm not mistaken, we do this because Apollo may
 			// price child and adult in different booking classes
-			if (StringUtil.startsWith(cmd, '$BB')) {
+			if (cmd.startsWith('$BB')) {
 				const ageGroupsPlural = php.array_filter([
 					paxNumChildren > 0 ? 'children' : null,
 					paxNumInfants > 0 ? 'infants' : null,
