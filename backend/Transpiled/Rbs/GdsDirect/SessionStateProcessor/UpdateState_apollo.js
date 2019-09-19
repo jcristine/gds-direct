@@ -16,15 +16,17 @@ const isValidPricingOutput = (output) => {
 	return !tooShortToBeValid;
 };
 
-const isValidPricing = (cmd, output) => {
+const isValidPricing = (cmd, output, agent = null) => {
 	const type = CmdParser.parse(cmd).type;
 	if (!['priceItinerary', 'storePricing'].includes(type) ||
 		!isValidPricingOutput(output)
 	) {
 		return false;
 	} else {
+		// probably canCreatePq flag should be
+		// calculated outside the state processor...
 		const errorRecs = CmsApolloTerminal
-			.checkPricingCmdObviousPqRuleRecords(cmd);
+			.checkPricingCmdObviousPqRuleRecords(cmd, agent);
 		return errorRecs.length === 0;
 	}
 };
@@ -75,8 +77,9 @@ const wasPnrOpenedFromList = (output) => {
 
 const wasIgnoredOk = (output) => output.match(/^\s*IGND\s*(><)?\s*$/);
 
+/** @param {Object|null} agent = require('Agent.js')() */
 const UpdateState_apollo = ({
-	cmd, output, sessionState, getAreaData,
+	cmd, output, sessionState, getAreaData, agent = null,
 }) => {
 	sessionState = {...sessionState};
 	const getAreaDataUnsafe = getAreaData;
@@ -86,7 +89,7 @@ const UpdateState_apollo = ({
 		const clean = php.preg_replace(/\)?><$/, '', output);
 		const commandTypeData = CmdParser.parse(cmd);
 		const {type, data} = commandTypeData;
-		if (isValidPricing(cmd, output)) {
+		if (isValidPricing(cmd, output, agent)) {
 			sessionState.canCreatePq = true;
 			sessionState.pricingCmd = cmd !== '$BBQ01'
 				? cmd : sessionState.pricingCmd;

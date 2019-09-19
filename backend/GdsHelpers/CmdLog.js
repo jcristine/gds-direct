@@ -10,8 +10,9 @@ const hrtimeToDecimal = require("klesun-node-tools/src/Utils/Misc.js").hrtimeToD
 const {ignoreExc} = require('../Utils/TmpLib.js');
 const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
 
+/** @param {Object|null} agent = require('Agent.js')() */
 const CmdLog = ({
-	session, whenCmdRqId, fullState,
+	session, whenCmdRqId, fullState, agent = null,
 	CmdLogs = require("../Repositories/CmdLogs"),
 	GdsSessions = require("../Repositories/GdsSessions"),
 	Db = require('../Utils/Db.js'),
@@ -31,7 +32,7 @@ const CmdLog = ({
 		return running.then(gdsResult => {
 			const prevState = fullState.areas[fullState.area];
 
-			fullState = UpdateState({cmd, output: gdsResult.output, gds, fullState});
+			fullState = UpdateState({cmd, output: gdsResult.output, gds, fullState, agent});
 			GdsSessions.updateFullState(session, fullState);
 
 			const state = fullState.areas[fullState.area];

@@ -2,10 +2,10 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 const SessionStateHelper = require('./SessionStateHelper.js');
 const UpdateState_apollo = require('./UpdateState_apollo.js');
 
-const updateAreaState = ({cmd, output, gds, sessionState, getAreaData}) => {
+const updateAreaState = ({cmd, output, gds, sessionState, getAreaData, agent = null}) => {
 	const getAreaDataNorm = (letter) => ({...getAreaData(letter)});
 	if (gds === 'apollo') {
-		return UpdateState_apollo({cmd, output, sessionState, getAreaData: getAreaDataNorm});
+		return UpdateState_apollo({cmd, output, sessionState, agent, getAreaData: getAreaDataNorm});
 	} else if (gds === 'sabre') {
 		const UpdateSabreSessionStateAction = require('./UpdateSabreState.js');
 		return UpdateSabreSessionStateAction.execute(cmd, output, sessionState, getAreaDataNorm);
@@ -24,8 +24,10 @@ const updateAreaState = ({cmd, output, gds, sessionState, getAreaData}) => {
  * takes called command, output and previous state,
  * returns the state after the command was applied
  * "state" includes info about current PCC/area/PNR/pricing/etc...
+ *
+ * @param {Object|null} agent = require('Agent.js')()
  */
-const UpdateState = ({cmd, output, gds, fullState}) => {
+const UpdateState = ({cmd, output, gds, fullState, agent = null}) => {
 	const updateFullState = () => {
 		fullState = JSON.parse(JSON.stringify(fullState));
 		const oldArea = fullState.area;
@@ -33,7 +35,7 @@ const UpdateState = ({cmd, output, gds, fullState}) => {
 		const oldState = fullState.areas[fullState.area] || {};
 		const newState = updateAreaState({
 			cmd, output, gds, getAreaData,
-			sessionState: oldState,
+			sessionState: oldState, agent,
 		});
 		const isMr = SessionStateHelper.mrCmdTypes.includes(newState.cmdType);
 		newState.scrolledCmd = isMr ? oldState.scrolledCmd : cmd;

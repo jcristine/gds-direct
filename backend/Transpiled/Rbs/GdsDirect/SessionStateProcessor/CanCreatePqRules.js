@@ -49,10 +49,10 @@ const checkCmdInPartialApolloPricingDump = (output, leadData) => {
  * Bruce asked to separate these rules from the rest because they are "obvious for a sales agent"
  * Eldar asked to return them nonetheless - they will likely appear if you hover on disabled button
  */
-const checkPricingCommandObviousRules = (gds, cmd) => {
+const checkPricingCommandObviousRules = (gds, cmd, agent = null) => {
 	const errors = [];
 	if (gds == 'apollo') {
-		const errorRecs = CmsApolloTerminal.checkPricingCmdObviousPqRuleRecords(cmd);
+		const errorRecs = CmsApolloTerminal.checkPricingCmdObviousPqRuleRecords(cmd, agent);
 		for (const errorRec of errorRecs) {
 			errors.push(Errors.getMessage(errorRec.type, errorRec.data || null));
 		}
@@ -121,8 +121,8 @@ class CanCreatePqRules {
 		return errors;
 	}
 
-	static checkPricingCommand(gds, cmd, leadData) {
-		const errors = checkPricingCommandObviousRules(gds, cmd);
+	static checkPricingCommand(gds, cmd, leadData, agent = null) {
+		const errors = checkPricingCommandObviousRules(gds, cmd, agent);
 		const ifc = CommonDataHelper.makeIfcByGds(gds);
 		const priced = ifc.getPricedPtcs(cmd);
 		if (!php.empty(priced.errors || [])) {
