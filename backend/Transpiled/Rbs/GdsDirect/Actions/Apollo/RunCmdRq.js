@@ -265,11 +265,11 @@ const RunCmdRq = ({
 		});
 	};
 
-	const shouldFetchAll = async (cmd) => {
+	const shouldFetchAll = (cmd) => {
 		const type = CommandParser.parse(cmd).type;
 		if (StringUtil.startsWith(cmd, '$B') || type === 'storePricing') {
 			const isConsidered = (errRec) => errRec.type === Errors.BAD_MOD_IGNORE_AVAILABILITY;
-			const errorRecords = CmsApolloTerminal.checkPricingCmdObviousPqRuleRecords(cmd);
+			const errorRecords = CmsApolloTerminal.checkPricingCmdObviousPqRuleRecords(cmd, getAgent());
 			const consideredErrors = errorRecords.filter(isConsidered);
 			return php.empty(consideredErrors);
 		} else if (['ticketList', 'ticketMask'].includes(type)) {
@@ -1356,7 +1356,7 @@ const RunCmdRq = ({
 			return fareSearchValidatedChangeCity(alias.realCmd);
 		} else {
 			cmd = alias['realCmd'];
-			const fetchAll = await shouldFetchAll(cmd);
+			const fetchAll = shouldFetchAll(cmd);
 			cmd = await preprocessCommand(cmd);
 			const {cmdRec, userMessages, performanceDebug} = await processRealCommand(cmd, fetchAll);
 			return {calledCommands: [cmdRec], userMessages, performanceDebug};

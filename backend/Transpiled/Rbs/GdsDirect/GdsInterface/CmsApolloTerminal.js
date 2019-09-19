@@ -90,6 +90,7 @@ class CmsApolloTerminal
 	/** @param {Object|null} agent = require('Agent.js')() */
 	static checkPricingCmdObviousPqRuleRecords(pricingCmd, agent)  {
 		const errorRecords = [];
+		const allowForcedFare = !agent ? false : agent.canAddPqWithForcedFare();
 		const cmdData = CommandParser.parse(pricingCmd).data || null;
 		if (!cmdData) {
 			const text = 'Failed to parse pricing command - >' + pricingCmd + '; for PQ validation';
@@ -103,7 +104,7 @@ class CmsApolloTerminal
 			const bundles = sMod.parsed.bundles;
 			const fareBases = php.array_filter(php.array_column(bundles, 'fareBasis'));
 			const bookingClasses = php.array_filter(php.array_column(bundles, 'bookingClass'));
-			if (fareBases.length > 0) {
+			if (fareBases.length > 0 && !allowForcedFare) {
 				errorRecords.push({type: Errors.BAD_MOD_BASIS_OVERRIDE, data: {modifier: '/@'+php.implode('@', fareBases)+'/'}});
 			}
 			if (bookingClasses.length > 0) {
