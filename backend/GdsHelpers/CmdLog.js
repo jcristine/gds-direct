@@ -1,5 +1,5 @@
 
-const SessionStateProcessor = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
+const UpdateState = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/UpdateState.js');
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
 const Rej = require("klesun-node-tools/src/Rej");
 const SessionStateHelper = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateHelper");
@@ -31,8 +31,7 @@ const CmdLog = ({
 		return running.then(gdsResult => {
 			const prevState = fullState.areas[fullState.area];
 
-			fullState = SessionStateProcessor
-				.updateFullState(cmd, gdsResult.output, gds, fullState);
+			fullState = UpdateState({cmd, output: gdsResult.output, gds, fullState});
 			GdsSessions.updateFullState(session, fullState);
 
 			const state = fullState.areas[fullState.area];

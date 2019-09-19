@@ -1,6 +1,6 @@
 
 
-const SessionStateProcessor = require('../../../../../../backend/Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
+const UpdateState = require('../../../../../../backend/Transpiled/Rbs/GdsDirect/SessionStateProcessor/UpdateState.js');
 const GdsDirectDefaults = require('../../../../../../backend/Utils/Testing/GdsDirectDefaults.js');
 let php = require('klesun-node-tools/src/Transpiled/php.js');
 
@@ -4212,29 +4212,29 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
      * @param $sessionRecord = SessionStateProcessorTest::provideCalledCommands()[0][0]
      */
 	testCalledCommands($sessionRecord)  {
-		let $state, $calledCommands, $letterToArea, $getAreaData, $i, $cmdRecord, $cmd, $output, $expected, $allCmds;
-		let gds = $sessionRecord.initialState.gds;
-
-		$state = $sessionRecord['initialState'];
-		$calledCommands = $sessionRecord['calledCommands'];
-		$letterToArea = {'A': $state};
-		$getAreaData = ($letter) => {
-			return $letterToArea[$letter] || {
+		const gds = $sessionRecord.initialState.gds;
+		let sessionState = $sessionRecord.initialState;
+		const calledCommands = $sessionRecord.calledCommands;
+		const letterToArea = {'A': sessionState};
+		const getAreaData = (letter) => {
+			return letterToArea[letter] || {
 				'pcc': '',
 				'recordLocator': '',
 				'hasPnr': false,
 				'isPnrStored': false,
 			};
 		};
-		for ([$i, $cmdRecord] of Object.entries($calledCommands)) {
-			$cmd = $cmdRecord['cmd'];
-			$output = $cmdRecord['output'];
-			$state = SessionStateProcessor.updateStateSafe($cmd, $output, gds, $state, $getAreaData);
-			$letterToArea[$state['area']] = $state;
-			if ($expected = $cmdRecord['state'] || null) {
-				$allCmds = php.array_column($calledCommands, 'cmd');
-				this.assertArrayElementsSubset($expected, $state, $i+'-th command - '+$cmdRecord['cmd']+' - '+php.PHP_EOL+php.implode(', ', $allCmds)+php.PHP_EOL);
-			}}
+		for (const [i, cmdRecord] of Object.entries(calledCommands)) {
+			const {cmd, output} = cmdRecord;
+			sessionState = UpdateState.forArea({cmd, output, gds, sessionState, getAreaData});
+			letterToArea[sessionState.area] = sessionState;
+			const expected = cmdRecord.state || null;
+			if (expected) {
+				const allCmds = php.array_column(calledCommands, 'cmd');
+				const msg = i + '-th command - ' + cmdRecord.cmd + ' - ' + php.PHP_EOL+php.implode(', ', allCmds) + php.PHP_EOL;
+				this.assertArrayElementsSubset(expected, sessionState, msg);
+			}
+		}
 	}
 
 	getTestMapping() {

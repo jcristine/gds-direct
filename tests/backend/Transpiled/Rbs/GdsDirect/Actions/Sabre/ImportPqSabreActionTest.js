@@ -1,6 +1,5 @@
 
 const ImportPqSabreAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Sabre/ImportPqSabreAction.js');
-const SessionStateProcessor = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateProcessor.js');
 const GdsDirectDefaults = require('../../../../../../../backend/Utils/Testing/GdsDirectDefaults.js');
 
 const php = require('../../../../php.js');
