@@ -16,19 +16,10 @@ const isValidPricingOutput = (output) => {
 	return !tooShortToBeValid;
 };
 
-const isValidPricing = (cmd, output, agent = null) => {
+const isValidPricing = (cmd, output) => {
 	const type = CmdParser.parse(cmd).type;
-	if (!['priceItinerary', 'storePricing'].includes(type) ||
-		!isValidPricingOutput(output)
-	) {
-		return false;
-	} else {
-		// probably canCreatePq flag should be
-		// calculated outside the state processor...
-		const errorRecs = CmsApolloTerminal
-			.checkPricingCmdObviousPqRuleRecords(cmd, agent);
-		return errorRecs.length === 0;
-	}
+	return ['priceItinerary', 'storePricing'].includes(type)
+		&& isValidPricingOutput(output);
 };
 
 const handleApolloCopyPnr = (sessionData, output) => {
@@ -79,7 +70,7 @@ const wasIgnoredOk = (output) => output.match(/^\s*IGND\s*(><)?\s*$/);
 
 /** @param {Object|null} agent = require('Agent.js')() */
 const UpdateState_apollo = ({
-	cmd, output, sessionState, getAreaData, agent = null,
+	cmd, output, sessionState, getAreaData,
 }) => {
 	sessionState = {...sessionState};
 	const getAreaDataUnsafe = getAreaData;
@@ -89,12 +80,10 @@ const UpdateState_apollo = ({
 		const clean = php.preg_replace(/\)?><$/, '', output);
 		const commandTypeData = CmdParser.parse(cmd);
 		const {type, data} = commandTypeData;
-		if (isValidPricing(cmd, output, agent)) {
-			sessionState.canCreatePq = true;
+		if (isValidPricing(cmd, output)) {
 			sessionState.pricingCmd = cmd !== '$BBQ01'
 				? cmd : sessionState.pricingCmd;
 		} else if (!php.in_array(type, SessionStateHelper.getCanCreatePqSafeTypes())) {
-			sessionState.canCreatePq = false;
 			sessionState.pricingCmd = null;
 		}
 		if (php.preg_match(/^\s*\*\s*(><)?\s*$/, output)) {

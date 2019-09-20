@@ -27,14 +27,12 @@ class UpdateGalileoSessionStateAction
 	}
 
 	openPnr($recordLocator)  {
-
 		this.$state.hasPnr = true;
 		this.$state.isPnrStored = true;
 		this.$state.recordLocator = $recordLocator;
 	}
 
 	dropPnr()  {
-
 		this.$state.hasPnr = false;
 		this.$state.isPnrStored = false;
 		this.$state.recordLocator = '';
@@ -46,15 +44,6 @@ class UpdateGalileoSessionStateAction
 		// '><',
 		const wrapped = StringUtil.wrapLinesAt(output, 64);
 		return php.count(StringUtil.lines(php.trim(wrapped))) < 4;
-	}
-
-	/** @param $data = CommandParser::parsePriceItinerary() */
-	static isPricingValidForPq($data, $output)  {
-		let $isErrorOutput, $errors, $pricedCorrectly;
-		$isErrorOutput = this.isErrorPricingRs($output);
-		$errors = CmsGalileoTerminal.checkPricingCmdObviousPqRules($data);
-		$pricedCorrectly = php.empty($errors);
-		return !$isErrorOutput && $pricedCorrectly;
 	}
 
 	static isSuccessChangeAreaOutput($clean)  {
@@ -209,11 +198,9 @@ class UpdateGalileoSessionStateAction
 		$type = $cmdParsed['type'];
 		$data = $cmdParsed['data'];
 
-		if ($type === 'priceItinerary' && this.constructor.isPricingValidForPq($data, $output)) {
-			this.$state.canCreatePq = true;
+		if ($type === 'priceItinerary' && !this.constructor.isErrorPricingRs($output)) {
 			this.$state.pricingCmd = $cmd;
 		} else if (!php.in_array($type, SessionStateHelper.getCanCreatePqSafeTypes())) {
-			this.$state.canCreatePq = false;
 			this.$state.pricingCmd = null;
 		}
 		if (php.trim($clean) === '*') {

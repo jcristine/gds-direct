@@ -195,7 +195,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 						')><',
 					]),
 					// /S/-egment modifier used
-					'state': {'area': 'A', 'pcc': '2G55', 'canCreatePq': true, 'hasPnr': true},
+					'state': {'area': 'A', 'pcc': '2G55', 'pricingCmd': '$BBS1|2|5', 'hasPnr': true},
 				},
 				{
 					'cmd': 'SB',
@@ -338,7 +338,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 						'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
 						'',
 					]),
-					'state': {'area': 'B', 'pcc': '2G2H', 'canCreatePq': true},
+					'state': {'area': 'B', 'pcc': '2G2H', 'pricingCmd': '$BB'},
 				},
 				{
 					'cmd': 'SA',
@@ -353,7 +353,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 						' 5 DL 140T 17JUL MSPCDG SS2   424P  730A|*      MO/TU   E',
 						'><',
 					]),
-					'state': {'area': 'A', 'pcc': '2G55', 'canCreatePq': true, 'hasPnr': true, 'isPnrStored': false},
+					'state': {'area': 'A', 'pcc': '2G55', 'pricingCmd': '$BBS1|2|5', 'hasPnr': true, 'isPnrStored': false},
 				},
 				{
 					'cmd': 'X3|4',
@@ -425,7 +425,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 						'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
 						'',
 					]),
-					'state': {'area': 'A', 'pcc': '2G55', 'canCreatePq': true},
+					'state': {'area': 'A', 'pcc': '2G55', 'pricingCmd': '$BB'},
 				},
 				{
 					'cmd': 'SB',
@@ -1159,7 +1159,6 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 				'recordLocator': '',
 				'hasPnr': true,
 				'isPnrStored': false,
-				'canCreatePq': false,
 			},
 			'calledCommands': [
 				{
@@ -1250,7 +1249,6 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 				'recordLocator': '',
 				'hasPnr': true,
 				'isPnrStored': false,
-				'canCreatePq': false,
 			},
 			'calledCommands': [
 				{
@@ -1697,7 +1695,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 						'     SEE RTSVC',
 						' ',
 					]),
-					'state': {'hasPnr': true, 'canCreatePq': false},
+					'state': {'hasPnr': true, 'pricingCmd': null},
 				},
 				{
 					'cmd': 'FXX',
@@ -1726,7 +1724,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 						'                                                  PAGE  2/ 3',
 						'',
 					]),
-					'state': {'canCreatePq': true},
+					'state': {'pricingCmd': 'FXX'},
 				},
 				{
 					'cmd': 'SS1Y2',
@@ -1743,7 +1741,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 						'     SEE RTSVC',
 						' ',
 					]),
-					'state': {'canCreatePq': false},
+					'state': {'pricingCmd': null},
 				},
 			],
 		});
@@ -3100,7 +3098,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 		// should not throw exception on attempt to get 'recordLocator' from unset 'pnrInfo'
 		$sessionRecords.push({
 			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultSabreState(), {
-				"area":"A","pcc":"6IIF","recordLocator":"","canCreatePq":false,
+				"area":"A","pcc":"6IIF","recordLocator":"",
 				"cmdType":"searchPnr","hasPnr":false,"isPnrStored":false,
 			}),
 			'calledCommands': [
@@ -3114,7 +3112,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 					"duration": "1.276961623",
 					"type": "searchPnr",
 					"state": {
-						"area":"A","pcc":"6IIF","recordLocator":"","canCreatePq":false,
+						"area":"A","pcc":"6IIF","recordLocator":"",
 						"cmdType":"searchPnr","hasPnr":false,"isPnrStored":false,
 					}
 				},
@@ -3132,7 +3130,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 					"type": "displayPnrFromList",
 					"scrolledCmd": "*0",
 					"state": {
-						"area":"A","pcc":"6IIF","recordLocator":"","canCreatePq":false,
+						"area":"A","pcc":"6IIF","recordLocator":"",
 						"cmdType":"displayPnrFromList","hasPnr":true,"isPnrStored":true,
 					}
 				},
@@ -3291,7 +3289,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 
 		// Amadeus canCreatePq after "NO FARE FOR BOOKING CODE" error check
 		$sessionRecords.push({
-			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState(), {'hasPnr': true, 'canCreatePq': false}),
+			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState(), {'hasPnr': true, 'pricingCmd': null}),
 			'calledCommands': [
 				{
 					'cmd': 'FXX',
@@ -3301,7 +3299,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 						'NO FARE FOR BOOKING CODE-TRY OTHER PRICING OPTIONS',
 						' ',
 					]),
-					'state': {'hasPnr': true, 'canCreatePq': false},
+					'state': {'hasPnr': true, 'pricingCmd': null},
 				},
 			],
 		});
@@ -3971,7 +3969,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 						"   PSGR   QUOTE BASIS         FARE    TAXES      TOTAL PSG DES  FQG 1       NLOWFNY   USD  1313.00    99.70    1412.70 ADT          GUARANTEED                                                  GRAND TOTAL INCLUDING TAXES ****     USD      1412.70                        **ADDITIONAL FEES MAY APPLY**SEE >FO;                     **CARRIER MAY OFFER ADDITIONAL SERVICES**SEE >FQBB/DASO;     ADT      LAST DATE TO PURCHASE TICKET: 10MAY19                  ADT      TICKETING AGENCY 711M                                  ADT      DEFAULT PLATING CARRIER PR                         )><"
 					].join("\n"),
 					"type": "priceItinerary",
-					"state": {"canCreatePq":true}
+					"state": {'pricingCmd': 'FQBB||-AB'}
 				}
 			],
 		});
@@ -4109,7 +4107,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 			],
 		});
 		$sessionRecords.push({
-			"initialState": {"gds": "apollo", "area":"B","cmdType":"redisplayPnr","scrolledCmd":"*R","canCreatePq":false,"pricingCmd":null,"pcc":"2G8P","hasPnr":true},
+			"initialState": {"gds": "apollo", "area":"B","cmdType":"redisplayPnr","scrolledCmd":"*R","pricingCmd":null,"pcc":"2G8P","hasPnr":true},
 			"calledCommands": [
 				{
 					"cmd": "PS-CREATED IN GDS DIRECT BY JAYDEN|@:5GD-JAYDEN/1092/FOR AGENT/1092/LEAD-11081962 IN 2G8P|T-CA-SFO@$0221686|P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT|T:TAU/27MAR|R:JAYDEN|ER",
@@ -4117,7 +4115,6 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 					"state": {
 						"area": "B",
 						"cmdType": "psRemark",
-						"canCreatePq": false,
 						"pricingCmd": null,
 						"pcc": "2G8P",
 						"hasPnr": true,
@@ -4131,7 +4128,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 			"title": "3-line error responses in Apollo should not result in canCreatePq=true",
 			"initialState": {
 				"gds": "apollo", "area":"D","cmdType":"priceItinerary",
-				"canCreatePq":true,"pricingCmd":"$BB/SOBAKALOPATA","pcc":"2G2H","hasPnr":true,
+				"pricingCmd":"$BB/SOBAKALOPATA","pcc":"2G2H","hasPnr":true,
 			},
 			"calledCommands": [
 				{
@@ -4144,7 +4141,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 					"type": "priceItinerary",
 					"state": {
 						"area":"D","cmdType":"priceItinerary",
-						"canCreatePq":false,"pricingCmd":null,"pcc":"2G2H","hasPnr":true,
+						"pricingCmd":null,"pcc":"2G2H","hasPnr":true,
 					}
 				},
 			],
@@ -4193,7 +4190,7 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 					].join("\n"),
 					"type": "priceItinerary",
 					"state": {
-						"area":"A","pcc":"C5VD","recordLocator":"","canCreatePq":false,
+						"area":"A","pcc":"C5VD","recordLocator":"", 'pricingCmd': null,
 						"cmdType":"priceItinerary","hasPnr":true,
 					}
 				},

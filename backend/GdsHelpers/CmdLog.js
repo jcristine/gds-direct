@@ -1,3 +1,5 @@
+const CanCreatePqRules = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/CanCreatePqRules.js');
+const CmsApolloTerminal = require('../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
 
 const UpdateState = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/UpdateState.js');
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
@@ -27,12 +29,24 @@ const CmdLog = ({
 	};
 	const calledPromises = [];
 
+	const addBusinessState = (fullState) => {
+		const areaState = fullState.areas[fullState.area];
+		const cmd = areaState.pricingCmd;
+		if (!cmd) {
+			areaState.canCreatePq = false;
+		} else {
+			const errors = CanCreatePqRules.checkPricingCommandObviousRules(gds, cmd, agent);
+			areaState.canCreatePq = errors.length === 0;
+		}
+	};
+
 	const logCommand = (cmd, running) => {
 		const hrtimeStart = process.hrtime();
 		return running.then(gdsResult => {
 			const prevState = fullState.areas[fullState.area];
 
-			fullState = UpdateState({cmd, output: gdsResult.output, gds, fullState, agent});
+			fullState = UpdateState({cmd, output: gdsResult.output, gds, fullState});
+			addBusinessState(fullState);
 			GdsSessions.updateFullState(session, fullState);
 
 			const state = fullState.areas[fullState.area];

@@ -1113,6 +1113,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					},
 				],
 				'sessionData': {
+					pricingCmd: 'FQ',
 					'canCreatePq': true,
 				},
 			},

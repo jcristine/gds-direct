@@ -45,31 +45,6 @@ const checkCmdInPartialApolloPricingDump = (output, leadData, agent = null) => {
 };
 
 /**
- * these errors decide whether button will be enabled or not
- * Bruce asked to separate these rules from the rest because they are "obvious for a sales agent"
- * Eldar asked to return them nonetheless - they will likely appear if you hover on disabled button
- */
-const checkPricingCommandObviousRules = (gds, cmd, agent = null) => {
-	const errors = [];
-	if (gds == 'apollo') {
-		const errorRecs = CmsApolloTerminal.checkPricingCmdObviousPqRuleRecords(cmd, agent);
-		for (const errorRec of errorRecs) {
-			errors.push(Errors.getMessage(errorRec.type, errorRec.data || null));
-		}
-	} else if (gds === 'sabre') {
-		const cmdParsed = SabCmdParser.parse(cmd);
-		errors.push(...CmsSabreTerminal.checkPricingCmdObviousPqRules(cmdParsed.data));
-	} else if (gds === 'amadeus') {
-		const cmdParsed = AmaCmdParser.parse(cmd);
-		errors.push(...CmsAmadeusTerminal.checkPricingCommandObviousPqRules(cmdParsed.data));
-	} else if (gds === 'galileo') {
-		const cmdParsed = GalCmdParser.parse(cmd);
-		errors.push(...CmsGalileoTerminal.checkPricingCmdObviousPqRules(cmdParsed.data));
-	}
-	return errors;
-};
-
-/**
  * provides functions that validate pricing cmd and
  * output to tell if pricing is applicable for PQ creation:
  * there are mods that ignore availability, some combinations
@@ -121,8 +96,33 @@ class CanCreatePqRules {
 		return errors;
 	}
 
+	/**
+	 * these errors decide whether button will be enabled or not
+	 * Bruce asked to separate these rules from the rest because they are "obvious for a sales agent"
+	 * Eldar asked to return them nonetheless - they will likely appear if you hover on disabled button
+	 */
+	static checkPricingCommandObviousRules(gds, cmd, agent = null) {
+		const errors = [];
+		if (gds == 'apollo') {
+			const errorRecs = CmsApolloTerminal.checkPricingCmdObviousPqRuleRecords(cmd, agent);
+			for (const errorRec of errorRecs) {
+				errors.push(Errors.getMessage(errorRec.type, errorRec.data || null));
+			}
+		} else if (gds === 'sabre') {
+			const cmdParsed = SabCmdParser.parse(cmd);
+			errors.push(...CmsSabreTerminal.checkPricingCmdObviousPqRules(cmdParsed.data));
+		} else if (gds === 'amadeus') {
+			const cmdParsed = AmaCmdParser.parse(cmd);
+			errors.push(...CmsAmadeusTerminal.checkPricingCommandObviousPqRules(cmdParsed.data));
+		} else if (gds === 'galileo') {
+			const cmdParsed = GalCmdParser.parse(cmd);
+			errors.push(...CmsGalileoTerminal.checkPricingCmdObviousPqRules(cmdParsed.data));
+		}
+		return errors;
+	}
+
 	static checkPricingCommand(gds, cmd, leadData, agent = null) {
-		const errors = checkPricingCommandObviousRules(gds, cmd, agent);
+		const errors = this.checkPricingCommandObviousRules(gds, cmd, agent);
 		const ifc = CommonDataHelper.makeIfcByGds(gds);
 		const priced = ifc.getPricedPtcs(cmd);
 		if (!php.empty(priced.errors || [])) {

@@ -17,18 +17,14 @@ class UpdateAmadeusState
 		this.$getAreaData = $getAreaData;
 	}
 
-	/** @param $data = CommandParser::parsePriceItinerary() */
-	static isPricingValidForPq($data, $output)  {
-		let $isErrorOutput, $errors, $pricedCorrectly;
-
+	/** @param data = CommandParser::parsePriceItinerary() */
+	static isPricingValidForPq(data, output)  {
 		// 'FXX',
 		// '',
 		// 'NO FARE FOR BOOKING CODE-TRY OTHER PRICING OPTIONS',
 		// ' ',
-		$isErrorOutput = php.count(StringUtil.lines(php.trim($output))) < 4;
-		$errors = CmsAmadeusTerminal.checkPricingCommandObviousPqRules($data);
-		$pricedCorrectly = php.empty($errors);
-		return !$isErrorOutput && $pricedCorrectly;
+		const isErrorOutput = StringUtil.lines(output.trim()).length < 4;
+		return !isErrorOutput;
 	}
 
 	static isPnrListOutput($output)  {
@@ -107,10 +103,8 @@ class UpdateAmadeusState
 		$data = $cmdParsed['data'];
 
 		if ($type === 'priceItinerary' && this.constructor.isPricingValidForPq($data, $output)) {
-			this.$state.canCreatePq = true;
 			this.$state.pricingCmd = $cmd;
 		} else if (!php.in_array($type, SessionStateHelper.getCanCreatePqSafeTypes())) {
-			this.$state.canCreatePq = false;
 			this.$state.pricingCmd = null;
 		}
 		$parsedPnr = PnrParser.parse($output);

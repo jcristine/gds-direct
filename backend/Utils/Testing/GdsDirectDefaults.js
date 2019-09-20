@@ -20,7 +20,6 @@ class GdsDirectDefaults {
 			'recordLocator': '',
 			'hasPnr': false,
 			'isPnrStored': false,
-			'canCreatePq': false,
 		};
 	}
 

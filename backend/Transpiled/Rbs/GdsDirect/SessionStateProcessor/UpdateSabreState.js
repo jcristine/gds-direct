@@ -20,18 +20,12 @@ class UpdateSabreState
 		this.$getAreaData = $getAreaData;
 	}
 
-	static isValidPricing($cmd, $output, data)  {
-		let $type, $tooShortToBeValid;
-		$type = CommandParser.parse($cmd)['type'];
-		$tooShortToBeValid = !php.preg_match(/\n.*\n/, $output);
-		const isError = $tooShortToBeValid ||
-            $output.match(/^PSGR TYPE  ADT.*\nATTN\*VERIFY BOOKING CLASS/);
-		if ($type !== 'priceItinerary' || isError) {
-			return false;
-		} else {
-			const errors = CmsSabreTerminal.checkPricingCmdObviousPqRules(data);
-			return php.count(errors) === 0;
-		}
+	static isValidPricing(cmd, output, data)  {
+		const type = CommandParser.parse(cmd).type;
+		const tooShortToBeValid = !php.preg_match(/\n.*\n/, output);
+		const isError = tooShortToBeValid ||
+            output.match(/^PSGR TYPE  ADT.*\nATTN\*VERIFY BOOKING CLASS/);
+		return type === 'priceItinerary' && !isError;
 	}
 
 	static handleSabreStoreAndCopyPnr($sessionData, $output)  {
@@ -93,10 +87,8 @@ class UpdateSabreState
 		$type = $commandTypeData['type'];
 		$data = $commandTypeData['data'];
 		if (this.constructor.isValidPricing($cmd, $output, $data)) {
-			$sessionState['canCreatePq'] = true;
 			$sessionState['pricingCmd'] = $cmd;
 		} else if (!php.in_array($type, SessionStateHelper.getCanCreatePqSafeTypes())) {
-			$sessionState['canCreatePq'] = false;
 			$sessionState['pricingCmd'] = null;
 		}
 		if (php.preg_match(/^\s*\*\s*$/, $output)) {
