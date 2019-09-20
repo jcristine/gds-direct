@@ -74,23 +74,27 @@ class CmsSabreTerminal
 		}
 	}
 
-	/** @param $cmdData = ['pricingModifiers' => PqParser::parsePricingQualifiers()] */
-	static checkPricingCmdObviousPqRules($cmdData)  {
-		let $errors, $mods, $typeToMod, $ncsMod, $qMod;
-
-		$errors = [];
-		$mods = $cmdData['pricingModifiers'];
-		$typeToMod = php.array_combine(php.array_column($mods, 'type'), $mods);
+	/**
+	 * @param {Object} cmdData = require('PricingCmdParser.js').parse()
+	 * @param {Object|null} agent = require('Agent.js')()
+	 */
+	static checkPricingCmdObviousPqRules(cmdData, agent = null)  {
+		const errors = [];
+		const allowForcedFare = !agent ? false : agent.canAddPqWithForcedFare();
+		const mods = cmdData.pricingModifiers;
+		const typeToMod = php.array_combine(php.array_column(mods, 'type'), mods);
 
 		// >WPNCS;
-		if ($ncsMod = $typeToMod['lowestFareIgnoringAvailability']) {
-			$errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {modifier: '/'+$ncsMod['raw']+'/'}));
+		const ncsMod = typeToMod.lowestFareIgnoringAvailability;
+		if (ncsMod) {
+			errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {modifier: '/'+ncsMod.raw+'/'}));
 		}
 		// >WPQVK4S9EU;
-		if ($qMod = $typeToMod['fareBasis']) {
-			$errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {modifier: '/'+$qMod['raw']+'/'}));
+		const qMod = typeToMod.fareBasis;
+		if (qMod && !allowForcedFare) {
+			errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {modifier: '/'+qMod.raw+'/'}));
 		}
-		return $errors;
+		return errors;
 	}
 
 	isScrollingAvailable($dumpPage)  {

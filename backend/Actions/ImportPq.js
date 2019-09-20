@@ -185,12 +185,12 @@ const ImportPq = async ({
 		if (gds === 'apollo') {
 			importAct = new ImportPqApolloAction({travelport, agent});
 		} else if (gds === 'sabre') {
-			importAct = new ImportPqSabreAction();
+			importAct = new ImportPqSabreAction({agent});
 		} else if (gds === 'galileo') {
-			importAct = new ImportPqGalileoAction({travelport});
+			importAct = new ImportPqGalileoAction({travelport, agent});
 		} else if (gds === 'amadeus') {
 			const amadeus = AmadeusClient.makeCustom({PersistentHttpRq});
-			importAct = new ImportPqAmadeusAction({amadeus});
+			importAct = new ImportPqAmadeusAction({amadeus, agent});
 		} else {
 			return Rej.NotImplemented('Unsupported GDS for importPq - ' + gds);
 		}

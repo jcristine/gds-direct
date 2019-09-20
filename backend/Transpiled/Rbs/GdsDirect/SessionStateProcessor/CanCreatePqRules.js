@@ -110,13 +110,13 @@ class CanCreatePqRules {
 			}
 		} else if (gds === 'sabre') {
 			const cmdParsed = SabCmdParser.parse(cmd);
-			errors.push(...CmsSabreTerminal.checkPricingCmdObviousPqRules(cmdParsed.data));
+			errors.push(...CmsSabreTerminal.checkPricingCmdObviousPqRules(cmdParsed.data, agent));
 		} else if (gds === 'amadeus') {
 			const cmdParsed = AmaCmdParser.parse(cmd);
-			errors.push(...CmsAmadeusTerminal.checkPricingCommandObviousPqRules(cmdParsed.data));
+			errors.push(...CmsAmadeusTerminal.checkPricingCommandObviousPqRules(cmdParsed.data, agent));
 		} else if (gds === 'galileo') {
 			const cmdParsed = GalCmdParser.parse(cmd);
-			errors.push(...CmsGalileoTerminal.checkPricingCmdObviousPqRules(cmdParsed.data));
+			errors.push(...CmsGalileoTerminal.checkPricingCmdObviousPqRules(cmdParsed.data, agent));
 		}
 		return errors;
 	}

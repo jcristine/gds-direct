@@ -21,18 +21,21 @@ const Rej = require('klesun-node-tools/src/Rej.js');
  */
 class ImportPqSabreAction extends AbstractGdsAction {
 
-	constructor() {
+	constructor({
+		agent = null,
+	} = {}) {
 		super();
-		this.$leadData = {};
+		this.leadData = {};
 		this.$fetchOptionalFields = true;
 		this.$baseDate = null;
 		this.$cmdToOutput = {};
 		this.$allCommands = [];
 		this.$preCalledCommands = [];
+		this.agent = agent;
 	}
 
 	setLeadData($leadData) {
-		this.$leadData = $leadData;
+		this.leadData = $leadData;
 		return this;
 	}
 
@@ -158,7 +161,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 
 	/** parse the dump, validate the data fro PQ creation */
 	async processPricingOutput(output, cmd, reservation) {
-		const errors = CanCreatePqRules.checkPricingOutput('sabre', output, this.$leadData);
+		const errors = CanCreatePqRules.checkPricingOutput('sabre', output, this.leadData);
 		if (!php.empty(errors)) {
 			const msg = 'Invalid pricing data - ' + php.implode(';', errors);
 			return Rej.BadRequest(msg);
@@ -248,7 +251,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 			const cmd = cmdRec.cmd;
 			this.$allCommands.push(cmdRec);
 
-			const errors = CanCreatePqRules.checkPricingCommand('sabre', cmd, this.$leadData);
+			const errors = CanCreatePqRules.checkPricingCommand('sabre', cmd, this.leadData, this.agent);
 			if (errors.length > 0) {
 				result.error = 'Invalid pricing command - ' + cmd + ' - ' + php.implode(';', errors);
 				return result;

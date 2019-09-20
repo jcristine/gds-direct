@@ -26,7 +26,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		useXml = true,
 		travelport = TravelportClient(),
 		agent = null,
-	}) {
+	} = {}) {
 		super();
 		this.leadData = {};
 		this.$fetchOptionalFields = true;
