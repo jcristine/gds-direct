@@ -119,21 +119,24 @@ class CmsAmadeusTerminal {
 		}
 	}
 
-	/** @param $cmdData = CommandParser::parsePriceItinerary() */
-	static checkPricingCommandObviousPqRules($cmdData) {
-		let $errors, $mods;
-
-		$errors = [];
-		for ($mods of Object.values($cmdData['pricingStores'])) {
-			$mods = php.array_combine(php.array_column($mods, 'type'), $mods);
-			if ((($mods['fareBasis'] || {})['parsed'] || {})['override'] || false) {
-				$errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {modifier: '/' + $mods['fareBasis']['raw']}));
+	/**
+	 * @param cmdData = require('PricingCmdParser.js').parse()
+	 * @param {Object|null} agent = require('Agent.js')()
+	 */
+	static checkPricingCommandObviousPqRules(cmdData, agent = null) {
+		const errors = [];
+		const allowForcedFare = !agent ? false : agent.canAddPqWithForcedFare();
+		for (let mods of Object.values(cmdData.pricingStores)) {
+			mods = php.array_combine(php.array_column(mods, 'type'), mods);
+			const isFareForced = ((mods.fareBasis || {}).parsed || {}).override;
+			if (isFareForced && !allowForcedFare) {
+				errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {modifier: '/' + mods.fareBasis.raw}));
 			}
 		}
-		if ($cmdData['baseCmd'] === 'FXL') {
-			$errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {modifier: 'FXL'}));
+		if (cmdData['baseCmd'] === 'FXL') {
+			errors.push(Errors.getMessage(Errors.BAD_MOD_IGNORE_AVAILABILITY, {modifier: 'FXL'}));
 		}
-		return $errors;
+		return errors;
 	}
 
 	sanitizeOutput($output) {

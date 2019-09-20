@@ -17,9 +17,13 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 const TravelportClient = require("../../../../../GdsClients/TravelportClient.js");
 
 class ImportPqGalileoAction extends AbstractGdsAction {
-	constructor({useXml = true, travelport = TravelportClient()}) {
+	constructor({
+		useXml = true, agent = null,
+		travelport = TravelportClient(),
+	}) {
 		super();
-		this.$leadData = {};
+		this.leadData = {};
+		this.agent = agent;
 		this.$fetchOptionalFields = true;
 		this.$baseDate = null;
 		this.$cmdToFullOutput = {};
@@ -30,7 +34,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 	}
 
 	setLeadData($leadData) {
-		this.$leadData = $leadData;
+		this.leadData = $leadData;
 		return this;
 	}
 
@@ -233,7 +237,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 			this.$allCommands.push({cmd, output});
 			this.$allCommands.push({cmd: 'F*Q', output: linearOutput});
 
-			const errors = CanCreatePqRules.checkPricingCommand('galileo', cmd, this.$leadData);
+			const errors = CanCreatePqRules.checkPricingCommand('galileo', cmd, this.leadData, this.agent);
 			if (errors.length > 0) {
 				result.error = 'Invalid pricing command - ' + cmd + ' - ' + php.implode(';', errors);
 				return result;

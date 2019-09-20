@@ -23,6 +23,7 @@ const AmadeusGetFareRulesAction = require('../../../../Rbs/GdsAction/AmadeusGetF
 const Rej = require('klesun-node-tools/src/Rej.js');
 const AnyGdsStubSession = require('../../../../../Utils/Testing/AnyGdsStubSession.js');
 const AmadeusGetStatelessRulesAction = require('../../../GdsAction/AmadeusGetStatelessRulesAction');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 /**
  * import PNR fields of currently opened PNR
@@ -32,6 +33,7 @@ const AmadeusGetStatelessRulesAction = require('../../../GdsAction/AmadeusGetSta
 class ImportPqAmadeusAction extends AbstractGdsAction {
 	constructor({
 		amadeus = AmadeusClient.makeCustom(),
+		agent = null,
 	} = {}) {
 		super();
 		this.$useStatelessRules = true;
@@ -41,12 +43,13 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 
 		this.$allCommands = [];
 		this.$cmdLog = null;
-		this.$leadData = {};
+		this.leadData = {};
+		this.agent = agent;
 		this.amadeus = amadeus;
 	}
 
 	setLeadData($leadData) {
-		this.$leadData = $leadData;
+		this.leadData = $leadData;
 		return this;
 	}
 
@@ -332,8 +335,8 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			const {cmd, output, fqqCmdRecs} = cmdRec;
 			this.$allCommands.push({cmd, output});
 			const errors = php.array_merge(
-				CanCreatePqRules.checkPricingCommand('amadeus', cmd, this.$leadData),
-				CanCreatePqRules.checkPricingOutput('amadeus', output, this.$leadData)
+				CanCreatePqRules.checkPricingCommand('amadeus', cmd, this.leadData, this.agent),
+				CanCreatePqRules.checkPricingOutput('amadeus', output, this.leadData)
 			);
 			if (!php.empty(errors)) {
 				return Rej.BadRequest('Invalid pricing - ' + cmd + ' - ' + php.implode(';', errors));
@@ -527,11 +530,14 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			$flightServiceRecord = await this.getFlightService($reservationRecord['parsed']['itinerary']);
 			if ($result['error'] = $flightServiceRecord['error']) return $result;
 			$result['pnrData']['flightServiceInfo'] = $flightServiceRecord;
-			$fareRuleData = this.$useStatelessRules
-				? await this.getStatelessFareRules($pricingRecord['parsed']['pricingList'],
+			const whenFareRuleData = this.$useStatelessRules
+				? this.getStatelessFareRules($pricingRecord['parsed']['pricingList'],
 					$reservationRecord['parsed']['itinerary'])
-				: await this.getStatefulFareRules($pricingRecord['parsed']['pricingList'][0],
+				: this.getStatefulFareRules($pricingRecord['parsed']['pricingList'][0],
 					$reservationRecord['parsed']['itinerary']);
+			$fareRuleData = await whenFareRuleData.catch(coverExc(Rej.list, exc => ({
+				error: 'Failed to fetch Fare Rules - ' + exc,
+			})));
 			if ($result['error'] = $fareRuleData['error']) return $result;
 
 			$result['pnrData']['fareComponentListInfo'] = $fareRuleData['fareListRecords'];

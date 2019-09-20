@@ -40,10 +40,14 @@ class CmsGalileoTerminal {
 		}
 	}
 
-	/** @param $cmdData = require('CommandParser.js').parsePriceItinerary() */
-	static checkPricingCmdObviousPqRules($cmdData) {
+	/**
+	 * @param $cmdData = require('CommandParser.js').parsePriceItinerary()
+	 * @param {Object|null} agent = require('Agent.js')()
+	 */
+	static checkPricingCmdObviousPqRules($cmdData, agent = null) {
 		let $errors, $mods, $typeToMod;
 
+		const allowForcedFare = !agent ? false : agent.canAddPqWithForcedFare();
 		$errors = [];
 		$mods = $cmdData['pricingModifiers'];
 		$typeToMod = php.array_combine(php.array_column($mods, 'type'), $mods);
@@ -67,7 +71,7 @@ class CmsGalileoTerminal {
 				}
 			}
 		}
-		if (!php.empty(fareBases)) {
+		if (!php.empty(fareBases) && !allowForcedFare) {
 			$errors.push(Errors.getMessage(Errors.BAD_MOD_BASIS_OVERRIDE, {modifier: '/@' + fareBases.join('@') + '/'}));
 		}
 		if (!php.empty(bookingClasses)) {

@@ -4,6 +4,7 @@ const AbstractGdsAction = require('./AbstractGdsAction');
 const _ = require('lodash');
 const moment = require('moment');
 const FareRuleSectionParser = require('../../Gds/Parsers/Common/FareRuleSectionParser');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 /**
  * get static rules by origin/destination/fareBasis/date/etc...
@@ -70,16 +71,20 @@ class AmadeusGetStatelessRulesAction extends AbstractGdsAction {
 	/** @param pricingStores = [AmadeusPricingStoreAdapter::transform(), ...] */
 	async execute(pricingStores, itinerary) {
 		const ruleRecs = [];
-		for(let i = 0; i < pricingStores.length; i++) {
+		for (let i = 0; i < pricingStores.length; i++) {
 			const store = pricingStores[i];
 
-			for(let j = 0; j <store.pricingBlockList.length; j++) {
+			for (let j = 0; j <store.pricingBlockList.length; j++) {
 				const ptcBlock = store.pricingBlockList[j];
+				const ticketingDt = (ptcBlock.lastDateToPurchase || {}).parsed || null;
+				if (!ticketingDt) {
+					return Rej.UnprocessableEntity('Ticketing date not available in PTC #' + (j + 1));
+				}
 
 				const fc = ptcBlock['fareInfo']['fareConstruction'];
 				const fareListRec = ImportPnrCommonFormatAdapter.collectFcFares(fc, itinerary);
 
-				if(fareListRec.error) {
+				if (fareListRec.error) {
 					return {error: `Failed to collect ${i} - ${j} -th FC fares: ${fareListRec.error}`};
 				}
 
@@ -88,7 +93,7 @@ class AmadeusGetStatelessRulesAction extends AbstractGdsAction {
 					return obj;
 				}, {});
 
-				for(let k = 0; k <fareListRec.fares.length; k++) {
+				for (let k = 0; k <fareListRec.fares.length; k++) {
 					const fare = fareListRec.fares[k];
 
 					const dprtSeg = numToSeg[_.first(fare['segmentNumbers'])];
@@ -97,7 +102,7 @@ class AmadeusGetStatelessRulesAction extends AbstractGdsAction {
 					const parsed = await this.getComponentRules({
 						origin: dprtSeg['departureAirport'],
 						destination: dstnSeg['destinationAirport'],
-						ticketingDt: ptcBlock['lastDateToPurchase']['parsed'],
+						ticketingDt: ticketingDt,
 						airline: ptcBlock['validatingCarrier'],
 						fareBasis: fare['fareBasis'],
 					});
