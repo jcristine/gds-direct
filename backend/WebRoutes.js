@@ -158,14 +158,18 @@ app.post('/keepAliveEmc', toHandleHttp(async (rqBody) => {
 		const emc = await Emc.getClient();
 		return Promise.resolve()
 			.then(() => emc.doAuth(rqBody.emcSessionId))
-			.catch(exc => (exc + '').match(/session key is invalid/)
-				? LoginTimeOut('Session key expired')
-				: (exc + '').match(/ESOCKETTIMEDOUT/)
-				? Rej.ServiceUnavailable('EMC server is unreachable ATM', {isOk: true})
-				: (exc + '').match(/405 Not Allowed/)
-				// when they do production restart I think, or when they are overloaded
-				? Rej.ServiceUnavailable('EMC service is inaccessible ATM', {isOk: true})
-				: Promise.reject(exc));
+			.catch(exc => {
+				if ((exc + '').match(/session key is invalid/)) {
+					return Rej.LoginTimeOut('Session key expired');
+				} else if ((exc + '').match(/ESOCKETTIMEDOUT/)) {
+					return Rej.ServiceUnavailable('EMC server is unreachable ATM', {isOk: true});
+				} else if ((exc + '').match(/405 Not Allowed/) || (exc + '').match(/error - not 200/)) {
+					// when they do production restart I think, or when they are overloaded
+					return Rej.ServiceUnavailable('EMC service is inaccessible ATM', {isOk: true});
+				} else {
+					return Promise.reject(exc);
+				}
+			});
 	}
 }));
 app.post('/system/reportJsError', withAuth((rqBody, emcResult) => {
