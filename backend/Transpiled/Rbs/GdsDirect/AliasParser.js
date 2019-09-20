@@ -194,9 +194,6 @@ class AliasParser {
 				itinerary: fromCms.segments,
 			};
 		}
-		if (!session.getAgent().canPasteItinerary()) {
-			return null;
-		}
 		const guess = (new ParsersController()).guessDumpType({
 			dump: cmd,
 			creationDate: session.getStartDt(),

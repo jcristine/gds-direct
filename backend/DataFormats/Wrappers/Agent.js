@@ -29,7 +29,6 @@ const Agent = (emcUser) => {
 		canSavePnrWithoutLead          : () => hasRole('NEW_GDS_DIRECT_NO_LEAD_PNR'),
 		canOpenPrivatePnr              : () => hasRole('NEW_GDS_DIRECT_PRIVATE_PNR_ACCESS'),
 		canUseMultiPccTariffDisplay    : () => hasRole('NEW_GDS_DIRECT_MULTI_PCC_TARIFF_DISPLAY'),
-		canPasteItinerary              : () => true, // hasRole('NEW_GDS_DIRECT_PASTE_ITINERARY'),
 		canUseMco                      : () => hasRole('NEW_GDS_DIRECT_HHMCO'),
 		canAddPqWithForcedFare         : () => hasRole('can_add_pq_with_forced_fare'),
 
