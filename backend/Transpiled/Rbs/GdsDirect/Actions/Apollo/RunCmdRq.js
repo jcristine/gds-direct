@@ -776,19 +776,41 @@ const RunCmdRq = ({
 			}
 			return reject('Failed to >' + cmd + '; - ' + error);
 		} else {
+			stateful.updateAreaState({
+				type: '!xml:PNRBFManagement',
+				state: {canCreatePq: false},
+			});
 			return Promise.resolve(result);
 		}
+	};
+
+	const hasSegmentSelect = (pricingCmdData) => {
+		return pricingCmdData.pricingModifiers.some(mod => {
+			if (mod.type === 'segments') {
+				for (const bundle of mod.parsed.bundles) {
+					if (bundle.segmentNumbers.length > 0) {
+						return true;
+					}
+				}
+			}
+			return false;
+		});
 	};
 
 	const storePricing = async (aliasData) => {
 		const messages = [];
 		const pnr = await getCurrentPnr();
+		const stores = pnr.getStoredPricingList();
 		if (pnr.getItinerary().length === 0) {
 			return Rej.BadRequest('No itinerary to price');
 		} else if (pnr.getPassengers().length === 0) {
 			return Rej.BadRequest('No passenger names in PNR');
+		} else if (stores.length > 0 && !hasSegmentSelect(aliasData)) {
+			const msg = 'PNR already has an ATFQ - if you know what ' +
+				'you are doing, you can cancel it with >XT;';
+			return Rej.BadRequest(msg);
 		}
-		const lastStore = ArrayUtil.getLast(pnr.getStoredPricingList());
+		const lastStore = ArrayUtil.getLast(stores);
 		const prevAtfqNum = lastStore ? lastStore.lineNumber : 0;
 		const newAtfqNum = +prevAtfqNum + 1;
 		let cmd = await makeStorePricingCmd(pnr, aliasData, false);
