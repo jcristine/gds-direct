@@ -1,9 +1,9 @@
-const MultiLevelMap = require('../Utils/MultiLevelMap.js');
+const _ = require('lodash');
 
 const {getConfig} = require('../Config.js');
 const Db = require('../Utils/Db.js');
-const sqlNow = require("../Utils/TmpLib").sqlNow;
-const iqJson = require("dyn-utils/src/DynUtils.js").iqJson;
+const {sqlNow} = require('klesun-node-tools/src/Utils/Misc.js');
+const {iqJson} = require("dyn-utils/src/DynUtils.js");
 const {strval, implode, array_column, array_combine} = require('klesun-node-tools/src/Transpiled/php.js');
 
 const TABLE = 'airports';
@@ -84,16 +84,16 @@ exports.getCountryNames = () => {
 exports.getAllLocations = async () => {
 	const rows = await Db.fetchAll({table: TABLE});
 
-	const typeToValueToName = MultiLevelMap();
+	const typeToValueToName = {};
 	for (const row of Object.values(rows)) {
-		typeToValueToName.set(['airport', row.iata_code], row.name);
-		typeToValueToName.set(['city', row.city_code], row.city_name);
-		typeToValueToName.set(['country', row.country_code], row.country_name);
-		typeToValueToName.set(['region', row.region_id], row.region_name);
+		_.set(typeToValueToName, ['airport', row.iata_code], row.name);
+		_.set(typeToValueToName, ['city', row.city_code], row.city_name);
+		_.set(typeToValueToName, ['country', row.country_code], row.country_name);
+		_.set(typeToValueToName, ['region', row.region_id], row.region_name);
 	}
 
 	const records = [];
-	for (const [type, valueToName] of Object.entries(typeToValueToName.root)) {
+	for (const [type, valueToName] of Object.entries(typeToValueToName)) {
 		for (const [value, name] of Object.entries(valueToName)) {
 			if (value) {
 				records.push({type, value, name});
