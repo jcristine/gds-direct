@@ -32,6 +32,7 @@ const StatefulSession = ({
 	startDt = new Date().toISOString(),
 	Airports = require('../Repositories/Airports.js'),
 }) => {
+	const askClientAvailable = askClient ? true : false;
 	askClient = askClient || ((msgData) => ServiceUnavailable('Client Socket not stored in GRECT session', {session, emcUser, msgData}));
 	const gds = session.context.gds;
 	const calledCommands = [];
@@ -109,6 +110,7 @@ const StatefulSession = ({
 			}
 			return leadData;
 		},
+		askClientAvailable: askClientAvailable,
 		askClient: ({messageType, ...params}) => askClient({
 			messageType: messageType, ...params,
 		}).then(rs => {
