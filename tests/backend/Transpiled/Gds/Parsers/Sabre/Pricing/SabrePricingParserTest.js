@@ -1719,6 +1719,63 @@ class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
 			},
 		]);
 
+		// problems with fare calculation line, possibly because
+		// surface segment is marked as connection - //X/NYC,
+		// but likely because it is wrapped on X/ CHI
+		list.push([
+			php.implode(php.PHP_EOL, [
+				"20DEC DEPARTURE DATE-----LAST DAY TO PURCHASE 23SEP/1838",
+				"       BASE FARE                 TAXES/FEES/CHARGES    TOTAL",
+				" 1-   USD1449.00                    531.71XT      USD1980.71JCB",
+				"    XT    350.00YQ      10.28US       8.40ZP      37.20US ",
+				"            5.77YC       7.00XY       3.96XA      11.20AY ",
+				"            8.30DE      25.70RA      45.90OY      18.00XF ",
+				"         1449.00                    531.71           1980.71TTL",
+				"JCB-01  SH357NCE/CN10 SK357NCV/CN10",
+				" ICT UA X/CHI UA MUC Q ICTMUC100.00 789.75UA X/EWR//X/NYC UA X/",
+				" CHI UA ICT Q MUCICT100.00 459.00NUC1448.75END ROE1.00 ZPLGAORD",
+				" XFICT4.5ORD4.5LGA4.5ORD4.5",
+				"REFTHRUAG/NONEND/NONRERTE/LH/UA/AC/OS/SN/LX ONLY",
+				"PRIVATE FARE APPLIED - CHECK RULES FOR CORRECT TICKETING",
+				"PRIVATE ¤",
+				"VALIDATING CARRIER - UA",
+				"BAG ALLOWANCE     -ICTMUC-01P/UA/EACH PIECE UP TO 50 POUNDS/23 ",
+				"KILOGRAMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS",
+				"2NDCHECKED BAG FEE-ICTMUC-USD100.00/UA/UP TO 50 POUNDS/23 KILOG",
+				"RAMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS**",
+				"BAG ALLOWANCE     -MUCICT-01P/UA/EACH PIECE UP TO 50 POUNDS/23 ",
+				"KILOGRAMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS",
+				"2NDCHECKED BAG FEE-MUCICT-USD100.00/UA/UP TO 50 POUNDS/23 KILOG",
+				"RAMS AND UP TO 62 LINEAR INCHES/158 LINEAR CENTIMETERS**",
+				"**BAG FEES APPLY AT EACH CHECK IN LOCATION",
+				"CARRY ON ALLOWANCE",
+				"ICTORD ORDMUC MUCEWR LGAORD ORDICT-01P/UA",
+				"01/CARRY ON HAND BAGGAGE",
+				"01/UP TO 45 LINEAR INCHES/115 LINEAR CENTIMETERS",
+				"CARRY ON CHARGES",
+				"ICTORD ORDMUC MUCEWR LGAORD ORDICT-UA-CARRY ON FEES UNKNOWN-CON",
+				"TACT CARRIER",
+				"ADDITIONAL ALLOWANCES AND/OR DISCOUNTS MAY APPLY",
+				".",
+			]),
+			{
+				pqList: [{
+					fareBasisInfo: {ptc: 'JCB'},
+					fareConstruction: {
+						data: {
+							segments: [
+								{destination: 'CHI'},
+								{destination: 'MUC'},
+								{destination: 'EWR'},
+								{destination: 'CHI'},
+								{destination: 'ICT'},
+							],
+						},
+					},
+				}],
+			},
+		]);
+
 		return list;
 	}
 

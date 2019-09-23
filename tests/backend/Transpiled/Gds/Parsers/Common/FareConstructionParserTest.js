@@ -1760,7 +1760,28 @@ class FareConstructionParserTest extends require('../../../Lib/TestCase.js') {
 					],
 					fare: '709.34',
 				},
-			}
+			},
+		]);
+
+		// from Sabre pricing - segment split on "UA X/ CHI"
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				"ICT UA X/CHI UA MUC Q ICTMUC100.00 789.75UA X/EWR//X/NYC UA X/",
+				"CHI UA ICT Q MUCICT100.00 459.00NUC1448.75END ROE1.00 ZPLGAORD",
+				"XFICT4.5ORD4.5LGA4.5ORD4.5",
+			]),
+			{
+				parsed: {
+					segments: [
+						{destination: 'CHI'},
+						{destination: 'MUC'},
+						{destination: 'EWR'},
+						{destination: 'CHI'},
+						{destination: 'ICT'},
+					],
+					fare: '1448.75',
+				},
+			},
 		]);
 
 		// ////================================================================
