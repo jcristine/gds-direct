@@ -1,3 +1,4 @@
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 
 const {
 	array_filter, array_key_exists,
@@ -13,6 +14,7 @@ const {
 } = require('klesun-node-tools/src/Transpiled/php.js');
 
 const CommonParserHelpers = require('./../CommonParserHelpers.js');
+const {mkReg} = require('klesun-node-tools/src/Utils/Misc.js');
 
 const SEGMENT_TYPE_ITINERARY_SEGMENT = 'SEGMENT_TYPE_ITINERARY_SEGMENT';
 const SEGMENT_TYPE_OTH = 'OTH';
@@ -120,66 +122,68 @@ class ItineraryParser {
 
 	// ' 1 UA1704S 19DEC LASEWR HK1   605A  157P *         SA   E  1'
 	// '1 ET 915T 6DEC DLAADD SS1   225P  855P *         FR   E  2     4:30  788',
-	parseSegmentLine($line) {
-		const $regex =
-			'^' +
-			'(?<segmentNumber>[\\s\\d]{1,2})' +
-			'\\s+' + '(?<airline>[A-Z\\d]{2})' +
-			'\\s*' + '(?<flightNumber>\\d+)' +
-			'\\s*' + '(?<bookingClass>[A-Z]{1})?' +
-			'\\s*' + '(?<departureDay>\\d{1,2})' +
-			'(?<departureMonth>[A-Z]{3})' +
-			'\\s+' + '(?<departureAirport>[A-Z]{3})' +
-			'(?<destinationAirport>[A-Z]{3})' +
-			'\\s+' + '(?<segmentStatus>[A-Z]{2})' +
-			'(?<seatCount>\\d{0,2})' +
-			'\\s*' + '(?<confirmedByAirline1>\\*)?' +
-			'\\s+' + '(?<departureTime>\\d+[A-Z]?)' +
-			'\\s+' + '(?<destinationTime>\\d+[A-Z]?)' +
-			'\\s*' + '(?<confirmedByAirline2>\\*)?' +
-			'\\s*' + '(?<dayOffset>[\\d|+\\s-]|¥\d*)?' +
-			'\\s*' + '(?<confirmedByAirline3>\\*)?' +
-			'\\s*' + '(?<days>[A-Z]{2}(\\\/[A-Z]{2})*)?' +
-			'(?<eticket>\\s+E)?' +
-			'(?<marriage>\\s+[0-9]{1,2}(\\s+|$))?' +
-			'(?<unexpectedText>.*)?' +
-			'$';
-		let $matches;
-		if ($matches = preg_match($regex, $line)) {
-			const $eticket = array_key_exists('eticket', $matches) ? trim($matches['eticket']) : false;
-			const $marriage = array_key_exists('marriage', $matches) ? intval(trim($matches['marriage'])) : false;
-			const $confirmedByAirline = in_array('*', [$matches['confirmedByAirline1'], $matches['confirmedByAirline2'], $matches['confirmedByAirline3']]);
+	parseSegmentLine(line) {
+		const regex = mkReg([
+			/^/,
+			/(?<segmentNumber>[\s\d]{1,2})/,
+			/\s+(?<airline>[A-Z\d]{2})/,
+			/\s*(?<flightNumber>\d+)/,
+			/\s*(?<bookingClass>[A-Z]{1})?/,
+			/\s*(?<departureDay>\d{1,2})/,
+			/(?<departureMonth>[A-Z]{3})/,
+			/\s+(?<departureAirport>[A-Z]{3})/,
+			/(?<destinationAirport>[A-Z]{3})/,
+			/\s+(?<segmentStatus>[A-Z]{2})/,
+			/(?<seatCount>\d{0,2})/,
+			/\s*(?<confirmedByAirline1>\*)?/,
+			/\s+(?<departureTime>\d+[A-Z]?)/,
+			/\s+(?<destinationTime>\d+[A-Z]?)/,
+			/\s*(?<confirmedByAirline2>\*)?/,
+			/\s*(?<dayOffset>[\d|+\s-]|¥\d*)?/,
+			/\s*(?<confirmedByAirline3>\*)?/,
+			/\s*(?<days>[A-Z]{2}(\/[A-Z]{2})*)?/,
+			/(?<eticket>\s+E)?/,
+			/(?<marriage>\s+[0-9]{1,2}(\s+|$))?/,
+			/(?<unexpectedText>.*)?/,
+			/$/,
+		]);
+		const match = line.match(regex);
+		if (match) {
+			const matches = match.groups;
+			const eticket = array_key_exists('eticket', matches) ? trim(matches.eticket) : false;
+			const marriage = array_key_exists('marriage', matches) ? intval(trim(matches.marriage)) : false;
+			const confirmedByAirline = in_array('*', [matches.confirmedByAirline1, matches.confirmedByAirline2, matches.confirmedByAirline3]);
 			return {
-				segmentNumber: intval(trim($matches['segmentNumber'])),
-				airline: trim($matches['airline']),
-				flightNumber: trim($matches['flightNumber']),
-				bookingClass: trim($matches['bookingClass'] || ''),
+				segmentNumber: intval(trim(matches.segmentNumber)),
+				airline: trim(matches.airline),
+				flightNumber: trim(matches.flightNumber),
+				bookingClass: trim(matches.bookingClass || ''),
 				departureDate: {
-					raw: $matches['departureDay'] + $matches['departureMonth'],
-					parsed: CommonParserHelpers.parsePartialDate($matches['departureDay'] + $matches['departureMonth']),
+					raw: matches.departureDay + matches.departureMonth,
+					parsed: ParserUtil.parsePartialDate(matches.departureDay + matches.departureMonth),
 				},
-				departureAirport: trim($matches['departureAirport']),
-				destinationAirport: trim($matches['destinationAirport']),
-				segmentStatus: trim($matches['segmentStatus']),
-				seatCount: intval(trim($matches['seatCount'])),
+				departureAirport: trim(matches.departureAirport),
+				destinationAirport: trim(matches.destinationAirport),
+				segmentStatus: trim(matches.segmentStatus),
+				seatCount: intval(trim(matches.seatCount)),
 				departureTime: {
-					raw: trim($matches['departureTime']),
-					parsed: CommonParserHelpers.decodeApolloTime(trim($matches['departureTime'])),
+					raw: trim(matches.departureTime),
+					parsed: ParserUtil.decodeGdsTime(trim(matches.departureTime)),
 				},
 				destinationTime: {
-					raw: trim($matches['destinationTime']),
-					parsed: CommonParserHelpers.decodeApolloTime(trim($matches['destinationTime'])),
+					raw: trim(matches.destinationTime),
+					parsed: ParserUtil.decodeGdsTime(trim(matches.destinationTime)),
 				},
-				dayOffset: this.decodeDayOffset(trim($matches['dayOffset'])),
-				confirmedByAirline: $confirmedByAirline,
+				dayOffset: this.decodeDayOffset(trim(matches.dayOffset)),
+				confirmedByAirline: confirmedByAirline,
 				daysOfWeek: {
-					raw: (isset($matches['days']) && $matches['days']) ? trim($matches['days']) : '',
-					parsed: (isset($matches['days']) && $matches['days']) ? this.decodeDaysOfWeek(trim($matches['days'])) : null,
+					raw: isset(matches.days) && matches.days ? trim(matches.days) : '',
+					parsed: isset(matches.days) && matches.days ? this.decodeDaysOfWeek(trim(matches.days)) : null,
 				},
-				eticket: $eticket,
-				marriage: $marriage,
-				unexpectedText: $matches['unexpectedText'] || '',
-				raw: $line,
+				eticket: eticket,
+				marriage: marriage,
+				unexpectedText: matches.unexpectedText || '',
+				raw: line,
 			};
 		} else {
 			return false;

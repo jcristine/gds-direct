@@ -762,6 +762,19 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
 			},
 		]);
 
+		// digits in place of booking class - should not get parsed
+		$list.push([
+			php.implode(php.PHP_EOL, [
+				" 4 DL35424 30DEC ATLABY SS1   141P  235P *         MO   E  2",
+				"         OPERATED BY SKYWEST DBA DELTA CONNECTION",
+			]),
+			{
+				segments: [
+					{destinationAirport: 'ABY', marriage: 2},
+				],
+			},
+		]);
+
 		return $list;
 	}
 
