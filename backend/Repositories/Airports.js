@@ -1,44 +1,35 @@
+
+const IqClients = require('../LibWrappers/IqClients.js');
 const _ = require('lodash');
 
-const {getConfig} = require('../Config.js');
 const Db = require('../Utils/Db.js');
 const {sqlNow} = require('klesun-node-tools/src/Utils/Misc.js');
-const {iqJson} = require("dyn-utils/src/DynUtils.js");
-const {strval, implode, array_column, array_combine} = require('klesun-node-tools/src/Transpiled/php.js');
+const {array_combine} = require('klesun-node-tools/src/Transpiled/php.js');
 
 const TABLE = 'airports';
 
-const normalizeRow = ($row) => ({
-	iata_code: $row['airport_code_en'],
-	name: $row['airport_title_en'],
-	country_code: strval($row['country_code']),
-	country_code_3: strval($row['country_iso3']),
-	country_name: strval($row['country_title_en']),
-	state_code: strval($row['state_code']),
-	city_code: strval($row['city_code_en']),
-	city_name: strval($row['city_title_en']),
-	region_id: $row['region_id'] || null,
-	region_name: $row['region'] || null,
-	lat: $row['airport_latitude'],
-	lon: $row['airport_longitude'],
-	tz: strval($row['airport_timezone']),
+const normalizeRow = (icnRow) => ({
+	iata_code: icnRow.airport_code_en,
+	name: icnRow.airport_title_en,
+	country_code: icnRow.country_code || '',
+	country_code_3: icnRow.country_iso3 || '',
+	country_name: icnRow.country_title_en || '',
+	state_code: icnRow.state_code || '',
+	city_code: icnRow.city_code_en || '',
+	city_name: icnRow.city_title_en || '',
+	region_id: icnRow.region_id || null,
+	region_name: icnRow.region || null,
+	lat: icnRow.airport_latitude,
+	lon: icnRow.airport_longitude,
+	tz: icnRow.airport_timezone || '',
 	updated_dt: sqlNow(),
-	alternatives: implode(',', array_column($row['alternatives'] || [], 'code_en')),
+	alternatives: (icnRow.alternatives || [])
+		.map(a => a.code_en).join(','),
 });
 
 exports.updateFromService = async () => {
-	const config = await getConfig();
-	/** @type IGetAirportsRs */
-	const serviceResult = await iqJson({
-		url: config.external_service.infocenter.host,
-		credentials: {
-			login: config.external_service.infocenter.login,
-			passwd: config.external_service.infocenter.password,
-		},
-		functionName: 'getAirports',
-		serviceName: 'infocenter',
-		params: {folder: 'arc'},
-	});
+	const infocenter = await IqClients.getInfocenter();
+	const serviceResult = await infocenter.getAirports({folder: 'arc'});
 
 	const rows = Object
 		.values(serviceResult.result.data)
@@ -66,18 +57,18 @@ exports.findByCity = (code) =>
 exports.getRegionNames = () => {
 	const sql = 'SELECT DISTINCT region_id, region_name FROM airports';
 	return Db.with(db => db.query(sql))
-		.then($rows => array_combine(
-			$rows.map(r => r.region_id),
-			$rows.map(r => r.region_name),
+		.then(rows => array_combine(
+			rows.map(r => r.region_id),
+			rows.map(r => r.region_name),
 		));
 };
 
 exports.getCountryNames = () => {
 	const sql = 'SELECT DISTINCT country_code, country_name FROM airports';
 	return Db.with(db => db.query(sql))
-		.then($rows => array_combine(
-			$rows.map(r => r.country_code),
-			$rows.map(r => r.country_name),
+		.then(rows => array_combine(
+			rows.map(r => r.country_code),
+			rows.map(r => r.country_name),
 		));
 };
 
