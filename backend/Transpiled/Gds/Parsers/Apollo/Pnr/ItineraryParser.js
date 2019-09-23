@@ -23,99 +23,99 @@ const SEGMENT_TYPE_HOTEL = 'HOTEL';
 const SEGMENT_TYPE_FAKE = 'FAKE'; // segment without times
 
 class ItineraryParser {
-	parse($dump) {
-		const $parsedData = [];
-		let $lastParsedSegment = null;
-		let $lines = $dump.split('\n');
-		while ($lines.length > 0) {
-			let $line = array_shift($lines);
-			let $result, $parsed;
-			if ($result = this.parseSegmentLine($line)) {
-				if ($lastParsedSegment) {
-					$parsedData.push($lastParsedSegment);
+	parse(dump) {
+		const segments = [];
+		let lastParsedSegment = null;
+		let lines = dump.split('\n');
+		while (lines.length > 0) {
+			let line = array_shift(lines);
+			let result, parsed;
+			if (result = this.parseSegmentLine(line)) {
+				if (lastParsedSegment) {
+					segments.push(lastParsedSegment);
 				}
-				$lastParsedSegment = $result;
-				$lastParsedSegment['segmentType'] = SEGMENT_TYPE_ITINERARY_SEGMENT;
-			} else if($result = this.parseOthSegmentLine($line)) {
-				if ($lastParsedSegment) {
-					$parsedData.push($lastParsedSegment);
+				lastParsedSegment = result;
+				lastParsedSegment['segmentType'] = SEGMENT_TYPE_ITINERARY_SEGMENT;
+			} else if (result = this.parseOthSegmentLine(line)) {
+				if (lastParsedSegment) {
+					segments.push(lastParsedSegment);
 				}
-				$lastParsedSegment = {
+				lastParsedSegment = {
 					segmentType: SEGMENT_TYPE_OTH,
-					segmentNumber: $result['segmentNumber'],
-					text: $result['text'],
+					segmentNumber: result['segmentNumber'],
+					text: result['text'],
 				};
-			} else if($result = this.parseTurSegmentLine($line)) {
-				if ($lastParsedSegment) {
-					$parsedData.push($lastParsedSegment);
+			} else if (result = this.parseTurSegmentLine(line)) {
+				if (lastParsedSegment) {
+					segments.push(lastParsedSegment);
 				}
-				$lastParsedSegment = $result;
-				$lastParsedSegment['segmentType'] = SEGMENT_TYPE_TUR;
-			} else if($result = this.parseArnkSegmentLine($line)) {
-				if ($lastParsedSegment) {
-					$parsedData.push($lastParsedSegment);
+				lastParsedSegment = result;
+				lastParsedSegment['segmentType'] = SEGMENT_TYPE_TUR;
+			} else if (result = this.parseArnkSegmentLine(line)) {
+				if (lastParsedSegment) {
+					segments.push(lastParsedSegment);
 				}
-				$lastParsedSegment = {segmentType: SEGMENT_TYPE_ARNK, segmentNumber: $result['segmentNumber']};
-			} else if($result = this.parseCarSegmentLine($line)) {
-				if ($lastParsedSegment) {
-					$parsedData.push($lastParsedSegment);
+				lastParsedSegment = {segmentType: SEGMENT_TYPE_ARNK, segmentNumber: result['segmentNumber']};
+			} else if (result = this.parseCarSegmentLine(line)) {
+				if (lastParsedSegment) {
+					segments.push(lastParsedSegment);
 				}
-				$lastParsedSegment = $result;
-				$lastParsedSegment['segmentType'] = SEGMENT_TYPE_CAR;
-			} else if($result = this.parseHotelSegmentLine($line)) {
-				if ($lastParsedSegment) {
-					$parsedData.push($lastParsedSegment);
+				lastParsedSegment = result;
+				lastParsedSegment['segmentType'] = SEGMENT_TYPE_CAR;
+			} else if (result = this.parseHotelSegmentLine(line)) {
+				if (lastParsedSegment) {
+					segments.push(lastParsedSegment);
 				}
-				$lastParsedSegment = $result;
-				$lastParsedSegment['segmentType'] = SEGMENT_TYPE_HOTEL;
-			} else if($result = this.parseFakeSegmentLine($line)) {
-				if ($lastParsedSegment) {
-					$parsedData.push($lastParsedSegment);
+				lastParsedSegment = result;
+				lastParsedSegment['segmentType'] = SEGMENT_TYPE_HOTEL;
+			} else if (result = this.parseFakeSegmentLine(line)) {
+				if (lastParsedSegment) {
+					segments.push(lastParsedSegment);
 				}
-				$lastParsedSegment = $result;
-				$lastParsedSegment['segmentType'] = SEGMENT_TYPE_FAKE;
-			} else if($result = this.parseOperatedByLine($line)) {
-				if ($lastParsedSegment) {
-					$lastParsedSegment['operatedBy'] = $result['operator'];
-					$lastParsedSegment['raw'] += PHP_EOL + $line;
-					$lines = array_merge($result['followingLines'], $lines);
+				lastParsedSegment = result;
+				lastParsedSegment['segmentType'] = SEGMENT_TYPE_FAKE;
+			} else if (result = this.parseOperatedByLine(line)) {
+				if (lastParsedSegment) {
+					lastParsedSegment['operatedBy'] = result['operator'];
+					lastParsedSegment['raw'] += PHP_EOL + line;
+					lines = array_merge(result['followingLines'], lines);
 				}
-			} else if($parsed = this.parsePlaneChangeLine($line)) {
-				$lastParsedSegment['raw'] += PHP_EOL + $line;
-				$lastParsedSegment['planeChange'] = $lastParsedSegment['planeChange'] || [];
-				$lastParsedSegment['planeChange'].push($parsed);
+			} else if (parsed = this.parsePlaneChangeLine(line)) {
+				lastParsedSegment['raw'] += PHP_EOL + line;
+				lastParsedSegment['planeChange'] = lastParsedSegment['planeChange'] || [];
+				lastParsedSegment['planeChange'].push(parsed);
 				const $filter =
 					'/^\\s+' +
 					'(?<from>[A-Z]{3})-' +
 					'(?<to>[A-Z]{3})\\s+' +
 					'(?<aircraft>[A-Z\\d]{2,3})\\s*' +
 					'$/';
-				while ($line = array_shift($lines)) {
+				while (line = array_shift(lines)) {
 					let $matches;
-					if ($matches = preg_match($filter, $line)) {
-						$lastParsedSegment['raw'] += PHP_EOL + $line;
-						$lastParsedSegment['planeChange'] = $lastParsedSegment['planeChange'] || [];
-						$lastParsedSegment['planeChange'].push({
+					if ($matches = preg_match($filter, line)) {
+						lastParsedSegment['raw'] += PHP_EOL + line;
+						lastParsedSegment['planeChange'] = lastParsedSegment['planeChange'] || [];
+						lastParsedSegment['planeChange'].push({
 							aircraft: $matches['aircraft'],
 							from: $matches['from'],
 							to: $matches['to'],
 						});
 					} else {
-						array_unshift($lines, $line);
+						array_unshift(lines, line);
 						break;
 					}
 				}
-			} else if(!trim($line)) {
+			} else if (!trim(line)) {
 				// skip empty lines, they may appear when you copy dump from Focal Point
 			} else {
-				array_unshift($lines, $line);
+				array_unshift(lines, line);
 				break;
 			}
 		}
-		if ($lastParsedSegment) {
-			$parsedData.push($lastParsedSegment);
+		if (lastParsedSegment) {
+			segments.push(lastParsedSegment);
 		}
-		return {segments: $parsedData, textLeft: implode(PHP_EOL, $lines)};
+		return {segments: segments, textLeft: implode(PHP_EOL, lines)};
 	}
 
 	// ' 1 UA1704S 19DEC LASEWR HK1   605A  157P *         SA   E  1'
