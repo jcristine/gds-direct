@@ -205,8 +205,11 @@ class AliasParser {
 		for (let i = 0; i < itinerary.length; ++i) {
 			const seg = itinerary[i];
 			if (!seg.departureDt || !seg.departureDt.full) {
-				const raw = (seg.departureDt || {}).raw || (seg.departureDate || {}).raw;
-				const msg = 'Segment #' + (i + 1) + ' has invalid date' + (!raw ? '' : ' - ' + raw);
+				const raw = (seg.departureDt || {}).raw || (
+					((seg.departureDate || {}).raw || '') + ' ' +
+					((seg.departureTime || {}).raw || '')
+				).trim();
+				const msg = 'Segment #' + (i + 1) + ' has invalid date/time' + (!raw ? '' : ' - ' + raw);
 				return Rej.BadRequest(msg, itinerary);
 			}
 		}

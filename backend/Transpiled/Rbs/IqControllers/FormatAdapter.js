@@ -345,33 +345,29 @@ class FormatAdapter
 		};
 	}
 
-	static addFullDateToApolloSegment($segment, $baseDate)  {
-		let $fullDepartureDate, $fullDestinationDate;
-		$fullDepartureDate = DateTime.decodeRelativeDateInFuture($segment['departureDate']['parsed'], $baseDate);
-		$fullDestinationDate = $fullDepartureDate
-			? php.date('Y-m-d', php.strtotime($fullDepartureDate) + $segment.dayOffset * 24 * 60 * 60)
+	static addFullDateToApolloSegment(segment, baseDate)  {
+		const fullDepartureDate = DateTime.addYear(segment.departureDate.parsed, baseDate);
+		const fullDestinationDate = fullDepartureDate
+			? php.date('Y-m-d', php.strtotime(fullDepartureDate) + segment.dayOffset * 24 * 60 * 60)
 			: null;
-		$segment['destinationDate'] = {
-			//            'raw' => $parsedData['departureDate']['raw'].' +'.$parsedData['dayOffset'],
-			parsed: $fullDestinationDate
-				? php.date('m-d', php.strtotime($fullDestinationDate))
+		segment.destinationDate = {
+			parsed: fullDestinationDate
+				? php.date('m-d', php.strtotime(fullDestinationDate))
 				: null,
 		};
-		$segment['departureDt'] = {
-			//            'raw' => $segment['departureDate']['raw'].' '.$segment['departureTime']['raw'],
-			parsed: $segment['departureDate']['parsed']+' '+$segment['departureTime']['parsed'],
-			full: $fullDepartureDate
-				? $fullDepartureDate+' '+$segment['departureTime']['parsed']+':00'
+		segment.departureDt = {
+			parsed: segment.departureDate.parsed + ' ' + segment.departureTime.parsed,
+			full: fullDepartureDate && segment.departureTime.parsed
+				? fullDepartureDate + ' ' + segment.departureTime.parsed + ':00'
 				: null,
 		};
-		$segment['destinationDt'] = {
-			//            'raw' => $segment['destinationDate']['raw'].' '.$segment['destinationTime']['raw'],
-			parsed: $segment['destinationDate']['parsed']+' '+$segment['destinationTime']['parsed'],
-			full: $fullDestinationDate
-				? $fullDestinationDate+' '+$segment['destinationTime']['parsed']+':00'
+		segment.destinationDt = {
+			parsed: segment.destinationDate.parsed+' '+segment.destinationTime.parsed,
+			full: fullDestinationDate && segment.destinationTime.parsed
+				? fullDestinationDate + ' ' + segment.destinationTime.parsed + ':00'
 				: null,
 		};
-		return $segment;
+		return segment;
 	}
 
 	static transformApolloAirSegment($parsed, $baseDate)  {
