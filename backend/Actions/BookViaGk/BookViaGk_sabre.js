@@ -17,18 +17,16 @@ const bookSa = async ({sabre, session, baseDate, itinerary}) => {
 		const from = itinerary[0].departureAirport;
 		const to = itinerary[0].destinationAirport;
 
-		if (built.errorType === Errors.REBUILD_MULTISEGMENT &&
-			(built.errorData.response || '').match('UNABLE 00 AVAILABLE')
-		) {
+		const response = (built.errorData || {}).response || '';
+		if (response.match('UNABLE 00 AVAILABLE')) {
 			const msg = 'No ' + cls + ' seats available for flights from ' + from;
 			return Rej.InsufficientStorage(msg, {isOk: true});
-		} else if (
-			built.errorType === Errors.REBUILD_MULTISEGMENT &&
-			(built.errorData.response || '').match(/^\s*Sabre warning - No PNR in AAA/)
-		) {
+		} else if (response.match(/^\s*Sabre warning - No PNR in AAA/)) {
 			const flightStr = air + fnum + from + to;
 			const msg = 'Can not rebuild, is flight operating? ' + flightStr;
 			return Rej.UnprocessableEntity(msg, built);
+		} else if (response.match(/FLIGHT NOOP FOR THIS FLIGHT\/DATE/)) {
+			return Rej.BadRequest(response);
 		} else {
 			const msg = Errors.getMessage(built.errorType, built.errorData);
 			return Rej.UnprocessableEntity(msg, built);
