@@ -312,68 +312,6 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
 			}
 		]);
 
-		// No cabin class, question marks after DOW
-		$list.push([
-			php.implode(php.PHP_EOL, [
-				' 1 AA 242 17APR SFOORD GK1   700A  119P           SU?',
-				' 2 AA 110 17APR ORDFCO GK1   450P  905A+       SU\/MO?',
-				' 3 AA 111 01MAY FCOORD GK1  1115A  300P           SU?',
-				' 4 AA1624 01MAY ORDSFO GK1   505P  746P           S'
-			]),
-			{
-				'segments': [
-					{
-						'segmentNumber': 1,
-						'airline': 'AA',
-						'flightNumber': '242',
-						'bookingClass': '',
-						'departureDate': {'raw': '17APR','parsed': '04-17'},
-						'departureAirport': 'SFO',
-						'destinationAirport': 'ORD',
-						'daysOfWeek': {'raw': 'SU','parsed': '7'},
-						'unexpectedText': '?',
-						'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
-					},
-					{
-						'segmentNumber': 2,
-						'airline': 'AA',
-						'flightNumber': '110',
-						'bookingClass': '',
-						'departureDate': {'raw': '17APR','parsed': '04-17'},
-						'departureAirport': 'ORD',
-						'destinationAirport': 'FCO',
-						'daysOfWeek': {'raw': 'SU\/MO','parsed': '7\/1'},
-						'unexpectedText': '?',
-						'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
-					},
-					{
-						'segmentNumber': 3,
-						'airline': 'AA',
-						'flightNumber': '111',
-						'bookingClass': '',
-						'departureDate': {'raw': '01MAY','parsed': '05-01'},
-						'departureAirport': 'FCO',
-						'destinationAirport': 'ORD',
-						'daysOfWeek': {'raw': 'SU','parsed': '7'},
-						'unexpectedText': '?',
-						'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
-					},
-					{
-						'segmentNumber': 4,
-						'airline': 'AA',
-						'flightNumber': '1624',
-						'bookingClass': '',
-						'departureDate': {'raw': '01MAY','parsed': '05-01'},
-						'departureAirport': 'ORD',
-						'destinationAirport': 'SFO',
-						'daysOfWeek': {'raw': '','parsed': null},
-						'unexpectedText': 'S',
-						'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
-					},
-				],
-			}
-		]);
-
 		// *RTZ2TA - with "ARNK" segment
 		$list.push([
 			php.implode(php.PHP_EOL, [
@@ -764,14 +702,16 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
 
 		// digits in place of booking class - should not get parsed
 		$list.push([
-			php.implode(php.PHP_EOL, [
+			[
 				" 4 DL35424 30DEC ATLABY SS1   141P  235P *         MO   E  2",
 				"         OPERATED BY SKYWEST DBA DELTA CONNECTION",
-			]),
+			].join('\n'),
 			{
-				segments: [
-					{destinationAirport: 'ABY', marriage: 2},
-				],
+				segments: [],
+				textLeft: [
+					" 4 DL35424 30DEC ATLABY SS1   141P  235P *         MO   E  2",
+					"         OPERATED BY SKYWEST DBA DELTA CONNECTION",
+				].join('\n'),
 			},
 		]);
 

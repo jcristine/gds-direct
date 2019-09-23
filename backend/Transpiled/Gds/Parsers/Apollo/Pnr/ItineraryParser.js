@@ -128,7 +128,7 @@ class ItineraryParser {
 			/(?<segmentNumber>[\s\d]{1,2})/,
 			/\s+(?<airline>[A-Z\d]{2})/,
 			/\s*(?<flightNumber>\d+)/,
-			/\s*(?<bookingClass>[A-Z]{1})?/,
+			/\s*(?<bookingClass>[A-Z]{1})/,
 			/\s*(?<departureDay>\d{1,2})/,
 			/(?<departureMonth>[A-Z]{3})/,
 			/\s+(?<departureAirport>[A-Z]{3})/,
@@ -190,27 +190,28 @@ class ItineraryParser {
 		}
 	}
 
-	decodeDaysOfWeek($str) {
-		return implode('/', array_map(function ($x) {
-			return CommonParserHelpers.apolloDayOfWeekToNumber($x);
-		}, explode('/', $str)));
+	decodeDaysOfWeek(str) {
+		return str
+			.split('/')
+			.map((x) => ParserUtil.gdsDayOfWeekToNumber(x))
+			.join('/');
 	}
 
-	decodeDayOffset($token) {
-		$token = $token || '';
+	decodeDayOffset(token) {
+		token = token || '';
 		// not a real format, but ¥ may appear when you paste
 		// itinerary in Sabre and all "+"-s get normalized to "¥"-s
-		$token = $token.replace('¥', '+');
-		if (!$token || $token === '0') {
+		token = token.replace('¥', '+');
+		if (!token || token === '0') {
 			return 0;
-		} else if($token == '|' || $token == '+') {
+		} else if (token == '|' || token == '+') {
 			return 1;
-		} else if($token == '-') {
+		} else if (token == '-') {
 			return -1;
-		} else if(intval($token)) {
-			return intval($token);
+		} else if (intval(token)) {
+			return intval(token);
 		} else {
-			throw Error('Unknown day offset [' + $token + ']');
+			throw Error('Unknown day offset [' + token + ']');
 		}
 	}
 
