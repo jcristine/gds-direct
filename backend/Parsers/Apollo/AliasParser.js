@@ -52,7 +52,7 @@ const extendPricingCmd = ($mainCmd, $newPart) => {
 	return $newParsed['data']['baseCmd'] + ($rawMods.length ? '/' + php.implode('/', $rawMods) : '');
 };
 
-exports.parse = async ($cmdRequested, stateful) => {
+exports.parse = async ($cmdRequested, stateful, PtcUtil = require('../../Transpiled/Rbs/Process/Common/PtcUtil.js')) => {
 	let $realCmd, $data, $type, $moveDownAll, $matches, $_, $units, $value, $parts, $mainCmd, $followingCommands,
 		$cmds, $segNumStr, $date, $cls, $result;
 	$realCmd = $cmdRequested;
@@ -86,7 +86,7 @@ exports.parse = async ($cmdRequested, stateful) => {
 			$cmds = php.array_merge([$mainCmd], $followingCommands);
 			$data = {'pricingCommands': $cmds};
 		}
-	} else if ($data = await AliasParser.parseStore($realCmd)) {
+	} else if ($data = await AliasParser.parseStore($realCmd, PtcUtil)) {
 		$type = 'storePricing';
 	} else if ($data = await AliasParser.parsePrice($realCmd, stateful)) {
 		$type = 'priceAll';
