@@ -165,7 +165,7 @@ const RepriceInPccMix = async ({
 
 	const main = async () => {
 		if (!stateful.askClientAvailable) {
-			return Rej.BadRequest('Parallel execution not possible - socket connection not initialized');
+			return Rej.BadRequest('Parallel execution not possible - socket connection not initialized, try again in few seconds');
 		}
 		const itinerary = await getFullItinerary();
 		if (itinerary.length === 0) {
