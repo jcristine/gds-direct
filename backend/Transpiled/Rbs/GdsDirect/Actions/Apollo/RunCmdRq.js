@@ -713,10 +713,13 @@ const RunCmdRq = ({
 			const ageGroup = PtcUtil.getPaxAgeGroup(pax, tripEndDt);
 			return ['child', 'infant'].includes(ageGroup);
 		};
-		if (!mods.some(m => m.type === 'commission')) {
+		const usedTypes = new Set(mods.map(m => m.type));
+		if (!usedTypes.has('commission')) {
 			cmd += '/Z0';
 		}
-		if (Fp.all(needsAccompanying, pnr.getPassengers())) {
+		if (!usedTypes.has('accompaniedChild') &&
+			pnr.getPassengers().every(needsAccompanying)
+		) {
 			cmd += '/ACC';
 		}
 		if (needsColonN) {
