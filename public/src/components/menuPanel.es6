@@ -49,8 +49,7 @@ export default class MenuPanel extends Component
 			new LanguageButtons()
 		);
 
-		let roles = window.GdsDirectPlusState.getRoles();
-		if (PQ_MODAL_PROVIDED() && roles.includes('can_add_pqs')) {
+		if (PQ_MODAL_PROVIDED()) {
 			this.observe(
 				new Component('article')
 					.observe(

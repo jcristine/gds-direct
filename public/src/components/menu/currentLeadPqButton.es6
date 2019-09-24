@@ -5,8 +5,10 @@ export default class CurrentLeadPqButton extends Component
 {
 	constructor()
 	{
+		const roles = window.GdsDirectPlusState.getRoles();
 		super('button.btn btn-sm btn-mozilla font-bold[PQ]', {
 			onclick : () => PQ_MODAL_SHOW(window.GdsDirectPlusParams.travelRequestId),
+			style: roles.includes('can_add_pqs') ? '' : 'display: none',
 		});
 	}
 

@@ -8,7 +8,10 @@ export default class LeadListPqButton extends Component
 {
     constructor()
     {
-        super('div');
+        const roles = window.GdsDirectPlusState.getRoles();
+        super('div', {
+            style: roles.includes('can_add_pqs') ? '' : 'display: none',
+        });
 
         this.pqButton = new PqButtonPopover().getTrigger();
     }
