@@ -520,9 +520,10 @@ const execute = ({
 
 	const processCloneItinerary = async (aliasData) => {
 		const pcc = aliasData.pcc;
-		const newStatus = aliasData.segmentStatus || 'GK';
 		const seatNumber = aliasData.seatCount || 0;
 		const takenSegments = (await getCurrentPnr()).getItinerary();
+		const newStatus = aliasData.segmentStatus ||
+			(takenSegments.some(s => s.airline === 'AA') ? 'SS' : 'GK');
 		if (php.empty(takenSegments)) {
 			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
 		}
