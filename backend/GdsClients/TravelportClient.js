@@ -1,5 +1,6 @@
 const {LoginTimeOut, BadGateway} = require("klesun-node-tools/src/Rej");
-const {escapeXml, parseXml} = require("../GdsHelpers/CommonUtils.js");
+const CommonUtils = require("../GdsHelpers/CommonUtils.js");
+const {escapeXml} = CommonUtils;
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {Conflict} = Rej;
 const TravelportPnrRequestTransformer = require('./Transformers/TravelportPnrRequest');
@@ -18,6 +19,22 @@ const TravelportFareRuleTransformer = require('./Transformers/TravelportFareRule
 const endpoint = 'https://americas.webservices.travelport.com/B2BGateway/service/XMLSelect';
 //let endpoint = 'https://emea.webservices.travelport.com/B2BGateway/service/XMLSelect';
 //let endpoint = 'https://apac.webservices.travelport.com/B2BGateway/service/XMLSelect';
+
+const parseXml = (xml) => {
+	try {
+		return CommonUtils.parseXml(xml);
+	} catch (exc) {
+		if ((exc + '').includes('disallowed character')) {
+			// ' ITIN/INVOICE ERROR - CALL HELP DESK'
+			xml = xml.replace('\u0011', ''); // "device control 1", happens on >U...; command
+			// '&#247;W&#195;&#185;m ON PENDING Q -INSUFFICIENT TICKETS'
+			xml = xml.replace('\u0027', ''); // "escape", also happens on >U...; command
+			return CommonUtils.parseXml(xml);
+		} else {
+			throw exc;
+		}
+	}
+};
 
 const buildSoapBody = (gdsData, requestType, reqXml) => (
 	`<?xml version="1.0" encoding="UTF-8"?>
