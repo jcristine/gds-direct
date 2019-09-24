@@ -139,19 +139,31 @@ const StorePricing_apollo = ({
 		});
 	};
 
-	const main = async () => {
-		const messages = [];
-		const pnr = await GetCurrentPnr.inApollo(stateful);
-		const stores = pnr.getStoredPricingList();
+	const validatePnr = (pnr, aliasData) => {
 		if (pnr.getItinerary().length === 0) {
 			return Rej.BadRequest('No itinerary to price');
 		} else if (pnr.getPassengers().length === 0) {
 			return Rej.BadRequest('No passenger names in PNR');
-		} else if (stores.length > 0 && !hasSegmentSelect(aliasData)) {
+		} else if (pnr.getStoredPricingList().length > 0 && !hasSegmentSelect(aliasData)) {
 			const msg = 'PNR already has an ATFQ - if you know what ' +
 				'you are doing, you can cancel it with >XT;';
 			return Rej.BadRequest(msg);
 		}
+		for (const seg of pnr.getItinerary()) {
+			if (['UC', 'US'].includes(seg.segmentStatus)) {
+				const msg = 'Invalid segment #' + seg.segmentNumber +
+					' status - ' + seg.segmentStatus;
+				return Rej.BadRequest(msg);
+			}
+		}
+		return Promise.resolve();
+	};
+
+	const main = async () => {
+		const messages = [];
+		const pnr = await GetCurrentPnr.inApollo(stateful);
+		const stores = pnr.getStoredPricingList();
+		await validatePnr(pnr, aliasData);
 		const lastStore = stores.slice(-1)[0];
 		const prevAtfqNum = lastStore ? lastStore.lineNumber : 0;
 		const newAtfqNum = +prevAtfqNum + 1;
