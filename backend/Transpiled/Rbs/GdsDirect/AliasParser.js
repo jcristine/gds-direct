@@ -77,7 +77,7 @@ class AliasParser {
 
 	static async parseStore(cmd, PtcUtil = require('../Process/Common/PtcUtil.js')) {
 		let matches;
-		if (php.preg_match(/^STORE([A-Z0-9]{3}|)\/?(.*)$/, cmd, matches = [])) {
+		if (php.preg_match(/^STORE\s*([A-Z0-9]{3}|)\/?(.*)$/, cmd, matches = [])) {
 			let [, ptc, modsPart] = matches;
 			if (ptc === 'FXD') {
 				// could probably just check that PTC is in the fare family
@@ -111,7 +111,7 @@ class AliasParser {
 
 	static async parsePrice($cmd, stateful) {
 		let $matches;
-		if (!php.preg_match(/^PRICE(MIX|)([A-Z0-9]{3}|)\/?(.*)$/, $cmd, $matches = [])) {
+		if (!php.preg_match(/^PRICE\s*(MIX|)([A-Z0-9]{3}|)\/?(.*)$/, $cmd, $matches = [])) {
 			return Promise.resolve(null);
 		}
 		let [$_, mix, inputPtc, modsPart] = $matches;
