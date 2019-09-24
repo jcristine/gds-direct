@@ -10,7 +10,7 @@ You can inject the app on a page in your project to give user access to a GDS (A
 
 <pre>
 &lt;div id=&quot;terminal-app-container&quot; style=&quot;height: 100%;&quot;&gt;&lt;/div&gt;
-&lt;!-- http://dev-w13:20328/public/terminal-bundle.js on dev -&gt;
+&lt;!-- http://gds-direct-plus.stage.dyninno.net/public/terminal-bundle.js on dev -&gt;
 &lt;script src=&quot;https://gds-direct-plus.asaptickets.com/public/terminal-bundle.js&quot;&gt;&lt;/script&gt;
 &lt;script&gt;
     window.InitGdsDirectPlusApp({
@@ -18,6 +18,7 @@ You can inject the app on a page in your project to give user access to a GDS (A
         // returned by https://auth.asaptickets.com/help/api#authorizeToken
         emcSessionId: '85f49ee15350fd6e8c6bc9c58a61a43e',
     }).then(nodeApp =&gt; {
+        // nodeApp.preEnterCommand({cmd: 'V24Z84/WS QSBYC DPBVWS  AG 05578602 02JUL\n 1.1KLESUN/ARTUR\n 1 PS 188X 20DEC RIXKBP HK1   600A  735A *         FR   E', terminalId: 1});
         // nodeApp.runPnr({pnrCode: 'QWE123', gdsName: 'galileo'});
         // nodeApp.rebuild({data: {itineraryId: 1234, segmentStatus: 'GK'}});
     });
