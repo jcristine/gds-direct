@@ -1,3 +1,4 @@
+const Parse_fareSearch = require('gds-utils/src/text_format_processing/apollo/commands/Parse_fareSearch.js');
 
 
 const ApolloCmdParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
@@ -101,35 +102,35 @@ class NormalizeTariffCmd
 	}
 
 	/** parse and apply some normalization if needed */
-	execute($cmd, $gds)  {
-		let $cmdData;
-		if ($gds === 'apollo') {
-			$cmdData = ApolloCmdParser.parseFareSearch($cmd);
-			$cmdData = this.constructor.normalizeApolloCmd($cmdData);
-		} else if ($gds === 'sabre') {
-			$cmdData = require('../../Transpiled/Gds/Parsers/Sabre/Commands/TariffCmdParser.js').parse($cmd);
-			$cmdData = this.constructor.normalizeSabreCmd($cmdData);
-		} else if ($gds === 'amadeus') {
-			$cmdData = require('../../Transpiled/Gds/Parsers/Amadeus/Commands/TariffCmdParser.js').parse($cmd);
-			$cmdData = this.constructor.normalizeAmadeusCmd($cmdData);
-		} else if ($gds === 'galileo') {
-			$cmdData = require('../../Transpiled/Gds/Parsers/Galileo/Commands/TariffCmdParser.js').parse($cmd);
-			$cmdData = this.constructor.normalizeGalileoCmd($cmdData);
+	execute(cmd, gds)  {
+		let cmdData;
+		if (gds === 'apollo') {
+			cmdData = Parse_fareSearch(cmd);
+			cmdData = this.constructor.normalizeApolloCmd(cmdData);
+		} else if (gds === 'sabre') {
+			cmdData = require('../../Transpiled/Gds/Parsers/Sabre/Commands/TariffCmdParser.js').parse(cmd);
+			cmdData = this.constructor.normalizeSabreCmd(cmdData);
+		} else if (gds === 'amadeus') {
+			cmdData = require('../../Transpiled/Gds/Parsers/Amadeus/Commands/TariffCmdParser.js').parse(cmd);
+			cmdData = this.constructor.normalizeAmadeusCmd(cmdData);
+		} else if (gds === 'galileo') {
+			cmdData = require('../../Transpiled/Gds/Parsers/Galileo/Commands/TariffCmdParser.js').parse(cmd);
+			cmdData = this.constructor.normalizeGalileoCmd(cmdData);
 		} else {
 			return null;
 		}
-		if (!$cmdData) {
+		if (!cmdData) {
 			return null;
 		}
-		$cmdData['departureDate'] = this.normalizeDate($cmdData['departureDate'] || null);
-		$cmdData['returnDate'] = this.normalizeDate($cmdData['returnDate'] || null);
-		if (php.empty($cmdData['departureAirport']) ||
-            php.empty($cmdData['destinationAirport']) ||
-            php.empty(($cmdData['departureDate'] || {})['full'])
+		cmdData.departureDate = this.normalizeDate(cmdData.departureDate || null);
+		cmdData.returnDate = this.normalizeDate(cmdData.returnDate || null);
+		if (php.empty(cmdData.departureAirport) ||
+            php.empty(cmdData.destinationAirport) ||
+            php.empty((cmdData.departureDate || {}).full)
 		) {
 			return null;
 		}
-		return $cmdData;
+		return cmdData;
 	}
 }
 module.exports = NormalizeTariffCmd;
