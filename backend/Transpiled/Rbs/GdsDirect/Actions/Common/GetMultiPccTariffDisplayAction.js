@@ -1,4 +1,4 @@
-const Rej = require('enko-fundamentals/src/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 const MultiPccTariffRules = require('../../../../../Repositories/MultiPccTariffRules.js');
 const _ = require('lodash');
 
