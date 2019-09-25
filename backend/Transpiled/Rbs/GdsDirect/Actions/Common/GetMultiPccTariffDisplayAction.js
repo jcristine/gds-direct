@@ -1,6 +1,6 @@
 const MultiPccTariffRules = require('../../../../../Repositories/MultiPccTariffRules.js');
+const _ = require('lodash');
 
-const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const LocationGeographyProvider = require('../../../../Rbs/DataProviders/LocationGeographyProvider.js');
 const RbsClient = require("../../../../../IqClients/RbsClient");
@@ -20,7 +20,7 @@ class GetMultiPccTariffDisplayAction {
 		this.$repriceRules = null;
 		this.$log = ($msg, $data) => {};
 		this.$geoProvider = new LocationGeographyProvider();
-		this.$baseDate = php.date('Y-m-d H:i:s');
+		this.baseDate = php.date('Y-m-d H:i:s');
 	}
 
 	log($msg, $data) {
@@ -36,7 +36,7 @@ class GetMultiPccTariffDisplayAction {
 	}
 
 	setBaseDate($baseDate) {
-		this.$baseDate = $baseDate;
+		this.baseDate = $baseDate;
 		return this;
 	}
 
@@ -86,50 +86,45 @@ class GetMultiPccTariffDisplayAction {
 	}
 
 	async makeRpcParamOptions($cmd, $sessionData) {
-		let $cmdData, $departureDate, $returnDate, $params, $type, $data, $options, $pccRec;
-		$cmdData = (new NormalizeTariffCmd())
-			.setBaseDate(this.$baseDate)
+		const cmdData = (new NormalizeTariffCmd())
+			.setBaseDate(this.baseDate)
 			.execute($cmd, $sessionData['gds']);
-		if (!$cmdData) {
+		if (!cmdData) {
 			return {error: ['Failed to parse base Tariff Display command ' + $cmd]};
 		}
-		$departureDate = ($cmdData['departureDate'] || {})['full'];
-		$returnDate = ($cmdData['returnDate'] || {})['full'];
-		$params = {
+		const departureDate = (cmdData.departureDate || {}).full;
+		const returnDate = (cmdData.returnDate || {}).full;
+		const baseParams = {
 			maxFares: 40,
 			timeout: this.constructor.TIMEOUT * 2 / 3,
-			departureDate: $departureDate,
-			returnDate: $returnDate,
-			departureAirport: $cmdData['departureAirport'],
-			destinationAirport: $cmdData['destinationAirport'],
+			departureDate: departureDate,
+			returnDate: returnDate,
+			departureAirport: cmdData.departureAirport,
+			destinationAirport: cmdData.destinationAirport,
 		};
-		for ([$type, $data] of Object.entries($cmdData['typeToData'])) {
-			if ($type === 'airlines') {
-				$params['airlines'] = $data;
-			} else if ($type === 'tripType') {
-				$params['tripType'] = $data;
-			} else if ($type === 'ptc') {
-				$params['ptc'] = $data;
-			} else if ($type === 'cabinClass') {
-				$params['cabinClass'] = $data;
-			} else if ($type === 'fareType') {
-				$params['fareType'] = this.constructor.transformFareType($data);
-			} else if ($type === 'accountCode') {
-				$params['accountCode'] = $data;
+		for (const [type, data] of Object.entries(cmdData.typeToData)) {
+			if (type === 'airlines') {
+				baseParams.airlines = data;
+			} else if (type === 'tripType') {
+				baseParams.tripType = data;
+			} else if (type === 'ptc') {
+				baseParams.ptc = data;
+			} else if (type === 'cabinClass') {
+				baseParams.cabinClass = data;
+			} else if (type === 'fareType') {
+				baseParams.fareType = this.constructor.transformFareType(data);
+			} else if (type === 'accountCode') {
+				baseParams.accountCode = data;
 			} else {
-				return {error: 'Unsupported modifier - ' + $type};
+				return {error: 'Unsupported modifier - ' + type};
 			}
 		}
-		$options = [];
-		for ($pccRec of Object.values(await this.getPccs($cmdData, $sessionData))) {
-			$options.push(this.constructor.extendFromPccRecord($params, $pccRec, $sessionData));
+		let options = [];
+		for (const pccRec of Object.values(await this.getPccs(cmdData, $sessionData))) {
+			options.push(this.constructor.extendFromPccRecord(baseParams, pccRec, $sessionData));
 		}
-		$options = php.array_values(Fp.map(a => ArrayUtil.getFirst(a), Fp.groupBy(a => JSON.stringify(a), $options)));
-		return {
-			baseParams: $params,
-			options: $options,
-			cmdData: $cmdData,
-		};
+		options = _.uniqBy(options, r => JSON.stringify(r));
+		return {baseParams, options, cmdData};
 	}
 
 	static formatJobError($job) {
