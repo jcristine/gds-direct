@@ -1,15 +1,14 @@
+const Rej = require('enko-fundamentals/src/Rej.js');
 const MultiPccTariffRules = require('../../../../../Repositories/MultiPccTariffRules.js');
 const _ = require('lodash');
 
-const Fp = require('../../../../Lib/Utils/Fp.js');
 const LocationGeographyProvider = require('../../../../Rbs/DataProviders/LocationGeographyProvider.js');
 const RbsClient = require("../../../../../IqClients/RbsClient");
 const NormalizeTariffCmd = require('../../../../../Actions/CmdTranslators/NormalizeTariffCmd.js');
 const MakeMultiPccTariffDumpAction = require('./MakeMultiPccTariffDumpAction.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const {allWrap} = require('klesun-node-tools/src/Lang.js');
-const {timeout} = require("../../../../../Utils/TmpLib");
+const {allWrap, timeout} = require('klesun-node-tools/src/Lang.js');
 
 /**
  * schedule multiple async jobs that fetch tariff displays in different PCC-s
@@ -85,12 +84,19 @@ class GetMultiPccTariffDisplayAction {
 		return $inRpcFormat;
 	}
 
-	async makeRpcParamOptions($cmd, $sessionData) {
+	async makeRpcParamOptions(cmd, sessionData) {
 		const cmdData = (new NormalizeTariffCmd())
 			.setBaseDate(this.baseDate)
-			.execute($cmd, $sessionData['gds']);
+			.execute(cmd, sessionData.gds);
 		if (!cmdData) {
-			return {error: ['Failed to parse base Tariff Display command ' + $cmd]};
+			const msg = 'Failed to parse your command - ' + cmd;
+			return Rej.NotImplemented(msg);
+		} else if (!cmdData.departureAirport) {
+			return Rej.BadRequest('Departure airport must be specified');
+		} else if (!cmdData.destinationAirport) {
+			return Rej.BadRequest('Destination airport must be specified');
+		} else if (!cmdData.departureDate) {
+			return Rej.BadRequest('Invalid departure date');
 		}
 		const departureDate = (cmdData.departureDate || {}).full;
 		const returnDate = (cmdData.returnDate || {}).full;
@@ -116,15 +122,15 @@ class GetMultiPccTariffDisplayAction {
 			} else if (type === 'accountCode') {
 				baseParams.accountCode = data;
 			} else {
-				return {error: 'Unsupported modifier - ' + type};
+				return Rej.NotImplemented('Unsupported modifier - ' + type);
 			}
 		}
 		let options = [];
-		for (const pccRec of Object.values(await this.getPccs(cmdData, $sessionData))) {
-			options.push(this.constructor.extendFromPccRecord(baseParams, pccRec, $sessionData));
+		for (const pccRec of Object.values(await this.getPccs(cmdData, sessionData))) {
+			options.push(this.constructor.extendFromPccRecord(baseParams, pccRec, sessionData));
 		}
 		options = _.uniqBy(options, r => JSON.stringify(r));
-		return {baseParams, options, cmdData};
+		return Promise.resolve({baseParams, options, cmdData});
 	}
 
 	static formatJobError($job) {
@@ -182,19 +188,14 @@ class GetMultiPccTariffDisplayAction {
 	/** @param $cmdData = CommandParser::parseFareSearch()
 	 * @param $session = await require('StatefulSession.js')() */
 	async execute($cmd, $session) {
-		let $sessionData, $rpcParamRecord,
-			$timeout, $hasFares, $cmdRecord;
-		$sessionData = {...$session.getSessionData(), gds: $session.gds};
+		const sessionData = {...$session.getSessionData(), gds: $session.gds};
 		if (!$session.getAgent().canUseMultiPccTariffDisplay()) {
-			return {errors: ['You are not allowed to use \/MIX alias']};
+			return Rej.Forbidden('You are not allowed to use /MIX alias');
 		}
-		$rpcParamRecord = await this.makeRpcParamOptions($cmd, $sessionData);
-		if (!php.empty($rpcParamRecord['error'])) {
-			return {errors: ['Failed to generate RPC params - ' + $rpcParamRecord['error']]};
-		}
+		const rpcParamRecord = await this.makeRpcParamOptions($cmd, sessionData);
 		const promises = [];
-		for (const $rpcParams of Object.values($rpcParamRecord['options'])) {
-			const $pccParams = this.constructor.arrayDiffTree($rpcParams, $rpcParamRecord['baseParams']);
+		for (const $rpcParams of Object.values(rpcParamRecord['options'])) {
+			const $pccParams = this.constructor.arrayDiffTree($rpcParams, rpcParamRecord['baseParams']);
 			let whenTariff = RbsClient.getTariffDisplay($rpcParams)
 				.then(serviceRs => ({
 					pcc: $rpcParams.pcc,
@@ -213,21 +214,21 @@ class GetMultiPccTariffDisplayAction {
 			promises.push(whenTariff);
 		}
 		this.log('Started ' + php.count(promises) + ' jobs: ' + php.implode(', ', php.array_column(promises, 'pcc')), promises);
-		$timeout = this.constructor.TIMEOUT;
 		const wrap = await allWrap(promises);
-		const $finishedJobs = wrap.resolved;
+		const finishedJobs = wrap.resolved;
 		const errors = wrap.rejected.map(exc => (exc + '').slice(0, 90) + '...');
-		this.logFinishedJobs($finishedJobs, promises);
+		this.logFinishedJobs(finishedJobs, promises);
 
-		$hasFares = ($job) => !php.empty($job['jobResult']['result']['fares']);
-		if (!Fp.any($hasFares, $finishedJobs)) {
-			const formatted = php.array_map(a => this.constructor.formatJobError(a), $finishedJobs);
+		const hasFares = ($job) => !php.empty($job.jobResult.result.fares);
+		if (!finishedJobs.some(hasFares)) {
+			const formatted = php.array_map(a => this.constructor.formatJobError(a), finishedJobs);
 			formatted.push(...errors);
 			return {errors: formatted.length > 0 ? formatted : ['None of PCC jobs responded']};
 		}
-		if (!php.empty($finishedJobs)) {
-			$cmdRecord = (new MakeMultiPccTariffDumpAction()).execute($finishedJobs, $sessionData, $rpcParamRecord['cmdData']);
-			return {calledCommands: [$cmdRecord], userMessages: errors};
+		if (!php.empty(finishedJobs)) {
+			const cmdRecord = (new MakeMultiPccTariffDumpAction())
+				.execute(finishedJobs, sessionData, rpcParamRecord.cmdData);
+			return {calledCommands: [cmdRecord], userMessages: errors};
 		} else {
 			return {errors: ['All ' + php.count(promises) + ' PCC jobs failed'].concat(errors)};
 		}

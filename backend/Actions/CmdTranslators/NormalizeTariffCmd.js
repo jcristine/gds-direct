@@ -1,3 +1,4 @@
+const Rej = require('enko-fundamentals/src/Rej.js');
 const Parse_fareSearch = require('gds-utils/src/text_format_processing/apollo/commands/Parse_fareSearch.js');
 
 
@@ -18,17 +19,16 @@ class NormalizeTariffCmd
 		return this;
 	}
 
-	static normalizeApolloCmd($cmdData)  {
-		let $typeToData;
-		if (!$cmdData || !php.empty($cmdData['unparsed'])) {
+	static normalizeApolloCmd(cmdData)  {
+		if (!cmdData || cmdData.unparsed) {
 			return null;
 		}
-		$typeToData = php.array_combine(
-			php.array_column($cmdData['modifiers'] || [], 'type'),
-			php.array_column($cmdData['modifiers'] || [], 'parsed')
+		const typeToData = php.array_combine(
+			php.array_column(cmdData.modifiers || [], 'type'),
+			php.array_column(cmdData.modifiers || [], 'parsed')
 		);
-		$cmdData['typeToData'] = $typeToData;
-		return $cmdData;
+		cmdData.typeToData = typeToData;
+		return cmdData;
 	}
 
 	static normalizeGalileoCmd($cmdData)  {
@@ -101,7 +101,10 @@ class NormalizeTariffCmd
 		return $dateRecord;
 	}
 
-	/** parse and apply some normalization if needed */
+	/**
+	 * parse and apply some normalization if needed
+	 * @return {Object|null} - null if input is not recognized as tariff command
+	 */
 	execute(cmd, gds)  {
 		let cmdData;
 		if (gds === 'apollo') {
@@ -124,12 +127,6 @@ class NormalizeTariffCmd
 		}
 		cmdData.departureDate = this.normalizeDate(cmdData.departureDate || null);
 		cmdData.returnDate = this.normalizeDate(cmdData.returnDate || null);
-		if (php.empty(cmdData.departureAirport) ||
-            php.empty(cmdData.destinationAirport) ||
-            php.empty((cmdData.departureDate || {}).full)
-		) {
-			return null;
-		}
 		return cmdData;
 	}
 }
