@@ -174,6 +174,7 @@ class CommandCorrector {
 					correct: 'A*C',
 					message: 'CORRECTED! USE * BETWEEN A and C',
 				},
+				{mistake: 'A', correct: 'A*'},
 				{
 					mistake: '0{number}{class}{int_num}**',
 					correct: '0{number}{class}{int_num}*',
