@@ -99,7 +99,7 @@ const PNRBFManagement_rq_StorePriceMods = (storePricingParams) => {
 		} else if (type === 'cabinClass') {
 			const msg = 'Cabin class modifier not allowed in T:$B - ' + raw +
 				'. You may want to $BB0/' + raw + ' to rebook the segments prior to T:$B';
-			return Rej.BadRequest(msg);
+			throw Rej.BadRequest.makeExc(msg);
 		} else {
 			const reject = !type ? Rej.BadRequest : Rej.NotImplemented;
 			throw reject.makeExc('Unsupported T:$B modifier - ' + type + ' - ' + raw);
