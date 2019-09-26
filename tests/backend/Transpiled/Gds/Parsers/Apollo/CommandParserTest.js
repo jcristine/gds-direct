@@ -1207,6 +1207,45 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 			},
 		});
 
+		// TODO: parse!
+		// list.push({
+		// 	title: 'First dates, then airport codes',
+		// 	input: '$DV20DEC04JANNYCPTY',
+		// 	output: {
+		// 		departureDate: {
+		// 			raw: '20DEC',
+		// 			partial: '12-20',
+		// 		},
+		// 		returnDate: {
+		// 			raw: '04JAN',
+		// 			partial: '01-04',
+		// 		},
+		// 		departureAirport: 'NYC',
+		// 		destinationAirport: 'PTY',
+		// 		modifiers: [],
+		// 		unparsed: '',
+		// 	},
+		// });
+		//
+		// list.push({
+		// 	title: 'First dates, then airport codes',
+		// 	input: '$DV20DEC4JANNYCPTY',
+		// 	output: {
+		// 		departureDate: {
+		// 			raw: '20DEC',
+		// 			partial: '12-20',
+		// 		},
+		// 		returnDate: {
+		// 			raw: '4JAN',
+		// 			partial: '01-04',
+		// 		},
+		// 		departureAirport: 'NYC',
+		// 		destinationAirport: 'PTY',
+		// 		modifiers: [],
+		// 		unparsed: '',
+		// 	},
+		// });
+
 		return list.map(a => [a]);
 	}
 
