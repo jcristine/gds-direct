@@ -127,7 +127,7 @@ class ItineraryParser {
 			/^/,
 			/(?<segmentNumber>[\s\d]{1,2})/,
 			/\s+(?<airline>[A-Z\d]{2})/,
-			/\s*(?<flightNumber>\d+)/,
+			/\s*(?<flightNumber>\d{1,4})/,
 			/\s*(?<bookingClass>[A-Z]{1})/,
 			/\s*(?<departureDay>\d{1,2})/,
 			/(?<departureMonth>[A-Z]{3})/,

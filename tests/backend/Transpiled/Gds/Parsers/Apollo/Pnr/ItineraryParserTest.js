@@ -715,6 +715,21 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
 			},
 		]);
 
+		// 5 digits in flight number - should not get parsed
+		$list.push([
+			[
+				"5 AC19175M 05JAN LISYYZ SS1  1255P  415P *         SU   E      ",
+				"       OPERATED BY AIR CANADA ROUGE",
+			].join('\n'),
+			{
+				segments: [],
+				textLeft: [
+					"5 AC19175M 05JAN LISYYZ SS1  1255P  415P *         SU   E      ",
+					"       OPERATED BY AIR CANADA ROUGE",
+				].join('\n'),
+			},
+		]);
+
 		return $list;
 	}
 
