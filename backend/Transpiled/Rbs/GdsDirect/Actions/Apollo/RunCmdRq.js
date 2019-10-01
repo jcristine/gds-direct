@@ -863,7 +863,9 @@ const RunCmdRq = ({
 	const matchesMcoName = (passengerName, headerData) => {
 		const [lnme, fnme] = passengerName.split('/');
 		return headerData.lastName.startsWith(lnme || '')
-			&& headerData.firstName.startsWith(fnme || '');
+			&& headerData.firstName.startsWith(fnme || '')
+			|| (lnme || '').startsWith(headerData.lastName)
+			&& (fnme || '').startsWith(headerData.firstName);
 	};
 
 	const filterMcoRowsByMask = async (matchingPartial, headerData) => {
@@ -987,7 +989,7 @@ const RunCmdRq = ({
 			}
 
 			// needed only to get date's year
-			const pastDate = DateTime.decodeRelativeDateInPast(
+			const pastDate = DateTime.addPastYear(
 				htRecord.transactionDt.parsed.split(' ')[0], stateful.getStartDt());
 
 			if (!pastDate) {

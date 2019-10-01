@@ -1553,6 +1553,173 @@ class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
 			},
 		});
 
+		list.push({
+			title: 'Middle name too long, truncated even in HB:FEX screen',
+			input: {
+				cmdRequested: 'HB:FEX',
+				baseDate: '2019-09-30 20:26:00',
+			},
+			output: {
+				calledCommands: [{
+					cmd: 'HB:FEX',
+					output: 'SEE MASK FORM BELOW',
+				}],
+				actions: [
+					{
+						type: 'displayExchangeMask',
+						data: {
+							mcoRows: [
+								{
+									'command': '*MCO1',
+									'passengerName': 'MONTROPE',
+									'documentNumber': '2305056297697',
+									'issueDate': {'raw': '30SEP19', 'parsed': '2019-09-30'},
+									'amount': '370.53',
+								},
+							],
+						},
+					},
+				],
+			},
+			sessionInfo: {
+				initialState: {
+					...GdsDirectDefaults.makeDefaultApolloState(),
+					'agent_id': 5820,
+					'hasPnr': true,
+					'isPnrStored': true,
+					'pcc': '1O3K',
+					'recordLocator': 'QTMQ77',
+				},
+				initialCommands: [
+					{
+						"cmd": "*R",
+						"output": [
+							"** THIS PNR IS CURRENTLY IN USE **",
+							"PANDAREN",
+							"2F3K - INTERNATIONAL TRAVEL NET SFO",
+							"QTMQ77/WS QSBYC DPBVWS  AG 05578602 30SEP",
+							" 1.1MONTROPEZRUBIO/ORIETTA DE LOS ANGELES ",
+							" 1 CM 229L 12FEB ORDPTY HK1   145P  816P *         WE   E  1",
+							" 2 CM 635L 12FEB PTYBAQ HK1   948P 1101P *         WE   E  1",
+							" 3 CM 674L 03MAR BAQPTY HK1   124P  247P *         TU   E  2",
+							" 4 CM 235L 03MAR PTYORD HK1   636P 1115P *         TU   E  2",
+							" 5 OTH ZO GK1  XXX 30JUL-PRESERVEPNR",
+							"FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
+							"FOP:-VIXXXXXXXXXXXX1475/D1022/*510331",
+							"TKTG-T/QSB 30SEP2021Z WS AG **ELECTRONIC DATA EXISTS** >*HTE;",
+							")><",
+						].join("\n"),
+					},
+					{
+						"cmd": "MR",
+						"output": [
+							"*** TIN REMARKS EXIST *** >*T; ",
+							"*** MISCELLANEOUS DOCUMENT DATA EXISTS *** >*MPD; ",
+							"*** LINEAR FARE DATA EXISTS *** >*LF; ",
+							"ATFQ-OK/$B/:N/Z8/ET/TA1O3K/CCM",
+							" FQ-USD 260.00/USD 37.20US/USD 84.33XT/USD 381.53 - 30SEP LAA4OZ2S.LAA4OZ2S.LAA4OZ2S.LAA4OZ2S",
+							"GFAX-SSRDOCSCMHK1/////16FEB68/F//MONTROPEZ RUBIO/ORIETTA/DE LOS ANGELES-1MONTROPEZRUBIO/ORIETTA DE LOS ANGELES",
+							"   3 SSRDOCSCMHK1/////16FEB68/F//MONTROPEZ RUBIO/ORIETTA/DE LOS ANGELES-1MONTROPEZRUBIO/ORIETTA DE LOS ANGELES",
+							"   5 SSRDOCSCMHK1/////16FEB68/F//MONTROPEZ RUBIO/ORIETTA/DE LOS ANGELES-1MONTROPEZRUBIO/ORIETTA DE LOS ANGELES",
+							"   7 SSRDOCSCMHK1/////16FEB68/F//MONTROPEZ RUBIO/ORIETTA/DE LOS )><",
+						].join("\n"),
+					},
+					{
+						"cmd": "MR",
+						"output": [
+							"ANGELES-1MONTROPEZRUBIO/ORIETTA DE LOS ANGELES",
+							"   9 SSRTKNECMHK01 ORDPTY 0229L 12FEB-1MONTROPEZRUBI.2307407625623C1",
+							"  10 SSRTKNECMHK01 PTYBAQ 0635L 12FEB-1MONTROPEZRUBI.2307407625623C2",
+							"  11 SSRTKNECMHK01 BAQPTY 0674L 03MAR-1MONTROPEZRUBI.2307407625623C3",
+							"  12 SSRTKNECMHK01 PTYORD 0235L 03MAR-1MONTROPEZRUBI.2307407625623C4",
+							"  13 SSRCTCECMHK1/ORIETTA502618//ICLOUD.COM-1MONTROPEZRUBIO/ORIETTA DE LOS ANGELES",
+							"  14 SSRCTCMCMHK1/17736209227-1MONTROPEZRUBIO/ORIETTA DE LOS ANGELES",
+							")><",
+						].join("\n"),
+					},
+					{
+						"cmd": "MR",
+						"output": [
+							"RMKS-GD-ANDROMEDA/104510/FOR ANDROMEDA/104510/LEAD-13267700 IN 2F3K",
+							"ACKN-CM EZI5UI   30SEP 1816",
+							"><",
+						].join("\n"),
+					},
+				],
+				performedCommands: [
+					{
+						"cmd": "HB:FEX",
+						"output": [
+							">$EX NAME MONTROPEZRUBIO/ORIETTA DE LOS ANG  PSGR  1/ 1",
+							"FARE USD   260.00  TOTAL USD   381.53",
+							"TX1 USD   37.20 US   TX2 USD   84.33 XT   TX3               ",
+							"",
+							"EXCHANGE TKTS ;..............-;...  CPN ALL",
+							"TKT1;.............. CPN;.... TKT2;.............. CPN;....",
+							"COMM;.........  ORIG FOP;................... EVEN;.",
+							"",
+							"TTL VALUE OF EX TKTS USD;.............  ORIG BRD/OFF;...;...",
+							"TX1 USD;.......;..   TX2 USD;.......;..   TX3 USD;.......;..",
+							"ORIG ISS;...... ORIG DATE;....... ORIG IATA NBR;.........",
+							"ORIG TKT;..............-;...  ORIG INV NBR;.........",
+							"PENALTY USD;............  COMM ON PENALTY;...........",
+							"><",
+						].join("\n"),
+					},
+					{
+						"cmd": "*MPD",
+						"output": [
+							"*MPD             MISCELLANEOUS DOCUMENT LIST",
+							"          NAME         DOCUMENT NBR   ISSUED       AMOUNT",
+							">*MCO1;   MONTROPE    2305056297697   30SEP19          370.53 ",
+							"END OF DISPLAY",
+							"><",
+						].join("\n"),
+					},
+					{
+						"cmd": "*MCO1",
+						"output": [
+							">HHMCU1           *** MISC CHARGE ORDER ***",
+							" PASSENGER NAME;MONTROPEZRUBIO/ORIETTA DE LOS ANGELES...",
+							" TO;CM...................................... AT;PTY............",
+							" VALID FOR;SPLIT...............................................",
+							" TOUR CODE;............... RELATED TKT NBR;.............",
+							" FOP;VIXXXXXXXXXXXX1475/OK.....................................",
+							" EXP DATE;1022 APVL CODE;510331 COMM;0.00/... TAX;........-;..",
+							" AMOUNT;370.53..-;USD EQUIV ;........-;... BSR;..........",
+							" END BOX;......................................................",
+							" REMARK1;..............................................",
+							" REMARK2;......................................................",
+							" VALIDATING CARRIER;CM                  ISSUE NOW;.",
+							"><",
+						].join("\n"),
+					},
+					{
+						"cmd": "*HT",
+						"output": [
+							"** CURRENT TIN DATA **",
+							"MONTROPEZRUBIO-00000000-01/2307407625623/000049884-USD/381.53/TE/30SEP2021Z",
+							"** HISTORY TIN DATA **",
+							"XK MONTROPEZRUBIO-52983616-17/2305056297697/000049881-USD/370.53/30SEP2013Z",
+							"><",
+						].join("\n"),
+					},
+					{
+						"cmd": "*HA",
+						"output": [
+							"     *****  AIR  HISTORY  *****",
+							"HS CM 235 L03MAR PTYORD NN/HK1   636P 1115P *       2",
+							"HS CM 674 L03MAR BAQPTY NN/HK1   124P  247P *       2",
+							"HS CM 635 L12FEB PTYBAQ NN/HK1   948P 1101P *       1",
+							"HS CM 229 L12FEB ORDPTY NN/HK1   145P  816P *       1",
+							"RCVD-NOKEYSUPPLIEDROBOT/ZDPBVWS -CR- QSB/2F3K/1V AG WS 30SEP1816Z",
+							"><",
+						].join("\n"),
+					},
+				],
+			},
+		});
+
 		return list.map(c => [c]);
 	}
 
