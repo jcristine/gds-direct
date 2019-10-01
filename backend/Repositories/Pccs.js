@@ -22,6 +22,8 @@ const normalizeRow = ($pcc) => {
 		'dk_number': $pcc['dk_number'],
 		'point_of_sale_country': $pcc['point_of_sale_country'],
 		'point_of_sale_city': $pcc['point_of_sale_city'],
+		// there are two fields: 'currency' in getPCCsAll and one in 'getConsolidatorAll'
+		// currency of PCC is > currency of consolidator, but the former may be not set
 		'default_currency': null, // RBS took it from 'getConsolidatorAll'
 		'ticket_mask_pcc': $pcc['ticket_mask_pcc'],
 		'updated_dt': sqlNow(),
