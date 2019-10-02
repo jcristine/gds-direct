@@ -739,7 +739,7 @@ const RunCmdRq = ({
 	};
 
 	const processRealCommand = async (cmd, fetchAll = false) => {
-		return RunRealCmd({stateful, cmd, fetchAll, cmdRq, CmdRqLog});
+		return RunRealCmd({stateful, cmd, fetchAll, cmdRq, CmdRqLog, gdsClients});
 	};
 
 	/** show availability for first successful city option */
