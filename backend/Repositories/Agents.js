@@ -16,6 +16,9 @@ const normalizeRow = (row) => {
 			emails[companyName] = companyData.email;
 		}
 	}
+	const gds_direct_fs_limit = (row.settings || {}).gds_direct_fs_limit;
+	const gds_direct_usage_limit = (row.settings || {}).gds_direct_usage_limit;
+
 	return {
 		id: row.id,
 		login: row.displayName,
@@ -24,18 +27,16 @@ const normalizeRow = (row) => {
 		fp_initials: (row.settings || {}).fp_initials || '',
 		email_list: !php.empty(emails) ? php.json_encode(emails) : '',
 		sabre_initials: (row.settings || {})[`Sabre Initials`] || '',
-		sabre_lniata: php.is_array(sabreLniata) ? php.implode(', ', sabreLniata) : sabreLniata,
 		sabre_id: (row.settings || {})['Sabre ID'] || '',
 		team_id: row.teamId || '',
 		updated_dt: php.date('Y-m-d H:i:s'),
 		deactivated_dt: (row.settings || {}).unactivatedDt,
-		gds_direct_fs_limit: (row.settings || {}).gds_direct_fs_limit,
-		gds_direct_usage_limit: (row.settings || {}).gds_direct_usage_limit,
-		/** @deprecated - use dataJson instead */
-		roles: (row.roles || []).join(','),
+		gds_direct_fs_limit: gds_direct_fs_limit === '' ? null : gds_direct_fs_limit,
+		gds_direct_usage_limit: gds_direct_usage_limit === '' ? null : gds_direct_usage_limit,
 		dataJson: JSON.stringify({
 			roles: row.roles || [],
 			availableCompanies: row.availableCompanies || {},
+			sabreLniata: sabreLniata,
 		}),
 	};
 };

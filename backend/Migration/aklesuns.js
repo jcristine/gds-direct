@@ -455,6 +455,18 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		name: 'GRECT/2019.10.02005-remove-roles-column-from-agents',
+		perform: (db) => db.query([
+			'ALTER TABLE `agents` DROP COLUMN roles;',
+		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.10.02005-remove-sabre-lniata-column-from-agents',
+		perform: (db) => db.query([
+			'ALTER TABLE `agents` DROP COLUMN sabre_lniata;',
+		].join('\n')),
+	},
+	{
 		name: 'GRECT/2019.04.02006-create-role-NEW_GDS_DIRECT_DEV_ACCESS',
 		perform: async (db) => {
 			const emc = await Emc.getClient();

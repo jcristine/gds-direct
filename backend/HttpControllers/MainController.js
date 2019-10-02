@@ -77,7 +77,7 @@ const normalizeRqBody = (rqBody, emcData) => {
  */
 const normalizeForeignProjectEmcData = async (emcData) => {
 	const row = await Agents.getById(emcData.data.user.id);
-	const roles = row.roles ? row.roles.split(',') : [];
+	const roles = (row.data || {}).roles || [];
 	emcData.data.user.roles = roles;
 	return emcData;
 };
