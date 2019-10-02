@@ -88,7 +88,7 @@ const shouldWrap = (cmd) => {
 
 /**
  * this wrapping is for display, not for processing, since it has pretty
- * loos rules that do not take type of command into account for example
+ * loose rules that do not take type of command into account for example
  */
 const wrap = (text, gds) => {
 	const result = [];
