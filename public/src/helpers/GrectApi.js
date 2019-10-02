@@ -60,6 +60,9 @@ const GrectApi = ({
 			url: '/api/js/admin/multi-pcc-tariff/delete-rule',
 			postParams: params,
 		}),
+		admin: {
+			getMpLog: () => fetchJson({url: '/admin/getMpLog'}),
+		},
 	};
 };
 

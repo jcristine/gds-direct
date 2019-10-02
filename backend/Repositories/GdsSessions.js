@@ -259,7 +259,7 @@ exports.getHist = async (params) => {
 		join: join,
 		where: where,
 		orderBy: 'ts.id DESC',
-		limit: 1250,
+		limit: params.limit || 1250,
 	}));
 
 	return rows.map(session => ({

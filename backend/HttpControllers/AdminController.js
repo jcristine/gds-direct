@@ -168,7 +168,7 @@ exports.getMpLog = async (rqBody) => {
 	});
 	const [agents, cmdRecs] = await Promise.all([whenAgents, whenCmdRecs]);
 	const sessionIds = [...new Set(cmdRecs.map(rec => rec.session_id))];
-	const sessions = await GdsSessions.getHist({sessionIds});
+	const sessions = await GdsSessions.getHist({sessionIds, limit: sessionIds.length});
 
 	const idToSession = _.keyBy(sessions, s => s.id);
 	const idToAgent = _.keyBy(agents, a => a.id);
