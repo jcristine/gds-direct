@@ -3,9 +3,8 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 
 const Db = require('../Utils/Db.js');
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
-const sqlNow = require("../Utils/TmpLib").sqlNow;
-const nonEmpty = require("klesun-node-tools/src/Rej").nonEmpty;
-const {coverExc} = require('klesun-node-tools/src/Lang.js');
+const {sqlNow} = require('klesun-node-tools/src/Utils/Misc.js');
+const {coverExc, nonEmpty} = require('klesun-node-tools/src/Lang.js');
 
 const TABLE = 'terminal_command_log';
 
@@ -119,7 +118,7 @@ const areValuesSame = (rowFromDb, rowForDb) => {
 		&& rowFromDb.duration.slice(0, rowForDb.duration.length) == rowForDb.duration
 		&& rowFromDb.cmd_rq_id == rowForDb.cmd_rq_id
 		&& rowFromDb.output === rowForDb.output
-		;
+	;
 };
 
 const tryInsert = row => Db.with(db => db.writeRows(TABLE, [row]));
@@ -193,24 +192,30 @@ exports.getAll = async (sessionId) => {
 		orderBy: 'id DESC',
 	}));
 	return rows.map(r => {
-        /** @var typed = makeRow() */
-        const typed = r;
+		/** @var typed = makeRow() */
+		const typed = r;
 		return typed;
 	});
 };
 
-exports.getBy = (params) => {
+exports.getBy = ({connectionType = 'master', ...params}) => {
 	params.table = TABLE;
-	return Db.with(db => db.fetchAll(params));
+	if (connectionType === 'master') {
+		return Db.with(db => db.fetchAll(params));
+	} else if (connectionType === 'slave') {
+		return Db.withSlave(db => db.fetchAll(params));
+	} else {
+		return Db.withAny(db => db.fetchAll(params));
+	}
 };
 
 exports.getLast = async (sessionId) => {
-    /** @var r = makeRow() */
+	/** @var r = makeRow() */
 	const r = await Db.with(db => db.fetchOne({
 		table: TABLE,
 		where: [['session_id', '=', sessionId]],
 		orderBy: 'id DESC',
-        limit: 1,
+		limit: 1,
 	}));
 	return r;
 };

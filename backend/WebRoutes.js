@@ -329,6 +329,7 @@ const routes = {
 	'/api/js/admin/multi-pcc-tariff/delete-rule': withRoleAuth([
 		'NEW_GDS_DIRECT_DEV_ACCESS', 'NEW_GDS_DIRECT_CAN_EDIT_D_MIX_MODIFIERS',
 	], MultiPccTariffRules.deleteRule),
+	'/admin/getMpLog': withDevAuth(AdminController.getMpLog),
 };
 
 const socketIo = SocketIo.init(routes);
