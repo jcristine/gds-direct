@@ -17,6 +17,7 @@
     "chokidar": "^3.0.2",
     "dyn-utils": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/dyn-utils.git#e21e4f5827ff7036b414b23afe98eb7faeeb561f",
     "gds-parsers": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/gds-parsers.git#8848508fc677cf31ea2bd45945cb13a80303b96e",
+    "dynatech-mysql-cluster-wrapper": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/mysql-cluster-wrapper.git#v0.3.9",
     "dynatech-client-component": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component.git#7ad8d0caa829bf947dadced1834ced94ae90b734",
     "dynatech-client-component-infocenter": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-infocenter.git#0d2f03b85b2621d4ed65649593b4193ae9764111",
     "dynatech-client-component-emc": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-emc.git#v0.1.2",
