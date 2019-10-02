@@ -168,14 +168,14 @@ exports.getMpLog = async (rqBody) => {
 	});
 	const [agents, cmdRecs] = await Promise.all([whenAgents, whenCmdRecs]);
 	const sessionIds = [...new Set(cmdRecs.map(rec => rec.session_id))];
-	const sessions = await GdsSessions.getHist({sessionIds: sessionIds});
+	const sessions = await GdsSessions.getHist({sessionIds});
 
 	const idToSession = _.keyBy(sessions, s => s.id);
 	const idToAgent = _.keyBy(agents, a => a.id);
 	const records = [];
 	for (const cmdRec of cmdRecs) {
 		const session = idToSession[cmdRec.session_id];
-		const agent = idToAgent[session.agentId];
+		const agent = !session ? null : idToAgent[session.agentId];
 
 		// @:5EXPERTS REMARK-MP-UA-2G2H|ER
 		const mpMatch = cmdRec.cmd.match(/EXPERTS REMARK-MP-([A-Z0-9]{2})-([A-Z0-9]{3,9})/);
