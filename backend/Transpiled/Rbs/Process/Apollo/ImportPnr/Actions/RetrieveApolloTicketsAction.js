@@ -13,6 +13,13 @@ const TravelportClient = require("../../../../../../GdsClients/TravelportClient"
 const Forbidden = require("klesun-node-tools/src/Rej").Forbidden;
 
 class RetrieveApolloTicketsAction extends AbstractGdsAction {
+	constructor({session = null} = {}) {
+		super();
+		if (session) {
+			this.setSession(session);
+		}
+	}
+
 	static async getTicket($ticketRef, gdsSession) {
 		let $cmd, $teDump, $ticket;
 
