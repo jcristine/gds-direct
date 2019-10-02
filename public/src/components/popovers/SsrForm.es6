@@ -123,7 +123,7 @@ const makeSectionsSwitchCmp = () => {
 				e.preventDefault();
 				for (const tr of tbodyCmp.context.querySelectorAll(':scope > tr')) {
 					const tsaData = tsaTrToData(tr);
-					const cmds = tsaDataToCmds(tsaData);
+					const cmds = [...tsaDataToCmds(tsaData), 'ER'];
 					for (const cmd of cmds) {
 						DEV_CMD_STACK_RUN(cmd);
 					}
