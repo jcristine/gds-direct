@@ -1,3 +1,4 @@
+const GdsSession = require('../../../../../../GdsHelpers/GdsSession.js');
 const RunCmdHelper = require('./RunCmdHelper.js');
 const ModifyCmdOutput = require('./ModifyCmdOutput.js');
 const TApolloSavePnr = require('../../../../GdsAction/Traits/TApolloSavePnr.js');
@@ -60,35 +61,20 @@ const isInRanges = ($num, $ranges) => {
 	return false;
 };
 
-const RunRealCmd = ({
-	stateful, cmd, fetchAll = false,
-	cmdRq, CmdRqLog,
+/**
+ * @param formattedTicketNumber = "006 7407 604208"
+ * @return {string} = "0067407604208"
+ */
+const normalizeTicketNumber = (formattedTicketNumber) => {
+	return formattedTicketNumber.replace(/\s+/g, '');
+};
+
+const checkIsForbidden = ({
+	stateful, cmd,
+	gdsClients = GdsSession.makeGdsClients(),
 }) => {
-
-	const {
-		flattenCmds,
-		prepareToSavePnr,
-		checkEmulatedPcc,
-		runCmd,
-		runCommand,
-	} = RunCmdHelper({stateful});
-
-	const doesDivideFpBooking = async ($cmd) => {
-		let $pnrCmds, $typeToOutput, $dnOutput, $pnrDump, $pnr;
-		if ($cmd === 'F') {
-			$pnrCmds = await stateful.getLog().getCurrentPnrCommands();
-			$typeToOutput = php.array_combine(
-				php.array_column($pnrCmds, 'type'),
-				php.array_column($pnrCmds, 'output')
-			);
-			if ($dnOutput = $typeToOutput['divideBooking'] || null) {
-				$pnrDump = extractPager($dnOutput)[0];
-				$pnr = ApolloPnr.makeFromDump($pnrDump);
-				return !$pnr.wasCreatedInGdsDirect();
-			}
-		}
-		return false;
-	};
+	const {travelport} = gdsClients;
+	const {checkEmulatedPcc} = RunCmdHelper({stateful});
 
 	/** @param $data = CommandParser::parseChangePnrRemarks()['data'] */
 	const checkChangeRemarks = async ($data) => {
@@ -130,18 +116,32 @@ const RunRealCmd = ({
 		}
 	};
 
-	const areAllCouponsVoided = async () => {
-		let $ticketData, $ticket, $isVoid;
-		$ticketData = await (new RetrieveApolloTicketsAction())
-			.setSession(stateful).execute();
-		if (!php.empty($ticketData['error'])) {
+	const areAllCouponsVoided = async (pnr) => {
+		const ticketData = await new RetrieveApolloTicketsAction({session: stateful}).execute();
+		if (!php.empty(ticketData.error)) {
 			return false;
 		}
-		for ($ticket of Object.values($ticketData['tickets'])) {
-			$isVoid = ($seg) => $seg['couponStatus'] === 'VOID';
-			if (!php.empty($ticket['error']) ||
-				!Fp.all($isVoid, $ticket['segments'])
-			) {
+		let dividedTicketNumbers = null;
+		if (pnr.hasDividedBooking() && ticketData.tickets.length > 0) {
+			// when you divide a PNR into 2 bookings, *HTE will still hold
+			// tickets from all passengers including the ones moved to new PNR
+			// so we need to fetch PNR XML data, which includes pax->ticket relation
+			const xmlPnr = await travelport.processPnr(stateful.getGdsData(), {
+				recordLocator: pnr.getRecordLocator(),
+			});
+			dividedTicketNumbers = xmlPnr.fareQuoteInfo.pricingList
+				.flatMap(store => store.tickets)
+				.flatMap(t => !t.ticketNumber ? [] : [t.ticketNumber]);
+		}
+
+		for (const ticket of Object.values(ticketData.tickets)) {
+			if (ticket.error) {
+				return false;
+			}
+			const isVoid = (seg) => seg.couponStatus === 'VOID';
+			const ticketNumber = normalizeTicketNumber(ticket.header.ticketNumber);
+			const belongsToPnr = !dividedTicketNumbers || dividedTicketNumbers.includes(ticketNumber);
+			if (belongsToPnr && !ticket.segments.every(s => isVoid(s))) {
 				return false;
 			}
 		}
@@ -156,7 +156,7 @@ const RunRealCmd = ({
 			&& !stateful.getAgent().canPerformAnyPccAvailability();
 	};
 
-	const checkIsForbidden = async (cmd) => {
+	const main = async () => {
 		const errors = [];
 		const parsedCmd = CommandParser.parse(cmd);
 		const flatCmds = php.array_merge([parsedCmd], parsedCmd.followingCommands || []);
@@ -202,7 +202,7 @@ const RunRealCmd = ({
 				if (pnr) {
 					const canChange = !pnr.hasEtickets()
 						|| agent.canEditVoidTicketedPnr()
-						&& await areAllCouponsVoided();
+						&& await areAllCouponsVoided(pnr);
 					if (!canChange) {
 						errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
 					}
@@ -231,6 +231,38 @@ const RunRealCmd = ({
 			}
 		}
 		return errors;
+	};
+
+	return main();
+};
+
+/** @param stateful = require('StatefulSession.js')() */
+const RunRealCmd = ({
+	stateful, cmd, fetchAll = false,
+	gdsClients = GdsSession.makeGdsClients(),
+	cmdRq, CmdRqLog,
+}) => {
+	const {
+		prepareToSavePnr,
+		runCmd,
+		runCommand,
+	} = RunCmdHelper({stateful});
+
+	const doesDivideFpBooking = async ($cmd) => {
+		let $pnrCmds, $typeToOutput, $dnOutput, $pnrDump, $pnr;
+		if ($cmd === 'F') {
+			$pnrCmds = await stateful.getLog().getCurrentPnrCommands();
+			$typeToOutput = php.array_combine(
+				php.array_column($pnrCmds, 'type'),
+				php.array_column($pnrCmds, 'output')
+			);
+			if ($dnOutput = $typeToOutput['divideBooking'] || null) {
+				$pnrDump = extractPager($dnOutput)[0];
+				$pnr = ApolloPnr.makeFromDump($pnrDump);
+				return !$pnr.wasCreatedInGdsDirect();
+			}
+		}
+		return false;
 	};
 
 	const callImplicitCommandsBefore = async ($cmd) => {
@@ -305,17 +337,22 @@ const RunRealCmd = ({
 	};
 
 	const execute = async () => {
-		let $errors, $userMessages, $cmdRecord;
-		if (!php.empty($errors = await checkIsForbidden(cmd))) {
-			return Rej.Forbidden($errors.join('; '));
+		const errors = await checkIsForbidden({
+			stateful, cmd, gdsClients,
+		});
+		if (!php.empty(errors)) {
+			return Rej.Forbidden(errors.join('; '));
 		}
 		await callImplicitCommandsBefore(cmd);
-		$cmdRecord = await runCmd(cmd, fetchAll);
-		$userMessages = await makeCmdMessages(cmd, $cmdRecord.output);
-		return callImplicitCommandsAfter($cmdRecord, $userMessages);
+		const cmdRecord = await runCmd(cmd, fetchAll);
+		const userMessages = await makeCmdMessages(cmd, cmdRecord.output);
+		return callImplicitCommandsAfter(cmdRecord, userMessages);
 	};
 
 	return execute();
 };
+
+/** exposed for tests */
+RunRealCmd.checkIsForbidden = checkIsForbidden;
 
 module.exports = RunRealCmd;
