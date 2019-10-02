@@ -278,10 +278,13 @@ const transformPtcBlock = (blockEl, storeEl) => {
 const getText = el => el.textContent;
 
 const transformTicket = (tickTag) => {
+	// '0067407604208-209', the 209 is printer device number if I'm not mistaken
+	const formattedTicketNumber = [...tickTag.getElementsByTagName('TkNum')].map(getText)[0] || '';
 	return {
 		'guaranteeCode': [...tickTag.getElementsByTagName('FareGuarCode')].map(getText)[0],
 		'status': [...tickTag.getElementsByTagName('Status')].map(getText)[0],
-		'ticketNumber': [...tickTag.getElementsByTagName('TkNum')].map(getText)[0] || null,
+		'ticketNumber': formattedTicketNumber.slice(0, 13),
+		'ticketNumberExtension': formattedTicketNumber.slice(14),
 		'ticketType': [...tickTag.getElementsByTagName('TkType')].map(getText)[0] || null,
 		'invoiceNumber': [...tickTag.getElementsByTagName('InvoiceNum')].map(getText)[0] || null,
 		'nameNumber': {
