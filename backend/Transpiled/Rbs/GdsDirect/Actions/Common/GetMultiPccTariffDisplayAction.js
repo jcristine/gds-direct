@@ -77,8 +77,8 @@ class GetMultiPccTariffDisplayAction {
 		$inRpcFormat = {
 			public: 'published',
 			private: 'private',
-			agencyPrivate: 'airline_private',
-			airlinePrivate: 'agency_private',
+			agencyPrivate: 'agency_private',
+			airlinePrivate: 'airline_private',
 			netAirlinePrivate: 'net_private',
 		}[$inParserFormat] || null;
 		return $inRpcFormat;
