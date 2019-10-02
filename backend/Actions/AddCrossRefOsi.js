@@ -81,7 +81,7 @@ const AddCrossRefOsi = ({
 			return {
 				apollo: `@:3OSI${airline} TCP ${recordLocator}`,
 				galileo: `SI.${airline}*TCP ${recordLocator}`,
-				sabre: `${sabreApi}OSI${airline} TCP ${recordLocator}`,
+				sabre: `${sabreApi}OSI ${airline} TCP ${recordLocator}`,
 				amadeus: `OS ${airline} TCP ${recordLocator}`,
 			}[gds];
 		});
