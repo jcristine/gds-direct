@@ -145,7 +145,7 @@ const makeSectionsSwitchCmp = () => {
 					tbodyCmp,
 				]),
 				Cmp('div', {style: 'text-align: right'}).attach([
-					Cmp('button[Add]'),
+					Cmp('button[Save]'),
 				]),
 			]),
 		]),

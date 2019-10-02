@@ -33,7 +33,7 @@ const makeCrossRefBtn = () => {
 const makeSsrBtn = () => {
 	const btnCmp = Cmp('article').attach([
 		new SsrForm({
-			icon: '<i class="fa t-f-size-14">SSR</i>',
+			icon: '<i class="fa t-f-size-14">PNR Services</i>',
 		}).getTrigger(),
 	]);
 	return btnCmp.context;
