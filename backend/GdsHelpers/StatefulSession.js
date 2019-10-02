@@ -68,6 +68,7 @@ const StatefulSession = ({
 			return GdsSessions.update(session);
 		},
 		gds: gds,
+		/** @deprecated and unused I guess as we log all HTTP requests now */
 		logit: logit,
 		logExc: (msg, exc) => FluentLogger.logExc(msg, session.logId, exc),
 		logId: session.logId,
@@ -142,16 +143,8 @@ StatefulSession.makeFromDb = async ({
 	const fullState = await GdsSessions.getFullState(session);
 	const agent = Agent(emcUser);
 	const cmdLog = CmdLog({session, fullState, whenCmdRqId, agent});
-	const logit = async (msg, data) => {
-		const config = await getConfig();
-		if (!config.production) {
-			console.log(msg, typeof data === 'string' ? data : jsExport(data));
-		}
-		const masked = !data ? data : Misc.maskCcNumbers(data);
-		return FluentLogger.logit(msg, session.logId, masked);
-	};
 	return StatefulSession({
-		session, emcUser, logit,
+		session, emcUser,
 		gdsSession, cmdLog, askClient,
 		GdsSessions,
 	});
