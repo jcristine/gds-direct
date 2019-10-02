@@ -1,7 +1,7 @@
 const CmsClient = require('../IqClients/CmsClient.js');
 const GdsSessions = require('./GdsSessions.js');
 const LocalDiag = require('./LocalDiag.js');
-const Debug = require('../../node_modules/klesun-node-tools/src/Debug.js');
+const Debug = require('klesun-node-tools/src/Debug.js');
 const Db = require("../Utils/Db.js");
 const {nonEmpty, coverExc} = require("klesun-node-tools/src/Lang.js");
 const Rej = require('klesun-node-tools/src/Rej.js');

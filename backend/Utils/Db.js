@@ -1,4 +1,4 @@
-const Rej = require('../../node_modules/klesun-node-tools/src/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 const mysql = require('promise-mysql');
 const {getDbConfig} = require('dyn-utils/src/Config.js');

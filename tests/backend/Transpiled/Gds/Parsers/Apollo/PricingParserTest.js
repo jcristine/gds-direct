@@ -1,6 +1,6 @@
 
 
-const PricingParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Apollo/PricingParser/PricingParser.js');
+const PricingParser = require('gds-parsers/src/Gds/Parsers/Apollo/PricingParser/PricingParser.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class PricingParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js')

@@ -1,5 +1,5 @@
 const Diag = require('../LibWrappers/Diag.js');
-const Rej = require('../../node_modules/klesun-node-tools/src/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 
 const Db = require('../Utils/Db.js');
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");

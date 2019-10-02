@@ -4,7 +4,7 @@ const AmadeusClient = require('../../GdsClients/AmadeusClient.js');
 const GdsSessions = require('../../Repositories/GdsSessions.js');
 const ArrayUtil = require('../../Transpiled/Lib/Utils/ArrayUtil.js');
 const Errors = require('../../Transpiled/Rbs/GdsDirect/Errors.js');
-const Rej = require('../../../node_modules/klesun-node-tools/src/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
 const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
 

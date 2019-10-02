@@ -1,8 +1,8 @@
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
-const BaggageAllowanceParser = require('../../../../Gds/Parsers/Apollo/BaggageAllowanceParser/BaggageAllowanceParser.js');
-const BaggageAllowanceParserDataStructureWriter = require('../../../../Gds/Parsers/Apollo/BaggageAllowanceParser/BaggageAllowanceParserDataStructureWriter.js');
+const BaggageAllowanceParser = require('gds-parsers/src/Gds/Parsers/Apollo/BaggageAllowanceParser/BaggageAllowanceParser.js');
+const BaggageAllowanceParserDataStructureWriter = require('gds-parsers/src/Gds/Parsers/Apollo/BaggageAllowanceParser/BaggageAllowanceParserDataStructureWriter.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 
 /**

@@ -109,7 +109,7 @@ const sendPqToPqt = async ({stateful, leadData, imported}) => {
 		'linearFareDump': $linearFareDump,
 	};
 	const config = await getConfig();
-	const Crypt = require("../../node_modules/dynatech-client-component/lib/Crypt.js").default;
+	const Crypt = require("dynatech-client-component/lib/Crypt.js").default;
 	const pqtPassword = config.external_service.pqt.password;
 	if (!pqtPassword) {
 		const rej = NotImplemented('PQT password not defined in config');

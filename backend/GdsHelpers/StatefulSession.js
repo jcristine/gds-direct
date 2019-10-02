@@ -1,6 +1,6 @@
 const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
 const GdsSession = require('./GdsSession.js');
-const Rej = require('../../node_modules/klesun-node-tools/src/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 const {NotImplemented, BadRequest, ServiceUnavailable, nonEmpty} = require("klesun-node-tools/src/Rej.js");
 const FluentLogger = require("../LibWrappers/FluentLogger.js");
 const Pccs = require("../Repositories/Pccs");
