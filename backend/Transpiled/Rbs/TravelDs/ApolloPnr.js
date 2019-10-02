@@ -157,6 +157,10 @@ class ApolloPnr {
 		return this.parsed['dataExistsInfo']['eTicketDataExists'] || this.parsed['dataExistsInfo']['tinRemarksExist'];
 	}
 
+	hasDividedBooking() {
+		return this.parsed.dataExistsInfo.dividedBookingExists ? true : false;
+	}
+
 	hasLinearFare() {
 		return this.parsed['dataExistsInfo']['linearFareDataExists'] ? true : false;
 	}
