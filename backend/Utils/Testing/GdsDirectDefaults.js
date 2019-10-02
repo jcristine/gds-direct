@@ -135,6 +135,28 @@ class GdsDirectDefaults {
 					{'company': 'ITN', 'role': 'NEW_GDS_DIRECT_NO_LEAD_PNR'},
 				],
 			})),
+			// expert with EDIT_VOID_TICKETED_PNR role
+			Agent.makeStub(php.array_merge(this.makeAgentBaseData(), {
+				'row': php.array_merge($defaultRow, {
+					'id': '100548',
+					'login': 'Chad',
+					'name': 'Stefan Stratan',
+					'sabre_initials': 'SX',
+					'team_id': '2180',
+				}),
+				'roleRows': [
+					{company: 'ITN', role: "login"},
+					{company: 'ITN', role: "NEW_GDS_DIRECT_ACCESS"},
+					{company: 'ITN', role: "NEW_GDS_DIRECT_PNR_SEARCH"},
+					{company: 'ITN', role: "NEW_GDS_DIRECT_EDIT_VOID_TICKETED_PNR"},
+					{company: 'ITN', role: "NEW_GDS_DIRECT_CAN_EMULATE_TO_RESTRICTED_SABRE_PCCS"},
+					{company: 'ITN', role: "NEW_GDS_DIRECT_MULTI_PCC_TARIFF_DISPLAY"},
+					{company: 'ITN', role: "NEW_GDS_DIRECT_PASTE_ITINERARY"},
+					{company: 'ITN', role: "can_add_pq_with_forced_fare"},
+					{company: 'ITN', role: "can_add_pqs"},
+					{company: 'ITN', role: "IS_PQ_AUDITOR"},
+				],
+			})),
 			// something like the lead of ticketing
 			Agent.makeStub(php.array_merge(this.makeAgentBaseData(), {
 				'row': php.array_merge($defaultRow, {
