@@ -86,6 +86,9 @@ const AddCrossRefOsi = ({
 			}[gds];
 		});
 		if (cmds.length > 0) {
+			if (gds === 'amadeus') {
+				cmds.push('RF' + stateful.getAgent().getLogin());
+			}
 			await SavePnr.withRetry({
 				gds, gdsSession, cmds,
 			});
