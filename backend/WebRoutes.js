@@ -1,4 +1,4 @@
-const DynUtils = require('dyn-utils/src/DynUtils.js');
+const AdminController = require('./HttpControllers/AdminController.js');
 const Airports = require('./Repositories/Airports.js');
 const MultiPccTariffRules = require('./Repositories/MultiPccTariffRules.js');
 const AgentCustomSettings = require('./Repositories/AgentCustomSettings.js');
@@ -21,8 +21,6 @@ const Redis = require('./LibWrappers/Redis.js');
 const {getConfig} = require('./Config.js');
 const GdsSessions = require('./Repositories/GdsSessions.js');
 const PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
-const Misc = require("./Transpiled/Lib/Utils/MaskUtil");
-const CmdLogs = require("./Repositories/CmdLogs");
 const Rej = require("klesun-node-tools/src/Rej");
 const Agents = require("./Repositories/Agents");
 const {withGdsSession} = require("./HttpControllers/MainController");
@@ -31,7 +29,6 @@ const {withAuth} = require("./HttpControllers/MainController");
 const Settings = require("./Repositories/Settings");
 const SocketIo = require('./LibWrappers/SocketIo.js');
 const ParsersController = require("./HttpControllers/ParsersController");
-const {readFile} = require('fs').promises;
 
 const app = express();
 
@@ -258,140 +255,26 @@ app.post('/admin/terminal/themes/delete', withAuth(rqBody => {
 
 app.post('/admin/terminal/sessionsGet', withRoleAuth([
 	'NEW_GDS_DIRECT_DEV_ACCESS', 'VIEW_GDS_SESSION_LOG',
-], async (rqBody, emcResult) => {
-	const sessions = await GdsSessions.getHist(rqBody);
-	return {
-		aaData: sessions,
-	};
-}));
+], async (rqBody, emcResult) => ({
+	aaData: await GdsSessions.getHist(rqBody),
+})));
 app.get('/terminal/getCmdRqList', withRoleAuth([
 	'NEW_GDS_DIRECT_DEV_ACCESS', 'VIEW_GDS_SESSION_LOG',
 ], GdsSessionController.getCmdRqList));
 
 app.get('/api/js/terminal-log/commands', withRoleAuth([
 	'NEW_GDS_DIRECT_DEV_ACCESS', 'VIEW_GDS_SESSION_LOG',
-], async (rqBody, emcResult) => {
-	const [sessionRow, cmdRows] = await Promise.all([
-		GdsSessions.getHist({sessionId: rqBody.sessionId})
-			.then(rows => rows[0])
-			.then(Rej.nonEmpty('No such session id DB: #' + rqBody.sessionId)),
-		CmdLogs.getAll(rqBody.sessionId),
-	]);
-	return {
-		sessionData: {
-			agent: "", // login
-			agent_id: sessionRow.agentId,
-			created_dt: sessionRow.startTime,
-			gds: sessionRow.gds,
-			id: sessionRow.id,
-			lead_id: sessionRow.requestId,
-			user_activity_dt: sessionRow.endTime,
-			log_id: sessionRow.logId,
-		},
-		records: cmdRows.reverse().map(row => ({...row,
-			cmd_performed: row.cmd,
-			cmd_type: row.type,
-			cmd_requested: row.cmd_rq_id,
-		})),
-	};
-}));
-app.post('/admin/getModel', withOwnerAuth(async (reqBody, emcResult) => {
-	let rows = await Db.withAny(db => db.fetchAll({
-		table: reqBody.model,
-		fields: reqBody.fields || [],
-		where: reqBody.where || [],
-		whereOr: reqBody.whereOr || [],
-		orderBy: reqBody.orderBy || [],
-		skip: reqBody.skip,
-		limit: reqBody.limit || 100,
-	})).catch(exc => {
-		if (exc) {
-			exc.message = 'Invalid params - ' + exc.httpStatusCode + ' - ' + exc.message;
-			exc.httpStatusCode = Rej.BadRequest.httpStatusCode;
-		}
-		return Promise.reject(exc);
-	});
-	rows = Misc.maskCcNumbers(rows);
-	return {records: rows};
-}));
-
-app.get('/admin/showTables', withOwnerAuth(async (rqBody) => {
-	const rows = await Db.with(async db => db.query('SHOW TABLES'));
-	const records = rows.map(row => ({name: Object.values(row)[0]}));
-	return {records};
-}));
-app.post('/admin/getAllRedisKeys', withOwnerAuth(async (reqBody, emcResult) => {
-	const redis = await Redis.getClient();
-	const keys = await redis.keys('*');
-	return {keys};
-}));
-app.post('/admin/operateRedisKey', withOwnerAuth(async (reqBody, emcResult) => {
-	const {key, operation} = reqBody;
-	const redis = await Redis.getClient();
-	const redisData = await redis[operation.toLowerCase()](key);
-	return {redisData};
-}));
-app.get('/admin/getShortcutActions', toHandleHttp(async (rqBody) => {
-	const rows = await Db.with(db => db
-		.fetchAll({table: 'shortcut_actions'}));
-	const records = rows
-		.map(row => ({
-			...JSON.parse(row.data),
-			id: row.id,
-			gds: row.gds,
-			name: row.name,
-		}));
-	return {records};
-}));
-app.post('/admin/setShortcutActions', withDevAuth(async (rqBody, emcResult) => {
-	const records = rqBody.records;
-	return Db.with(async db => {
-		const rows = records.map(rec => ({
-			...(rec.id ? {id: rec.id} : {}),
-			gds: rec.gds,
-			name: rec.name,
-			data: JSON.stringify(rec),
-		}));
-		const oldRows = rows.filter(r => r.id);
-		const newRows = rows.filter(r => !r.id);
-
-		if (oldRows.length > 0) {
-			await db.query([
-				'DELETE FROM shortcut_actions WHERE id',
-				'NOT IN (' + oldRows.map(id => '?') + ');',
-			].join('\n'), oldRows.map(r => r.id));
-		} else {
-			await db.query('DELETE FROM shortcut_actions');
-		}
-		return Promise.all([
-			db.writeRows('shortcut_actions', oldRows),
-			db.writeRows('shortcut_actions', newRows),
-		]);
-	});
-}));
-app.get('/admin/getSettings', withOwnerAuth(async (rqBody, emcResult) => {
-	return Settings.getAll()
-		.then(records => ({records}));
-}));
+], AdminController.getCommandLogs));
+app.post('/admin/getModel', withOwnerAuth(AdminController.getModel));
+app.get('/admin/showTables', withOwnerAuth(AdminController.showTables));
+app.post('/admin/getAllRedisKeys', withOwnerAuth(AdminController.getAllRedisKeys));
+app.post('/admin/operateRedisKey', withOwnerAuth(AdminController.operateRedisKey));
+app.get('/admin/getShortcutActions', toHandleHttp(AdminController.getShortcutActions));
+app.post('/admin/setShortcutActions', withDevAuth(AdminController.setShortcutActions));
+app.get('/admin/getSettings', withOwnerAuth(() => Settings.getAll().then(records => ({records}))));
 app.post('/admin/setSetting', withOwnerAuth(Settings.set));
 app.post('/admin/deleteSetting', withOwnerAuth(Settings.delete));
-app.get('/admin/status', withDevAuth(async (reqBody, emcResult) => {
-	const v8 = require('v8');
-	const PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js');
-	const startupTag = await Clustering.whenStartupTag;
-	const fsTag = await readFile(__dirname + '/../public/CURRENT_PRODUCTION_TAG', 'utf8').catch(exc => 'FS error - ' + exc);
-	return {
-		dt: new Date().toISOString(),
-		message: 'testing no watch:true in config, take 1',
-		startupTag: startupTag,
-		fsTag: fsTag,
-		process: descrProc(),
-		persistentHttpRqInfo: PersistentHttpRq.getInfo(),
-		cmdLogsInsertionKeys: CmdLogs.ramDebug.getInsertionKeys(),
-		heapSpaceStatistics: v8.getHeapSpaceStatistics(),
-		heapStatistics: v8.getHeapStatistics(),
-	};
-}));
+app.get('/admin/status', withDevAuth(AdminController.status));
 
 app.get('/parser/test', toHandleHttp(ParsersController.parseAnything));
 
@@ -425,20 +308,7 @@ app.get('/getAgentList', withOwnerAuth(async (reqBody, emcResult) => {
 	const users = await emc.call();
 	return users;
 }));
-app.get('/getAsapLocations', withOwnerAuth(async (reqBody, emcResult) => {
-	const config = await getConfig();
-	/** @type IGetAirportsRs */
-	return DynUtils.iqJson({
-		url: config.external_service.infocenter.host,
-		credentials: {
-			login: config.external_service.infocenter.login,
-			passwd: config.external_service.infocenter.password,
-		},
-		functionName: 'getAllWithRegions',
-		serviceName: 'infocenter',
-		params: {folder: 'asap'},
-	});
-}));
+app.get('/getAsapLocations', withOwnerAuth(AdminController.getAsapLocations));
 
 //============================
 // socket listener initialization follows

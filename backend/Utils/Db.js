@@ -148,6 +148,14 @@ Db.withAny = async (process) => {
 		.catch(normSqlExc)
 		.finally(() => dbConn.release());
 };
+Db.withSlave = async (process) => {
+	const wrapper = await getWrapper();
+	const dbConn = await wrapper.getConnection('SLAVE*');
+	return Promise.resolve()
+		.then(() => process(ReadOnlyDb(dbConn)))
+		.catch(normSqlExc)
+		.finally(() => dbConn.release());
+};
 
 Db.getInfo = async () => {
 	// should probably return this functionality...
