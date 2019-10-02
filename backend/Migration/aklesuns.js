@@ -449,6 +449,12 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		name: 'GRECT/2019.10.02005-add-json-to-agents',
+		perform: (db) => db.query([
+			'ALTER TABLE `agents` ADD COLUMN dataJson TEXT DEFAULT NULL;',
+		].join('\n')),
+	},
+	{
 		name: 'GRECT/2019.04.02006-create-role-NEW_GDS_DIRECT_DEV_ACCESS',
 		perform: async (db) => {
 			const emc = await Emc.getClient();

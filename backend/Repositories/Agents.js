@@ -6,34 +6,37 @@ const {getClient, keys} = require('../LibWrappers/Redis.js');
 
 const TABLE = 'agents';
 
-/** @param {getUsers_rs_el} $row */
-const normalizeRow = ($row) => {
-	let $sabreLniata, $emails, $companyName, $companyData;
-
-	$sabreLniata = ($row['settings'] || {})['Sabre LNIATA'] || [];
-	$emails = [];
-	for ($companyName of Object.values($row['availableCompanies'] || [])) {
-		$companyData = ($row['companySettings'] || {})[$companyName];
-		if ($companyData && $companyData['email']) {
-			$emails[$companyName] = $companyData['email'];
+/** @param {getUsers_rs_el} row */
+const normalizeRow = (row) => {
+	const sabreLniata = (row.settings || {})['Sabre LNIATA'] || [];
+	const emails = [];
+	for (const companyName of Object.values(row.availableCompanies || {})) {
+		const companyData = (row.companySettings || {})[companyName];
+		if (companyData && companyData.email) {
+			emails[companyName] = companyData.email;
 		}
 	}
 	return {
-		'id': $row['id'],
-		'login': $row['displayName'],
-		'name': $row['name'],
-		'is_active': $row['isActive'],
-		'fp_initials': ($row['settings'] || {})['fp_initials'] || '',
-		'email_list': !php.empty($emails) ? php.json_encode($emails) : '',
-		'sabre_initials': ($row['settings'] || {})['Sabre Initials'] || '',
-		'sabre_lniata': php.is_array($sabreLniata) ? php.implode(', ', $sabreLniata) : $sabreLniata,
-		'sabre_id': ($row['settings'] || {})['Sabre ID'] || '',
-		'team_id': $row['teamId'] || '',
-		'updated_dt': php.date('Y-m-d H:i:s'),
-		'deactivated_dt': ($row['settings'] || {})['unactivatedDt'],
-		'gds_direct_fs_limit': ($row['settings'] || {})['gds_direct_fs_limit'],
-		'gds_direct_usage_limit': ($row['settings'] || {})['gds_direct_usage_limit'],
-		'roles': ($row.roles || []).join(','),
+		id: row.id,
+		login: row.displayName,
+		name: row.name,
+		is_active: row.isActive,
+		fp_initials: (row.settings || {}).fp_initials || '',
+		email_list: !php.empty(emails) ? php.json_encode(emails) : '',
+		sabre_initials: (row.settings || {})[`Sabre Initials`] || '',
+		sabre_lniata: php.is_array(sabreLniata) ? php.implode(', ', sabreLniata) : sabreLniata,
+		sabre_id: (row.settings || {})['Sabre ID'] || '',
+		team_id: row.teamId || '',
+		updated_dt: php.date('Y-m-d H:i:s'),
+		deactivated_dt: (row.settings || {}).unactivatedDt,
+		gds_direct_fs_limit: (row.settings || {}).gds_direct_fs_limit,
+		gds_direct_usage_limit: (row.settings || {}).gds_direct_usage_limit,
+		/** @deprecated - use dataJson instead */
+		roles: (row.roles || []).join(','),
+		dataJson: JSON.stringify({
+			roles: row.roles || [],
+			availableCompanies: row.availableCompanies || {},
+		}),
 	};
 };
 
@@ -107,6 +110,7 @@ exports.getById = async (id) => {
 		table: TABLE,
 		where: [['id', '=', id]],
 	}));
+	row.data = row.dataJson ? JSON.parse(row.dataJson) : {};
 	return row;
 };
 
