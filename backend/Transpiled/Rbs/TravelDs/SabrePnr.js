@@ -55,10 +55,6 @@ class SabrePnr {
 		return $homePcc === 'L3II' && php.in_array($initials, ['WS', 'VWS']);
 	}
 
-	getRsprTeam() {
-		return null;
-	}
-
 	getPassengers() {
 		return ((((this.$parsed || {})['parsedData'] || {})['passengers'] || {})['parsedData'] || {})['passengerList'] || [];
 	}

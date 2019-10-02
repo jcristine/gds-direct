@@ -11,7 +11,6 @@ interface IPnr {
     getGdsName(): string;
     getAgentInitials();
     wasCreatedInGdsDirect();
-    getRsprTeam();
 
     /** will also include some GDS-specific fields */
     getItinerary(): {
