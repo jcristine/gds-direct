@@ -6,9 +6,17 @@ const {getClient, keys} = require('../LibWrappers/Redis.js');
 
 const TABLE = 'agents';
 
-/** @param {getUsers_rs_el} row */
-const normalizeRow = (row) => {
+const normalizeCustomData = (row) => {
 	const sabreLniata = (row.settings || {})['Sabre LNIATA'] || [];
+	return {
+		roles: row.roles || [],
+		availableCompanies: row.availableCompanies || {},
+		sabreLniata: sabreLniata,
+	};
+};
+
+/** @param {getUsers_rs_el} row */
+const normalizeRowForDb = (row) => {
 	const emails = [];
 	for (const companyName of Object.values(row.availableCompanies || {})) {
 		const companyData = (row.companySettings || {})[companyName];
@@ -33,11 +41,7 @@ const normalizeRow = (row) => {
 		deactivated_dt: (row.settings || {}).unactivatedDt,
 		gds_direct_fs_limit: gds_direct_fs_limit === '' ? null : gds_direct_fs_limit,
 		gds_direct_usage_limit: gds_direct_usage_limit === '' ? null : gds_direct_usage_limit,
-		dataJson: JSON.stringify({
-			roles: row.roles || [],
-			availableCompanies: row.availableCompanies || {},
-			sabreLniata: sabreLniata,
-		}),
+		dataJson: JSON.stringify(normalizeCustomData(row)),
 	};
 };
 
@@ -96,7 +100,7 @@ exports.updateFromService = async () => {
 	const rows = Object
 		.values(serviceResult.data.users)
 		.filter(u => u.id) // older versions of EMC may return empty rows
-		.map(normalizeRow);
+		.map(normalizeRowForDb);
 
 	const written = await Db.with(db => db.writeRows(TABLE, rows));
 	return {
@@ -105,14 +109,19 @@ exports.updateFromService = async () => {
 	};
 };
 
+/** @param row = normalizeRowForDb() */
+const normalizeRowFromDb = (row) => {
+	/** @var data = normalizeCustomData() */
+	const data = row.dataJson ? JSON.parse(row.dataJson) : {};
+	row.data = data;
+	return row;
+};
+
 exports.getById = async (id) => {
-	/** @var row = normalizeRow() */
-	const row = await Db.with(db => db.fetchOne({
+	return Db.with(db => db.fetchOne({
 		table: TABLE,
 		where: [['id', '=', id]],
-	}));
-	row.data = row.dataJson ? JSON.parse(row.dataJson) : {};
-	return row;
+	})).then(normalizeRowFromDb);
 };
 
 exports.getAll = async () => {
@@ -120,9 +129,5 @@ exports.getAll = async () => {
 		table: TABLE,
 		orderBy: 'id ASC',
 	}));
-	return rows.map(r => {
-		/** @var typed = normalizeRow() */
-		const typed = r;
-		return typed;
-	});
+	return rows.map(normalizeRowFromDb);
 };
