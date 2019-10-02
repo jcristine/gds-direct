@@ -1,28 +1,35 @@
+const Debug = require('klesun-node-tools/src/Debug.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
-const mysql = require('promise-mysql');
 const {getDbConfig} = require('dyn-utils/src/Config.js');
+const {getStaticConfig} = require('../Config.js');
 const NotFound = require("klesun-node-tools/src/Rej").NotFound;
 const Diag = require('../LibWrappers/Diag.js');
 const {SqlUtil} = require('klesun-node-tools');
-const {jsExport} = require('klesun-node-tools/src/Utils/Misc.js');
 const {coverExc, onDemand} = require('klesun-node-tools/src/Lang.js');
+const ClusterWrapper = require('dynatech-mysql-cluster-wrapper').default;
 
-const getPool = onDemand(async () => {
+const getWrapper = onDemand(async () => {
+	const staticCfg = getStaticConfig();
 	const cfg = await getDbConfig();
 	if (!cfg || !cfg.DB_HOST) {
 		return Rej.BadRequest('DB credentials not supplied');
 	}
-	return mysql.createPool({
-		host: cfg.DB_HOST,
-		user: cfg.DB_USER,
-		password: cfg.DB_PASS,
-		database: cfg.DB_NAME,
-		port: cfg.DB_PORT || 3306,
+	const wrapper = new ClusterWrapper({
+		canRetry: true,
+		removeNodeErrorCount: 5,
+		restoreNodeTimeout: 1000 * 10,
+	}, {
+		mantisId: staticCfg.mantisId,
+	});
+	wrapper.configFetch().setSchedule(true);
+	wrapper.configFetch().appendDefaultPollConfig({
 		connectionLimit: 20,
 		// return datetime as string, not Date object
 		dateStrings: true,
 	});
+
+	return wrapper;
 });
 
 /**
@@ -31,9 +38,16 @@ const getPool = onDemand(async () => {
  * @param {PoolConnection} dbConn
  */
 const Db = (dbConn) => {
-	const query = (sql, ...restArgs) => Promise.resolve()
-		.then(() => dbConn.query(sql, ...restArgs))
-		.catch(exc => {
+	const query = (sql, ...restArgs) => {
+		return new Promise((resolve, reject) => {
+			dbConn.query(sql, ...restArgs, (err, result) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(result);
+				}
+			});
+		}).catch(exc => {
 			exc = exc || new Error('empty mysqljs error');
 			exc = typeof exc === 'string' ? new Error(exc) : exc;
 			exc.httpStatusCode = Rej.ServiceUnavailable.httpStatusCode;
@@ -42,6 +56,7 @@ const Db = (dbConn) => {
 			exc.restArgs = restArgs;
 			return Promise.reject(exc);
 		});
+	};
 
 	/**
 	 * @return {Promise<IPromiseMysqlQueryResult>}
@@ -94,14 +109,15 @@ const Db = (dbConn) => {
 		query: query,
 	};
 };
-Db.with = async (process) => {
-	const dbPool = await getPool();
-	const dbConn = await dbPool.getConnection();
+
+const withMaster = async (process) => {
+	const wrapper = await getWrapper();
+	const dbConn = await wrapper.getMasterConnection();
 	return Promise.resolve()
 		.then(() => process(Db(dbConn)))
 		.catch(exc => {
 			if (exc.httpStatusCode !== NotFound.httpStatusCode) {
-				Diag.error('SQL query failed ' + exc, jsExport({
+				Diag.error('SQL query failed ' + exc, Debug.jsExport({
 					message: exc.message,
 					stack: exc.stack,
 					exc: exc,
@@ -109,16 +125,19 @@ Db.with = async (process) => {
 			}
 			return Promise.reject(exc);
 		})
-		.finally(() => dbPool.releaseConnection(dbConn));
+		.finally(() => dbConn.release());
 };
 
+Db.withMaster = withMaster;
+Db.with = withMaster;
+
 Db.getInfo = async () => {
-	const dbPool = await getPool();
+	// should probably return this functionality...
 	return {
-		acquiringConnections: dbPool.pool._acquiringConnections.length,
-		allConnections: dbPool.pool._allConnections.length,
-		freeConnections: dbPool.pool._freeConnections.length,
-		connectionQueue: dbPool.pool._connectionQueue.length,
+		acquiringConnections: 0,
+		allConnections: 0,
+		freeConnections: 0,
+		connectionQueue: 0,
 	};
 };
 

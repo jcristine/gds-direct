@@ -72,5 +72,6 @@ StaticConfig.getConfig = async () => {
 	return fetching;
 };
 StaticConfig.getExternalServices = getExternalServices;
+StaticConfig.getStaticConfig = () => StaticConfig;
 
 module.exports = StaticConfig;
