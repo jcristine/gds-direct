@@ -275,13 +275,30 @@ const transformPtcBlock = (blockEl, storeEl) => {
 	};
 };
 
+const getText = el => el.textContent;
+
+const transformTicket = (tickTag) => {
+	return {
+		'guaranteeCode': [...tickTag.getElementsByTagName('FareGuarCode')].map(getText)[0],
+		'status': [...tickTag.getElementsByTagName('Status')].map(getText)[0],
+		'ticketNumber': [...tickTag.getElementsByTagName('TkNum')].map(getText)[0] || null,
+		'ticketType': [...tickTag.getElementsByTagName('TkType')].map(getText)[0] || null,
+		'invoiceNumber': [...tickTag.getElementsByTagName('InvoiceNum')].map(getText)[0] || null,
+		'nameNumber': {
+			'fieldNumber': [...tickTag.getElementsByTagName('LNameNum')].map(getText)[0],
+			'firstNameNumber': [...tickTag.getElementsByTagName('PsgrNum')].map(getText)[0],
+		},
+	};
+};
+
 /** @param {Element} storeEl */
 const transformStore = (storeEl) => {
 	const get = (keys) => [...storeEl.querySelectorAll(':scope > ' + keys.join(' > '))];
 	return {
 		pricingNumber: get(['FareNumInfo', 'FareNumAry', 'FareNum'])
-			.map(el => el.textContent)[0] || null,
+			.map(getText)[0] || null,
 		pricingBlockList: get(['GenQuoteDetails']).map((b, i) => transformPtcBlock(b, storeEl)),
+		tickets: get(['AdditionalPsgrFareInfo']).map(transformTicket),
 		// there is more data in XML, but for now I need just few fields
 	};
 };
