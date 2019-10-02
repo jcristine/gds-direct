@@ -110,26 +110,44 @@ const Db = (dbConn) => {
 	};
 };
 
+const ReadOnlyDb = (dbConn) => {
+	const db = Db(dbConn);
+	return {
+		fetchAll: db.fetchAll,
+		fetchOne: db.fetchOne,
+	};
+};
+
+const normSqlExc = exc => {
+	if (exc.httpStatusCode !== NotFound.httpStatusCode) {
+		Diag.error('SQL query failed ' + exc, Debug.jsExport({
+			message: exc.message,
+			stack: exc.stack,
+			exc: exc,
+		}));
+	}
+	return Promise.reject(exc);
+};
+
 const withMaster = async (process) => {
 	const wrapper = await getWrapper();
 	const dbConn = await wrapper.getMasterConnection();
 	return Promise.resolve()
 		.then(() => process(Db(dbConn)))
-		.catch(exc => {
-			if (exc.httpStatusCode !== NotFound.httpStatusCode) {
-				Diag.error('SQL query failed ' + exc, Debug.jsExport({
-					message: exc.message,
-					stack: exc.stack,
-					exc: exc,
-				}));
-			}
-			return Promise.reject(exc);
-		})
+		.catch(normSqlExc)
 		.finally(() => dbConn.release());
 };
 
 Db.withMaster = withMaster;
 Db.with = withMaster;
+Db.withAny = async (process) => {
+	const wrapper = await getWrapper();
+	const dbConn = await wrapper.getConnection();
+	return Promise.resolve()
+		.then(() => process(ReadOnlyDb(dbConn)))
+		.catch(normSqlExc)
+		.finally(() => dbConn.release());
+};
 
 Db.getInfo = async () => {
 	// should probably return this functionality...
