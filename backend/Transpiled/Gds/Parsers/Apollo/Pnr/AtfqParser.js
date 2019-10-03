@@ -1,4 +1,4 @@
-const PricingCmdParser = require('gds-utils/src/text_format_processing/apollo/commands/PricingCmdParser.js');
+const Parse_priceItinerary = require('gds-utils/src/text_format_processing/apollo/commands/Parse_priceItinerary.js');
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const php = require("klesun-node-tools/src/Transpiled/php.js");
@@ -86,22 +86,22 @@ class AtfqParser {
 	}
 
 	static parsePricingCommand(cmd) {
-		return PricingCmdParser.parse(cmd);
+		return Parse_priceItinerary.parse(cmd);
 	}
 	static parsePricingModifiers($modsPart) {
-		return PricingCmdParser.parsePricingModifiers($modsPart);
+		return Parse_priceItinerary.parsePricingModifiers($modsPart);
 	}
 
 	static getCabinClassMapping() {
-		return PricingCmdParser.getCabinClassMapping();
+		return Parse_priceItinerary.getCabinClassMapping();
 	};
 
 	static encodeFareType(type) {
-		return PricingCmdParser.encodeFareType(type);
+		return Parse_priceItinerary.encodeFareType(type);
 	};
 
 	static decodeFareType($code) {
-		return PricingCmdParser.decodeFareType($code);
+		return Parse_priceItinerary.decodeFareType($code);
 	};
 }
 
