@@ -7,6 +7,7 @@ const Agent = (emcUser) => {
 	//let roles = testRoles;
 	const roles = emcUser.roles || [];
 	// 6206 - aklesuns
+	const isOwner = () => +emcUser.emcId === 6206;
 	const hasRole = (role) => roles.includes(role);
 	return {
 		getId: () => emcUser.id,

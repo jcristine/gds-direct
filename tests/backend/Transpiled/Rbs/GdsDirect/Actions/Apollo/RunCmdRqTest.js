@@ -110,6 +110,14 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 							'><',
 						]),
 					},
+					// forged response to keep the test case after behaviour change
+					{
+						'cmd': '*HTE',
+						'output': php.implode(php.PHP_EOL, [
+							'FAKE ERROR NO ACCESS',
+							'><',
+						]),
+					},
 				],
 			},
 		});

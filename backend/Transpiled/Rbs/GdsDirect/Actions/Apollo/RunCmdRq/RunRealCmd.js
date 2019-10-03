@@ -197,15 +197,22 @@ const checkIsForbidden = ({
 			errors.push('NO BA AVAILABILITY IN THIS PCC. PLEASE CHECK IN 2G2H');
 		}
 		if (php.in_array('deletePnrField', php.array_column(flatCmds, 'type'))) {
-			if (!agent.canEditTicketedPnr()) {
-				const pnr = await getStoredPnr();
-				if (pnr) {
-					const canChange = !pnr.hasEtickets()
-						|| agent.canEditVoidTicketedPnr()
-						&& await areAllCouponsVoided(pnr);
-					if (!canChange) {
-						errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
+			const pnr = await getStoredPnr();
+			if (pnr && pnr.hasEtickets()) {
+				const couponsVoided = await areAllCouponsVoided(pnr);
+				const allowedAsVoid = agent.canEditVoidTicketedPnr() && couponsVoided;
+				if (agent.canEditTicketedPnr()) {
+					if (!couponsVoided) {
+						const confirmation = await stateful.askClient({
+							messageType: 'promptForTicketedPnrCancelConfirm',
+							agentDisplayName: stateful.getAgent().getLogin(),
+						});
+						if (confirmation.status !== 'confirmed') {
+							errors.push('Ticketed PNR edit confirmation prompt was rejected');
+						}
 					}
+				} else if (!allowedAsVoid) {
+					errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
 				}
 			}
 		}
