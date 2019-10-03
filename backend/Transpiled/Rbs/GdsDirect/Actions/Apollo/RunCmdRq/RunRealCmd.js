@@ -199,29 +199,33 @@ const checkIsForbidden = ({
 			errors.push('NO BA AVAILABILITY IN THIS PCC. PLEASE CHECK IN 2G2H');
 		}
 		if (php.in_array('deletePnrField', php.array_column(flatCmds, 'type'))) {
-			const pnr = await getStoredPnr();
-			if (pnr && pnr.hasEtickets()) {
-				const couponsVoided = await areAllCouponsVoided(pnr);
-				const allowedAsVoid = agent.canEditVoidTicketedPnr() && couponsVoided;
-				if (agent.canEditTicketedPnr()) {
-					if (!couponsVoided) {
-						const confirmation = await stateful.askClient({
-							messageType: 'promptForTicketedPnrCancelConfirm',
-							agentDisplayName: stateful.getAgent().getLogin(),
-						}).catch(exc => {
-							// temporarily fallback till all agents refresh the page (takes 2 days sometimes)
-							const excData = Debug.getExcData(exc, {
-								session: stateful.getSessionRecord(),
+			if (agent.canEditTicketedPnr()) {
+				// temporarily disabling the new popup
+			} else {
+				const pnr = await getStoredPnr();
+				if (pnr && pnr.hasEtickets()) {
+					const couponsVoided = await areAllCouponsVoided(pnr);
+					const allowedAsVoid = agent.canEditVoidTicketedPnr() && couponsVoided;
+					if (agent.canEditTicketedPnr()) {
+						if (!couponsVoided) {
+							const confirmation = await stateful.askClient({
+								messageType: 'promptForTicketedPnrCancelConfirm',
+								agentDisplayName: stateful.getAgent().getLogin(),
+							}).catch(exc => {
+								// temporarily fallback till all agents refresh the page (takes 2 days sometimes)
+								const excData = Debug.getExcData(exc, {
+									session: stateful.getSessionRecord(),
+								});
+								Diag.logExc('Failed to ask client to promptForTicketedPnrCancelConfirm', excData);
+								return {status: 'confirmed'};
 							});
-							Diag.logExc('Failed to ask client to promptForTicketedPnrCancelConfirm', excData);
-							return {status: 'confirmed'};
-						});
-						if (confirmation.status !== 'confirmed') {
-							errors.push('Ticketed PNR edit confirmation prompt was rejected');
+							if (confirmation.status !== 'confirmed') {
+								errors.push('Ticketed PNR edit confirmation prompt was rejected');
+							}
 						}
+					} else if (!allowedAsVoid) {
+						errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
 					}
-				} else if (!allowedAsVoid) {
-					errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
 				}
 			}
 		}
