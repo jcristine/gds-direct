@@ -8,17 +8,18 @@ import {PqParser} 		from "../modules/pqParser";
 import {OFFSET_DEFAULT, AREA_LIST} from "../constants";
 import {connect, getStore} from "../store";
 import $ from 'jquery';
-let {post} = require('../helpers/requests.es6');
+const {post} = require('../helpers/requests.es6');
 import {CHANGE_INPUT_LANGUAGE} from "../actions/settings";
 import {setMessageFromServerHandler} from './../helpers/socketIoWrapper.js';
 import {notify} from './../helpers/debug.es6';
 import {LeadList} from '../components/reusable/LeadList.js';
 import PricePccMixList from '../components/popovers/PricePccMixList.es6';
+import promptForTicketedPnrCancelConfirm from "../components/popovers/promptForTicketedPnrCancelConfirm";
 
 const BORDER_SIZE = 2;
 
-let chooseLeadFromList = (plugin) => new Promise((resolve, reject) => {
-	let {remove} = plugin.injectDom({
+const chooseLeadFromList = (plugin) => new Promise((resolve, reject) => {
+	const {remove} = plugin.injectDom({
 		dom: new LeadList(leadId => {
 			remove();
 			resolve(leadId);
@@ -27,7 +28,7 @@ let chooseLeadFromList = (plugin) => new Promise((resolve, reject) => {
 	});
 });
 
-let toHandleMessageFromServer = (gdsSwitch) => {
+const toHandleMessageFromServer = (gdsSwitch) => {
 	return (data, reply) => {
 		// maybe should move to separate module and add list suggestions for lead id
 		if (data.messageType === 'promptForLeadId') {
@@ -44,6 +45,13 @@ let toHandleMessageFromServer = (gdsSwitch) => {
 				}
 				reply({leadId: leadId});
 			}
+		} else if (data.messageType === 'promptForTicketedPnrCancelConfirm') {
+			const plugin = gdsSwitch.getActivePlugin();
+			promptForTicketedPnrCancelConfirm(plugin, data)
+				.then(({status}) => reply({value: ({status})}))
+				.catch(exc => reply({error: exc + '', value: ({
+					stack: (exc || {}).stack, ...(exc || {})}),
+				}));
 		} else if (data.messageType === 'displayPriceMixPccRow') {
 			PricePccMixList.displayPriceMixPccRow(data);
 			reply({value: {status: 'done'}});

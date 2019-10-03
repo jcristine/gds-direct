@@ -307,6 +307,51 @@
 .price-mix-pcc-holder .injected-dom-holder {
   background-color: transparent;
 }
+.ticketed-pnr-cancellation-holder {
+  .injected-dom-holder {
+    color: black;
+    background-color: #f6fffe;
+    padding: 10px;
+    button.cancel-popup {
+      float: right;
+      margin-right: 60px; /* for terminal split floating button to not cover it */
+      border: none;
+      background-color: transparent;
+      color: grey;
+      cursor: pointer;
+    }
+    h2 {
+      color: #d22b2b;
+      text-align: center;
+      text-decoration: underline;
+    }
+    p {
+      font-size: 16px;
+    }
+    .btn-holder {
+      text-align: right;
+      button {
+        background-color: transparent;
+        font-size: 18px;
+        padding: 10px;
+        border-style: solid;
+        border-color: black;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      button + button {
+        margin-left: 28px;
+      }
+      button.confirm {
+        color: #d22b2b;
+        border-color: #d22b2b;
+      }
+    }
+    button:hover {
+      background-color: rgba(127, 127, 127, 0.05);
+    }
+  }
+}
 
 .mask-form {
   background-color: #747198;

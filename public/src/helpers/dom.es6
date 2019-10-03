@@ -11,7 +11,7 @@ const applyProperties = (node, list) => {
 };
 
 /** @return {HTMLElement} */
-export default function Dom(str, props = {}) {
+export default function Dom(str, props = {}, children = []) {
 
 	let innerHTML;
 
@@ -33,5 +33,10 @@ export default function Dom(str, props = {}) {
 		element.innerHTML = innerHTML;
 
 	applyProperties(element, props);
+
+	for (const child of children) {
+		element.appendChild(child);
+	}
+
 	return element;
 };
