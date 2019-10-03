@@ -70,6 +70,7 @@ const StatefulSession = ({
 		gds: gds,
 		/** @deprecated and unused I guess as we log all HTTP requests now */
 		logit: logit,
+		/** @deprecated */
 		logExc: (msg, exc) => FluentLogger.logExc(msg, session.logId, exc),
 		logId: session.logId,
 

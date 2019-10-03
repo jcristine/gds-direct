@@ -1,3 +1,4 @@
+const FluentLogger = require('../LibWrappers/FluentLogger.js');
 const GetCurrentPnr = require('../Actions/GetCurrentPnr.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const Debug = require('klesun-node-tools/src/Debug.js');
@@ -39,7 +40,8 @@ const initStateful = async (params) => {
 			pcc: stateful.getSessionData().pcc,
 			agentId: params.session.context.agentId,
 		}).then(rs => {
-			stateful.logit('INFO: Successfully reported saved PNR to RBS', rs);
+			const msg = 'INFO: Successfully reported saved PNR to RBS';
+			FluentLogger.logit(msg, stateful.getSessionRecord().logId, rs);
 		}).catch(exc => {
 			const msg = 'Failed to report saved PNR to RBS';
 			stateful.logExc('ERROR: ' + msg, exc);
@@ -112,9 +114,7 @@ const sendPqToPqt = async ({stateful, leadData, imported}) => {
 	const Crypt = require("dynatech-client-component/lib/Crypt.js").default;
 	const pqtPassword = config.external_service.pqt.password;
 	if (!pqtPassword) {
-		const rej = NotImplemented('PQT password not defined in config');
-		stateful.logExc('ERROR: Failed to send PQ to PQT', rej.exc);
-		return rej;
+		return NotImplemented('PQT password not defined in config');
 	}
 	const ec = new Crypt(process.env.RANDOM_KEY, 'des-ede3');
 	const credentials = {login: config.external_service.pqt.login, password: ec.encryptToken(pqtPassword)};
@@ -125,9 +125,11 @@ const sendPqToPqt = async ({stateful, leadData, imported}) => {
 		url: config.external_service.pqt.host + '?log_id=' + logId,
 		credentials: credentials,
 	}).then(svcRs => {
-		stateful.logit('PQ was successfully sent to PQT', svcRs);
+		const msg = 'PQ was successfully sent to PQT';
+		FluentLogger.logit(msg, stateful.getSessionRecord().logId, svcRs);
 	}).catch(exc => {
-		stateful.logExc('ERROR: Failed to send PQ to PQT', exc);
+		const msg = 'ERROR: Failed to send PQ to PQT';
+		FluentLogger.logExc(msg, stateful.getSessionRecord().logId, exc);
 	});
 };
 
