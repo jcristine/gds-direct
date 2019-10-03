@@ -1,5 +1,5 @@
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
-const ItineraryParser = require('../../Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
+const ItineraryParser = require('gds-parsers/src/Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
 const AirAvailabilityParser = require("../../Gds/Parsers/Apollo/AirAvailabilityParser");
 const {fetchAll} = require("../../../GdsHelpers/TravelportUtils.js");
 const {REBUILD_NO_AVAIL, REBUILD_GDS_ERROR, REBUILD_MULTISEGMENT} = require('../GdsDirect/Errors.js');

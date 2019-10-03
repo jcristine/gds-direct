@@ -1,7 +1,7 @@
 
 // add this to generated require() - '../../backend/Transpiled/'
 
-const ItineraryParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
+const ItineraryParser = require('gds-parsers/src/Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
 const php                              = require('klesun-node-tools/src/Transpiled/php.js');
 
 class ItineraryParserTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js')

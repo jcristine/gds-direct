@@ -1,6 +1,6 @@
 const Errors = require('../../Transpiled/Rbs/GdsDirect/Errors.js');
 const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
-const ItineraryParser = require('../../Transpiled/Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
+const ItineraryParser = require('gds-parsers/src/Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
 const TravelportUtils = require('../../GdsHelpers/TravelportUtils.js');
 const TravelportBuildItineraryActionViaXml = require('../../Transpiled/Rbs/GdsAction/TravelportBuildItineraryActionViaXml.js');
 const Rej = require('klesun-node-tools/src/Rej.js');

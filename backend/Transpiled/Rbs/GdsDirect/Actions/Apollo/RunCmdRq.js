@@ -38,7 +38,7 @@ const GetMultiPccTariffDisplayAction = require('../../../../Rbs/GdsDirect/Action
 const DisplayHistoryActionHelper = require('./DisplayHistoryActionHelper.js');
 
 // parsers
-const ItineraryParser = require('../../../../Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
+const ItineraryParser = require('gds-parsers/src/Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
 const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 const TApolloSavePnr = require('../../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
 const AliasParser = require('../../../../Rbs/GdsDirect/AliasParser.js');
