@@ -13,7 +13,6 @@ const {
 	trim,
 } = require('klesun-node-tools/src/Transpiled/php.js');
 
-const CommonParserHelpers = require('./../CommonParserHelpers.js');
 const {mkReg} = require('klesun-node-tools/src/Utils/Misc.js');
 
 const SEGMENT_TYPE_ITINERARY_SEGMENT = 'SEGMENT_TYPE_ITINERARY_SEGMENT';
@@ -240,7 +239,7 @@ class ItineraryParser {
 				location: $matches['location'],
 				date: {
 					raw: $matches['date'],
-					parsed: CommonParserHelpers.parsePartialDate($matches['date']),
+					parsed: ParserUtil.parsePartialDate($matches['date']),
 				},
 				remark: $matches['remark'],
 			};
@@ -287,7 +286,18 @@ class ItineraryParser {
 	// ' 1 CCR ET SS1 REK  10MAY - 20MAY  SDAR/BS-05578602/PUP-REKC61/ARR-1200/RC-ER8IS/DT-1200/NM-TEST TEST/RG-ISK169400.00WY-UNL FK XD24200.00-UNL FK/CF-1918832450COUNT/AT-ISK300080.00-UNL FM 10DY 0HR 58080.00MC *'
 	parseCarSegmentLine($line) {
 		const $regex =
-			'^' + '(?<segmentNumber>[\\s\\d]{1,2})' + '\\s+' + 'CCR' + '\\s+' + '(?<vendorCode>[A-Z\\d]{2})' + '\\s+' + '(?<segmentStatus>[A-Z]{2})' + '(?<seatCount>\\d{0,2})' + '\\s+' + '(?<airport>[A-Z]{3})' + '\\s+' + '(?<arrivalDate>\\d{1,2}[A-Z]{3})' + '\\s*-\\s*' + '(?<returnDate>\\d{1,2}[A-Z]{3})' + '\\s+' + '(?<acrissCode>[A-Z]{4})' + '\\\/(?<modifiers>.*)$' + '';
+			'^' +
+			'(?<segmentNumber>[\\s\\d]{1,2})' +
+			'\\s+' + 'CCR' + '\\s+' +
+			'(?<vendorCode>[A-Z\\d]{2})' + '\\s+' +
+			'(?<segmentStatus>[A-Z]{2})' +
+			'(?<seatCount>\\d{0,2})' + '\\s+' +
+			'(?<airport>[A-Z]{3})' + '\\s+' +
+			'(?<arrivalDate>\\d{1,2}[A-Z]{3})' + '\\s*-\\s*' +
+			'(?<returnDate>\\d{1,2}[A-Z]{3})' + '\\s+' +
+			'(?<acrissCode>[A-Z]{4})' +
+			'\\\/(?<modifiers>.*)$' +
+			'';
 		let $matches;
 		if ($matches = preg_match('/' + $regex + '/', $line, $matches)) {
 			const $modifiers = this.parseCarSegmentModifiers($matches['modifiers']);
@@ -300,11 +310,11 @@ class ItineraryParser {
 				airport: trim($matches['airport']),
 				arrivalDate: {
 					raw: $matches['arrivalDate'],
-					parsed: CommonParserHelpers.parsePartialDate($matches['arrivalDate']),
+					parsed: ParserUtil.parsePartialDate($matches['arrivalDate']),
 				},
 				returnDate: {
 					raw: $matches['returnDate'],
-					parsed: CommonParserHelpers.parsePartialDate($matches['returnDate']),
+					parsed: ParserUtil.parsePartialDate($matches['returnDate']),
 				},
 				acrissCode: trim($matches['acrissCode']),
 				confirmationNumber: $modifiers['confirmationNumber'],
@@ -339,30 +349,30 @@ class ItineraryParser {
 		const $modifiers = array_map($getModifierCodeAndData, array_map('trim', explode('/', $txt)));
 		for (const [$code, $data] of $modifiers) {
 			if ($code === 'CF') {
-				$result['confirmationNumber'] = rtrim($data, ' *');
+				$result.confirmationNumber = rtrim($data, ' *');
 			} else if ($code === 'BS') {
-				$result['bookingSource'] = $data;
+				$result.bookingSource = $data;
 			} else if ($code === 'PUP') {
-				$result['pickUpPoint'] = $data;
+				$result.pickUpPoint = $data;
 			} else if ($code === 'ARR') {
-				$result['arrivalTime'] = $data;
+				$result.arrivalTime = $data;
 			} else if ($code === 'RC') {
-				$result['rateCode'] = $data;
+				$result.rateCode = $data;
 			} else if ($code === 'DT') {
-				$result['departureTime'] = $data;
+				$result.departureTime = $data;
 			} else if ($code === 'NM') {
-				$result['name'] = $data;
+				$result.name = $data;
 			} else if ($code === 'RG') {
 				// 'USD109.00DY-UNL FM'
 				let $match;
 				if ($match = preg_match(/^(?<currency>[A-Z]{3})(?<amount>\d*\.\d{2})/, $data, $match)) {
-					$result['rateGuarantee'] = {currency: $match['currency'], amount: $match['amount']};
+					$result.rateGuarantee = {currency: $match['currency'], amount: $match['amount']};
 				}
 			} else if ($code === 'APPROXIMATE TOTAL RATE') {
 				// 'APPROXIMATE TOTAL RATE-USD237.00-UNL FM 03DY 00HR .00MC'
 				let $match;
 				if ($match = preg_match(/^(?<currency>[A-Z]{3})(?<amount>\d*\.\d{2})/, $data, $match)) {
-					$result['approxTotal'] = {currency: $match['currency'], amount: $match['amount']};
+					$result.approxTotal = {currency: $match['currency'], amount: $match['amount']};
 				}
 			} else if ($code === 'AT') { // TODO: Unknown
 			}
@@ -391,7 +401,23 @@ class ItineraryParser {
 	// ' 4 HHL RD HK3 RIX 10DEC-12DEC  2NT 69706  RADISSON BLU ELIZAB   3ZJXX101-2/RG-EUR105.00/AGT05578602/NM-LIBERMANE MARINA/CF-R2G4YFK *',
 	parseHhlSegmentLine($line) {
 		const $regex =
-			'/^' + '(?<segmentNumber>[\\s\\d]{1,2})' + '\\s+' + '(?<hotelType>HHL)' + '\\s+' + '(?<hotel>[A-Z\\d]{2})' + '\\s+' + '(?<segmentStatus>[A-Z]{2})' + '(?<roomCount>\\d{0,2})' + '\\s+' + '(?<city>[A-Z]{3})' + '\\s+' + '(?<from>\\d{1,2}[A-Z]{3})' + '-(OUT|)' + '(?<to>\\d{1,2}[A-Z]{3})' + '\\s+' + '(?<stayNights>\\d+)NT\\s+' + '(?<propertyCode>[A-Z0-9]{1,5})\\s+' + '(?<hotelName>.*?)\\s*' + '(?<basisRoomCount>\\d+)' + '(?<fareBasis>[A-Z0-9]+)\\s*-' + '(?<personCount>\\d+)' + '(?<fields>.*)' + '$/';
+			'/^' +
+			'(?<segmentNumber>[\\s\\d]{1,2})' + '\\s+' +
+			'(?<hotelType>HHL)' + '\\s+' +
+			'(?<hotel>[A-Z\\d]{2})' + '\\s+' +
+			'(?<segmentStatus>[A-Z]{2})' +
+			'(?<roomCount>\\d{0,2})' + '\\s+' +
+			'(?<city>[A-Z]{3})' + '\\s+' +
+			'(?<from>\\d{1,2}[A-Z]{3})' + '-(OUT|)' +
+			'(?<to>\\d{1,2}[A-Z]{3})' + '\\s+' +
+			'(?<stayNights>\\d+)NT\\s+' +
+			'(?<propertyCode>[A-Z0-9]{1,5})\\s+' +
+			'(?<hotelName>.*?)\\s*' +
+			'(?<basisRoomCount>\\d+)' +
+			'(?<fareBasis>[A-Z0-9]+)\\s*-' +
+			'(?<personCount>\\d+)' +
+			'(?<fields>.*)' +
+			'$/';
 		let $matches;
 		if ($matches = preg_match($regex, $line)) {
 			const $fields = array_values(array_filter(array_map(
@@ -407,11 +433,11 @@ class ItineraryParser {
 				city: trim($matches['city']),
 				startDate: {
 					raw: $matches['from'],
-					parsed: CommonParserHelpers.parsePartialDate($matches['from']),
+					parsed: ParserUtil.parsePartialDate($matches['from']),
 				},
 				endDate: {
 					raw: $matches['to'],
-					parsed: CommonParserHelpers.parsePartialDate($matches['to']),
+					parsed: ParserUtil.parsePartialDate($matches['to']),
 				},
 				stayNights: $matches['stayNights'],
 				propertyCode: $matches['propertyCode'],
@@ -430,7 +456,17 @@ class ItineraryParser {
 	// looks similar to HHL, but formatted differently... is it due to Cash form of payment instead of Credit Card?
 	parseHtlSegmentLine($line) {
 		const $regex =
-			'/^' + '(?<segmentNumber>[\\s\\d]{1,2})' + '\\s+' + '(?<hotelType>HTL)' + '\\s+' + '(?<hotel>[A-Z\\d]{2})' + '\\s+' + '(?<segmentStatus>[A-Z]{2})' + '(?<roomCount>\\d{0,2})' + '\\s+' + '(?<city>[A-Z]{3})' + '\\s+' + '(?<from>\\d{1,2}[A-Z]{3})' + '-OUT' + '(?<to>\\d{1,2}[A-Z]{3})' + '\\s+' + '(?<unparsed>.*)' + '/';
+			'/^' +
+			'(?<segmentNumber>[\\s\\d]{1,2})' + '\\s+' +
+			'(?<hotelType>HTL)' + '\\s+' +
+			'(?<hotel>[A-Z\\d]{2})' + '\\s+' +
+			'(?<segmentStatus>[A-Z]{2})' +
+			'(?<roomCount>\\d{0,2})' + '\\s+' +
+			'(?<city>[A-Z]{3})' + '\\s+' +
+			'(?<from>\\d{1,2}[A-Z]{3})' + '-OUT' +
+			'(?<to>\\d{1,2}[A-Z]{3})' + '\\s+' +
+			'(?<unparsed>.*)' +
+			'/';
 		let $matches;
 		if ($matches = preg_match($regex, $line)) {
 			return {
@@ -442,11 +478,11 @@ class ItineraryParser {
 				city: trim($matches['city']),
 				startDate: {
 					raw: $matches['from'],
-					parsed: CommonParserHelpers.parsePartialDate($matches['from']),
+					parsed: ParserUtil.parsePartialDate($matches['from']),
 				},
 				endDate: {
 					raw: $matches['to'],
-					parsed: CommonParserHelpers.parsePartialDate($matches['to']),
+					parsed: ParserUtil.parsePartialDate($matches['to']),
 				},
 				unparsed: trim($matches['unparsed']),
 			};
@@ -480,7 +516,7 @@ class ItineraryParser {
 				bookingClass: trim($matches['bookingClass'] || ''),
 				departureDate: {
 					raw: $matches['departureDate'],
-					parsed: CommonParserHelpers.parsePartialDate($matches['departureDate']),
+					parsed: ParserUtil.parsePartialDate($matches['departureDate']),
 				},
 				departureAirport: trim($matches['departureAirport']),
 				destinationAirport: trim($matches['destinationAirport']),
