@@ -128,7 +128,7 @@ const RunCmdRq = ({
 		checkEmulatedPcc,
 		runCmd,
 		runCommand,
-	} = RunCmdHelper({stateful});
+	} = RunCmdHelper({stateful, gdsClients});
 
 	const getSessionData = () => {
 		return stateful.getSessionData();

@@ -26,14 +26,6 @@ const PnrParser = require('../../../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
  * modifies the output if needed, calls some implicit commands, etc...
  */
 
-const doesStorePnr = ($cmd) => {
-	let $parsedCmd, $flatCmds, $cmdTypes;
-	$parsedCmd = CommandParser.parse($cmd);
-	$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
-	$cmdTypes = php.array_column($flatCmds, 'type');
-	return php.array_intersect($cmdTypes, ['storePnr', 'storeKeepPnr', 'storePnrSendEmail', 'storeAndCopyPnr']).length;
-};
-
 const doesOpenPnr = ($cmd) => {
 	let $parsedCmd;
 	$parsedCmd = CommandParser.parse($cmd);
@@ -63,20 +55,11 @@ const isInRanges = ($num, $ranges) => {
 	return false;
 };
 
-/**
- * @param formattedTicketNumber = "006 7407 604208"
- * @return {string} = "0067407604208"
- */
-const normalizeTicketNumber = (formattedTicketNumber) => {
-	return formattedTicketNumber.replace(/\s+/g, '');
-};
-
 const checkIsForbidden = ({
 	stateful, cmd,
 	gdsClients = GdsSession.makeGdsClients(),
 }) => {
-	const {travelport} = gdsClients;
-	const {checkEmulatedPcc} = RunCmdHelper({stateful});
+	const {checkEmulatedPcc, areAllCouponsVoided, doesStorePnr} = RunCmdHelper({stateful, gdsClients});
 
 	/** @param $data = CommandParser::parseChangePnrRemarks()['data'] */
 	const checkChangeRemarks = async ($data) => {
@@ -116,38 +99,6 @@ const checkIsForbidden = ({
 		} else {
 			return null;
 		}
-	};
-
-	const areAllCouponsVoided = async (pnr) => {
-		const ticketData = await new RetrieveApolloTicketsAction({session: stateful}).execute();
-		if (!php.empty(ticketData.error)) {
-			return false;
-		}
-		let dividedTicketNumbers = null;
-		if (pnr.hasDividedBooking() && ticketData.tickets.length > 0) {
-			// when you divide a PNR into 2 bookings, *HTE will still hold
-			// tickets from all passengers including the ones moved to new PNR
-			// so we need to fetch PNR XML data, which includes pax->ticket relation
-			const xmlPnr = await travelport.processPnr(stateful.getGdsData(), {
-				recordLocator: pnr.getRecordLocator(),
-			});
-			dividedTicketNumbers = xmlPnr.fareQuoteInfo.pricingList
-				.flatMap(store => store.tickets)
-				.flatMap(t => !t.ticketNumber ? [] : [t.ticketNumber]);
-		}
-
-		for (const ticket of Object.values(ticketData.tickets)) {
-			if (ticket.error) {
-				return false;
-			}
-			const isVoid = (seg) => seg.couponStatus === 'VOID';
-			const ticketNumber = normalizeTicketNumber(ticket.header.ticketNumber);
-			const belongsToPnr = !dividedTicketNumbers || dividedTicketNumbers.includes(ticketNumber);
-			if (belongsToPnr && !ticket.segments.every(s => isVoid(s))) {
-				return false;
-			}
-		}
-		return true;
 	};
 
 	const isForbiddenBaAvailability = ($cmd) => {
@@ -199,31 +150,13 @@ const checkIsForbidden = ({
 			errors.push('NO BA AVAILABILITY IN THIS PCC. PLEASE CHECK IN 2G2H');
 		}
 		if (php.in_array('deletePnrField', php.array_column(flatCmds, 'type'))) {
-			if (agent.canEditTicketedPnr()) {
-				// temporarily disabling the new popup
-			} else {
+			if (!agent.canEditTicketedPnr()) {
 				const pnr = await getStoredPnr();
-				if (pnr && pnr.hasEtickets()) {
-					const couponsVoided = await areAllCouponsVoided(pnr);
-					const allowedAsVoid = agent.canEditVoidTicketedPnr() && couponsVoided;
-					if (agent.canEditTicketedPnr()) {
-						if (!couponsVoided) {
-							const confirmation = await stateful.askClient({
-								messageType: 'promptForTicketedPnrCancelConfirm',
-								agentDisplayName: stateful.getAgent().getLogin(),
-							}).catch(exc => {
-								// temporarily fallback till all agents refresh the page (takes 2 days sometimes)
-								const excData = Debug.getExcData(exc, {
-									session: stateful.getSessionRecord(),
-								});
-								Diag.logExc('Failed to ask client to promptForTicketedPnrCancelConfirm', excData);
-								return {status: 'confirmed'};
-							});
-							if (confirmation.status !== 'confirmed') {
-								errors.push('Ticketed PNR edit confirmation prompt was rejected');
-							}
-						}
-					} else if (!allowedAsVoid) {
+				if (pnr) {
+					const canChange = !pnr.hasEtickets()
+						|| agent.canEditVoidTicketedPnr()
+						&& await areAllCouponsVoided(pnr);
+					if (!canChange) {
 						errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
 					}
 				}
@@ -263,6 +196,7 @@ const RunRealCmd = ({
 	cmdRq, CmdRqLog,
 }) => {
 	const {
+		doesStorePnr,
 		prepareToSavePnr,
 		runCmd,
 		runCommand,
