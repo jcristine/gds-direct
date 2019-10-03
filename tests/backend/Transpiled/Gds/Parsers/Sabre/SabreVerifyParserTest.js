@@ -675,6 +675,45 @@ class SabreVerifyParserTest extends require('../../../Lib/TestCase.js')
 			},
 		]);
 
+		$list.push([
+			[
+				'   FLIGHT  DATE  SEGMENT DPTR  ARVL   MLS   EQP  ELPD MILES SMD',
+				' 1 CX  934 13OCT MNL HKG  910P 1135P   D    359  2.25   712  N ',
+				'DEP-TERMINAL 3                 ARR-TERMINAL 1                  ',
+				'ONEWORLD',
+				'CABIN-ECONOMY                                                  ',
+				' 2 CX  872 14OCT HKG SFO 1245A 1010P-1 BD   77W 12.25  6915  N ',
+				'DEP-TERMINAL 1                 ARR-INTERNATIONAL TERMINAL      ',
+				'ONEWORLD',
+				'CABIN-ECONOMY                                                  ',
+				' 3 CX  873  5NOV SFO HKG 1055P  610A¥2 BD   77W 15.15  6915  N ',
+				'DEP-INTERNATIONAL TERMINAL     ARR-TERMINAL 1                  ',
+				'ONEWORLD',
+				'CABIN-ECONOMY                                                  ',
+				' 4 CX  907  7NOV HKG MNL  730A  940A   B    773  2.10   712  N ',
+				'DEP-TERMINAL 1                 ARR-TERMINAL 3                  ',
+				'ONEWORLD',
+				'CABIN-ECONOMY',
+			].join('\n'),
+			{
+				segments: [
+					{},
+					{
+						segmentNumber: '2',
+						legs: [
+							{offset: -1},
+						],
+					},
+					{
+						segmentNumber: '3',
+						legs: [
+							{offset: 2},
+						],
+					},
+				],
+			},
+		]);
+
 		return $list;
 	}
 

@@ -87,7 +87,7 @@ class SabreVerifyParser
 		//         ' 1 PR  127 24NOV JFK YVR 1155P  310A¥1 D    773  6.15  2424  N '
 		//         '                 YVR JFK  200P 1010P   H         5.10  2424  N ',
 		//         ' 1 AA*4030 13NOV BWI PHL  420P  509P        CRJ   .49    91  N ',
-		$pattern = 'LL AA_FFFF DDDDD PPP SSS TTTTT QQQQQ_X MMM  EEE OOOOO IIIII NN';
+		$pattern = 'LL AA_FFFF DDDDD PPP SSS TTTTT QQQQQXX MMM  EEE OOOOO IIIII NN';
 
 		$names = {
 			' ': 'whitespace',
@@ -171,6 +171,7 @@ class SabreVerifyParser
 	}
 
 	static parseDayOffset($token)  {
+		$token = $token.replace(/¥/g, '+');
 
 		if ($token == '') {
 			return 0;
