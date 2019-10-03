@@ -57,7 +57,10 @@ const toHandleMessageFromServer = (gdsSwitch) => {
 			reply({value: {status: 'done'}});
 		} else {
 			console.error('could not interpret message triggered by server', data);
-			reply({error: 'I do not confirm your message', value: {status: 'unknownMessageType'}});
+			reply({
+				error: 'Unexpected message from server - ' + data.messageType + ', you may need to reload page twice',
+				value: {status: 'unknownMessageType', data},
+			});
 		}
 	};
 };
