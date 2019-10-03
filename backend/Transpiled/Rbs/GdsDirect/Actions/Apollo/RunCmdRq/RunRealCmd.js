@@ -1,3 +1,5 @@
+const Debug = require('klesun-node-tools/src/Debug.js');
+const Diag = require('../../../../../../LibWrappers/Diag.js');
 const GdsSession = require('../../../../../../GdsHelpers/GdsSession.js');
 const RunCmdHelper = require('./RunCmdHelper.js');
 const ModifyCmdOutput = require('./ModifyCmdOutput.js');
@@ -206,6 +208,13 @@ const checkIsForbidden = ({
 						const confirmation = await stateful.askClient({
 							messageType: 'promptForTicketedPnrCancelConfirm',
 							agentDisplayName: stateful.getAgent().getLogin(),
+						}).catch(exc => {
+							// temporarily fallback till all agents refresh the page (takes 2 days sometimes)
+							const excData = Debug.getExcData(exc, {
+								session: stateful.getSessionRecord(),
+							});
+							Diag.logExc('Failed to ask client to promptForTicketedPnrCancelConfirm', excData);
+							return {status: 'confirmed'};
 						});
 						if (confirmation.status !== 'confirmed') {
 							errors.push('Ticketed PNR edit confirmation prompt was rejected');
