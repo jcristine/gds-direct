@@ -204,49 +204,28 @@ class PnrParser {
 		return $result;
 	}
 
-	static parse($dump) {
-		let $result, $desiredSections, $sections, $parsedResult;
-		$result = {
-			dataExistsInfo: null,
-			headerData: null,
-			passengers: null,
-			itineraryData: null,
+	static parse(dump) {
+		const sections = this.splitToSections(dump);
+		const headResult = HeaderParser.parse(sections['HEAD']);
+		const paxResult = GdsPassengerBlockParser.parse(headResult.textLeft);
+		const ticketLines = !php.empty(sections['TI']) ? StringUtil.lines(sections['TI']) : [];
+		return {
+			headerData: headResult.parsedData,
+			passengers: paxResult.parsedData,
+			itineraryData: ItineraryParser.parse(paxResult.textLeft).segments,
+			/* not needed - not parsed ATM */
 			foneData: null,
-			adrsData: null,
-			dlvrData: null,
-			formOfPaymentData: null,
-			tktgData: null,
-			atfqData: null,
-			ticketListData: null,
-			ssrData: null,
-			remarks: null,
-			acknData: null,
+			adrsData: sections['ADRS'] ? this.parseAddress(sections['ADRS']) : null,
+			dlvrData: sections['DLVR'] ? this.parseAddress(sections['DLVR']) : null,
+			formOfPaymentData: FopParser.parse(sections['FOP:']),
+			tktgData: TktgParser.parse(sections['TKTG']),
+			atfqData: sections['ATFQ'] ? AtfqParser.parse(sections['ATFQ']) : null,
+			ticketListData: ticketLines.map(a => TicketHistoryParser.parseTicketLine(a)),
+			ssrData: sections['GFAX'] ? SsrBlockParser.parse(sections['GFAX']) : null,
+			remarks: sections['RMKS'] ? this.parseRemarks(sections['RMKS']) : null,
+			acknData: sections['ACKN'] ? this.parseAcknSection(sections['ACKN']) : null,
+			dataExistsInfo: this.parseDataExistsLines(sections['dataExistsLines'], sections['TKTG']),
 		};
-		$desiredSections = php.array_keys($result);
-		$sections = this.splitToSections($dump);
-		$result['dataExistsInfo'] = this.parseDataExistsLines($sections['dataExistsLines'], $sections['TKTG']);
-
-		$parsedResult = HeaderParser.parse($sections['HEAD']);
-		$result['headerData'] = $parsedResult['parsedData'];
-
-		$parsedResult = GdsPassengerBlockParser.parse($parsedResult['textLeft']);
-		$result['passengers'] = $parsedResult['parsedData'];
-
-		$result['itineraryData'] = ItineraryParser.parse($parsedResult['textLeft']).segments;
-		$result['adrsData'] = $sections['ADRS'] ? this.parseAddress($sections['ADRS']) : null;
-		$result['dlvrData'] = $sections['DLVR'] ? this.parseAddress($sections['DLVR']) : null;
-		$result['formOfPaymentData'] = FopParser.parse($sections['FOP:']);
-		$result['tktgData'] = TktgParser.parse($sections['TKTG']);
-
-		const ticketLines = !php.empty($sections['TI']) ? StringUtil.lines($sections['TI']) : [];
-		$result['ticketListData'] = ticketLines.map(a => TicketHistoryParser.parseTicketLine(a));
-
-		$result['atfqData'] = $sections['ATFQ'] ? AtfqParser.parse($sections['ATFQ']) : null;
-		$result['ssrData'] = $sections['GFAX'] ? SsrBlockParser.parse($sections['GFAX']) : null;
-		$result['remarks'] = $sections['RMKS'] ? this.parseRemarks($sections['RMKS']) : null;
-		$result['acknData'] = $sections['ACKN'] ? this.parseAcknSection($sections['ACKN']) : null;
-
-		return $result;
 	}
 }
 
