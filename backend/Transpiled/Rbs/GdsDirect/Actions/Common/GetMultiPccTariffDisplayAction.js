@@ -1,3 +1,4 @@
+const FluentLogger = require('../../../../../LibWrappers/FluentLogger.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const MultiPccTariffRules = require('../../../../../Repositories/MultiPccTariffRules.js');
 const _ = require('lodash');
@@ -186,29 +187,36 @@ class GetMultiPccTariffDisplayAction {
 	}
 
 	/** @param $cmdData = CommandParser::parseFareSearch()
-	 * @param $session = await require('StatefulSession.js')() */
-	async execute($cmd, $session) {
-		const sessionData = {...$session.getSessionData(), gds: $session.gds};
-		if (!$session.getAgent().canUseMultiPccTariffDisplay()) {
+	 * @param stateful = await require('StatefulSession.js')() */
+	async execute(cmd, stateful) {
+		const sessionData = {...stateful.getSessionData(), gds: stateful.gds};
+		if (!stateful.getAgent().canUseMultiPccTariffDisplay()) {
 			return Rej.Forbidden('You are not allowed to use /MIX alias');
 		}
-		const rpcParamRecord = await this.makeRpcParamOptions($cmd, sessionData);
+		const rpcParamRecord = await this.makeRpcParamOptions(cmd, sessionData);
 		const promises = [];
-		for (const $rpcParams of Object.values(rpcParamRecord['options'])) {
-			const $pccParams = this.constructor.arrayDiffTree($rpcParams, rpcParamRecord['baseParams']);
-			let whenTariff = RbsClient.getTariffDisplay($rpcParams)
+		for (const rpcParams of Object.values(rpcParamRecord['options'])) {
+			let whenTariff = RbsClient.getTariffDisplay(rpcParams)
 				.then(serviceRs => ({
-					pcc: $rpcParams.pcc,
-					gds: $rpcParams.gds,
-					rpcParams: $rpcParams,
+					pcc: rpcParams.pcc,
+					gds: rpcParams.gds,
+					rpcParams: rpcParams,
 					jobResult: serviceRs.result,
 				}));
 
-			whenTariff.then(result => $session.logit('Got a /MIX job result', {$pccParams, result})).catch(() => {});
+			whenTariff.then(result => {
+				const pccParams = this.constructor.arrayDiffTree(rpcParams, rpcParamRecord['baseParams']);
+				const logId = stateful.getSessionRecord().logId;
+				FluentLogger.logit('Got a /MIX job result', logId, {pccParams, result});
+				return stateful.askClient({
+					messageType: 'displayTariffMixPccRow',
+					pccResult: result,
+				});
+			}).catch(() => {});
 			whenTariff = timeout(this.constructor.TIMEOUT, whenTariff)
 				.catch(exc => {
-					$session.logExc('WARNING: /MIX job failed for PCC ' + $rpcParams.pcc, exc);
-					exc.message = $rpcParams.pcc + ': ' + exc.message;
+					stateful.logExc('WARNING: /MIX job failed for PCC ' + rpcParams.pcc, exc);
+					exc.message = rpcParams.pcc + ': ' + exc.message;
 					return Promise.reject(exc);
 				});
 			promises.push(whenTariff);
