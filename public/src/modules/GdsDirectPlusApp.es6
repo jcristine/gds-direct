@@ -2,7 +2,7 @@
 import {CHANGE_ACTIVE_TERMINAL} from "../actions/settings";
 import {DEV_CMD_STACK_RUN} from "../actions";
 import {CHANGE_GDS, UPDATE_CUR_GDS, UPDATE_ALL_AREA_STATE} from "../actions/gdsActions";
-import {GdsSwitch} 			from './gdsSwitch';
+import {GdsSwitch} 			from './GdsSwitch';
 import {ContainerMain, normalizeThemeId} from "../containers/main";
 import {PqParser} 		from "../modules/pqParser";
 import {OFFSET_DEFAULT, AREA_LIST} from "../constants";
