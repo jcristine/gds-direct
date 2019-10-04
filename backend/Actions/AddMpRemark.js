@@ -1,10 +1,32 @@
+const RbsUtils = require('../GdsHelpers/RbsUtils.js');
+const MpRemarkLogs = require('../Repositories/MpRemarkLogs.js');
+const GetCurrentPnr = require('./GetCurrentPnr.js');
 
 const SavePnr = require('./SavePnr.js');
 const CommonUtils = require('../GdsHelpers/CommonUtils.js');
 
+const writeToLog = async ({stateful, airline, pcc}) => {
+	const pnr = await GetCurrentPnr(stateful);
+	const recordLocator = pnr.getRecordLocator();
+	const agentId = stateful.getAgent().getId();
+	const reservation = pnr.getReservation(stateful.getStartDt());
+	const destinations = RbsUtils.getDestinations(reservation.itinerary);
+	if (destinations.length > 0) {
+		const destinationAirport = destinations[0][0].destinationAirport;
+		MpRemarkLogs.storeNew({
+			airline, pcc, agentId,
+			destinationAirport,
+			recordLocator,
+		});
+	}
+};
+
 /** @param stateful = require('StatefulSession.js')() */
 module.exports = async ({stateful, airline}) => {
-	const remark = 'EXPERTS REMARK-MP-' + airline + '-' + stateful.getSessionData().pcc;
+	const pcc = stateful.getSessionData().pcc;
+	await writeToLog({stateful, airline, pcc});
+
+	const remark = 'EXPERTS REMARK-MP-' + airline + '-' + pcc;
 	const gds = stateful.gds;
 	const cmds = {
 		apollo: ['@:5' + remark],

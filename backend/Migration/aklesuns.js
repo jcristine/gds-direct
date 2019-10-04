@@ -1,3 +1,4 @@
+const MpRemarkLogs = require('../Repositories/MpRemarkLogs.js');
 
 const Emc = require('../LibWrappers/Emc.js');
 const Redis = require("../LibWrappers/Redis");
@@ -637,21 +638,30 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
-		name: 'GRECT/2019.10.02005-create-mp-log-table',
+		name: 'GRECT/2019.10.02005-create-mp-log-table-2',
 		perform: db => db.query([
 			'CREATE TABLE mp_remark_log (',
 			'    id INT PRIMARY KEY AUTO_INCREMENT,',
 			'    dt DATETIME NOT NULL,',
+			'    recordLocator CHAR(6) NOT NULL,',
 			'    agentId INT NOT NULL,',
 			'    airline CHAR(2) NOT NULL,',
 			'    pcc VARCHAR(9) NOT NULL,',
 			'    destinationAirport CHAR(3) DEFAULT NULL,',
 			'    INDEX dt (dt),',
+			'    INDEX recordLocator (recordLocator),',
 			'    INDEX airline (airline),',
 			'    INDEX pcc (pcc),',
 			'    INDEX destinationAirport (destinationAirport),',
 			'    INDEX agentId (agentId)',
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8',
 		].join('\n')),
+	},
+	{
+		name: 'GRECT/2019.10.02005-fill-mp-log-table-2',
+		perform: async db => {
+			const rows = await MpRemarkLogs.getFromCmdLogs();
+			return db.writeRows('mp_remark_log', [rows]);
+		},
 	},
 ];
