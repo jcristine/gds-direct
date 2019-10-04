@@ -171,7 +171,7 @@ export const replaceInTerminal = ($div, tips) => {
 				target.onclick 	= () => DEV_CMD_STACK_RUN(onClickCommand);
 			} else
 			{
-				target.onclick 	= () => switchTerminal({keymap : 'next'}).then( () => DEV_CMD_STACK_RUN(onClickCommand) )
+				target.onclick 	= () => switchTerminal({keymap : 'next'}).then( () => DEV_CMD_STACK_RUN(onClickCommand) );
 			}
 		}
 	};
@@ -225,5 +225,5 @@ export const replaceInTerminal = ($div, tips) => {
 const popoverDefs = (content, id) => {
 	content += window.GdsDirectPlusState.hasPermissions() ? '(' + id + ')' : '';
 
-	return {content}
+	return {content};
 };

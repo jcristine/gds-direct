@@ -16,6 +16,7 @@ import {LeadList} from '../components/reusable/LeadList.js';
 import PricePccMixList from '../components/popovers/PricePccMixList.es6';
 import promptForTicketedPnrCancelConfirm from "../components/popovers/promptForTicketedPnrCancelConfirm";
 import TariffPccMixList from "../components/popovers/TariffPccMixList";
+import tetherDrop from 'tether-drop';
 
 const BORDER_SIZE = 2;
 
@@ -68,6 +69,20 @@ const toHandleMessageFromServer = (gdsSwitch) => {
 			});
 		}
 	};
+};
+
+/**
+ * without that, when you hover on a highlighted
+ * text, scroll will jump to the bottom...
+ */
+const initTetherDrop = (dom) => {
+	const popover = new tetherDrop({
+		target: dom,
+		content: document.createElement('div'),
+	});
+	popover.open();
+	popover.close();
+	popover.destroy();
 };
 
 /**
@@ -146,9 +161,7 @@ export default class GdsDirectPlusApp
 		let queryObj = new URLSearchParams(window.location.search);
 		this.initFromQuery(queryObj);
 
-		// without that, when you hover on a highlighted
-		// text, scroll will jump to the bottom...
-		getStore().updateView();
+		initTetherDrop(htmlRootDom);
 
 		// ping EMC session every 10 minutes to avoid state where
 		// CMS session is still alive, but GDSD session expired
