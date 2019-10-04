@@ -18,6 +18,11 @@ const provide_call = () => {
 			initialState: GdsDirectDefaults.makeDefaultAmadeusState(),
 			performedCommands: [
 				{
+					comment: 'forged',
+					cmd: 'RT',
+					output: 'FAKE *R OUTPUT DUNNO SYSTEM DOWN CANT REDISPLAY',
+				},
+				{
 					"cmd": "RMEXPERTS REMARK-MP-UA-SFO1S2195;ER",
 					"output": [
 						"/",
@@ -64,6 +69,11 @@ const provide_call = () => {
 			gds: 'sabre',
 			initialState: GdsDirectDefaults.makeDefaultSabreState(),
 			performedCommands: [
+				{
+					comment: 'forged',
+					cmd: '*R',
+					output: 'FAKE *R OUTPUT DUNNO SYSTEM DOWN CANT REDISPLAY',
+				},
 				{
 					"cmd": "5EXPERTS REMARK-MP-UA-6IIF§ER",
 					"output": "SIMULTANEOUS CHANGES TO PNR - USE IR TO IGNORE AND RETRIEVE PNR",
@@ -120,6 +130,11 @@ const provide_call = () => {
 			gds: 'apollo',
 			initialState: {...GdsDirectDefaults.makeDefaultApolloState(), pcc: '2CV4'},
 			performedCommands: [
+				{
+					comment: 'forged',
+					cmd: '*R',
+					output: 'FAKE *R OUTPUT DUNNO SYSTEM DOWN CANT REDISPLAY',
+				},
 				{
 					"cmd": "@:5EXPERTS REMARK-MP-AY-2CV4|ER",
 					"output": "OK - MH6L31-TRAVEL SHOP              SFO\n><",
