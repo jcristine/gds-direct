@@ -88,3 +88,5 @@ exports.getHist = async (rqBody) => {
 	}
 	return {records};
 };
+
+exports.getFromCmdLogs = getFromCmdLogs;
