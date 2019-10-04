@@ -11,17 +11,20 @@
         <label><span>Company: </span><input name="company" type="text"/></label>
         <label><span>Airline: </span><input name="mpAirline" type="text" size="2"/></label>
         <label><span>Expert's Display Name: </span><input name="agentLogin" type="text"/></label>
-        <label><span>PCC: </span><input name="mpPcc" type="text"/></label>
+        <label><span>PCC: </span><input name="mpPcc" type="text" size="9"/></label>
+        <label><span>Destination: </span><input name="destinationAirport" type="text" size="3"/></label>
         <button>Submit</button>
     </form>
     <table>
         <thead>
             <tr>
                 <th>Date/Time</th>
+                <th>PNR</th>
                 <th>Expert</th>
                 <th>Companies</th>
                 <th>MPed airline</th>
                 <th>PCC</th>
+                <th>Destination</th>
             </tr>
         </thead>
         <tbody id="mp-action-list"></tbody>
