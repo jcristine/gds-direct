@@ -102,19 +102,14 @@ const StorePricing_apollo = ({
 				error.includes('ATFQ ALREADY EXISTS')
 			) {
 				reject = Rej.BadRequest;
+			} else if (error.includes('NO VALIDATING AIRLINE FOUND')) {
+				reject = Rej.BadRequest;
+				error += ' (is SEM/ PCC correct?)';
 			} else if (error.includes('ERROR MESSAGE NOT DEFINED')) {
-				const isCa179 = s => s.airline === 'CA' && +s.flightNumber === 179;
-				if (pnr.getItinerary().some(isCa179)) {
-					// dunno why, but any itinerary with this segment in any GDS results in
-					// various forms of "UNKNOWN ERROR", some problems in airline database perhaps
-					reject = Rej.ServiceUnavailable;
-					error = 'CA179 flight airline DB issues, store manually - ' + error;
-				} else {
-					// when there are segments without times in itinerary, like
-					// ' 4 DL  26Y 08JAN ICNATL GK1   805P  734P           WE'
-					// ' 5 DL2521Y 08JAN ATLLEX GK1                        WE'
-					error = 'Some flights are not operable - ' + error;
-				}
+				// when there are segments without times in itinerary, like
+				// ' 4 DL  26Y 08JAN ICNATL GK1   805P  734P           WE'
+				// ' 5 DL2521Y 08JAN ATLLEX GK1                        WE'
+				error = 'Some flights are not operable - ' + error;
 			}
 			return reject('Failed to >' + cmd + '; - ' + error);
 		} else {
