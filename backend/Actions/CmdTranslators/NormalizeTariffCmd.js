@@ -1,3 +1,4 @@
+const Rej = require('klesun-node-tools/src/Rej.js');
 const Parse_fareSearch = require('gds-utils/src/text_format_processing/apollo/commands/Parse_fareSearch.js');
 const DateTime = require('../../Transpiled/Lib/Utils/DateTime.js');
 
@@ -16,8 +17,11 @@ class NormalizeTariffCmd
 	}
 
 	static normalizeApolloCmd(cmdData)  {
-		if (!cmdData || cmdData.unparsed) {
+		if (!cmdData) {
 			return null;
+		} else if (cmdData.unparsed) {
+			const msg = 'Failed to parse part of $D - ' + cmdData.unparsed;
+			throw Rej.NotImplemented.makeExc(msg);
 		}
 		const typeToData = php.array_combine(
 			php.array_column(cmdData.modifiers || [], 'type'),

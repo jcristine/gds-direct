@@ -1207,6 +1207,24 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 			},
 		});
 
+		list.push({
+			title: 'First date, then airport codes?',
+			input: '$D10NOVDFWAKL|AA/@C',
+			output: {
+				departureDate: {
+					raw: '10NOV',
+					partial: '11-10',
+				},
+				returnDate: null,
+				departureAirport: 'DFW',
+				destinationAirport: 'AKL',
+				modifiers: [
+					{type: 'airlines'},
+					{type: 'cabinClass'},
+				],
+			},
+		});
+
 		// TODO: parse!
 		// list.push({
 		// 	title: 'First dates, then airport codes',
