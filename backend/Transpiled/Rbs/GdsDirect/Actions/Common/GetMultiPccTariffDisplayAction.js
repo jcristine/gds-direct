@@ -56,21 +56,21 @@ class GetMultiPccTariffDisplayAction {
 		});
 	}
 
-	static extendFromPccRecord($rpcParams, $pccRec, $sessionData) {
-		$rpcParams = {...$rpcParams};
-		if ($pccRec['gds'] !== $sessionData['gds']) {
-			delete($rpcParams['ptc']);
-			delete($rpcParams['fareType']);
-			delete($rpcParams['accountCode']);
+	static extendFromPccRecord(rpcParams, pccRec, sessionData) {
+		rpcParams = {...rpcParams};
+		if (pccRec.gds !== sessionData.gds) {
+			delete rpcParams.ptc;
+			delete rpcParams.fareType;
+			delete rpcParams.accountCode;
 		}
-		$rpcParams['pcc'] = $pccRec['pcc'];
-		$rpcParams['gds'] = $pccRec['gds'];
-		delete($pccRec['pcc']);
-		delete($pccRec['gds']);
-		if (php.empty(php.array_intersect_key($rpcParams, $pccRec))) {
-			$rpcParams = php.array_merge($rpcParams, $pccRec);
+		rpcParams.pcc = pccRec.pcc;
+		rpcParams.gds = pccRec.gds;
+		delete pccRec.pcc;
+		delete pccRec.gds;
+		if (php.empty(php.array_intersect_key(rpcParams, pccRec))) {
+			rpcParams = php.array_merge(rpcParams, pccRec);
 		}
-		return $rpcParams;
+		return rpcParams;
 	}
 
 	static transformFareType($inParserFormat) {
@@ -122,12 +122,15 @@ class GetMultiPccTariffDisplayAction {
 				baseParams.fareType = this.constructor.transformFareType(data);
 			} else if (type === 'accountCode') {
 				baseParams.accountCode = data;
+			} else if (type === 'bookingClass') {
+				baseParams.bookingClass = data;
 			} else {
 				return Rej.NotImplemented('Unsupported modifier - ' + type);
 			}
 		}
 		let options = [];
-		for (const pccRec of Object.values(await this.getPccs(cmdData, sessionData))) {
+		const pccRecs = await this.getPccs(cmdData, sessionData);
+		for (const pccRec of pccRecs) {
 			options.push(this.constructor.extendFromPccRecord(baseParams, pccRec, sessionData));
 		}
 		options = _.uniqBy(options, r => JSON.stringify(r));
