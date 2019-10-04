@@ -27,23 +27,26 @@ const matchesFilters = (filters, record) => {
 
 const main = () => {
 	const mpList = document.getElementById('mp-action-list');
+	const totalCntHolder = document.getElementById('total-cnt-holder');
+	const filteredCntHolder = document.getElementById('filtered-cnt-holder');
 	const filterForm = document.forms[0];
 	const filters = filterForm.elements;
 	grectApi.admin.getMpLog().then(({records}) => {
 		const render = () => {
 			mpList.textContent = '';
-			for (const record of records) {
-				if (matchesFilters(filters, record)) {
-					mpList.appendChild(Cmp('tr').attach([
-						Cmp('td', {textContent: record.dt}),
-						Cmp('td', {textContent: record.recordLocator}),
-						Cmp('td', {textContent: record.agentLogin}),
-						Cmp('td', {textContent: record.agentCompanies.join(', ')}),
-						Cmp('td', {textContent: record.mpAirline}),
-						Cmp('td', {textContent: record.mpPcc}),
-						Cmp('td', {textContent: record.destinationAirport}),
-					]).context);
-				}
+			const filtered = records.filter(r => matchesFilters(filters, r));
+			totalCntHolder.textContent = records.length;
+			filteredCntHolder.textContent = filtered.length;
+			for (const record of filtered) {
+				mpList.appendChild(Cmp('tr').attach([
+					Cmp('td', {textContent: record.dt}),
+					Cmp('td', {textContent: record.recordLocator}),
+					Cmp('td', {textContent: record.agentLogin}),
+					Cmp('td', {textContent: record.agentCompanies.join(', ')}),
+					Cmp('td', {textContent: record.mpAirline}),
+					Cmp('td', {textContent: record.mpPcc}),
+					Cmp('td', {textContent: record.destinationAirport}),
+				]).context);
 			}
 		};
 		filterForm.onsubmit = (evt) => {
