@@ -146,6 +146,10 @@ export default class GdsDirectPlusApp
 		let queryObj = new URLSearchParams(window.location.search);
 		this.initFromQuery(queryObj);
 
+		// without that, when you hover on a highlighted
+		// text, scroll will jump to the bottom...
+		getStore().updateView();
+
 		// ping EMC session every 10 minutes to avoid state where
 		// CMS session is still alive, but GDSD session expired
 		let keepAliveEmcInterval = setInterval(() => {

@@ -3,7 +3,8 @@ import TerminalCell from "./TerminalCell";
 import {getStorageMatrix} from "../helpers/helpers";
 
 /**
- * represents a particular GDS terminal, like Apollo terminal or Sabre terminal
+ * represents a grid of particular GDS terminal
+ * cells, like Apollo terminal or Sabre terminal
  */
 export class GdsUnit
 {
