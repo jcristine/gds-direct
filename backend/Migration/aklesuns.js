@@ -638,6 +638,12 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		name: 'GRECT/2019.10.02005-delete-wrong-mp-log-table',
+		perform: db => db.query([
+			'DROP TABLE mp_remark_log;',
+		].join('\n')),
+	},
+	{
 		name: 'GRECT/2019.10.02005-create-mp-log-table-2',
 		perform: db => db.query([
 			'CREATE TABLE mp_remark_log (',

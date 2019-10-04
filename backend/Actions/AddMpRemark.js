@@ -21,7 +21,7 @@ const writeToLog = async ({stateful, airline, pcc}) => {
 	}
 };
 
-/** @param stateful = require('StatefulSession.js')() */
+/** @param stateful = require('StatefulSesion.js')() */
 module.exports = async ({stateful, airline}) => {
 	const pcc = stateful.getSessionData().pcc;
 	await writeToLog({stateful, airline, pcc});
