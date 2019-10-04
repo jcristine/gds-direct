@@ -27,6 +27,10 @@ const bookSa = async ({sabre, session, baseDate, itinerary}) => {
 			return Rej.UnprocessableEntity(msg, built);
 		} else if (response.match(/FLIGHT NOOP FOR THIS FLIGHT\/DATE/)) {
 			return Rej.BadRequest(response);
+		} else if (response.match(/FLIGHT DEPARTED/)) {
+			return Rej.BadRequest(response);
+		} else if (response.match(/INVALID DATE/)) {
+			return Rej.BadRequest(response);
 		} else {
 			const msg = Errors.getMessage(built.errorType, built.errorData);
 			return Rej.UnprocessableEntity(msg, built);
