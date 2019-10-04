@@ -1,5 +1,5 @@
 import {AREA_LIST} from "../constants";
-import Terminal from "./terminal";
+import TerminalCell from "./TerminalCell";
 import {getStorageMatrix} from "../helpers/helpers";
 
 /**
@@ -68,7 +68,7 @@ export class GdsUnit
 			.filter( index => !terminals[index] )
 			.forEach( index => {
 
-				terminals[index] = new Terminal({
+				terminals[index] = new TerminalCell({
 					name 	: index,
 					gds		: this.get('name'),
 					buffer	: this.get('buffer') ? this.get('buffer')['terminals'][index + 1] : '',
@@ -77,7 +77,7 @@ export class GdsUnit
 
 			});
 
-		terminals['wide'] = terminals['wide'] || new Terminal({
+		terminals['wide'] = terminals['wide'] || new TerminalCell({
 			name 	: 'wide',
 			gds		: this.get('name'),
 			buffer	: '',
@@ -88,13 +88,13 @@ export class GdsUnit
 		this.set('dimensions', dimensions);
 	}
 
-	/** @return {Terminal[]} */
+	/** @return {TerminalCell[]} */
 	getTerminals()
 	{
 		return Object.values(this.get('terminals'));
 	}
 
-	/** @return {Terminal} */
+	/** @return {TerminalCell} */
 	getActiveTerminal()
 	{
 		return this.get('terminals')[ this.get('curTerminalId') ];

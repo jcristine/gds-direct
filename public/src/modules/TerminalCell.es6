@@ -5,7 +5,7 @@ import {CHANGE_ACTIVE_TERMINAL} from "../actions/settings";
 require('jquery.terminal/js/unix_formatting');
 
 /** element of GDS_UNIT class */
-export default class Terminal
+export default class TerminalCell
 {
 	constructor( params )
 	{
