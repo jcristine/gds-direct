@@ -166,13 +166,6 @@ const RunCmdHelper = ({
 					const confirmation = await stateful.askClient({
 						messageType: 'promptForTicketedPnrCancelConfirm',
 						agentDisplayName: stateful.getAgent().getLogin(),
-					}).catch(exc => {
-						// temporarily fallback till all agents refresh the page (takes 2 days sometimes)
-						const excData = Debug.getExcData(exc, {
-							session: stateful.getSessionRecord(),
-						});
-						Diag.logExc('Failed to ask client to promptForTicketedPnrCancelConfirm', excData);
-						return {status: 'confirmed'};
 					});
 					if (confirmation.status !== 'confirmed') {
 						const msg = 'Ticketed PNR edit confirmation prompt was rejected';
