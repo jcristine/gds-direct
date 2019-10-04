@@ -657,12 +657,4 @@ module.exports.migrations = [
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8',
 		].join('\n')),
 	},
-	{
-		name: 'GRECT/2019.10.02005-fill-mp-log-table-3',
-		perform: async db => {
-			const rows = await MpRemarkLogs.getFromCmdLogs();
-			await db.delete({table: 'mp_remark_log'});
-			return db.writeRows('mp_remark_log', rows);
-		},
-	},
 ];

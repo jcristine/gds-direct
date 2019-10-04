@@ -16,6 +16,7 @@ exports.storeNew = ({airline, pcc, agentId, destinationAirport, recordLocator}) 
 	}]));
 };
 
+/** probably won't be needed anymore */
 const getFromCmdLogs = async () => {
 	const dtObj = new Date();
 	dtObj.setMonth(dtObj.getMonth() - 1);
@@ -57,9 +58,18 @@ const getFromCmdLogs = async () => {
 	return records;
 };
 
+const getAll = () => {
+	return Db.withSlave(db => db.fetchAll({
+		table: TABLE,
+		orderBy: [
+			['id', 'DESC'],
+		],
+	}));
+};
+
 exports.getHist = async (rqBody) => {
 	const whenAgents = Agents.getAll();
-	const whenLogRecs = getFromCmdLogs();
+	const whenLogRecs = getAll();
 	const [agents, logRecs] = await Promise.all([whenAgents, whenLogRecs]);
 
 	const idToAgent = _.keyBy(agents, a => a.id);
@@ -78,5 +88,3 @@ exports.getHist = async (rqBody) => {
 	}
 	return {records};
 };
-
-exports.getFromCmdLogs = getFromCmdLogs;
