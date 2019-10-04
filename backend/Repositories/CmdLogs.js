@@ -23,6 +23,7 @@ const isInvalidFormat = (cmdRec, gds) => {
 			|| cmdRec.output.match(/^CHECK FORMAT - .+\s*><$/)
 			|| cmdRec.output.match(/^CK ACTN CODE\s*><$/)
 			|| cmdRec.output.match(/^CK ACTN CODE - NO LONGER ACTIVE\s*><$/)
+			|| cmdRec.output.match(/^CK DTE\s*><$/)
 			|| cmdRec.output.match(/^CK FRMT\s*><$/)
 			|| cmdRec.output.match(/^CK STATUS\s*><$/)
 			|| cmdRec.output.match(/^CK FLT NBR\s*><$/)

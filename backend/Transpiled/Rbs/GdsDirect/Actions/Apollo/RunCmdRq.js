@@ -1,3 +1,4 @@
+const CmdLogs = require('../../../../../Repositories/CmdLogs.js');
 const PrepareHbFexMask = require('../../../../../Actions/PrepareHbFexMask.js');
 const StorePricing_apollo = require('../../../../../Actions/StorePricing_apollo.js');
 const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
@@ -780,7 +781,7 @@ const RunCmdRq = ({
 				const month = date.raw.slice(-3);
 				return 'A*O' + day + month;
 			}
-			if (type === 'airAvailability' && !data) {
+			if (type === 'airAvailability' && !data && !CmdLogs.isInvalidFormat(lastAvail, 'apollo')) {
 				return Rej.NotImplemented('Could not parse availability cmd >' + lastAvail.cmd + ';');
 			}
 		}
