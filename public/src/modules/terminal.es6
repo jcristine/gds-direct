@@ -1,4 +1,4 @@
-import TerminalPlugin	from '../middleware/plugin.es6';
+import TerminalPlugin	from '../middleware/TerminalPlugin.es6';
 import Dom				from '../helpers/dom.es6';
 import {CHANGE_ACTIVE_TERMINAL} from "../actions/settings";
 

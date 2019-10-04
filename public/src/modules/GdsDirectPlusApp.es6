@@ -15,6 +15,7 @@ import {notify} from './../helpers/debug.es6';
 import {LeadList} from '../components/reusable/LeadList.js';
 import PricePccMixList from '../components/popovers/PricePccMixList.es6';
 import promptForTicketedPnrCancelConfirm from "../components/popovers/promptForTicketedPnrCancelConfirm";
+import TariffPccMixList from "../components/popovers/TariffPccMixList";
 
 const BORDER_SIZE = 2;
 
@@ -54,6 +55,10 @@ const toHandleMessageFromServer = (gdsSwitch) => {
 				}));
 		} else if (data.messageType === 'displayPriceMixPccRow') {
 			PricePccMixList.displayPriceMixPccRow(data);
+			reply({value: {status: 'done'}});
+		} else if (data.messageType === 'displayTariffMixPccRow') {
+			const plugin = gdsSwitch.getActivePlugin();
+			TariffPccMixList.displayTariffMixPccRow(plugin, data);
 			reply({value: {status: 'done'}});
 		} else {
 			console.error('could not interpret message triggered by server', data);

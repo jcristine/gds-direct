@@ -189,6 +189,7 @@ class GetMultiPccTariffDisplayAction {
 	/** @param $cmdData = CommandParser::parseFareSearch()
 	 * @param stateful = await require('StatefulSession.js')() */
 	async execute(cmd, stateful) {
+		const cmdRqId = await stateful.getLog().getCmdRqId();
 		const sessionData = {...stateful.getSessionData(), gds: stateful.gds};
 		if (!stateful.getAgent().canUseMultiPccTariffDisplay()) {
 			return Rej.Forbidden('You are not allowed to use /MIX alias');
@@ -210,6 +211,7 @@ class GetMultiPccTariffDisplayAction {
 				FluentLogger.logit('Got a /MIX job result', logId, {pccParams, result});
 				return stateful.askClient({
 					messageType: 'displayTariffMixPccRow',
+					cmdRqId: cmdRqId,
 					pccResult: result,
 				});
 			}).catch(() => {});
@@ -233,12 +235,13 @@ class GetMultiPccTariffDisplayAction {
 			formatted.push(...errors);
 			return {errors: formatted.length > 0 ? formatted : ['None of PCC jobs responded']};
 		}
+		const actions = [{type: 'finalizeTariffMix', data: {cmdRqId}}];
 		if (!php.empty(finishedJobs)) {
 			const cmdRecord = (new MakeMultiPccTariffDumpAction())
 				.execute(finishedJobs, sessionData, rpcParamRecord.cmdData);
-			return {calledCommands: [cmdRecord], userMessages: errors};
+			return {actions, calledCommands: [cmdRecord], userMessages: errors};
 		} else {
-			return {errors: ['All ' + php.count(promises) + ' PCC jobs failed'].concat(errors)};
+			return {actions, errors: ['All ' + php.count(promises) + ' PCC jobs failed'].concat(errors)};
 		}
 	}
 }

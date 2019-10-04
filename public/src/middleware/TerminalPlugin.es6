@@ -1,3 +1,5 @@
+import TariffPccMixList from "../components/popovers/TariffPccMixList";
+
 const $		= require('jquery');
 
 // require('jquery.terminal/js/jquery.terminal');
@@ -649,6 +651,8 @@ export default class TerminalPlugin
 				this._displayMpRemarkDialog(action.data);
 			} else if (action.type === 'initializePriceMix') {
 				PricePccMixList.initialize(this, action.data);
+			} else if (action.type === 'finalizeTariffMix') {
+				TariffPccMixList.finalize(this, action.data);
 			} else {
 				let msg = '[[;;;error]Unsupported action - ' + action.type + ']';
 				this._printOutput(msg, false);
