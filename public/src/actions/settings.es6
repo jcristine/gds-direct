@@ -7,8 +7,8 @@ import $ from 'jquery';
 export const CHANGE_STYLE = theme => {
 	getters('theme', theme);
 
-	const { name } = getStore().app.Gds.getCurrent().get();
-	getStore().app.Gds.update({ theme }, name);
+	const { name } = getStore().app.gdsSwitch.getCurrent().get();
+	getStore().app.gdsSwitch.update({ theme }, name);
 	getStore().updateView({theme});
 	getStore().app.changeStyle(theme);
 };
@@ -18,8 +18,8 @@ export const CHANGE_FONT_SIZE = ({fontSize}) => {
 
 	getStore().app.getContainer().changeFontClass(fontSize);
 
-	const { name } = getStore().app.Gds.getCurrent().get();
-	getStore().app.Gds.update({ fontSize: fontSize }, name);
+	const { name } = getStore().app.gdsSwitch.getCurrent().get();
+	getStore().app.gdsSwitch.update({ fontSize: fontSize }, name);
 	getStore().updateView({fontSize});
 };
 
@@ -41,7 +41,7 @@ export const CHANGE_SETTINGS = settings => {
 	$.each(settings, (gds, value) => {
 		newData.keyBindings[gds] = value.keyBindings || {};
         newData.gdsAreaSettings[gds] = value.areaSettings || [];
-		let promise = getStore().app.Gds.update({
+		let promise = getStore().app.gdsSwitch.update({
 			keyBindings: newData.keyBindings[gds],
             areaSettings: newData.gdsAreaSettings[gds],
 		}, gds);
@@ -72,12 +72,12 @@ export const CHANGE_MATRIX = matrix => {
 		matrix,
 	};
 	getters('matrixConfiguration', result);
-	getStore().app.Gds.update({matrix});
+	getStore().app.gdsSwitch.update({matrix});
 	getStore().updateView();
 };
 
 export const CHANGE_ACTIVE_TERMINAL = ({curTerminalId}) => {
-	getStore().app.Gds.changeActive(curTerminalId);
+	getStore().app.gdsSwitch.changeActive(curTerminalId);
 	getters('terminal', curTerminalId + 1);
 };
 
@@ -89,13 +89,13 @@ export const CHANGE_SESSION_BY_MENU = area => {
 		galileo: 'S' + area,
 		sabre: '¤' + area,
 		amadeus: 'JM' + area,
-	}[getStore().app.Gds.name];
-	return getStore().app.Gds.runCommand([command])
+	}[getStore().app.gdsSwitch.name];
+	return getStore().app.gdsSwitch.runCommand([command])
 };
 
 export const RUN_COMMAND_LIST = commands => {
 	for (let cmd of commands) {
-		getStore().app.Gds.runCommand([cmd]);
+		getStore().app.gdsSwitch.runCommand([cmd]);
 	}
 };
 
@@ -107,7 +107,7 @@ export const ADD_WIDE_COLUMN = () => {
 	};
 	getters('matrixConfiguration', result);
 
-	getStore().app.Gds.update({
+	getStore().app.gdsSwitch.update({
 		hasWide : !getStore().app.getGds().get('hasWide')
 	});
 

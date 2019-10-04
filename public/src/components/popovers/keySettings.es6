@@ -71,7 +71,7 @@ class Context
 
 	_makeBody(parent)
 	{
-		const { name } = getStore().app.Gds.getCurrent().get();
+		const { name } = getStore().app.gdsSwitch.getCurrent().get();
 		let selectedGds = name;
 
 		const container	= Dom('div');

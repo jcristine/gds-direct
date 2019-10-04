@@ -106,7 +106,7 @@ export default class GdsDirectPlusApp
 			activeName 	: settings['common']['currentGds'] || 'apollo',
 			buffer 		: buffer || {},
 		});
-		this.Gds = gdsSwitch;
+		this.gdsSwitch = gdsSwitch;
 		if (PqPriceModal) {
 			this.pqParser = new PqParser(PqPriceModal, gdsSwitch);
 		}
@@ -132,8 +132,8 @@ export default class GdsDirectPlusApp
 			disableTextWrap : agentCustomSettings.disableTextWrap || false,
 			language		: language,
 			theme			: this.themeId,
-			gdsObjName		: this.Gds.getCurrentName(),
-			gdsObjIndex 	: this.Gds.getCurrentIndex(),
+			gdsObjName		: this.gdsSwitch.getCurrentName(),
+			gdsObjIndex 	: this.gdsSwitch.getCurrentIndex(),
 			keyBindings		: keyBindings,
 			gdsAreaSettings	: gdsAreaSettings,
 		});
@@ -169,8 +169,8 @@ export default class GdsDirectPlusApp
 	{
 		if (!this.themeId)
 		{
-			const themeId = settings && settings[this.Gds.name] && settings[this.Gds.name].theme
-				? settings[this.Gds.name].theme
+			const themeId = settings && settings[this.gdsSwitch.name] && settings[this.gdsSwitch.name].theme
+				? settings[this.gdsSwitch.name].theme
 				: 4; // 4  Apollo Default
 			this.themeId = normalizeThemeId(themeId, terminalThemes);
 			this.container.changeStyle(this.themeId);
@@ -223,7 +223,7 @@ export default class GdsDirectPlusApp
 
 	getGds()
 	{
-		return this.Gds.getCurrent();
+		return this.gdsSwitch.getCurrent();
 	}
 
 	getCharLength()
@@ -258,7 +258,7 @@ export default class GdsDirectPlusApp
 			return;
 		}
 
-		const {matrix, hasWide} = this.Gds.getCurrent().get();
+		const {matrix, hasWide} = this.gdsSwitch.getCurrent().get();
 		const {rows, cells} 	= matrix;
 
 		const char 			= this.getCharLength();
@@ -297,7 +297,7 @@ export default class GdsDirectPlusApp
 			height : Math.floor(   ( this.container.context.clientHeight - ((dimensions.terminalSize.height + BORDER_SIZE) * rRows)  ) / rRows ),
 		};
 
-		this.Gds.updateMatrix(dimensions);
+		this.gdsSwitch.updateMatrix(dimensions);
 
 		if (hasWide)
 		{
@@ -321,7 +321,7 @@ export default class GdsDirectPlusApp
 			height : Math.floor(this.container.context.clientHeight - (wideDimensions.terminalSize.height + BORDER_SIZE)),
 		};
 
-		this.Gds.update({wideDimensions});
+		this.gdsSwitch.update({wideDimensions});
 	}
 
 	_changePcc(gds, pcc) {
@@ -391,14 +391,14 @@ export default class GdsDirectPlusApp
 		}
 		this._changePcc(gds, pcc);
 
-		let prevTermId = getStore().app.Gds.getCurrent().props.curTerminalId;
-		if (!getStore().app.Gds.getCurrent().props.matrix.list.includes(terminalId)) {
+		let prevTermId = getStore().app.gdsSwitch.getCurrent().props.curTerminalId;
+		if (!getStore().app.gdsSwitch.getCurrent().props.matrix.list.includes(terminalId)) {
 			// TODO: extend cells if terminalId is out of bounds
 			terminalId = 0;
 		}
-		getStore().app.Gds.changeActive(terminalId);
-		getStore().app.Gds.getActivePlugin().terminal.set_command(cmd);
-		getStore().app.Gds.changeActive(prevTermId);
+		getStore().app.gdsSwitch.changeActive(terminalId);
+		getStore().app.gdsSwitch.getActivePlugin().terminal.set_command(cmd);
+		getStore().app.gdsSwitch.changeActive(prevTermId);
 	}
 
 	/** @param {URLSearchParams} queryObj */

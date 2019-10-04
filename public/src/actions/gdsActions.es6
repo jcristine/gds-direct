@@ -8,7 +8,7 @@ const update_cur_gds = (sessionInfo) => {
 	const sessionIndex	= AREA_LIST.indexOf(area);
 
 	const pc 	= {[sessionIndex] : pcc};
-	let pccUpd	= startNewSession ? pc : {...getStore().app.Gds.getGds(gdsName).get('pcc'), ...pc};
+	let pccUpd	= startNewSession ? pc : {...getStore().app.gdsSwitch.getGds(gdsName).get('pcc'), ...pc};
 	for (let areaSetting of (window.GdsDirectPlusState.getGdsAreaSettings()[gdsName] || [])) {
 		// show default PCC on empty areas instead of nothing
 		let idx = AREA_LIST.indexOf(areaSetting.area);
@@ -17,10 +17,10 @@ const update_cur_gds = (sessionInfo) => {
 		}
 	}
 
-	let idxToInfo = startNewSession ? {} : {...getStore().app.Gds.getGds(gdsName).get('idxToInfo') || {}};
+	let idxToInfo = startNewSession ? {} : {...getStore().app.gdsSwitch.getGds(gdsName).get('idxToInfo') || {}};
 	idxToInfo[sessionIndex] = sessionInfo;
 
-	getStore().app.Gds.update({pcc : pccUpd, canCreatePq, canCreatePqErrors, sessionIndex, idxToInfo}, gdsName);
+	getStore().app.gdsSwitch.update({pcc : pccUpd, canCreatePq, canCreatePqErrors, sessionIndex, idxToInfo}, gdsName);
 
 	return {
 		log,
@@ -31,21 +31,21 @@ const update_cur_gds = (sessionInfo) => {
 export const CHANGE_GDS = gdsName => {
 	getters('gds', gdsName);
 
-	getStore().app.Gds.setCurrent(gdsName);
+	getStore().app.gdsSwitch.setCurrent(gdsName);
 
-	const { fontSize, language, theme } = getStore().app.Gds.getCurrent().get();
+	const { fontSize, language, theme } = getStore().app.gdsSwitch.getCurrent().get();
 
 	getStore().app.getContainer().changeFontClass(fontSize);
 	getStore().app.changeStyle(theme);
 
 	getStore().updateView({
-		gdsObjName 	: getStore().app.Gds.getCurrentName(),
-		gdsObjIndex : getStore().app.Gds.getCurrentIndex(),
+		gdsObjName 	: getStore().app.gdsSwitch.getCurrentName(),
+		gdsObjIndex : getStore().app.gdsSwitch.getCurrentIndex(),
 		fontSize,
 		language,
 		theme,
 	});
-	const gdsUnit = getStore().app.Gds.getGds(gdsName);
+	const gdsUnit = getStore().app.gdsSwitch.getGds(gdsName);
 
 	return gdsUnit;
 };
@@ -76,7 +76,7 @@ export const UPDATE_ALL_AREA_STATE = (gds, fullState) => {
  */
 export const UPDATE_DEFAULT_AREA_PCCS = (gdsToSetting) => {
 	for (let [gdsName, gdsSetting] of Object.entries(gdsToSetting)) {
-		let gdsUnit = getStore().app.Gds.getGds(gdsName);
+		let gdsUnit = getStore().app.gdsSwitch.getGds(gdsName);
 		if (!gdsUnit) continue; // just in case
 
 		let idxToInfo = gdsUnit.get('idxToInfo') || {};
@@ -87,10 +87,10 @@ export const UPDATE_DEFAULT_AREA_PCCS = (gdsToSetting) => {
 			let areaInfo = idxToInfo[areaIdx] || {};
 			if (areaInfo.pcc) continue; // some PCC already emulated
 
-			let idxToPcc = getStore().app.Gds.getGds(gdsName).get('pcc');
+			let idxToPcc = getStore().app.gdsSwitch.getGds(gdsName).get('pcc');
 			if (idxToPcc[areaIdx] == defaultPcc) continue;
 
-			getStore().app.Gds.update({pcc: {...idxToPcc, [areaIdx]: defaultPcc}}, gdsName);
+			getStore().app.gdsSwitch.update({pcc: {...idxToPcc, [areaIdx]: defaultPcc}}, gdsName);
 			getStore().setState({}); // to redraw UI
 		}
 	}

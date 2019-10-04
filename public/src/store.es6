@@ -33,7 +33,7 @@ class Store
 		store.app.calculateMatrix();
 		this.setState({
 			...props,
-			curGds  : store.app.Gds.getCurrent(),
+			curGds  : store.app.gdsSwitch.getCurrent(),
 		});
 	}
 }

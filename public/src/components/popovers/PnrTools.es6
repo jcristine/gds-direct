@@ -9,7 +9,7 @@ const Cmp = (...args) => new Component(...args);
 
 const makeCrossRefBtn = () => {
 	const action = () => {
-		const gdsSwitch = getStore().app.Gds;
+		const gdsSwitch = getStore().app.gdsSwitch;
 		const plugin = gdsSwitch.getActivePlugin();
 		const currentRloc = plugin.getSessionInfo().recordLocator;
 		const msg = 'Enter PNR for cross reference' +

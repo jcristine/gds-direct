@@ -110,7 +110,7 @@ function eventToButtonName(evt) {
  * @returns string || false
  */
 function getUserCustomCommand(keyName) {
-	const { name, keyBindings } = getStore().app.Gds.getCurrent().get();
+	const { name, keyBindings } = getStore().app.gdsSwitch.getCurrent().get();
 
 	if (keyBindings && keyBindings[keyName]) {
 		const defaultCommand = getBindingForKey(keyName, name);

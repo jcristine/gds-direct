@@ -5,10 +5,10 @@ import {UPDATE_ALL_AREA_STATE, UPDATE_DEFAULT_AREA_PCCS} from "./actions/gdsActi
 import {post} from './helpers/requests';
 import Session from "./modules/session.es6";
 
-export const DEV_CMD_STACK_RUN = command => getStore().app.Gds.runCommand(command);
+export const DEV_CMD_STACK_RUN = command => getStore().app.gdsSwitch.runCommand(command);
 
 export const PURGE_SCREENS 	= () => {
-	getStore().app.Gds.clearScreen();
+	getStore().app.gdsSwitch.clearScreen();
 	getters('clear'); // TO MANY REQUESTS;
 };
 
@@ -16,7 +16,7 @@ export const SWITCH_TERMINAL = (fn) => {
 	return new Promise( resolve => {
 		const curTerminalId = fn(getStore().app.getGds().get());
 		setTimeout(() => { // THIS IS CRAZY SHIT. WITHOUT IT SWITCHES TERMINALS SEVERAL TIMES TRY PRESS ~
-			const terminal = getStore().app.Gds.getCurrent().get('terminals');
+			const terminal = getStore().app.gdsSwitch.getCurrent().get('terminals');
 			if (curTerminalId !== false)
 				terminal[curTerminalId].plugin.terminal.focus();
 

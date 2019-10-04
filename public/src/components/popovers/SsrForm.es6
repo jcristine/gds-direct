@@ -82,7 +82,7 @@ const tsaTrToData = (tr) => {
  *                    'SRDOCSYYHK1-----17JAN54-F--QUIROZII-ELMA-FERNANDEZ/P1'
  */
 const tsaDataToCmds = (tsaData) => {
-	const gdsSwitch = getStore().app.Gds;
+	const gdsSwitch = getStore().app.gdsSwitch;
 	const gds = gdsSwitch.getCurrentName();
 
 	const {fieldNumber, firstNameNumber} = tsaData.nameNumber;
@@ -225,7 +225,7 @@ export default class SsrForm extends ButtonPopOver
 
 	onOpen()
 	{
-		const gdsSwitch = getStore().app.Gds;
+		const gdsSwitch = getStore().app.gdsSwitch;
 		const plugin = gdsSwitch.getActivePlugin();
 		const gds = gdsSwitch.getCurrentName();
 
