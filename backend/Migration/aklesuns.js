@@ -638,12 +638,6 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
-		name: 'GRECT/2019.10.02005-delete-wrong-mp-log-table',
-		perform: db => db.query([
-			'DROP TABLE mp_remark_log;',
-		].join('\n')),
-	},
-	{
 		name: 'GRECT/2019.10.02005-create-mp-log-table-2',
 		perform: db => db.query([
 			'CREATE TABLE mp_remark_log (',
@@ -664,10 +658,11 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
-		name: 'GRECT/2019.10.02005-fill-mp-log-table-2',
+		name: 'GRECT/2019.10.02005-fill-mp-log-table-3',
 		perform: async db => {
 			const rows = await MpRemarkLogs.getFromCmdLogs();
-			return db.writeRows('mp_remark_log', [rows]);
+			await db.delete({table: 'mp_remark_log'});
+			return db.writeRows('mp_remark_log', rows);
 		},
 	},
 ];

@@ -44,14 +44,14 @@ const getFromCmdLogs = async () => {
 		const mpMatch = cmdRec.cmd.match(/EXPERTS REMARK-MP-([A-Z0-9]{2})-([A-Z0-9]{3,9})/);
 		if (mpMatch && session) {
 			const [, airline, pcc] = mpMatch;
-			return {
+			records.push({
 				dt: cmdRec.dt,
 				recordLocator: cmdRec.record_locator,
 				agentId: session.agentId,
 				airline: airline,
 				pcc: pcc,
 				destinationAirport: null,
-			};
+			});
 		}
 	}
 	return records;
@@ -59,8 +59,8 @@ const getFromCmdLogs = async () => {
 
 exports.getHist = async (rqBody) => {
 	const whenAgents = Agents.getAll();
-	const whenCmdRecs = getFromCmdLogs();
-	const [agents, logRecs] = await Promise.all([whenAgents, whenCmdRecs]);
+	const whenLogRecs = getFromCmdLogs();
+	const [agents, logRecs] = await Promise.all([whenAgents, whenLogRecs]);
 
 	const idToAgent = _.keyBy(agents, a => a.id);
 	const records = [];
