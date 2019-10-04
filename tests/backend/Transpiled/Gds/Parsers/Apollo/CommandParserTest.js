@@ -1208,7 +1208,7 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 		});
 
 		list.push({
-			title: 'First date, then airport codes?',
+			title: 'Slash before booking class',
 			input: '$D10NOVDFWAKL|AA/@C',
 			output: {
 				departureDate: {
@@ -1221,6 +1221,27 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 				modifiers: [
 					{type: 'airlines'},
 					{type: 'cabinClass'},
+				],
+			},
+		});
+
+		list.push({
+			title: 'Apparently every modifier may have any amount of optional slashes before it (like, I believe, in Galileo pricing)',
+			input: '$D12NOVSLCROM|DL-Z:RT-JWZ/:A',
+			output: {
+				departureDate: {
+					raw: '12NOV',
+					partial: '11-12',
+				},
+				returnDate: null,
+				departureAirport: 'SLC',
+				destinationAirport: 'ROM',
+				modifiers: [
+					{type: 'airlines'},
+					{type: 'bookingClass'},
+					{type: 'tripType'},
+					{type: 'ptc'},
+					{type: 'fareType'},
 				],
 			},
 		});
