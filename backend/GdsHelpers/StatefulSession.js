@@ -116,6 +116,7 @@ const StatefulSession = ({
 		askClient: ({messageType, ...params}) => askClient({
 			messageType: messageType, ...params,
 		}).then(rs => {
+			FluentLogger.logit('INFO: askClient ' + messageType, session.logId, {params, rs});
 			if (rs.error) {
 				return Rej.FailedDependency('Client returned error - ' + rs.error + ' - in session #' + session.id, rs);
 			} else if (!rs.value) {
