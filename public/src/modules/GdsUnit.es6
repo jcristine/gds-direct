@@ -2,7 +2,10 @@ import {AREA_LIST} from "../constants";
 import Terminal from "./terminal";
 import {getStorageMatrix} from "../helpers/helpers";
 
-export class GDS_UNIT
+/**
+ * represents a particular GDS terminal, like Apollo terminal or Sabre terminal
+ */
+export class GdsUnit
 {
 	constructor(name, area, buffer, settings)
 	{

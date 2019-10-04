@@ -1,4 +1,4 @@
-import {GDS_UNIT} 	from "./gdsUnit";
+import {GdsUnit} 	from "./GdsUnit";
 import {GDS_LIST} from "../constants";
 
 /**
@@ -14,11 +14,11 @@ export class GdsSwitch
 			const settings 		= gdsListDb[name] || {};
 			const {gds = {}} 	= buffer;
 
-			return new GDS_UNIT(name, settings.area, gds, settings);
+			return new GdsUnit(name, settings.area, gds, settings);
 		});
 	}
 
-	/** @return {GDS_UNIT[]} */
+	/** @return {GdsUnit[]} */
 	getList()
 	{
 		return this.gdsSet;
@@ -30,7 +30,7 @@ export class GdsSwitch
 		this.index 	= GDS_LIST.indexOf(name);
 	}
 
-	/** @return {GDS_UNIT} */
+	/** @return {GdsUnit} */
 	getCurrent()
 	{
 		return this.gdsSet.filter( gds => this.name === gds.get('name') )[0] || this.gdsSet[0];
@@ -78,7 +78,7 @@ export class GdsSwitch
 		this.getCurrent().updateMatrix(dimensions);
 	}
 
-	/** @return {GDS_UNIT} */
+	/** @return {GdsUnit} */
 	getGds(gdsName)
 	{
 		return this.gdsSet.filter( gds => gds.get('name') === gdsName )[0];
