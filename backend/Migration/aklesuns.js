@@ -636,4 +636,22 @@ module.exports.migrations = [
 			'(\'2019-08-29 12:28:00\', \'{"departure_items":[{"type":"country","value":"PH","name":"Philippines"}],"destination_items":[],"reprice_pcc_records":[{"gds":"amadeus","pcc":"MNLPH28FP","ptc":"","account_code":"","fare_type":""},{"gds":"sabre","pcc":"C5VD","ptc":"","account_code":"","fare_type":""},{"gds":"apollo","pcc":"2F3K","ptc":"","account_code":"","fare_type":""},{"gds":"apollo","pcc":"2G2H","ptc":"","account_code":"","fare_type":""},{"gds":"apollo","pcc":"2G8P","ptc":"","account_code":"","fare_type":""}]}\')',
 		].join('\n')),
 	},
+	{
+		name: 'GRECT/2019.10.02005-create-mp-log-table',
+		perform: db => db.query([
+			'CREATE TABLE mp_remark_log (',
+			'    id INT PRIMARY KEY AUTO_INCREMENT,',
+			'    dt DATETIME NOT NULL,',
+			'    agentId INT NOT NULL,',
+			'    airline CHAR(2) NOT NULL,',
+			'    pcc VARCHAR(9) NOT NULL,',
+			'    destinationAirport CHAR(3) DEFAULT NULL,',
+			'    INDEX dt (dt),',
+			'    INDEX airline (airline),',
+			'    INDEX pcc (pcc),',
+			'    INDEX destinationAirport (destinationAirport),',
+			'    INDEX agentId (agentId)',
+			') ENGINE=InnoDB DEFAULT CHARSET=utf8',
+		].join('\n')),
+	},
 ];
