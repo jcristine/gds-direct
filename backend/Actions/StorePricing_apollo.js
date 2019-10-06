@@ -109,7 +109,7 @@ const StorePricing_apollo = ({
 				// when there are segments without times in itinerary, like
 				// ' 4 DL  26Y 08JAN ICNATL GK1   805P  734P           WE'
 				// ' 5 DL2521Y 08JAN ATLLEX GK1                        WE'
-				error = 'Some flights are not operable - ' + error;
+				error = error + ' (are some flights not operable?)';
 			}
 			return reject('Failed to >' + cmd + '; - ' + error);
 		} else {
