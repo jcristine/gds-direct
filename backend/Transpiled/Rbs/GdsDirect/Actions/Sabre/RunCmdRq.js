@@ -206,7 +206,7 @@ const execute = ({
 	gdsClients = GdsSession.makeGdsClients(),
 }) => {
 	const getRestrictedPccs =  () => {
-		return ['52ZG'];
+		return ['52ZG', '3LEJ'];
 	};
 
 	const isPccAllowed =  ($pcc) => {
