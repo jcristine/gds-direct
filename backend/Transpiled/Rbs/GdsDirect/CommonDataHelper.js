@@ -269,8 +269,7 @@ class CommonDataHelper {
 		const pccRow = await Pccs.findByCode(stateful.gds, currentPcc)
 			.catch(coverExc([Rej.NotFound], exc => null));
 		if (pccRow && !pccRow.data.can_book_pnr) {
-			const msg = 'Creating PNRs in PCC ' +
-				currentPcc + ' is not allowed';
+			const msg = 'This PCC cannot be used for PNR creation - ' + currentPcc;
 			return Rej.Forbidden(msg);
 		} else {
 			return Promise.resolve();
@@ -283,8 +282,7 @@ class CommonDataHelper {
 		const pccRow = await Pccs.findByCode(stateful.gds, currentPcc)
 			.catch(coverExc([Rej.NotFound], exc => null));
 		if (pccRow && !pccRow.data.can_store_fare) {
-			const msg = 'Storing fare  in PCC ' +
-				currentPcc + ' is not allowed';
+			const msg = 'This PCC cannot be used for Fare Storing -  ' + currentPcc;
 			return Rej.Forbidden(msg);
 		} else {
 			return Promise.resolve();
