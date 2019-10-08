@@ -239,6 +239,12 @@ module.exports.migrations = [
 		].join('\n')),
 	},
 	{
+		name: 'GRECT/2019.10.04019-add-custom-data-column-to-pccs',
+		perform: (db) => db.query([
+			'ALTER TABLE `pccs` ADD COLUMN data_json TEXT DEFAULT NULL;',
+		].join('\n')),
+	},
+	{
 		name: 'GRECT/2019.03.01001-create-airlines-table',
 		perform: (db) => db.query([
 			"CREATE TABLE `airlines` (",
