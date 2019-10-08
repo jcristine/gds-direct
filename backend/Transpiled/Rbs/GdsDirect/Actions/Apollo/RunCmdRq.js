@@ -680,9 +680,10 @@ const RunCmdRq = ({
 	};
 
 	const storePricing = async (aliasData) => {
+		await CommonDataHelper.checkStorePricingPcc({stateful, Pccs});
 		return StorePricing_apollo({
 			stateful, aliasData, agent,
-			gdsClients, PtcUtil,
+			gdsClients, PtcUtil, Pccs,
 		});
 	};
 

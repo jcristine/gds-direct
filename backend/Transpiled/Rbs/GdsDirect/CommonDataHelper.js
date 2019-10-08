@@ -266,10 +266,24 @@ class CommonDataHelper {
 			return Promise.resolve();
 		}
 		const currentPcc = state.pcc;
-		const pccRow = await Pccs.findByCode('apollo', currentPcc)
+		const pccRow = await Pccs.findByCode(stateful.gds, currentPcc)
 			.catch(coverExc([Rej.NotFound], exc => null));
 		if (pccRow && !pccRow.data.can_book_pnr) {
 			const msg = 'Creating PNRs in PCC ' +
+				currentPcc + ' is not allowed';
+			return Rej.Forbidden(msg);
+		} else {
+			return Promise.resolve();
+		}
+	}
+
+	/** @param stateful = require('StatefulSession.js')() */
+	static async checkStorePricingPcc({stateful, Pccs = require('../../../Repositories/Pccs.js')}) {
+		const currentPcc = stateful.getSessionData().pcc;
+		const pccRow = await Pccs.findByCode(stateful.gds, currentPcc)
+			.catch(coverExc([Rej.NotFound], exc => null));
+		if (pccRow && !pccRow.data.can_store_fare) {
+			const msg = 'Storing fare  in PCC ' +
 				currentPcc + ' is not allowed';
 			return Rej.Forbidden(msg);
 		} else {

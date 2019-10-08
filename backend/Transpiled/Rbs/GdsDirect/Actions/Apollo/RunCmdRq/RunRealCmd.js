@@ -141,6 +141,8 @@ const checkIsForbidden = ({
 			if (!agent.hasRole('CMD_soldTicketsDailyReport') && !agent.canIssueTickets()) {
 				errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd, type}));
 			}
+		} else if (type === 'storePricing') {
+			await CommonDataHelper.checkStorePricingPcc({stateful, Pccs});
 		} else if (php.in_array(type, CommonDataHelper.getTotallyForbiddenCommands())) {
 			errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd, type}));
 		} else if (type === 'airAvailability' && isForbiddenBaAvailability(cmd)) {
