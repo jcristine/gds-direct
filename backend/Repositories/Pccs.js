@@ -104,3 +104,6 @@ exports.getAll = async () => {
 	}));
 	return rows.map(normalizeFromDb);
 };
+
+/** for tests */
+exports.normalizeFromDb = normalizeFromDb;

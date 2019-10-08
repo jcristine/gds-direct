@@ -21,6 +21,8 @@ const FormatAdapter = require("../IqControllers/FormatAdapter");
 const AmadeusPnr = require("../TravelDs/AmadeusPnr");
 const AmadeusPnrCommonFormatAdapter = require("../FormatAdapters/AmadeusPnrCommonFormatAdapter");
 const NoContent = require("klesun-node-tools/src/Rej").NoContent;
+const Rej = require('klesun-node-tools/src/Rej.js');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 const CmsApolloTerminal = require('../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal');
 const CmsSabreTerminal = require('../../Rbs/GdsDirect/GdsInterface/CmsSabreTerminal');
@@ -254,6 +256,24 @@ class CommonDataHelper {
 			return NoContent('Itinerary is already SORT-ed');
 		} else {
 			return {itinerary: $sorted};
+		}
+	}
+
+	/** @param stateful = require('StatefulSession.js')() */
+	static async checkCreatePcc({stateful, Pccs = require('../../../Repositories/Pccs.js')}) {
+		const state = stateful.getSessionData();
+		if (state.isPnrStored) {
+			return Promise.resolve();
+		}
+		const currentPcc = state.pcc;
+		const pccRow = await Pccs.findByCode('apollo', currentPcc)
+			.catch(coverExc([Rej.NotFound], exc => null));
+		if (pccRow && !pccRow.data.can_book_pnr) {
+			const msg = 'Creating PNRs in PCC ' +
+				currentPcc + ' is not allowed';
+			return Rej.Forbidden(msg);
+		} else {
+			return Promise.resolve();
 		}
 	}
 }

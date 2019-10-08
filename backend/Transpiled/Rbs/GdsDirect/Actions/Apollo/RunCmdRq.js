@@ -597,47 +597,48 @@ const RunCmdRq = ({
 	};
 
 	const processSavePnr = async () => {
-		let $pnr, $pnrDump, $errors, $usedCmds, $flatCmds, $usedCmdTypes, $login, $writeCommands, $cmd, $output,
-			$saveResult, $cmdRecord;
-		$pnr = await getCurrentPnr();
-		$pnrDump = $pnr.getDump();
-		if (!CommonDataHelper.isValidPnr($pnr)) {
-			return {errors: [Errors.getMessage(Errors.INVALID_PNR, {response: php.trim($pnrDump)})]};
-		} else if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
-			return {errors: $errors};
+		await CommonDataHelper.checkCreatePcc({stateful, Pccs});
+
+		const pnr = await getCurrentPnr();
+		const pnrDump = pnr.getDump();
+		let errors = null;
+		if (!CommonDataHelper.isValidPnr(pnr)) {
+			return {errors: [Errors.getMessage(Errors.INVALID_PNR, {response: php.trim(pnrDump)})]};
+		} else if (!php.empty(errors = CommonDataHelper.checkSeatCount(pnr))) {
+			return {errors: errors};
 		}
-		$usedCmds = await stateful.getLog().getCurrentPnrCommands();
-		$flatCmds = flattenCmds($usedCmds);
-		$usedCmdTypes = php.array_column($flatCmds, 'type');
-		$login = getAgent().getLogin();
-		$writeCommands = [
+		const usedCmds = await stateful.getLog().getCurrentPnrCommands();
+		const flatCmds = flattenCmds(usedCmds);
+		const usedCmdTypes = php.array_column(flatCmds, 'type');
+		const login = getAgent().getLogin();
+		let writeCommands = [
 			'ER',
 		];
-		if (!php.in_array('addReceivedFrom', $usedCmdTypes)) {
-			php.array_unshift($writeCommands, 'R:' + php.strtoupper($login));
+		if (!php.in_array('addReceivedFrom', usedCmdTypes)) {
+			php.array_unshift(writeCommands, 'R:' + php.strtoupper(login));
 		}
-		if (!php.in_array('addTicketingDateLimit', $usedCmdTypes)) {
-			php.array_unshift($writeCommands, 'T:TAU/' + php.strtoupper(php.date('dM', php.strtotime(stateful.getStartDt()))));
+		if (!php.in_array('addTicketingDateLimit', usedCmdTypes)) {
+			php.array_unshift(writeCommands, 'T:TAU/' + php.strtoupper(php.date('dM', php.strtotime(stateful.getStartDt()))));
 		}
-		if (!php.in_array('addAgencyPhone', $usedCmdTypes)) {
-			php.array_unshift($writeCommands, 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT');
+		if (!php.in_array('addAgencyPhone', usedCmdTypes)) {
+			php.array_unshift(writeCommands, 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT');
 		}
 		// Add accounting line ("customer account" in apollo docs): smth like DK number in Sabre
 		if (php.in_array(getSessionData()['pcc'], ['2E8R', '1RZ2', '2G8P'])
-			&& !php.in_array('addAccountingLine', $usedCmdTypes)
+			&& !php.in_array('addAccountingLine', usedCmdTypes)
 		) {
-			php.array_unshift($writeCommands, 'T-CA-SFO@$0221686');
+			php.array_unshift(writeCommands, 'T-CA-SFO@$0221686');
 		}
-		$writeCommands = php.array_merge(await prepareToSavePnr(), $writeCommands);
-		$cmd = php.implode('|', $writeCommands);
-		$output = (await runCmd($cmd)).output;
-		$saveResult = TApolloSavePnr.parseSavePnrOutput($output);
-		if ($saveResult['success']) {
-			handlePnrSave($saveResult['recordLocator']);
-			$output = (await runCmd('*R')).output;
+		writeCommands = php.array_merge(await prepareToSavePnr(), writeCommands);
+		const cmd = php.implode('|', writeCommands);
+		let output = (await runCmd(cmd)).output;
+		const saveResult = TApolloSavePnr.parseSavePnrOutput(output);
+		if (saveResult.success) {
+			handlePnrSave(saveResult.recordLocator);
+			output = (await runCmd('*R')).output;
 		}
-		$cmdRecord = {cmd: 'PNR', output: $output};
-		return {calledCommands: [$cmdRecord]};
+		const cmdRecord = {cmd: 'PNR', output: output};
+		return {calledCommands: [cmdRecord]};
 	};
 
 	const processSortItinerary = async () => {
@@ -740,7 +741,7 @@ const RunCmdRq = ({
 	};
 
 	const processRealCommand = async (cmd, fetchAll = false) => {
-		return RunRealCmd({stateful, cmd, fetchAll, cmdRq, CmdRqLog, gdsClients});
+		return RunRealCmd({stateful, cmd, fetchAll, cmdRq, CmdRqLog, gdsClients, Pccs});
 	};
 
 	/** show availability for first successful city option */

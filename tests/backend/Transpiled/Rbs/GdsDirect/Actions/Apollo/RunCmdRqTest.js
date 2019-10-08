@@ -6496,7 +6496,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				findByCode: (gds, pcc) => Promise.resolve()
 					.then(() => Pccs.findByCodeParams(gds, pcc))
 					.then(params => SqlUtil.selectFromArray(params, stubPccs)[0])
-					.then(nonEmpty('No stubbed PCC matching ' + gds + ':' + pcc)),
+					.then(nonEmpty('No stubbed PCC matching ' + gds + ':' + pcc))
+					.then(Pccs.normalizeFromDb),
 			},
 			PtcUtil: PtcUtil.makeCustom({
 				PtcFareFamilies: {

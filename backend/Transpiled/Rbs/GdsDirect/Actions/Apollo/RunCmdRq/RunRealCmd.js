@@ -1,5 +1,3 @@
-const Debug = require('klesun-node-tools/src/Debug.js');
-const Diag = require('../../../../../../LibWrappers/Diag.js');
 const GdsSession = require('../../../../../../GdsHelpers/GdsSession.js');
 const RunCmdHelper = require('./RunCmdHelper.js');
 const ModifyCmdOutput = require('./ModifyCmdOutput.js');
@@ -17,6 +15,7 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 const {fetchAll, extractPager} = require('../../../../../../GdsHelpers/TravelportUtils.js');
 const PnrParser = require('../../../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 /**
  * @module - unlike RunCmdRq.js, this one executes exactly the command
@@ -57,6 +56,7 @@ const isInRanges = ($num, $ranges) => {
 
 const checkIsForbidden = ({
 	stateful, cmd,
+	Pccs = require('../../../../../../Repositories/Pccs.js'),
 	gdsClients = GdsSession.makeGdsClients(),
 }) => {
 	const {checkEmulatedPcc, areAllCouponsVoided, doesStorePnr} = RunCmdHelper({stateful, gdsClients});
@@ -75,22 +75,19 @@ const checkIsForbidden = ({
 		return $errors;
 	};
 
-	const checkSavePcc = ($pnrCreationPcc, $currentPcc) => {
-		let $errors, $pccLimitations, $allowedPccs, $errorData;
-		$errors = [];
-		$pccLimitations = {
+	const checkSavePcc = async (pnrCreationPcc, currentPcc) => {
+		const errors = [];
+		const pccLimitations = {
 			'2F9B': ['2F9B'],
 			'2G52': ['2G52'],
 			'2E8R': ['2E8R', '2G56'],
 		};
-		if (php.array_key_exists($pnrCreationPcc, $pccLimitations)) {
-			$allowedPccs = $pccLimitations[$pnrCreationPcc];
-			if (!php.in_array($currentPcc, $allowedPccs)) {
-				$errorData = {allowedPccs: php.implode(' or ', $allowedPccs)};
-				$errors.push(Errors.getMessage(Errors.CANT_CHANGE_IN_THIS_PCC, $errorData));
-			}
+		const allowedPccs = pccLimitations[pnrCreationPcc];
+		if (allowedPccs && !allowedPccs.includes(currentPcc)) {
+			const errorData = {allowedPccs: allowedPccs.join(' or ')};
+			errors.push(Errors.getMessage(Errors.CANT_CHANGE_IN_THIS_PCC, errorData));
 		}
-		return $errors;
+		return errors;
 	};
 
 	const getStoredPnr = async () => {
@@ -164,6 +161,7 @@ const checkIsForbidden = ({
 		}
 		if (doesStorePnr(cmd)) {
 			const pnr = await getStoredPnr();
+			await CommonDataHelper.checkCreatePcc({stateful, Pccs});
 			if (pnr) {
 				for (const remark of Object.values(pnr.getRemarks())) {
 					if (GenericRemarkParser.CMS_LEAD_REMARK !== remark.remarkType) continue;
@@ -171,7 +169,7 @@ const checkIsForbidden = ({
 					if (!pnrCreationPcc) continue;
 
 					const currentPcc = stateful.getSessionData().pcc;
-					errors.push(...checkSavePcc(pnrCreationPcc, currentPcc));
+					errors.push(...await checkSavePcc(pnrCreationPcc, currentPcc));
 				}
 			}
 		}
@@ -192,6 +190,7 @@ const checkIsForbidden = ({
 /** @param stateful = require('StatefulSession.js')() */
 const RunRealCmd = ({
 	stateful, cmd, fetchAll = false,
+	Pccs = require('../../../../../../Repositories/Pccs.js'),
 	gdsClients = GdsSession.makeGdsClients(),
 	cmdRq, CmdRqLog,
 }) => {
@@ -292,7 +291,7 @@ const RunRealCmd = ({
 
 	const execute = async () => {
 		const errors = await checkIsForbidden({
-			stateful, cmd, gdsClients,
+			stateful, cmd, gdsClients, Pccs,
 		});
 		if (!php.empty(errors)) {
 			return Rej.Forbidden(errors.join('; '));
