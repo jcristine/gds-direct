@@ -169,7 +169,7 @@ const RunCmdHelper = ({
 					});
 					if (confirmation.status !== 'confirmed') {
 						const msg = 'Ticketed PNR edit confirmation prompt was rejected';
-						return Rej.NotAcceptable(msg, confirmation);
+						return Rej.NotAcceptable(msg, {...confirmation, isOk: true});
 					}
 				}
 			}
