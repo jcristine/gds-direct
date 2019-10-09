@@ -34,6 +34,8 @@ const PNRBFManagement_rq_StorePriceMods = (storePricingParams) => {
 			xmlMods.push({DocProdFareType: [{Type: Parse_priceItinerary.encodeFareType(parsed)}]});
 		} else if (type === 'validatingCarrier') {
 			xmlMods.push({PlatingAirVMods: [{PlatingAirV: parsed}]});
+		} else if (type === 'overrideCarrier') {
+			xmlMods.push({OCMods: [{AirV: parsed}]});
 		} else if (type === 'commission') {
 			const commMod = parsed.units === 'percent'
 				? {CommissionMod: [{Amt: parsed.value}]}
