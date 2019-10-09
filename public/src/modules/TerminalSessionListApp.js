@@ -101,9 +101,11 @@ const init = () => {
 	};
 
 	const submitFilters = () => {
-		const data = {};
+		let data = {};
 		$('#filter-form').serializeArray()
 			.map((item) => data[item.name] = item.value);
+		data = {...data, ...eval('(' + (data.customJson || '{}') + ')')};
+		delete data.customJson;
 		window.GdsDirectPlusPage.whenEmcSessionId
 			.then(emcSessionId => fetch('/admin/terminal/sessionsGet', {
 				method: 'POST',
