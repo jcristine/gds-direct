@@ -411,7 +411,8 @@ const execute = ({
 			errors = php.array_merge(errors, checkEmulatedPcc(parsedCmd['data']));
 		}
 		if (doesStorePnr(cmd)) {
-			if (!canSavePnrInThisPcc()) {
+			const state = stateful.getSessionData();
+			if (!state.isPnrStored && !(await canCreatePnrInThisPcc())) {
 				errors.push('Unfortunately, PNR\\\'s in PCC cannot be created. Please use a special Sabre login in SabreRed.');
 			}
 		}
@@ -663,7 +664,7 @@ const execute = ({
 	};
 
 	const processSavePnr = async  () => {
-		if (!canSavePnrInThisPcc()) {
+		if (!(await canCreatePnrInThisPcc())) {
 			return {
 				calledCommands: [],
 				errors: ['Unfortunately, PNR\'s in PCC cannot be created. Please use a special Sabre login in SabreRed.'],
@@ -856,8 +857,14 @@ const execute = ({
 		return $calledCommands;
 	};
 
-	const canSavePnrInThisPcc =  () => {
-		return !php.in_array(getSessionData()['pcc'], ['DK8H', '5E9H']);
+	const canCreatePnrInThisPcc = async () => {
+		const pcc = getSessionData().pcc;
+		if (['DK8H', '5E9H'].includes(pcc)) {
+			return false;
+		}
+		return CommonDataHelper.checkCreatePcc({stateful})
+			.then(() => true)
+			.catch(coverExc([Rej.Forbidden], exc => false));
 	};
 
 	const callImplicitCommandsAfter = async  ($cmdRecord, $calledCommands, $userMessages) => {
