@@ -4,23 +4,23 @@ import './../actions/initAuthPage.js';
 //import DataTable from '../abstract/dataTables.js';
 import {getAgentList} from '../helpers/dataProvider.js';
 
-let {$} = window;
-let isDev = !(window.location.hostname + '').endsWith('.asaptickets.com');
+const {$} = window;
+const isDev = !(window.location.hostname + '').endsWith('.asaptickets.com');
 
-let init = () => {
-	let headTr = document.querySelector('thead > tr.session-list-columns');
-	let tbody = document.querySelector('tbody.session-list');
+const init = () => {
+	const headTr = document.querySelector('thead > tr.session-list-columns');
+	const tbody = document.querySelector('tbody.session-list');
 
-	let whenAgentList = getAgentList();
-	let whenAgentsById = whenAgentList.then(({records}) => {
-		let agentsById = {};
-		for (let record of records) {
+	const whenAgentList = getAgentList();
+	const whenAgentsById = whenAgentList.then(({records}) => {
+		const agentsById = {};
+		for (const record of records) {
 			agentsById[record.id] = record;
 		}
 		return agentsById;
 	});
-	let getAgentById = (id) => whenAgentsById.then(agentsById => {
-		let agent = agentsById[id];
+	const getAgentById = (id) => whenAgentsById.then(agentsById => {
+		const agent = agentsById[id];
 		if (agent) {
 			return Promise.resolve(agent);
 		} else {
@@ -28,9 +28,9 @@ let init = () => {
 		}
 	});
 
-	let formatters = {
+	const formatters = {
 		agentId: (value) => {
-			let span = document.createElement('span');
+			const span = document.createElement('span');
 			span.textContent = value;
 			if (value) {
 				getAgentById(value).then(agent => {
@@ -40,10 +40,10 @@ let init = () => {
 			return span;
 		},
 		requestId: (value) => {
-			let baseUrl = isDev
+			const baseUrl = isDev
 				? 'https://cms.gitlab-runner.snx702.dyninno.net/leadInfo?rId='
 				: 'https://cms.asaptickets.com/leadInfo?&rId=';
-			let a = document.createElement('a');
+			const a = document.createElement('a');
 			a.classList.add('btn-link');
 			a.setAttribute('target', '_blank');
 			a.setAttribute('href', baseUrl + value);
@@ -51,10 +51,10 @@ let init = () => {
 			return a;
 		},
 		logId: (value) => {
-			let baseUrl = isDev
+			const baseUrl = isDev
 				? 'http://stg-logger.dyninno.net/get.php?i='
 				: 'https://log.dyninno.net/get.php?i=';
-			let a = document.createElement('a');
+			const a = document.createElement('a');
 			a.classList.add('btn-link');
 			a.setAttribute('target', '_blank');
 			a.setAttribute('href', baseUrl + value);
@@ -62,8 +62,8 @@ let init = () => {
 			return a;
 		},
 		id: (value) => {
-			let url = '/public/admin/terminalSessionCommands.html?sessionId=' + value;
-			let a = document.createElement('a');
+			const url = '/public/admin/terminalSessionCommands.html?sessionId=' + value;
+			const a = document.createElement('a');
 			a.classList.add('btn-link');
 			a.setAttribute('target', '_blank');
 			a.setAttribute('href', url);
@@ -73,25 +73,25 @@ let init = () => {
 	};
 
 	/** @param {sessionsGet_rs} rsData */
-	let redraw = (rsData) => {
+	const redraw = (rsData) => {
 		tbody.innerHTML = '';
 		// put active sessions first
-		let rows = rsData.aaData.sort((a,b) =>
+		const rows = rsData.aaData.sort((a,b) =>
 			a.endTime === b.endTime ? 0 :
-			!a.endTime ? -1 :
-			!b.endTime ? 1 : 0);
+				!a.endTime ? -1 :
+					!b.endTime ? 1 : 0);
 
 		for (let i = 0; i < rows.length; ++i) {
-			let row = rows[i];
+			const row = rows[i];
 			row['rowNumber'] = i + 1;
-			let tr = headTr.cloneNode(true);
+			const tr = headTr.cloneNode(true);
 			tbody.appendChild(tr);
 			[...tr.querySelectorAll(':scope > td')].forEach(td => {
-				let name = td.getAttribute('data-name');
+				const name = td.getAttribute('data-name');
 				td.innerHTML = '';
-				let formatter = formatters[name];
+				const formatter = formatters[name];
 				if (formatter) {
-					let formatted = formatter(row[name]);
+					const formatted = formatter(row[name]);
 					td.appendChild(formatted);
 				} else {
 					td.textContent = row[name];
@@ -100,8 +100,8 @@ let init = () => {
 		}
 	};
 
-	let submitFilters = () => {
-		let data = {};
+	const submitFilters = () => {
+		const data = {};
 		$('#filter-form').serializeArray()
 			.map((item) => data[item.name] = item.value);
 		window.GdsDirectPlusPage.whenEmcSessionId
@@ -122,12 +122,12 @@ let init = () => {
 	submitFilters();
 
 	whenAgentList.then(({records}) => {
-		let input = document.querySelector('#filter-form input[name="agentId"]');
+		const input = document.querySelector('#filter-form input[name="agentId"]');
 		records.sort((a,b) =>
 			a.displayName < b.displayName ? -1 :
-			a.displayName > b.displayName ? 1 : 0);
+				a.displayName > b.displayName ? 1 : 0);
 
-		let data = records.map(({id, displayName}) => ({
+		const data = records.map(({id, displayName}) => ({
 			id: id,
 			text: displayName + ' - ' + id,
 		}));
@@ -136,11 +136,11 @@ let init = () => {
 			width: '140px',
 			tags: true,
 			query: (params) => {
-				let {term, page, callback} = params;
-				let pageSize = 100;
-				let from = (page - 1) * pageSize;
-				let to = page * pageSize;
-				let results = term
+				const {term, page, callback} = params;
+				const pageSize = 100;
+				const from = (page - 1) * pageSize;
+				const to = page * pageSize;
+				const results = term
 					? data.filter(e => e.text.toUpperCase()
 						.includes(term.toUpperCase()))
 					: data;
