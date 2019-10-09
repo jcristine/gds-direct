@@ -155,6 +155,7 @@ const translateGenericMods = (apolloPricingModifiers) => {
 const execute = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
+	Pccs = require('../../../../../Repositories/Pccs.js'),
 	gdsClients = GdsSession.makeGdsClients(),
 }) => {
 	const fakeAreaUtil = FakeAreaUtil({
@@ -246,6 +247,8 @@ const execute = ({
 	};
 
 	const processSavePnr = async () => {
+		await CommonDataHelper.checkCreatePcc({stateful, Pccs});
+
 		let $calledCommands, $pnr, $errors, $login, $cmd, $writeCommands, $output, $parsedStoredPnr, $rloc;
 
 		$calledCommands = [];
@@ -877,6 +880,9 @@ const execute = ({
 			}
 		} else if (php.in_array(type, CommonDataHelper.getTotallyForbiddenCommands())) {
 			errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: cmd, type: type}));
+		}
+		if (doesStorePnr(cmd)) {
+			await CommonDataHelper.checkCreatePcc({stateful, Pccs});
 		}
 		if (type == 'deletePnrField' || type == 'deletePnr') {
 			if (stateful.getSessionData()['isPnrStored'] &&

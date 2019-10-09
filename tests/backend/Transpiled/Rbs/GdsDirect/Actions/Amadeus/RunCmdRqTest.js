@@ -1,3 +1,5 @@
+const SqlUtil = require('klesun-node-tools/src/Utils/SqlUtil.js');
+const Pccs = require('../../../../../../../backend/Repositories/Pccs.js');
 const stubPtcFareFamilies = require('../../../../../../data/stubPtcFareFamilies.js');
 const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFareFamilies.js');
 const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
@@ -8,6 +10,8 @@ const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.j
 const php = require('../../../../php.js');
 const AmadeusClient = require('../../../../../../../backend/GdsClients/AmadeusClient');
 const Rej = require('klesun-node-tools/src/Rej');
+const stubPccs = require('../../../../../../data/stubPccs.js');
+const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
 
 class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	provideTestForgeAreasDumpCases() {
@@ -3160,6 +3164,13 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 					getByAdultPtc: adultPtc => PtcFareFamilies.getByAdultPtcFrom(adultPtc, stubPtcFareFamilies),
 				},
 			}),
+			Pccs: {
+				findByCode: (gds, pcc) => Promise.resolve()
+					.then(() => Pccs.findByCodeParams(gds, pcc))
+					.then(params => SqlUtil.selectFromArray(params, stubPccs)[0])
+					.then(nonEmpty('No stubbed PCC matching ' + gds + ':' + pcc))
+					.then(Pccs.normalizeFromDb),
+			},
 		}).catch(exc => ({error: exc + '', stack: (exc || {}).stack}));
 		actualOutput['sessionData'] = stateful.getSessionData();
 
