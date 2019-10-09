@@ -252,7 +252,7 @@ exports.getHist = async (params) => {
 		});
 		where.push(['mp.recordLocator', '=', params.recordLocator]);
 	}
-	const rows = await Db.with(db => db.fetchAll({
+	const rows = await Db.withSlave(db => db.fetchAll({
 		fields: ['ts.*'],
 		table: TABLE,
 		as: 'ts',
