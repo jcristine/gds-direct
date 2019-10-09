@@ -32,15 +32,14 @@ const AmadeusGetPricingPtcBlocks = require('./AmadeusGetPricingPtcBlocksAction.j
 const PricingCmdParser = require('../../../../../Transpiled/Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
 const {findSegmentNumberInPnr} = require('../Common/ItinerarySegments');
 const FakeAreaUtil = require('../../../../../GdsHelpers/Amadeus/FakeAreaUtil.js');
+
 const PASSIVE_STATUSES = ['GK', 'PE'];
 
-const doesStorePnr = ($cmd) => {
-	let $parsedCmd, $flatCmds, $cmdTypes;
-
-	$parsedCmd = CommandParser.parse($cmd);
-	$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
-	$cmdTypes = php.array_column($flatCmds, 'type');
-	return !php.empty(php.array_intersect($cmdTypes, ['storePnr', 'storeKeepPnr']));
+const doesStorePnr = (cmd) => {
+	const parsedCmd = CommandParser.parse(cmd);
+	const flatCmds = php.array_merge([parsedCmd], parsedCmd['followingCommands'] || []);
+	const cmdTypes = php.array_column(flatCmds, 'type');
+	return !php.empty(php.array_intersect(cmdTypes, ['storePnr', 'storeKeepPnr']));
 };
 
 const doesOpenPnr = ($cmd) => {
@@ -847,85 +846,80 @@ const execute = ({
 		return false;
 	};
 
-	const checkIsForbidden = async ($cmd) => {
-		let $errors, $parsedCmd, $flatCmds, $type, $agent, $isQueueCmd, $totalAllowed, $pnr, $canChange, $flatCmd,
-			$numRec;
+	const checkIsForbidden = async (cmd) => {
+		const errors = [];
+		const parsedCmd = CommandParser.parse(cmd);
+		const flatCmds = php.array_merge([parsedCmd], parsedCmd['followingCommands'] || []);
+		const type = parsedCmd['type'];
+		const agent = getAgent();
+		const isQueueCmd =
+			php.in_array(type, CommonDataHelper.getQueueCommands()) ||
+			StringUtil.startsWith(cmd, 'Q'); // to be extra sure
 
-		$errors = [];
-		$parsedCmd = CommandParser.parse($cmd);
-		$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
-		$type = $parsedCmd['type'];
-		$agent = getAgent();
-		$isQueueCmd =
-			php.in_array($type, CommonDataHelper.getQueueCommands()) ||
-			StringUtil.startsWith($cmd, 'Q'); // to be extra sure
-
-		if (php.in_array($type, CommonDataHelper.getTicketingCommands())) {
-			if (!$agent.canIssueTickets()) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type}));
+		if (php.in_array(type, CommonDataHelper.getTicketingCommands())) {
+			if (!agent.canIssueTickets()) {
+				errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: cmd, type: type}));
 			}
-		} else if (php.in_array($type, CommonDataHelper.getCountedFsCommands())) {
-			$totalAllowed = $agent.getFsLimit();
-			if (!$totalAllowed) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type}));
-			} else if ((await $agent.getFsCallsUsed()) >= $totalAllowed) {
-				$errors.push(Errors.getMessage(Errors.FS_LIMIT_EXHAUSTED, {totalAllowed: $totalAllowed}));
+		} else if (php.in_array(type, CommonDataHelper.getCountedFsCommands())) {
+			const totalAllowed = agent.getFsLimit();
+			if (!totalAllowed) {
+				errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: cmd, type: type}));
+			} else if ((await agent.getFsCallsUsed()) >= totalAllowed) {
+				errors.push(Errors.getMessage(Errors.FS_LIMIT_EXHAUSTED, {totalAllowed: totalAllowed}));
 			}
-		} else if ($isQueueCmd && !php.in_array($type, ['movePnrToQueue'])) {
-			if (!$agent.canProcessQueues()) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type || 'queueOperation'}));
+		} else if (isQueueCmd && !php.in_array(type, ['movePnrToQueue'])) {
+			if (!agent.canProcessQueues()) {
+				errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: cmd, type: type || 'queueOperation'}));
 			}
-		} else if ($type === 'searchPnr') {
-			if (!$agent.canSearchPnr()) {
-				$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type}));
+		} else if (type === 'searchPnr') {
+			if (!agent.canSearchPnr()) {
+				errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: cmd, type: type}));
 			}
-		} else if (php.in_array($type, CommonDataHelper.getTotallyForbiddenCommands())) {
-			$errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: $cmd, type: $type}));
+		} else if (php.in_array(type, CommonDataHelper.getTotallyForbiddenCommands())) {
+			errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: cmd, type: type}));
 		}
-		if ($type == 'deletePnrField' || $type == 'deletePnr') {
+		if (type == 'deletePnrField' || type == 'deletePnr') {
 			if (stateful.getSessionData()['isPnrStored'] &&
-				!$agent.canEditTicketedPnr()
+				!agent.canEditTicketedPnr()
 			) {
-				$pnr = await getCurrentPnr();
-				$canChange = !$pnr.hasEtickets()
-					|| $agent.canEditVoidTicketedPnr()
+				const pnr = await getCurrentPnr();
+				const canChange = !pnr.hasEtickets()
+					|| agent.canEditVoidTicketedPnr()
 					&& await areAllCouponsVoided();
-				if (!$canChange) {
-					$errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
+				if (!canChange) {
+					errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
 				}
 			}
 		}
 		if (getSessionData()['isPnrStored']) {
-			for ($flatCmd of Object.values($flatCmds)) {
-				if ($flatCmd['type'] === 'changePnrField') {
-					if (await isGdRemarkLine($flatCmd['data']['majorNum'])) {
-						$errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {lineNum: $flatCmd['data']['majorNum']}));
+			for (const flatCmd of Object.values(flatCmds)) {
+				if (flatCmd['type'] === 'changePnrField') {
+					if (await isGdRemarkLine(flatCmd.data.majorNum)) {
+						errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {lineNum: flatCmd.data.majorNum}));
 					}
-				} else if ($flatCmd['type'] === 'deletePnrField') {
-					for ($numRec of Object.values(($flatCmd['data'] || {})['lineNumbers'] || [])) {
-						if (await isGdRemarkLine($numRec['major'])) {
-							$errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {lineNum: $numRec['major']}));
+				} else if (flatCmd['type'] === 'deletePnrField') {
+					for (const numRec of (flatCmd.data || {}).lineNumbers || []) {
+						if (await isGdRemarkLine(numRec.major)) {
+							errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {lineNum: numRec.major}));
 						}
 					}
 				}
 			}
 		}
-		return $errors;
+		return errors;
 	};
 
-	const callImplicitCommandsBefore = async ($cmd) => {
-		let $calledCommands;
-
-		$calledCommands = [];
-		if (doesStorePnr($cmd)) {
-			if ($cmd = await makeCreatedForCmdIfNeeded()) {
-				await runCommand($cmd);
+	const callImplicitCommandsBefore = async (cmd) => {
+		const calledCommands = [];
+		if (doesStorePnr(cmd)) {
+			if (cmd = await makeCreatedForCmdIfNeeded()) {
+				await runCommand(cmd);
 			}
-			if ($cmd = await makeTopRemarkCmdIfNeeded()) {
-				await runCommand($cmd);
+			if (cmd = await makeTopRemarkCmdIfNeeded()) {
+				await runCommand(cmd);
 			}
 		}
-		return $calledCommands;
+		return calledCommands;
 	};
 
 	const callImplicitCommandsAfter = async ($cmdRecord, $calledCommands, $userMessages) => {
