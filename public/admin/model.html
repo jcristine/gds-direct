@@ -73,7 +73,7 @@ window.GdsDirectPlusPage.whenEmcSessionId.then(emcSessionId => {
 			orderBy: document.querySelector('input[name="orderBy"]').value || null,
 			skip: document.querySelector('input[name="skip"]').value || null,
 			limit: document.querySelector('input[name="limit"]').value || null,
-			...(!jsonParamsStr ? {} : JSON.parse(jsonParamsStr)),
+			...(!jsonParamsStr ? {} : eval('(' + jsonParamsStr + ')')),
 		};
 		colTr.innerHTML = '';
 		rowTbody.innerHTML = '';
