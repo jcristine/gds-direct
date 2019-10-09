@@ -24,7 +24,6 @@ const CommonDataHelper = require('../../../../Rbs/GdsDirect/CommonDataHelper.js'
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const SabreTicketListParser = require('../../../../Gds/Parsers/Sabre/SabreTicketListParser.js');
 const PnrParser = require('../../../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
-const Pccs = require("../../../../../Repositories/Pccs");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
 const SabreTicketParser = require('../../../../Gds/Parsers/Sabre/SabreTicketParser.js');
@@ -32,13 +31,24 @@ const Rej = require('klesun-node-tools/src/Rej.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 const doesStorePnr = ($cmd) => {
-	let $parsedCmd, $flatCmds, $cmdTypes;
-
-	$parsedCmd = CommandParser.parse($cmd);
-	$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
-	$cmdTypes = php.array_column($flatCmds, 'type');
-	const intersection = php.array_intersect($cmdTypes, ['storePnr', 'storeKeepPnr', 'storePnrSendEmail', 'storeAndCopyPnr']);
+	const parsedCmd = CommandParser.parse($cmd);
+	const flatCmds = php.array_merge([parsedCmd], parsedCmd.followingCommands || []);
+	const cmdTypes = php.array_column(flatCmds, 'type');
+	const intersection = php.array_intersect(cmdTypes, [
+		'storePnr', 'storeKeepPnr', 'storePnrSendEmail', 'storeAndCopyPnr',
+	]);
 	return !php.empty(intersection);
+};
+
+const doesStorePricing = parsedCmd => {
+	if (parsedCmd.type === 'storePricing') {
+		return true;
+	} else if (parsedCmd.type === 'priceItinerary') {
+		return parsedCmd.data.pricingModifiers
+			.some(m => m.type === 'createPriceQuote');
+	} else {
+		return false;
+	}
 };
 
 const doesOpenPnr = ($cmd) => {
@@ -83,31 +93,6 @@ const getPerformedCommands = async ($cmdLog) => {
 		}
 	}
 	return result;
-};
-
-const getDkNumber = async ($pcc) => {
-	return Pccs.findByCode('sabre', $pcc)
-		.then(row => row.dk_number)
-		.catch(exc => null);
-};
-
-const makeAddDkNumberCmdIfNeeded = async ($cmdLog) => {
-	let $sessionData, $number, $flatCmd;
-
-	$sessionData = $cmdLog.getSessionData();
-	if ($sessionData['isPnrStored']) {
-		return null;
-	}
-	if (!($number = await getDkNumber($sessionData['pcc']))) {
-		return null;
-	}
-	for ($flatCmd of Object.values(getPerformedCommands($cmdLog))) {
-		if ($flatCmd['type'] === 'addDkNumber' && $flatCmd['data'] == $number) {
-		// already added DK number
-			return null;
-		}
-	}
-	return 'DK' + $number;
 };
 
 const isSuccessfulFsCommand = ($cmd, $dump) => {
@@ -203,8 +188,34 @@ const forgePccChangeOutput = ($calledCommands, $area) => {
 const execute = ({
 	stateful, cmdRq,
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
+	Pccs = require("../../../../../Repositories/Pccs"),
 	gdsClients = GdsSession.makeGdsClients(),
 }) => {
+	const getDkNumber = async ($pcc) => {
+		return Pccs.findByCode('sabre', $pcc)
+			.then(row => row.dk_number)
+			.catch(exc => null);
+	};
+
+	const makeAddDkNumberCmdIfNeeded = async ($cmdLog) => {
+		let $sessionData, $number, $flatCmd;
+
+		$sessionData = $cmdLog.getSessionData();
+		if ($sessionData['isPnrStored']) {
+			return null;
+		}
+		if (!($number = await getDkNumber($sessionData['pcc']))) {
+			return null;
+		}
+		for ($flatCmd of Object.values(getPerformedCommands($cmdLog))) {
+			if ($flatCmd['type'] === 'addDkNumber' && $flatCmd['data'] == $number) {
+				// already added DK number
+				return null;
+			}
+		}
+		return 'DK' + $number;
+	};
+
 	const getRestrictedPccs =  () => {
 		return ['52ZG', '3LEJ'];
 	};
@@ -415,6 +426,9 @@ const execute = ({
 			if (!state.isPnrStored && !(await canCreatePnrInThisPcc())) {
 				errors.push('Unfortunately, PNR\\\'s in PCC cannot be created. Please use a special Sabre login in SabreRed.');
 			}
+		}
+		if (doesStorePricing(parsedCmd)) {
+			await CommonDataHelper.checkStorePricingPcc({stateful, Pccs});
 		}
 		for (const flatCmd of Object.values(flatCmds)) {
 			if (flatCmd['type'] === 'changePnrRemarks') {
@@ -811,6 +825,7 @@ const execute = ({
 	};
 
 	const storePricing = async  (aliasData) => {
+		await CommonDataHelper.checkStorePricingPcc({stateful, Pccs});
 		const pnr = await getCurrentPnr();
 		if (pnr.getItinerary().length === 0) {
 			return Rej.BadRequest('No itinerary to price');
@@ -862,7 +877,7 @@ const execute = ({
 		if (['DK8H', '5E9H'].includes(pcc)) {
 			return false;
 		}
-		return CommonDataHelper.checkCreatePcc({stateful})
+		return CommonDataHelper.checkCreatePcc({stateful, Pccs})
 			.then(() => true)
 			.catch(coverExc([Rej.Forbidden], exc => false));
 	};

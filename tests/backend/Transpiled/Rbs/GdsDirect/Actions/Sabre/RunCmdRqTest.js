@@ -1,10 +1,14 @@
+const SqlUtil = require('klesun-node-tools/src/Utils/SqlUtil.js');
+const Pccs = require('../../../../../../../backend/Repositories/Pccs.js');
 const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
 const stubPtcFareFamilies = require('../../../../../../data/stubPtcFareFamilies.js');
 const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFareFamilies.js');
+const stubPccs = require('../../../../../../data/stubPccs.js');
 
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
 const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.js');
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Sabre/RunCmdRq.js');
+const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
 
 const php = require('../../../../php.js');
 
@@ -1010,25 +1014,30 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	 * @test
 	 * @dataProvider provideActionTestCases
 	 */
-	async testAction($input, $expected, $sessionInfo) {
-		let $session, $actual;
-
-		$session = GdsDirectDefaults.makeStatefulSession('sabre', $input, $sessionInfo);
-		$actual = await RunCmdRq({
-			stateful: $session,
-			cmdRq: $input['cmdRequested'],
+	async testAction(input, expected, $sessionInfo) {
+		const session = GdsDirectDefaults.makeStatefulSession('sabre', input, $sessionInfo);
+		const actual = await RunCmdRq({
+			stateful: session,
+			cmdRq: input['cmdRequested'],
 			PtcUtil: PtcUtil.makeCustom({
 				PtcFareFamilies: {
 					getAll: () => Promise.resolve(stubPtcFareFamilies),
 					getByAdultPtc: (adultPtc) => PtcFareFamilies.getByAdultPtcFrom(adultPtc, stubPtcFareFamilies),
 				},
 			}),
+			Pccs: {
+				findByCode: (gds, pcc) => Promise.resolve()
+					.then(() => Pccs.findByCodeParams(gds, pcc))
+					.then(params => SqlUtil.selectFromArray(params, stubPccs)[0])
+					.then(nonEmpty('No stubbed PCC matching ' + gds + ':' + pcc))
+					.then(Pccs.normalizeFromDb),
+			},
 			useXml: false,
 		});
-		$actual['sessionData'] = $session.getSessionData();
+		actual['sessionData'] = session.getSessionData();
 
-		this.assertArrayElementsSubset($expected, $actual, php.implode('; ', $actual['userMessages'] || []) || '(no errors)');
-		this.assertEquals([], $session.getGdsSession().getCommandsLeft(), 'not all session commands were used');
+		this.assertArrayElementsSubset(expected, actual, php.implode('; ', actual['userMessages'] || []) || '(no errors)');
+		this.assertEquals([], session.getGdsSession().getCommandsLeft(), 'not all session commands were used');
 	}
 
 	getTestMapping() {
