@@ -663,60 +663,61 @@ const execute = ({
 	};
 
 	const processSavePnr = async  () => {
-		let $pnr, $errors, $login, $writeCommands, $usedCmds, $flatCmds, $usedCmdTypes, $performedCmds, $pcc,
-			$remarkCmd, $dkNumberCmd, $cmd, $output, $parsedStoredPnr, $rloc, $cmdRecord;
-
 		if (!canSavePnrInThisPcc()) {
 			return {
 				calledCommands: [],
 				errors: ['Unfortunately, PNR\'s in PCC cannot be created. Please use a special Sabre login in SabreRed.'],
 			};
 		}
-		$pnr = await getCurrentPnr();
-		if (!CommonDataHelper.isValidPnr($pnr)) {
-			return {errors: [Errors.getMessage(Errors.INVALID_PNR, {response: php.trim($pnr.getDump())})]};
-		} else if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
-			return {errors: $errors};
+		const pnr = await getCurrentPnr();
+		let errors;
+		if (!CommonDataHelper.isValidPnr(pnr)) {
+			return {errors: [Errors.getMessage(Errors.INVALID_PNR, {response: php.trim(pnr.getDump())})]};
+		} else if (!php.empty(errors = CommonDataHelper.checkSeatCount(pnr))) {
+			return {errors: errors};
 		}
 
-		$login = getAgent().getLogin();
-		$writeCommands = [
+		const login = getAgent().getLogin();
+		const writeCommands = [
 			'7TAW/' + php.strtoupper(php.date('dM', php.strtotime(stateful.getStartDt()))),
-			'6' + php.strtoupper($login),
+			'6' + php.strtoupper(login),
 			'ER',
 		];
-		$usedCmds = await stateful.getLog().getCurrentPnrCommands();
-		$flatCmds = flattenCmds($usedCmds);
-		$usedCmdTypes = php.array_column($flatCmds, 'type');
-		$performedCmds = php.array_column($flatCmds, 'cmd');
-		$pcc = getSessionData()['pcc'];
-		if ($pcc == '9WE0' && !php.in_array('5.ITN', $performedCmds)) {
-			php.array_unshift($writeCommands, '5.ITN');
+		const usedCmds = await stateful.getLog().getCurrentPnrCommands();
+		const flatCmds = flattenCmds(usedCmds);
+		const usedCmdTypes = php.array_column(flatCmds, 'type');
+		const performedCmds = php.array_column(flatCmds, 'cmd');
+		const pcc = getSessionData()['pcc'];
+		if (pcc == '9WE0' && !php.in_array('5.ITN', performedCmds)) {
+			php.array_unshift(writeCommands, '5.ITN');
 		}
-		if (!php.in_array('addAgencyPhone', $usedCmdTypes)) {
-			php.array_unshift($writeCommands, '9800-750-2238-A'); //Add Phone if not done earlier
+		if (!php.in_array('addAgencyPhone', usedCmdTypes)) {
+			php.array_unshift(writeCommands, '9800-750-2238-A'); //Add Phone if not done earlier
 		}
-		if ($remarkCmd = await makeCmsRemarkCmdIfNeeded()) {
-			php.array_unshift($writeCommands, $remarkCmd);
+		const remarkCmd = await makeCmsRemarkCmdIfNeeded();
+		if (remarkCmd) {
+			php.array_unshift(writeCommands, remarkCmd);
 		}
-		if ($dkNumberCmd = await makeAddDkNumberCmdIfNeeded(stateful.getLog())) {
-			php.array_unshift($writeCommands, $dkNumberCmd);
-		}
-
-		$cmd = php.implode('\u00A7', $writeCommands);
-		$output = await runCommand($cmd);
-
-		if (php.trim($output) === 'NEED ADDRESS - USE W-') {
-			$cmd = php.implode('\u00A7', ['W- 100 PINE STREET', '5\/ITN', 'ER']);
-			$output = await runCommand($cmd);
-		}
-		$parsedStoredPnr = PnrParser.parse($output);
-		if ($rloc = (($parsedStoredPnr['parsedData'] || {})['pnrInfo'] || {})['recordLocator']) {
-			handlePnrSave($rloc);
+		const dkNumberCmd = await makeAddDkNumberCmdIfNeeded(stateful.getLog());
+		if (dkNumberCmd) {
+			php.array_unshift(writeCommands, dkNumberCmd);
 		}
 
-		$cmdRecord = {cmd: 'PNR', output: $output};
-		return {calledCommands: [$cmdRecord]};
+		let cmd = php.implode('\u00A7', writeCommands);
+		let output = await runCommand(cmd);
+
+		if (php.trim(output) === 'NEED ADDRESS - USE W-') {
+			cmd = php.implode('\u00A7', ['W- 100 PINE STREET', '5\/ITN', 'ER']);
+			output = await runCommand(cmd);
+		}
+		const parsedStoredPnr = PnrParser.parse(output);
+		const rloc = ((parsedStoredPnr['parsedData'] || {})['pnrInfo'] || {})['recordLocator'];
+		if (rloc) {
+			handlePnrSave(rloc);
+		}
+
+		const cmdRecord = {cmd: 'PNR', output: output};
+		return {calledCommands: [cmdRecord]};
 	};
 
 	const processSortItinerary = async (pnrDump) => {
