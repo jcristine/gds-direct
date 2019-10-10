@@ -604,15 +604,6 @@ module.exports.migrations = [
 		},
 	},
 	{
-		name: 'GRECT/2019.10.09007-add-role-ignore_act_pcc_action_restrictions',
-		perform: async (db) => {
-			const emc = await Emc.getClient();
-			return emc.addRole([
-				{"name": "ignore_act_pcc_action_restrictions", "project": "GDSD", "description": "Allows creating PNR, storing fare, etc... in a PCC even if it is configured to restrict that in ACT"},
-			]);
-		},
-	},
-	{
 		name: 'GRECT/2019.07.30001-create-local-diag-table-2',
 		perform: async (db) => db.query([
 			'CREATE TABLE local_diag (',

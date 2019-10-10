@@ -27,7 +27,6 @@ const Agent = (emcUser) => {
 		canSwitchToAnyPcc              : () => hasRole('NEW_GDS_DIRECT_EMULATE_ANY_PCC'),
 		canPerformAnyPccAvailability   : () => hasRole('NEW_GDS_DIRECT_ANY_PCC_AVAILABILITY'),
 		canEmulateToRestrictedSabrePccs: () => hasRole('NEW_GDS_DIRECT_CAN_EMULATE_TO_RESTRICTED_SABRE_PCCS'),
-		canPerformPccActionsRestrictedByAct: () => hasRole('ignore_act_pcc_action_restrictions'),
 		canSavePnrWithoutLead          : () => hasRole('NEW_GDS_DIRECT_NO_LEAD_PNR'),
 		canOpenPrivatePnr              : () => hasRole('NEW_GDS_DIRECT_PRIVATE_PNR_ACCESS'),
 		canUseMultiPccTariffDisplay    : () => hasRole('NEW_GDS_DIRECT_MULTI_PCC_TARIFF_DISPLAY'),
