@@ -261,6 +261,9 @@ class CommonDataHelper {
 
 	/** @param stateful = require('StatefulSession.js')() */
 	static async checkCreatePcc({stateful, Pccs = require('../../../Repositories/Pccs.js')}) {
+		if (stateful.getAgent().canPerformPccActionsRestrictedByAct()) {
+			return Promise.resolve();
+		}
 		const state = stateful.getSessionData();
 		if (state.isPnrStored) {
 			return Promise.resolve();
@@ -278,6 +281,9 @@ class CommonDataHelper {
 
 	/** @param stateful = require('StatefulSession.js')() */
 	static async checkStorePricingPcc({stateful, Pccs = require('../../../Repositories/Pccs.js')}) {
+		if (stateful.getAgent().canPerformPccActionsRestrictedByAct()) {
+			return Promise.resolve();
+		}
 		const currentPcc = stateful.getSessionData().pcc;
 		const pccRow = await Pccs.findByCode(stateful.gds, currentPcc)
 			.catch(coverExc([Rej.NotFound], exc => null));
