@@ -317,7 +317,7 @@ const inGalileo = (norm) => {
 			if (letter) {
 				effectiveMods.push('++-' + letter);
 			} else {
-				throw Rej.NotImplemented('Unsupported cabin class ' + mod.parsed + ' - ' + mod.raw);
+				throw Rej.NotImplemented('Unsupported cabin class ' + mod.parsed.parsed + ' - ' + mod.raw);
 			}
 		} else {
 			throw Rej.NotImplemented.makeExc('Unsupported modifier ' + mod.type + ' - ' + mod.raw);
