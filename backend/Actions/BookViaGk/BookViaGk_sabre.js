@@ -24,7 +24,7 @@ const bookSa = async ({sabre, session, baseDate, itinerary}) => {
 		} else if (response.match(/^\s*Sabre warning - No PNR in AAA/)) {
 			const flightStr = air + fnum + from + to;
 			const msg = 'Can not rebuild, is flight operating? ' + flightStr;
-			return Rej.UnprocessableEntity(msg, built);
+			return Rej.BadRequest(msg, built);
 		} else if (response.match(/FLIGHT NOOP FOR THIS FLIGHT\/DATE/)) {
 			return Rej.BadRequest(response);
 		} else if (response.match(/FLIGHT DEPARTED/)) {
