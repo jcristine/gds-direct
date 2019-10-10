@@ -6,6 +6,12 @@ const SabreBuildItineraryAction = require('../../Transpiled/Rbs/GdsAction/SabreB
 const {findSegmentInPnr} = require('../../Transpiled/Rbs/GdsDirect/Actions/Common/ItinerarySegments.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
+/**
+ * 'LL' is not actually a passive status, it's a _waitlist_ status, but since
+ * American Airlines does not allow passive segments in Sabre, this is close enough
+ */
+const AA_PASSIVE_STATUS = 'LL';
+
 const bookSa = async ({sabre, session, baseDate, itinerary}) => {
 	const params = {sabre, session, baseDate};
 	const action = new SabreBuildItineraryAction(params);
@@ -74,9 +80,8 @@ const BookViaGk_sabre = ({
 
 	const bookPassive = async (itinerary) => {
 		itinerary = itinerary.map(seg => {
-			// Sabre does not allow GK status on AA segments
 			return seg.airline === 'AA'
-				? {...seg, segmentStatus: 'LL'}
+				? {...seg, segmentStatus: AA_PASSIVE_STATUS}
 				: {...seg, segmentStatus: 'GK'};
 		});
 		let yFallback = false;
@@ -135,5 +140,7 @@ const BookViaGk_sabre = ({
 		return bookPassive(itinerary);
 	}
 };
+
+BookViaGk_sabre.AA_PASSIVE_STATUS = AA_PASSIVE_STATUS;
 
 module.exports = BookViaGk_sabre;

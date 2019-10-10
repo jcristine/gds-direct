@@ -589,7 +589,11 @@ const execute = ({
 			calledCommands.push(...(booked.calledCommands || []));
 		}
 		if (itinerary.length > 0) {
-			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
+			itinerary = itinerary.map((s, i) => ({...s,
+				segmentNumber: +i + 1,
+				segmentStatus: s.airline === 'AA' && s.segmentStatus === 'GK'
+					? BookViaGk_sabre.AA_PASSIVE_STATUS : s.segmentStatus,
+			}));
 			const booked = await bookItinerary(itinerary, true)
 				.catch(coverExc([Rej.UnprocessableEntity], exc => {
 					if ((exc + '').includes('SYSTEM UNABLE TO PROCESS')) {
