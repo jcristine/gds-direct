@@ -120,11 +120,11 @@ const ReadOnlyDb = (dbConn) => {
 
 const normSqlExc = exc => {
 	if (exc.httpStatusCode !== NotFound.httpStatusCode) {
-		Diag.error('SQL query failed ' + exc, Debug.jsExport({
-			message: exc.message,
-			stack: exc.stack,
-			exc: exc,
-		}));
+		// Diag.error('SQL query failed ' + exc, Debug.jsExport({
+		// 	message: exc.message,
+		// 	stack: exc.stack,
+		// 	exc: exc,
+		// }));
 	}
 	return Promise.reject(exc);
 };
