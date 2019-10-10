@@ -17,6 +17,7 @@ const agnosticMap = {
 	'PRICEBJC': 'PRICEJCB',
 	'PRICEFXD': 'PRICEALL/FXD',
 	'STOREALL': 'STORE',
+	'PRICE/MIX': 'PRICEMIX',
 };
 
 /**
