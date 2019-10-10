@@ -610,6 +610,7 @@ const execute = ({
 	};
 
 	const bookItinerary = async ($desiredSegments, $fallbackToGk) => {
+		const prevState = getSessionData();
 		const built = await BookViaGk_sabre({
 			bookRealSegments: true,
 			withoutRebook: !$fallbackToGk,
@@ -617,7 +618,14 @@ const execute = ({
 			session: stateful,
 			baseDate: stateful.getStartDt(),
 			sabre: gdsClients.sabre,
-		});
+		}).catch(coverExc([Rej.UnprocessableEntity], exc => {
+			if (exc.message.includes('DUPLICATE SEGMENT - NOT ALLOWED') &&
+				prevState.hasPnr
+			) {
+				exc.httpStatusCode = Rej.BadRequest.httpStatusCode;
+			}
+			return Promise.reject(exc);
+		}));
 		stateful.updateAreaState({
 			type: '!xml:EnhancedAirBookRQ',
 			state: {hasPnr: true, canCreatePq: false},
