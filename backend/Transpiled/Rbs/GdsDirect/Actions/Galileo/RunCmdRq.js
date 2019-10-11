@@ -664,7 +664,7 @@ const RunCmdRq = ({
 			$calledCommands, $cmd;
 
 		$pnr = await getCurrentPnr();
-		const {itinerary} = await CommonDataHelper.sortSegmentsByUtc(
+		const {itinerary} = await CommonDataHelper.sortPnrSegmentsByUtc(
 			$pnr, stateful.getGeoProvider(), stateful.getStartDt()
 		);
 

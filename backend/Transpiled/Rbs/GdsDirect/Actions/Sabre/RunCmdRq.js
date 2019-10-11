@@ -749,7 +749,7 @@ const execute = ({
 
 	const processSortItinerary = async (pnrDump) => {
 		const pnr = pnrDump ? SabrePnr.makeFromDump(pnrDump) : await getCurrentPnr();
-		const {itinerary} = await CommonDataHelper.sortSegmentsByUtc(
+		const {itinerary} = await CommonDataHelper.sortPnrSegmentsByUtc(
 			pnr, stateful.getGeoProvider(), stateful.getStartDt()
 		);
 
