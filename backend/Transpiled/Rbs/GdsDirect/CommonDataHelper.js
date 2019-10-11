@@ -225,12 +225,12 @@ class CommonDataHelper {
 		}
 	}
 
-	static async _getSegUtc($seg, geo, baseDate) {
-		const $geoProvider = geo;
-		const fullDt = ($seg.departureDt || {}).full || (DateTime.addYear(
-			$seg.departureDate.parsed, baseDate
-		) + ' ' + $seg.departureTime.parsed + ':00');
-		const tz = await $geoProvider.getTimezone($seg.departureAirport);
+	static async _getSegUtc(seg, geo, baseDate) {
+		const fullDt = (seg.departureDt || {}).full || (
+			DateTime.addYear(seg.departureDate.parsed, baseDate) +
+			' ' + seg.departureTime.parsed + ':00'
+		);
+		const tz = await geo.getTimezone(seg.departureAirport);
 		if (tz) {
 			return DateTime.toUtc(fullDt, tz);
 		} else {

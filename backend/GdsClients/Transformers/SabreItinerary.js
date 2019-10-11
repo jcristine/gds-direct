@@ -70,7 +70,11 @@ module.exports.parseItineraryXmlResponse = (dom, params) => {
 };
 
 const transformSegment = el => ({
+	departureDt: transformDate(el.getAttribute('DepartureDateTime')),
+	destinationDt: transformDate(el.getAttribute('ArrivalDateTime')),
+	/** @deprecated, not sure if they are used anywhere... */
 	departureDate: transformDate(el.getAttribute('DepartureDateTime')),
+	/** @deprecated */
 	destinationDate: transformDate(el.getAttribute('ArrivalDateTime')),
 	airline: getValueOrNullFromDomAttribute(el, 'MarketingAirline', 'Code'),
 	flightNumber: el.getAttribute('FlightNumber'),
@@ -117,13 +121,14 @@ const transformDate = val => {
 		return null;
 	}
 
-	const [date] = val.split('T');
+	const [date, time] = val.split('T');
 
 	// in reservation segment date is already with the year
 	if (date.length === '2019-01-01'.length) {
 		return {
 			raw: val,
 			parsed: date.substr('2019-'.length), // everywhere else parsed date is just date and month
+			full: date + ' ' + time + ':00',
 		};
 	}
 
@@ -173,6 +178,7 @@ const combineReservation = segments => {
 
 	return _.extend(departure, {
 		destinationDate: arrival.destinationDate,
+		destinationDt: arrival.destinationDt,
 		destinationAirport: arrival.destinationAirport,
 	});
 };
