@@ -185,7 +185,16 @@ const RepriceInPccMix = async ({
 					const msg = 'Failed to translate command for ' +
 						pccRec.pcc + ' - ' + exc.message;
 					messages.push({type: 'error', text: msg});
-				}));
+				})).catch(exc => {
+					if (exc) {
+						exc.message = ' - ' + exc.message;
+						exc.data = {
+							...(exc.data || {}), pccRec,
+							sessionRecord: stateful.getSessionRecord(),
+						};
+					}
+					return Promise.reject(exc);
+				});
 		}
 		return {
 			messages: messages,
