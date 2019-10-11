@@ -4197,6 +4197,37 @@ class SessionStateProcessorTest extends require('../../../../../../backend/Trans
 			],
 		});
 
+		$sessionRecords.push({
+			"title": "sell with N2Z1* instead of 02Z1* should still set the hasPnr=true flag",
+			"initialState": {
+				"gds": 'apollo',
+				"area":"A","pcc":"2F3K","recordLocator":"",
+				"cmdType":"moreAirAvailability","hasPnr":false,
+			},
+			"calledCommands": [
+				{
+					"cmd": "N2Z1*",
+					"output": [
+						" 1 EY  407Z  30JAN BKKAUH SS2   155A  555A *      1          E",
+						"010 AZ 3935  BT 5770  HM 5359  HX 1407  JU 7495  PG 4012  S7 *",
+						"6 *",
+						"010 UX 2704  VN 3279 *",
+						"                         ARRIVES AUH TERMINAL 3 ",
+						" 2 EY  151Z  30JAN AUHORD SS2   930A  245P *      1          E",
+						"010 GF 5151  SV 6208  UL 2651 *",
+						"OFFER CAR/HOTEL    >CAL;     >HOA;",
+						"DEPARTS AUH TERMINAL 3  - ARRIVES ORD TERMINAL 5 ",
+						"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
+						"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
+						"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
+						"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
+						"><"
+					].join("\n"),
+					"state": {"hasPnr": true, "cmdType": "sell"},
+				},
+			],
+		});
+
 		$argumentTuples = [];
 		for ($sessionRecord of $sessionRecords) {
 			$argumentTuples.push([$sessionRecord]);}
