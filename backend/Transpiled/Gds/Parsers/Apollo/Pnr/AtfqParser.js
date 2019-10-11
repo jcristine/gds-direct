@@ -86,7 +86,7 @@ class AtfqParser {
 	}
 
 	static parsePricingCommand(cmd) {
-		return Parse_priceItinerary.parse(cmd);
+		return Parse_priceItinerary(cmd);
 	}
 	static parsePricingModifiers($modsPart) {
 		return Parse_priceItinerary.parsePricingModifiers($modsPart);
