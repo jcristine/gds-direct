@@ -72,7 +72,7 @@ module.exports.parsePnrXmlResponse = async response => {
 
 // In soap response it is yyyymmdd without any delimiters
 const transformDateFromSoap = date => {
-	if(!/^\d{8}$/.test(date)) {
+	if (!/^\d{8}$/.test(date)) {
 		return null;
 	}
 
@@ -88,7 +88,7 @@ const transformDateFromSoap = date => {
 
 // In soap response it is as (h)hmm(ss) without any delimiters
 const transformTimeFromSoap = time => {
-	if(!time) {
+	if (!time) {
 		return null;
 	}
 
@@ -166,27 +166,27 @@ const transformAirSellSegFromSoap = element => {
 		sell: [],
 	};
 
-	if(!element) {
+	if (!element) {
 		return result;
 	}
 
 	_.forEach(element.children, childEl => {
-		if(childEl.tagName === "AirSell") {
+		if (childEl.tagName === "AirSell") {
 			result.sell.push(transformAirSellFromSoap(childEl));
 			return;
 		}
 
-		if(childEl.tagName === "TextMsg" && result.sell.length > 0) {
+		if (childEl.tagName === "TextMsg" && result.sell.length > 0) {
 			_.last(result.sell).messages.push(getValueOrNullFromDomElement(childEl, "Txt") || '');
 			return;
 		}
 
-		if(childEl.tagName === "ErrText" && result.sell.length > 0) {
+		if (childEl.tagName === "ErrText" && result.sell.length > 0) {
 			_.last(result.sell).error = getValueOrNullFromDomElement(childEl, "Text");
 			return;
 		}
 
-		if(childEl.tagName === "ErrText") {
+		if (childEl.tagName === "ErrText") {
 			result.error = getValueOrNullFromDomElement(childEl, "Text");
 			return;
 		}
@@ -208,7 +208,7 @@ const transformAirSegmentForSoap = segment => {
 		? moment.utc(segment.destinationDt).diff(moment.utc(segment.departureDt), "days") : null;
 
 	return [
-		{Vnd: segment["airline"]},
+		{Vnd: segment.airline},
 		{FltNum: _.padStart(segment.flightNumber, 4, "0")},
 		{Class: segment.bookingClass},
 		{StartDt: moment.utc(segment.departureDt).format("YYYYMMDD")},
@@ -220,6 +220,9 @@ const transformAirSegmentForSoap = segment => {
 		{EndTm: destinationTime},
 		{DtChg: dayOffset},
 		{AvailDispType: 'G'},
+		...(+segment.marriage ? [{
+			AvailJrnyNum: ('00' + segment.marriage).slice(-2),
+		}] : []),
 	];
 };
 
@@ -229,11 +232,11 @@ const collectErrors = (dom, sellSegments) => {
 	const overallError = getValueOrNullFromDomElement(dom.querySelector("PNRBFRetrieve > ErrText"), "Text");
 	const transactionErrorCode = getValueOrNullFromDomElement(dom.querySelector("TransactionErrorCode"), "Code");
 
-	if(overallError) {
+	if (overallError) {
 		errors.push(overallError);
 	}
 
-	if(sellSegments.error) {
+	if (sellSegments.error) {
 		errors.push('Failed to sell segments - ' + sellSegments.error);
 	}
 
