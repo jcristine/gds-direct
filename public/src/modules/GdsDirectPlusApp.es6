@@ -101,7 +101,10 @@ export default class GdsDirectPlusApp
 	 */
 	constructor(params, viewData, themeData)
 	{
-		const {htmlRootDom, PqPriceModal, travelRequestId, chatContainerId} = params;
+		const {
+			htmlRootDom, PqPriceModal = null, travelRequestId, chatContainerId,
+			onTokenExpired = () => {},
+		} = params;
 		const terminalThemes = themeData.terminalThemes;
 		const {settings, buffer, auth} = viewData;
 
@@ -167,7 +170,17 @@ export default class GdsDirectPlusApp
 		// CMS session is still alive, but GDSD session expired
 		let keepAliveEmcInterval = setInterval(() => {
 			post('/keepAliveEmc', {skipErrorPopup: true})
-				.catch(exc => clearInterval(keepAliveEmcInterval));
+				.then(result => console.log('/keepAliveEmc result', result))
+				.catch(exc => {
+					if (exc.httpStatusCode == 440) { // LoginTimeOut
+						clearInterval(keepAliveEmcInterval);
+						onTokenExpired();
+						return Promise.resolve('Session expired - normal flow');
+					} else {
+						// should not happen perfectly
+						return Promise.reject(exc);
+					}
+				});
 		}, 10 * 60 * 1000);
 	}
 

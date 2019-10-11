@@ -20,6 +20,8 @@
 				? 'http://cms.gitlab-runner.snx702.dyninno.net'
 				: 'https://cms.asaptickets.com',
 			PqPriceModal	: null,
+			onTokenExpired  : window.GdsDirectPlusPage.redirectToLoginPage,
+			isForeignProjectEmcId: false,
 		}).then(nodeApp => {
 			// nodeApp.preEnterCommand({cmd: 'V24Z84/WS QSBYC DPBVWS  AG 05578602 02JUL\n 1.1KLESUN/ARTUR\n 1 PS 188X 20DEC RIXKBP HK1   600A  735A *         FR   E', terminalId: 1});
 			// nodeApp.runPnr({pnrCode: 'QWE123'});
@@ -33,48 +35,6 @@
 			return Promise.reject(exc);
 		});
 	});
-</script>
-
-<div style="display: none">
-	<button onclick="window.updateHighlightRulesFromProd()">Update Highlight Rules From Prod</button>
-	<div class="multi-threading-test-output" style="background-color: white; color: black; min-height: 200px;"></div>
-</div>
-<script>
-	window.updateHighlightRulesFromProd = () => {
-		let destinationUrl = '/admin/updateHighlightRules';
-		let promises = [
-			fetch('https://cms.asaptickets.com/admin/terminal/highlight?draw=1&length=5000', {credentials: 'include'}),
-			fetch('https://cms.asaptickets.com/admin/table/listGet', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, credentials: 'include', body: 'draw=1&length=5000&order[0][column]=0&order[0][dir]=DESC&model=App\\Models\\Gds'}),
-			fetch('https://cms.asaptickets.com/admin/table/listGet', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, credentials: 'include', body: 'draw=1&length=5000&order[0][column]=0&order[0][dir]=DESC&model=App\\Models\\Terminal\\TerminalInputLanguages'}),
-			fetch('https://cms.asaptickets.com/admin/table/listGet', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, credentials: 'include', body: 'draw=1&length=5000&order[0][column]=0&order[0][dir]=DESC&model=App\\Models\\Terminal\\TerminalHighlightGroup'}),
-			fetch('https://cms.asaptickets.com/admin/table/listGet', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, credentials: 'include', body: 'draw=1&length=5000&order[0][column]=0&order[0][dir]=DESC&model=App\\Models\\Terminal\\TerminalColors'}),
-			fetch('https://cms.asaptickets.com/admin/table/listGet', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, credentials: 'include', body: 'draw=1&length=5000&order[0][column]=0&order[0][dir]=DESC&model=App\\Models\\Terminal\\TerminalHighlightType'}),
-		];
-
-		promises.push();
-		promises = promises.map(p => p.then(resp => resp.json()));
-
-		Promise.all(promises)
-			.catch(exc => Promise.reject('(make sure browser CORS flag is set and cookie has the prod token) ' + exc))
-			.then(([cmsData, gdses, langs, groups, colors, types]) => {
-				return fetch(destinationUrl, {
-					method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
-						cmsData: cmsData, emcSessionId: emcSessionId,
-						langs, gdses, groups, colors, types,
-					}),
-				})
-			})
-			.then(resp => resp.text())
-			.then(resp => {
-				document.querySelector('.multi-threading-test-output').innerHTML += 'Response: <br/>';
-				document.querySelector('.multi-threading-test-output').innerText += resp;
-				document.querySelector('.multi-threading-test-output').innerHTML += '<br/>';
-			})
-			.catch(exc => {
-				document.querySelector('.multi-threading-test-output').innerHTML +=
-					'<div style="color: red;">ERROR, ' + exc + '</div>';
-			});
-	};
 </script>
 
 </body>

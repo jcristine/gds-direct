@@ -62,7 +62,10 @@ const Ask = (url, fetchParams) => {
 				if (!fetchParams.skipErrorPopup) {
 					debugRequest(url, msg, status);
 				}
-				return Promise.reject(msg);
+				const exc = new Error(msg);
+				exc.httpStatusCode = status;
+				exc.data = body;
+				return Promise.reject(exc);
 			}
 		})
 		.then( showUserMessages );

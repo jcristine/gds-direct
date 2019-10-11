@@ -290,11 +290,15 @@ let getEmcSessionIdFromCookie = () => {
 /**
  * supposed to be injected in a <script> tag (either
  * statically or via js dynamic DOM generation)
+ *
+ * @return {Promise<GdsDirectPlusApp>}
  */
 window.InitGdsDirectPlusApp = (params) => {
 	let whenEmcSessionId;
 	if (!params.getCrossAuthToken) {
-		window.GdsDirectPlusParams.isForeignProjectEmcId = true;
+		window.GdsDirectPlusParams.isForeignProjectEmcId =
+			params.isForeignProjectEmcId === undefined
+				? true : params.isForeignProjectEmcId;
 		whenEmcSessionId = Promise.resolve(params.emcSessionId);
 	} else {
 		whenEmcSessionId = getEmcSessionIdFromCookie()
