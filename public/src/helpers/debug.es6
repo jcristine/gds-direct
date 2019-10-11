@@ -15,7 +15,7 @@ export const Debug = (txt, type) => {
 	}).show();
 };
 
-let codeToDescr = {
+export const codeToDescr = {
 	204: {severity: 'warning', name: 'NoContent'},
 	400: {severity: 'error'  , name: 'BadRequest'},
 	401: {severity: 'error'  , name: 'NotAuthorized'},

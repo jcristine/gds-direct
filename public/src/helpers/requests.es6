@@ -1,5 +1,5 @@
 
-import {showUserMessages, debugRequest} from "./debug";
+import {showUserMessages, debugRequest, codeToDescr} from "./debug";
 import {getHttpSocket, makeBriefRsStr} from './socketIoWrapper.js';
 
 /**
@@ -54,10 +54,11 @@ const Ask = (url, fetchParams) => {
 			if (status && status === 200) {
 				return Promise.resolve(body);
 			} else {
-				console.log("HTTP request ERROR:   ", body);
+				console.error("HTTP request ERROR:   ", body);
 
 				let error = body.error || JSON.stringify(body);
-				let msg = error.slice(0, 300);
+				const statusStr = (codeToDescr[status] || {}).name || status;
+				let msg = error.slice(0, 300) + ' - ' + statusStr;
 				if (!fetchParams.skipErrorPopup) {
 					debugRequest(url, msg, status);
 				}
