@@ -180,21 +180,22 @@ const RepriceInPccMix = async ({
 					const pricingCmd = TranslatePricingCmd.fromData(pccRec.gds, normalized);
 					processes.push({...pccRec, pricingCmd, pricingAction: normalized.action, cmdRqId});
 					processPcc({...pccRec, pricingCmd, itinerary})
-						.catch(coverExc(Rej.list, e => {})); // maybe should log them somewhere...
+						.catch(coverExc(Rej.list, e => {})) // maybe should log them somewhere...
+						.catch(exc => {
+							if (exc) {
+								exc.message = '$B/MIX PCC job failed - ' + exc.message;
+								exc.data = {
+									...(exc.data || {}), pccRec,
+									sessionRecord: stateful.getSessionRecord(),
+								};
+							}
+							return Promise.reject(exc);
+						});
 				}).catch(coverExc([Rej.NotImplemented], exc => {
 					const msg = 'Failed to translate command for ' +
 						pccRec.pcc + ' - ' + exc.message;
 					messages.push({type: 'error', text: msg});
-				})).catch(exc => {
-					if (exc) {
-						exc.message = ' - ' + exc.message;
-						exc.data = {
-							...(exc.data || {}), pccRec,
-							sessionRecord: stateful.getSessionRecord(),
-						};
-					}
-					return Promise.reject(exc);
-				});
+				}));
 		}
 		return {
 			messages: messages,
