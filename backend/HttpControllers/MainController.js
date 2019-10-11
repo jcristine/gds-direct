@@ -51,6 +51,13 @@ const toHandleHttp = (httpAction) => (req, res) => {
 						type: LocalDiag.types.AMA_ILLOGICAL_CONVERSATION,
 						data: errorData,
 					});
+				} else if (msg.includes('<faultstring> 18|Application|</faultstring>')) {
+					// agent ignored and re-opened PNR, entered same command again (TTH),
+					// and it worked, dunno maybe something just failed on Amadeus side...
+					LocalDiag({
+						type: LocalDiag.types.AMA_APPLICATION,
+						data: errorData,
+					});
 				} else {
 					const msg = 'HTTP request failed';
 					if (process.env.NODE_ENV === 'development') {
