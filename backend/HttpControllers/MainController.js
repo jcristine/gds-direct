@@ -95,14 +95,6 @@ const withAuth = (userAction) => (req, res) => {
 			return InternalServerError('Action is not a function - ' + userAction);
 		}
 		return Emc.getCachedSessionInfo(rqBody.emcSessionId)
-			.catch(exc => {
-				const error = new Error('EMC auth error - ' + exc);
-				error.httpStatusCode = (exc + '').match(/Session not found/)
-					? LoginTimeOut.httpStatusCode
-					: NotAuthorized.httpStatusCode;
-				error.stack += '\nCaused by:\n' + exc.stack;
-				return Promise.reject(error);
-			})
 			.then(async emcData => {
 				rqBody = {...rqBody};
 				emcData = {...emcData};

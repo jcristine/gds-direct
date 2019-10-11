@@ -64,12 +64,14 @@ exports.getCachedSessionInfo = async (sessionKey) => {
 		sessionInfo = JSON.parse(session);
 	} else {
 		const client = await getClient();
-		try {
-			sessionInfo = await client.sessionInfo(sessionKey);
-		} catch (exc) {
-			exc = normalizeTransportException(exc);
-			return Promise.reject(exc);
-		}
+		sessionInfo = await client.sessionInfo(sessionKey).catch(exc => {
+			if ((exc + '').match(/Session not found/)) {
+				return Rej.LoginTimeOut('Session key expired');
+			} else {
+				exc = normalizeTransportException(exc);
+				return Promise.reject(exc);
+			}
+		});
 	}
 	redis.set(cacheKey, JSON.stringify(sessionInfo), 'EX', keyExpire);
 	const userId = (((sessionInfo || {}).data || {}).user || {}).id;
