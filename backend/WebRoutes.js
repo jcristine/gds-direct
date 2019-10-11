@@ -152,21 +152,7 @@ app.post('/keepAliveEmc', toHandleHttp(async (rqBody) => {
 	} else if (rqBody.isForeignProjectEmcId) {
 		return Promise.resolve({message: 'Foreign Project EMC id - success by default'});
 	} else {
-		const emc = await Emc.getClient();
-		return Promise.resolve()
-			.then(() => emc.doAuth(rqBody.emcSessionId))
-			.catch(exc => {
-				if ((exc + '').match(/session key is invalid/)) {
-					return Rej.LoginTimeOut('Session key expired');
-				} else if ((exc + '').match(/ESOCKETTIMEDOUT/)) {
-					return Rej.ServiceUnavailable('EMC server is unreachable ATM', {isOk: true});
-				} else if ((exc + '').match(/405 Not Allowed/) || (exc + '').match(/error - not 200/)) {
-					// when they do production restart I think, or when they are overloaded
-					return Rej.ServiceUnavailable('EMC service is inaccessible ATM', {isOk: true});
-				} else {
-					return Promise.reject(exc);
-				}
-			});
+		return Emc.doAuth(rqBody.emcSessionId);
 	}
 }));
 app.post('/system/reportJsError', withAuth((rqBody, emcResult) => {

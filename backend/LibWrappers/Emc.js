@@ -1,3 +1,4 @@
+const Rej = require('klesun-node-tools/src/Rej.js');
 const Redis = require("./Redis.js");
 const Config = require('../Config.js');
 
@@ -5,8 +6,8 @@ const Config = require('../Config.js');
  * @see https://auth.asaptickets.com/help/api
  */
 
-// 1 day, because it expired in EMC in past, and I'm not sure our 'doAuth' requests keep it alive for good
-const SESSION_EXPIRE = 1 * 3 * 60 * 60;
+// 3 hours
+const SESSION_EXPIRE = 3 * 60 * 60;
 
 const makeClient = cfg => {
 	const {Emc} = require('dynatech-client-component-emc');
@@ -34,6 +35,17 @@ const getClient = () => {
 	return whenClient;
 };
 
+const normalizeTransportException = (exc) => {
+	if ((exc + '').match(/ESOCKETTIMEDOUT/)) {
+		return Rej.ServiceUnavailable.makeExc('EMC server is unreachable ATM', {isOk: true});
+	} else if ((exc + '').match(/405 Not Allowed/) || (exc + '').match(/error - not 200/)) {
+		// when they do production restart I think, or when they are overloaded
+		return Rej.ServiceUnavailable.makeExc('EMC service is inaccessible ATM', {isOk: true});
+	} else {
+		return exc;
+	}
+};
+
 exports.getClient = getClient;
 
 /**
@@ -41,10 +53,8 @@ exports.getClient = getClient;
  */
 exports.getCachedSessionInfo = async (sessionKey) => {
 	if (!sessionKey) {
-		return Promise.reject('Passed EMC session token is empty');
+		return Rej.BadRequest('Passed EMC session token is empty');
 	}
-	// probably just keeping token -> agentId mapping
-	// instead would save us few milliseconds...
 	const cacheKey = Redis.keys.EMC_TOKEN_TO_USER + ':' + sessionKey;
 	const keyExpire = SESSION_EXPIRE;
 	const redis = await Redis.getClient();
@@ -54,13 +64,34 @@ exports.getCachedSessionInfo = async (sessionKey) => {
 		sessionInfo = JSON.parse(session);
 	} else {
 		const client = await getClient();
-	    sessionInfo = await client.sessionInfo(sessionKey);
+		try {
+			sessionInfo = await client.sessionInfo(sessionKey);
+		} catch (exc) {
+			exc = normalizeTransportException(exc);
+			return Promise.reject(exc);
+		}
 	}
 	redis.set(cacheKey, JSON.stringify(sessionInfo), 'EX', keyExpire);
 	const userId = (((sessionInfo || {}).data || {}).user || {}).id;
 	if (!userId) {
-	    return Promise.reject('No user id in EMC rs - ' + JSON.stringify(sessionInfo));
+	    return Rej.BadGateway('No user id in EMC rs', sessionInfo);
 	} else {
-	    return sessionInfo;
+	    return Promise.resolve(sessionInfo);
 	}
 };
+
+exports.doAuth = async (emcSessionId) => {
+	const emc = await getClient();
+	return Promise.resolve()
+		.then(() => emc.doAuth(emcSessionId))
+		.catch(exc => {
+			if ((exc + '').match(/session key is invalid/)) {
+				return Rej.LoginTimeOut('Session key expired');
+			} else {
+				exc = normalizeTransportException(exc);
+				return Promise.reject(exc);
+			}
+		});
+};
+
+exports.normalizeTransportException = normalizeTransportException;
