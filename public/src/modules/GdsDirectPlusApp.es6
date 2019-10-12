@@ -172,6 +172,7 @@ export default class GdsDirectPlusApp
 			post('/keepAliveEmc', {skipErrorPopup: true})
 				.then(result => console.log('/keepAliveEmc result', result))
 				.catch(exc => {
+					console.error('/keepAliveEmc error', exc);
 					if (exc.httpStatusCode == 440) { // LoginTimeOut
 						clearInterval(keepAliveEmcInterval);
 						onTokenExpired();

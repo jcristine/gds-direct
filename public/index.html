@@ -11,6 +11,7 @@
 <script src="src/actions/initAuthPage.js"></script>
 <script src="terminal-bundle.js"></script>
 <script>
+	const redirectMsg = 'Your authorization to this page expired, press "OK" to be redirected to login form';
 	window.GdsDirectPlusPage.whenEmcSessionId.then(emcSessionId => {
 		let isDev = !(window.location.hostname + '').endsWith('.asaptickets.com');
 		window.InitGdsDirectPlusApp({
@@ -21,8 +22,9 @@
 				: 'https://cms.asaptickets.com',
 			PqPriceModal	: null,
 			onTokenExpired  : () => {
-				alert('Your authorization to this page expired, you will now be redirected to login form');
-				window.GdsDirectPlusPage.redirectToLoginPage();
+				if (prompt(redirectMsg)) {
+					window.GdsDirectPlusPage.redirectToLoginPage();
+				}
 			},
 			isForeignProjectEmcId: false,
 		}).then(nodeApp => {
@@ -33,7 +35,9 @@
 			// remove expired token
 			document.cookie = 'emcSessionId=';
 			if (!(exc + '').includes('TypeError')) {
-				window.GdsDirectPlusPage.redirectToLoginPage();
+				if (prompt(redirectMsg)) {
+					window.GdsDirectPlusPage.redirectToLoginPage();
+				}
 			}
 			return Promise.reject(exc);
 		});
