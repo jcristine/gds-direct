@@ -43,26 +43,26 @@ class RepriceInAnotherPccAction {
 		this.baseDate = baseDate;
 	}
 
-	static async getTargetGdsAndPcc($target) {
-		let $gdsCodes, $gdsCodeAliases, $gds;
-		$gdsCodes = {
+	static async getTargetGdsAndPcc(target) {
+		const gdsCodes = {
 			'1A': {gds: 'amadeus', pcc: 'SFO1S2195'},
 			'1G': {gds: 'galileo', pcc: '711M'},
 			'1V': {gds: 'apollo', pcc: '2F3K'},
 			'1W': {gds: 'sabre', pcc: '6IIF'},
 		};
-		$gdsCodeAliases = {
+		const gdsCodeAliases = {
 			AM: '1A',
 			GA: '1G',
 			AP: '1V',
 			SA: '1W',
 		};
-		if ($gdsCodes[$target] || null) {
-			return $gdsCodes[$target];
-		} else if ($gdsCodes[$gdsCodeAliases[$target] || null] || null) {
-			return $gdsCodes[$gdsCodeAliases[$target]];
-		} else if ($gds = await Pccs.getGdsByPcc($target)) {
-			return {gds: $gds, pcc: $target};
+		let gds;
+		if (gdsCodes[target] || null) {
+			return gdsCodes[target];
+		} else if (gdsCodes[gdsCodeAliases[target] || null] || null) {
+			return gdsCodes[gdsCodeAliases[target]];
+		} else if (gds = await Pccs.getGdsByPcc(target)) {
+			return {gds: gds, pcc: target};
 		} else {
 			return null;
 		}
@@ -99,7 +99,7 @@ class RepriceInAnotherPccAction {
 			return {errors: ['Unknown GDS/PCC target - ' + targetStr]};
 		}
 		const {gds, pcc} = target;
-		const itinerary = pnr.getItinerary();
+		const itinerary = pnr.getReservation(baseDate).itinerary;
 		if (php.empty(itinerary)) {
 			return BadRequest('Itinerary is empty');
 		}
