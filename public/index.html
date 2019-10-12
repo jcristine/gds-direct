@@ -22,7 +22,7 @@
 				: 'https://cms.asaptickets.com',
 			PqPriceModal	: null,
 			onTokenExpired  : () => {
-				if (prompt(redirectMsg)) {
+				if (confirm(redirectMsg)) {
 					window.GdsDirectPlusPage.redirectToLoginPage();
 				}
 			},
@@ -35,7 +35,7 @@
 			// remove expired token
 			document.cookie = 'emcSessionId=';
 			if (!(exc + '').includes('TypeError')) {
-				if (prompt(redirectMsg)) {
+				if (confirm(redirectMsg)) {
 					window.GdsDirectPlusPage.redirectToLoginPage();
 				}
 			}
