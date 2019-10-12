@@ -167,7 +167,7 @@ const provide_call = () => {
 	});
 
 	testCases.push({
-		title: 'Example of bug: when you paste itinerary to session that already has some segments, wrong segments gets rebooked',
+		title: 'Example of bug: when you paste itinerary to session that already has some segments, wrong segments get rebooked',
 		startDt: '2019-08-13 13:12:00',
 		sessionInfo: {
 			initialCommands: [{
