@@ -5,7 +5,7 @@ type processPnr = (params) => Promise<{
     },
 }>;
 
-type BookViaGk_rq = {
+export type BookViaGk_rq = {
     bookRealSegments: false,
     withoutRebook: false,
 
