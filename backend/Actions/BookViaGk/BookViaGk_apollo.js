@@ -83,11 +83,13 @@ const BookViaGk_apollo = async (params) => {
 			...bookParams, session,
 			itinerary: [...noRebook, ...forRebook],
 		});
-		const {failedSegments, messages} = await rebookGkSegments(forRebook, reservation);
+		let {failedSegments, messages} = await rebookGkSegments(forRebook, reservation);
 		// mandatory between calls if segment numbers changed apparently...
 		const pnrCmdRec = await TravelportUtils.fetchAll('*R', session);
 		reservation = ApolloPnr.makeFromDump(pnrCmdRec.output).getReservation(baseDate);
 
+		// Apollo does not allow cancelling segments in non-sequential order, like >X1|6|4|5;
+		failedSegments = failedSegments.sort((a,b) => a.segmentNumber - b.segmentNumber);
 		if (failedSegments.length > 0) {
 			await session.runCmd('X' + failedSegments.map(s => s.segmentNumber).join('|'));
 			const built = await bookPassive(failedSegments);
