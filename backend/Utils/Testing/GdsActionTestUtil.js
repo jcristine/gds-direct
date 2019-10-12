@@ -49,7 +49,7 @@ exports.testHttpGdsAction = async ({unit, testCase, getActual}) => {
 	};
 	const session = {
 		context: {gds: fullState.gds, travelRequestId: null},
-		gdsData: {
+		gdsData: fullState.gdsData || {
 			sessionToken: 'soap-unit-test-blabla-123',
 			binarySecurityToken: 'soap-unit-test', // for sabre
 			conversationId: 777,
