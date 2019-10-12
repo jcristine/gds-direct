@@ -1,4 +1,4 @@
-const BookViaGk_apollo = require('../BookViaGk/BookViaGk_apollo.js');
+const BookViaGk = require('../BookViaGk/BookViaGk.js');
 const ImportPqApolloAction = require('../../Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloAction.js');
 const TravelportUtils = require('../../GdsHelpers/TravelportUtils.js');
 const AtfqParser = require('../../Transpiled/Gds/Parsers/Apollo/Pnr/AtfqParser.js');
@@ -27,7 +27,7 @@ const extendApolloCmd = (cmd) => {
 
 const RepriceItinerary_apollo = ({pricingCmd, session, baseDate, ...bookParams}) => {
 	const main = async () => {
-		const built = await BookViaGk_apollo({...bookParams, baseDate, session});
+		const built = await BookViaGk.inApollo({...bookParams, baseDate, session});
 		pricingCmd = extendApolloCmd(pricingCmd);
 		const cmdRec = await TravelportUtils.fetchAll(pricingCmd, session);
 		const pricing = ImportPqApolloAction.parsePricing(cmdRec.output, [], pricingCmd);

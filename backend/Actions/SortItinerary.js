@@ -19,7 +19,7 @@ const SortItinerary = ({
 		}[gds];
 
 		const cmdRec = await gdsSession.runCmd(cmd);
-		return {calledCommands: [cmdRec]};
+		return {itinerary: sortedSegments, calledCommands: [cmdRec]};
 	};
 
 	return main();

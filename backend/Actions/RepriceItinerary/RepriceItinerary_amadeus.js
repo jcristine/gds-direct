@@ -1,4 +1,4 @@
-const BookViaGk_amadeus = require('../BookViaGk/BookViaGk_amadeus.js');
+const BookViaGk = require('../BookViaGk/BookViaGk.js');
 const CommonUtils = require('../../GdsHelpers/CommonUtils.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const PricingCmdParser = require('../../Transpiled/Gds/Parsers/Sabre/Commands/PricingCmdParser.js');
@@ -36,7 +36,7 @@ const extendAmadeusCmd = (cmd) => {
 
 const RepriceItinerary_amadeus = ({pricingCmd, session, baseDate, itinerary, ...bookParams}) => {
 	const main = async () => {
-		const built = await BookViaGk_amadeus({...bookParams, session, baseDate, itinerary});
+		const built = await BookViaGk.inAmadeus({...bookParams, session, baseDate, itinerary});
 		pricingCmd = extendAmadeusCmd(pricingCmd);
 		const capturing = CommonUtils.withCapture(session);
 		const cmdRec = await AmadeusUtils.fetchAllFx(pricingCmd, capturing);

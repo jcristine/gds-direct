@@ -1,4 +1,4 @@
-const BookViaGk_sabre = require('../BookViaGk/BookViaGk_sabre.js');
+const BookViaGk = require('../BookViaGk/BookViaGk.js');
 const SabrePricingParser = require('../../Transpiled/Gds/Parsers/Sabre/Pricing/SabrePricingParser.js');
 const BookingClasses = require('../../Repositories/BookingClasses.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
@@ -49,7 +49,7 @@ const extendSabreCmd = async ({cmd, yFallback, srcItin}) => {
 
 const RepriceItinerary_sabre = ({pricingCmd, session, baseDate, ...bookParams}) => {
 	const main = async () => {
-		const built = await BookViaGk_sabre({...bookParams, session, baseDate});
+		const built = await BookViaGk.inSabre({...bookParams, session, baseDate});
 		pricingCmd = await extendSabreCmd({
 			cmd: pricingCmd,
 			yFallback: built.yFallback,
