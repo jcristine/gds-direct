@@ -1,3 +1,4 @@
+const ApolloPnr = require('../../Transpiled/Rbs/TravelDs/ApolloPnr.js');
 const Errors = require('../../Transpiled/Rbs/GdsDirect/Errors.js');
 const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
 const ItineraryParser = require('gds-parsers/src/Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
@@ -22,6 +23,8 @@ const BookViaGk_apollo = async ({
 	withoutRebook = false,
 	itinerary, session, ...bookParams
 }) => {
+	const {baseDate} = bookParams;
+
 	const isSuccessRebookOutput = (dump) => {
 		const isSegmentLine = line => ItineraryParser.parseSegmentLine('0 ' + line);
 		return dump.split('\n').some(isSegmentLine);
@@ -79,13 +82,15 @@ const BookViaGk_apollo = async ({
 			itinerary: [...noRebook, ...forRebook],
 		});
 		const {failedSegments, messages} = await rebookGkSegments(forRebook, reservation);
-		await session.runCmd('*R'); // mandatory between calls if segment numbers changed apparently...
+		// mandatory between calls if segment numbers changed apparently...
+		const pnrCmdRec = await TravelportUtils.fetchAll('*R', session);
+		reservation = ApolloPnr.makeFromDump(pnrCmdRec.output).getReservation(baseDate);
+
 		if (failedSegments.length > 0) {
 			await session.runCmd('X' + failedSegments.map(s => s.segmentNumber).join('|'));
 			const built = await bookPassive(failedSegments);
 			reservation = built.reservation;
 		}
-		// TODO: SORT
 		return {reservation, messages};
 	};
 
