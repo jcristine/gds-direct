@@ -16,14 +16,15 @@ const {coverExc} = require('klesun-node-tools/src/Lang.js');
  * this action also handles stuff like Galileo having AK instead
  * of GK, Sabre not allowing GK on AA, fallback, etc...
  *
+ * @param {gdsClients} gdsClients
  * @param {BookViaGk_rq} params
  */
 const BookViaGk = ({
-	gdsClients = GdsSession.makeGdsClients(),
+	gdsClients,
 	gds, ...params
 }) => {
 	const {travelport, sabre, amadeus} = gdsClients;
-	const {session, baseDate, Airports} = params;
+	const {session, Airports = undefined} = params;
 
 	const main = async () => {
 		const booked = await {
@@ -38,9 +39,9 @@ const BookViaGk = ({
 		// marriages, insertion order will not match chronological order, so need to sort for pricing
 		const geo = new LocationGeographyProvider({Airports});
 		const sorted = await SortItinerary({
-			gds, geo, baseDate, gdsSession: session,
+			gds, geo, gdsSession: session,
 			itinerary: booked.reservation.itinerary,
-		}).catch(coverExc(Rej.list, exc => ({
+		}).catch(coverExc([Rej.NoContent, Rej.NotImplemented], exc => ({
 			itinerary: booked.reservation.itinerary,
 		})));
 		booked.reservation.itinerary = sorted.itinerary;
@@ -51,9 +52,10 @@ const BookViaGk = ({
 	return main();
 };
 
-BookViaGk.inApollo = params => BookViaGk({...params, gds: 'apollo'});
-BookViaGk.inSabre = params => BookViaGk({...params, gds: 'sabre'});
-BookViaGk.inAmadeus = params => BookViaGk({...params, gds: 'amadeus'});
-BookViaGk.inGalileo = params => BookViaGk({...params, gds: 'galileo'});
+// probably it would be better to just call SORT in each GDS action explicitly...
+BookViaGk.inApollo = ({travelport, ...params}) => BookViaGk({gdsClients: {travelport}, ...params, gds: 'apollo'});
+BookViaGk.inSabre = ({sabre, ...params}) => BookViaGk({gdsClients: {sabre}, ...params, gds: 'sabre'});
+BookViaGk.inAmadeus = ({amadeus, ...params}) => BookViaGk({gdsClients: {amadeus}, ...params, gds: 'amadeus'});
+BookViaGk.inGalileo = ({travelport, ...params}) => BookViaGk({gdsClients: {travelport}, ...params, gds: 'galileo'});
 
 module.exports = BookViaGk;

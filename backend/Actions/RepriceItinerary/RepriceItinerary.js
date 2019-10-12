@@ -31,9 +31,12 @@ const restoreMarriages = async (rebookItinerary, itinerary) => {
 /**
  * build the passed itinerary in passed session
  * and price it with the passed command
+ *
+ * @param {BookViaGk_rq} params
+ * @param {gdsClients} gdsClients
  */
 const RepriceItinerary = ({
-	gds, gdsClients = GdsSession.makeGdsClients(), ...params
+	gds, gdsClients, ...params
 }) => {
 	const {bookRealSegments = false, itinerary} = params;
 	const {travelport, sabre, amadeus} = gdsClients;
