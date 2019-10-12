@@ -100,7 +100,7 @@ const GoToPricing = ({
 			gds: pricingGds,
 			pcc: pricingPcc,
 			session: targetSession,
-			startDt: stateful.getStartDt(),
+			baseDate: stateful.getStartDt(),
 			bookRealSegments: pricingAction !== 'lowestFareIgnoringAvailability',
 			itinerary: itinerary.map(seg => ({
 				// even if source itinerary was GK,
