@@ -42,11 +42,11 @@ const getTargetSession = async ({
 	pricingGds, pricingPcc, oldStateful,
 	travelRequestId, controllerData,
 }) => {
-	const {emcUser, askClient} = controllerData;
 	let targetStateful;
 	if (pricingGds === oldStateful.gds) {
 		targetStateful = oldStateful;
 	} else {
+		const {emcUser, askClient} = controllerData;
 		const params = {
 			rqBody: {travelRequestId, gds: pricingGds},
 			canStartNew: true, emcUser,
@@ -78,6 +78,7 @@ const getTargetSession = async ({
 const GoToPricing = ({
 	stateful, controllerData, rqBody,
 	gdsClients = GdsSession.makeGdsClients(),
+	Airports = require('../Repositories/Airports.js'),
 }) => {
 	const {
 		pricingGds, itinerary,
@@ -107,7 +108,7 @@ const GoToPricing = ({
 				// should book real segments here
 				...seg, segmentStatus: 'SS',
 			})),
-			pricingCmd, gdsClients,
+			pricingCmd, gdsClients, Airports,
 		});
 	};
 
