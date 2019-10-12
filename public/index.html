@@ -20,7 +20,10 @@
 				? 'http://cms.gitlab-runner.snx702.dyninno.net'
 				: 'https://cms.asaptickets.com',
 			PqPriceModal	: null,
-			onTokenExpired  : window.GdsDirectPlusPage.redirectToLoginPage,
+			onTokenExpired  : () => {
+				alert('Your authorization to this page expired, you will now be redirected to login form');
+				window.GdsDirectPlusPage.redirectToLoginPage();
+			},
 			isForeignProjectEmcId: false,
 		}).then(nodeApp => {
 			// nodeApp.preEnterCommand({cmd: 'V24Z84/WS QSBYC DPBVWS  AG 05578602 02JUL\n 1.1KLESUN/ARTUR\n 1 PS 188X 20DEC RIXKBP HK1   600A  735A *         FR   E', terminalId: 1});
