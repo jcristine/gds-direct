@@ -83,7 +83,7 @@ const ImportPq = async ({
 			const fcSegs = ptcBlock.fareInfo.fareConstruction.segments;
 			ptcBlock.fareType = await RbsUtils.getFareTypeV2(gds, pcc, ptcBlock);
 			ptcBlock.isRegionChange = await isRegionChange(fcSegs)
-				.catch(coverExc([Rej.list], exc => false));
+				.catch(coverExc(Rej.list, exc => false));
 			for (const fcSeg of fcSegs) {
 				if (fcSeg.fare) {
 					const td = fcSeg.ticketDesignator;
