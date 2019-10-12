@@ -182,7 +182,7 @@ export default class GdsDirectPlusApp
 						return Promise.reject(exc);
 					}
 				});
-		}, 10 * 60 * 1000);
+		}, 3 * 60 * 1000);
 	}
 
 	set(key, val)

@@ -66,7 +66,7 @@ exports.getCachedSessionInfo = async (sessionKey) => {
 		const client = await getClient();
 		sessionInfo = await client.sessionInfo(sessionKey).catch(exc => {
 			if ((exc + '').match(/Session not found/)) {
-				return Rej.LoginTimeOut('Session key expired');
+				return Rej.LoginTimeOut('Session key expired - ' + sessionKey);
 			} else {
 				exc = normalizeTransportException(exc);
 				return Promise.reject(exc);
@@ -83,12 +83,15 @@ exports.getCachedSessionInfo = async (sessionKey) => {
 };
 
 exports.doAuth = async (emcSessionId) => {
+	if (!emcSessionId) {
+		return Rej.BadRequest('Passed EMC session token is empty in doAuth()');
+	}
 	const emc = await getClient();
 	return Promise.resolve()
 		.then(() => emc.doAuth(emcSessionId))
 		.catch(exc => {
 			if ((exc + '').match(/session key is invalid/)) {
-				return Rej.LoginTimeOut('Session key expired');
+				return Rej.LoginTimeOut('Session key expired - ' + emcSessionId);
 			} else {
 				exc = normalizeTransportException(exc);
 				return Promise.reject(exc);
