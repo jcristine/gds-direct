@@ -1,3 +1,4 @@
+const SortItinerary = require('../../../../../Actions/SortItinerary.js');
 const TranslatePricingCmd = require('../../../../../Actions/CmdTranslators/TranslatePricingCmd.js');
 const NormalizePricingCmd = require('gds-utils/src/cmd_translators/NormalizePricingCmd.js');
 const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
@@ -749,16 +750,11 @@ const execute = ({
 
 	const processSortItinerary = async (pnrDump) => {
 		const pnr = pnrDump ? SabrePnr.makeFromDump(pnrDump) : await getCurrentPnr();
-		const {itinerary} = await CommonDataHelper.sortPnrSegmentsByUtc(
-			pnr, stateful.getGeoProvider(), stateful.getStartDt()
-		);
-
-		const calledCommands = [];
-		const cmd = /0/ + itinerary.map(s => s.segmentNumber).join(',');
-		const output = await runCommand(cmd);
-		calledCommands.push({cmd, output});
-
-		return {calledCommands};
+		return SortItinerary.inSabre({
+			gdsSession: stateful,
+			itinerary: pnr.getReservation(stateful.getStartDt()).itinerary,
+			geo: stateful.getGeoProvider(),
+		});
 	};
 
 	const needsPl = async  ($cmd, $pricingDump, $pnr) => {

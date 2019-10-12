@@ -1,3 +1,4 @@
+const SortItinerary = require('../../../../../Actions/SortItinerary.js');
 const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
 const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
 const FqCmdParser = require('../../../../Gds/Parsers/Galileo/Commands/FqCmdParser.js');
@@ -660,18 +661,12 @@ const RunCmdRq = ({
 	};
 
 	const processSortItinerary = async () => {
-		let $pnr, $pnrDump,
-			$calledCommands, $cmd;
-
-		$pnr = await getCurrentPnr();
-		const {itinerary} = await CommonDataHelper.sortPnrSegmentsByUtc(
-			$pnr, stateful.getGeoProvider(), stateful.getStartDt()
-		);
-
-		$calledCommands = [];
-		$cmd = '/0S' + itinerary.map(s => s.segmentNumber).join('.');
-		$calledCommands.push(await runCmd($cmd));
-		return {calledCommands: $calledCommands};
+		const pnr = await getCurrentPnr();
+		return SortItinerary.inGalileo({
+			gdsSession: stateful,
+			itinerary: pnr.getReservation(stateful.getStartDt()).itinerary,
+			geo: stateful.getGeoProvider(),
+		});
 	};
 
 	const getEmptyAreas =  () => {

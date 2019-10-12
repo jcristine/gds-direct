@@ -1,3 +1,4 @@
+const SortItinerary = require('../../../../../Actions/SortItinerary.js');
 const TranslatePricingCmd = require('../../../../../Actions/CmdTranslators/TranslatePricingCmd.js');
 const NormalizePricingCmd = require('gds-utils/src/cmd_translators/NormalizePricingCmd.js');
 const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
@@ -294,19 +295,12 @@ const execute = ({
 	};
 
 	const processSortItinerary = async () => {
-		let $pnr, $pnrDump,
-			$calledCommands, $cmd;
-
-		$pnr = await getCurrentPnr();
-		const {itinerary} = await CommonDataHelper.sortPnrSegmentsByUtc(
-			$pnr, stateful.getGeoProvider(), stateful.getStartDt()
-		);
-
-		$calledCommands = [];
-		$cmd = 'RS' + itinerary.map(s => s.segmentNumber).join(',');
-		const output = await runCommand($cmd);
-		$calledCommands.push({cmd: $cmd, output});
-		return {calledCommands: $calledCommands};
+		const pnr = await getCurrentPnr();
+		return SortItinerary.inAmadeus({
+			gdsSession: stateful,
+			itinerary: pnr.getReservation(stateful.getStartDt()).itinerary,
+			geo: stateful.getGeoProvider(),
+		});
 	};
 
 	const deleteSegments = async ($segNumStart, $segNumEnd) => {

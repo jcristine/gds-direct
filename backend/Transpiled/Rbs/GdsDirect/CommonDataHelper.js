@@ -225,11 +225,8 @@ class CommonDataHelper {
 		}
 	}
 
-	static async _getSegUtc(seg, geo, baseDate) {
-		const fullDt = (seg.departureDt || {}).full || (
-			DateTime.addYear(seg.departureDate.parsed, baseDate) +
-			' ' + seg.departureTime.parsed + ':00'
-		);
+	static async _getSegUtc(seg, geo) {
+		const fullDt = seg.departureDt.full;
 		const tz = await geo.getTimezone(seg.departureAirport);
 		if (tz) {
 			return DateTime.toUtc(fullDt, tz);
@@ -238,9 +235,9 @@ class CommonDataHelper {
 		}
 	}
 
-	static async sortSegmentsByUtc(segments, geo, baseDate = new Date().toISOString()) {
+	static async sortSegmentsByUtc(segments, geo) {
 		const promises = segments.map(async seg => {
-			const utc = await this._getSegUtc(seg, geo, baseDate);
+			const utc = await this._getSegUtc(seg, geo);
 			return utc
 				? Promise.resolve({utc, seg})
 				: NotImplemented('No tz for seg ' + seg.segmentNumber + ' ' + seg.departureAirport, {isOk: true});
@@ -252,14 +249,6 @@ class CommonDataHelper {
 		} else {
 			return {itinerary: sorted};
 		}
-	}
-
-	static async sortPnrSegmentsByUtc($pnr, geo, baseDate = new Date().toISOString()) {
-		if (!CommonDataHelper.isValidPnr($pnr)) {
-			return BadRequest('No itinerary to sort');
-		}
-		const $itinerary = $pnr.getItinerary();
-		return this.sortSegmentsByUtc($itinerary, geo, baseDate);
 	}
 
 	/** @param stateful = require('StatefulSession.js')() */

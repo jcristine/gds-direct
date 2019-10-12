@@ -1,3 +1,4 @@
+const SortItinerary = require('../../../../../Actions/SortItinerary.js');
 const CmdLogs = require('../../../../../Repositories/CmdLogs.js');
 const PrepareHbFexMask = require('../../../../../Actions/PrepareHbFexMask.js');
 const StorePricing_apollo = require('../../../../../Actions/StorePricing_apollo.js');
@@ -642,18 +643,12 @@ const RunCmdRq = ({
 	};
 
 	const processSortItinerary = async () => {
-		let $pnr, $pnrDump, $calledCommands,
-			$cmd;
-
-		$pnr = await getCurrentPnr();
-		const {itinerary} = await CommonDataHelper.sortPnrSegmentsByUtc(
-			$pnr, stateful.getGeoProvider(), stateful.getStartDt()
-		);
-
-		$calledCommands = [];
-		$cmd = '/0/' + itinerary.map(s => s.segmentNumber).join('|');
-		$calledCommands.push(await runCmd($cmd));
-		return {calledCommands: $calledCommands};
+		const pnr = await getCurrentPnr();
+		return SortItinerary.inApollo({
+			gdsSession: stateful,
+			itinerary: pnr.getReservation(stateful.getStartDt()).itinerary,
+			geo: stateful.getGeoProvider(),
+		});
 	};
 
 	const multiPriceItinerary = async ($aliasData) => {
