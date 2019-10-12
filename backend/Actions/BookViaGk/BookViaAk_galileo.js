@@ -32,11 +32,14 @@ const isSuccessRebookOutput = dump => {
 	return UpdateGalileoState.isSuccessSellOutput(dump);
 };
 
-const BookViaAk_galileo = ({
-	bookRealSegments = false,
-	withoutRebook = false,
-	itinerary, session, ...bookParams
-}) => {
+/** @param {BookViaGk_rq} params */
+const BookViaAk_galileo = (params) => {
+	const {
+		bookRealSegments = false,
+		withoutRebook = false,
+		itinerary, session, ...bookParams
+	} = params;
+
 	/** replace GK segments with $segments */
 	const rebookGkSegments = async (segments, reservation) => {
 		const records = segments.map(seg => {

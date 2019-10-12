@@ -18,12 +18,14 @@ const bookTp = async (params) => {
 	}
 };
 
-const BookViaGk_apollo = async ({
-	bookRealSegments = false,
-	withoutRebook = false,
-	itinerary, session, ...bookParams
-}) => {
-	const {baseDate} = bookParams;
+/** @param {BookViaGk_rq} params */
+const BookViaGk_apollo = async (params) => {
+	const {
+		bookRealSegments = false,
+		withoutRebook = false,
+		...bookParams
+	} = params;
+	const {itinerary, session, baseDate} = bookParams;
 
 	const isSuccessRebookOutput = (dump) => {
 		const isSegmentLine = line => ItineraryParser.parseSegmentLine('0 ' + line);

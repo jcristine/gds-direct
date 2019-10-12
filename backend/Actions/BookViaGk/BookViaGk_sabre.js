@@ -46,16 +46,17 @@ const bookSa = async ({sabre, session, baseDate, itinerary}) => {
 	}
 };
 
-/**
- * @param itinerary = require('ItineraryParser.js').parse()
- *  				|| require('FormatAdapter.js').adaptSabreItineraryParseForClient()
- */
-const BookViaGk_sabre = ({
-	bookRealSegments = false,
-	withoutRebook = false,
-	itinerary, session, baseDate,
-	sabre = SabreClient.makeCustom(),
-}) => {
+/** @param {BookViaGk_rq} params */
+const BookViaGk_sabre = (params) => {
+	/** @var itinerary = require('ItineraryParser.js').parse()
+	 *  			|| require('FormatAdapter.js').adaptSabreItineraryParseForClient() */
+	const {
+		bookRealSegments = false,
+		withoutRebook = false,
+		itinerary, session, baseDate,
+		sabre = SabreClient.makeCustom(),
+	} = params;
+
 	const rebookPassiveSegments = async (newSegments, reservation) => {
 		const errors = [];
 		const failedSegments = [];

@@ -25,11 +25,14 @@ const bookAm = async ({session, baseDate, itinerary}) => {
 
 const PASSIVE_STATUSES = ['GK', 'PE'];
 
-const BookViaGk_amadeus = ({
-	bookRealSegments = false,
-	withoutRebook = false,
-	itinerary, session, baseDate,
-}) => {
+/** @param {BookViaGk_rq} params */
+const BookViaGk_amadeus = (params) => {
+	const {
+		bookRealSegments = false,
+		withoutRebook = false,
+		itinerary, session, baseDate,
+	} = params;
+
 	const rebookSegment = async (bookingClass, lineNumbers) => {
 		const numberStr = lineNumbers.join(',');
 		const output = (await session.runCmd('SB' + bookingClass + numberStr)).output;

@@ -15,6 +15,8 @@ const {coverExc} = require('klesun-node-tools/src/Lang.js');
  *
  * this action also handles stuff like Galileo having AK instead
  * of GK, Sabre not allowing GK on AA, fallback, etc...
+ *
+ * @param {BookViaGk_rq} params
  */
 const BookViaGk = ({
 	gdsClients = GdsSession.makeGdsClients(),
