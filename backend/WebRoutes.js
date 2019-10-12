@@ -13,7 +13,6 @@ const Emc = require('./LibWrappers/Emc.js');
 const GdsSessionController = require('./HttpControllers/GdsSessionController.js');
 const TerminalBaseController = require('./Transpiled/App/Controllers/TerminalBaseController.js');
 const {Forbidden, BadRequest, LoginTimeOut} = require('klesun-node-tools/src/Rej.js');
-const UpdateHighlightRulesFromProd = require('./Actions/UpdateHighlightRulesFromProd.js');
 const Db = require('./Utils/Db.js');
 const Diag = require('./LibWrappers/Diag.js');
 const HighlightRulesRepository = require('./Repositories/HighlightRules.js');
@@ -218,11 +217,6 @@ const withRoleAuth = (roles, roleAction) => withAuth((rqBody, emcResult) => {
 });
 
 const withDevAuth = (devAction) => withRoleAuth(['NEW_GDS_DIRECT_DEV_ACCESS'], devAction);
-
-//app.use('/admin/updateHighlightRules', express.bodyParser({limit: '10mb'}));
-app.post('/admin/updateHighlightRules', withDevAuth((reqBody, emcResult) => {
-	return UpdateHighlightRulesFromProd(reqBody);
-}));
 
 app.post('/admin/terminal/highlight', toHandleHttp(HighlightRulesRepository.getFullDataForAdminPage));
 app.post('/admin/terminal/highlight/save', withDevAuth(HighlightRulesRepository.saveRule));
