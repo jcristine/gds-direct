@@ -1,8 +1,5 @@
 const PNRBFManagement_rq_StorePriceMods = require('./PNRBFManagement_rq_StorePriceMods.js');
-const BuilderUtil = require('gds-utils/src/text_format_processing/agnostic/BuilderUtil.js');
-const AtfqParser = require('../../Transpiled/Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
-const Rej = require('klesun-node-tools/src/Rej.js');
 const DecodeTravelportError = require('./DecodeTravelportError.js');
 const {parseXml} = require("../../GdsHelpers/CommonUtils.js");
 const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
@@ -39,8 +36,8 @@ module.exports.buildPnrXmlDataObject = params => js2xml([
 	...(!params.storePricingParams ? [] : [{
 		StorePriceMods: PNRBFManagement_rq_StorePriceMods(params.storePricingParams),
 	}]),
-	// I wonder if placing it after the StorePriceMods will make it
-	// not add remark on pricing failure... doubt that, but still
+	// placing it after the StorePriceMods will
+	// make it not add remark on pricing failure
 	...((params.addRemarks || []).length === 0 ? [] : [{
 		PNRBFSecondaryBldChgMods: [
 			{ItemAry: params.addRemarks.map(rec => ({
