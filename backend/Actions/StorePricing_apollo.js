@@ -88,12 +88,19 @@ const StorePricing_apollo = ({
 
 	/** @param cmd = 'T:$B/N1|2*C05/:N/FXD' */
 	const invokeStorePricingCmd = async (cmd, pnr) => {
-		const cmdData = Parse_priceItinerary.parse(cmd.slice('T:'.length));
+		const cmdData = Parse_priceItinerary(cmd.slice('T:'.length));
+		const hasFxd = cmdData.pricingModifiers
+			.some(mod => mod.type === 'forceProperEconomy');
 		const result = await travelport.processPnr(stateful.getGdsData(), {
 			storePricingParams: {
 				gds: 'apollo',
 				pricingModifiers: cmdData.pricingModifiers,
 			},
+			addRemarks: [
+				...(!hasFxd ? [] : [{
+					content: '*****FARE STORED AS FXD*****',
+				}]),
+			],
 		});
 		let error = result.currentPricing.error;
 		if (error) {
@@ -172,7 +179,7 @@ const StorePricing_apollo = ({
 				result = await invokeStorePricingCmd(cmd, pnr);
 			}
 		}
-		const hasFxd = Parse_priceItinerary.parse(cmd.slice('T:'.length))
+		const hasFxd = Parse_priceItinerary(cmd.slice('T:'.length))
 			.pricingModifiers.some(mod => mod.type === 'forceProperEconomy');
 
 		const lacksBaggages = result.currentPricing.pricingBlockList

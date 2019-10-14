@@ -39,6 +39,23 @@ module.exports.buildPnrXmlDataObject = params => js2xml([
 	...(!params.storePricingParams ? [] : [{
 		StorePriceMods: PNRBFManagement_rq_StorePriceMods(params.storePricingParams),
 	}]),
+	// I wonder if placing it after the StorePriceMods will make it
+	// not add remark on pricing failure... doubt that, but still
+	...((params.addRemarks || []).length === 0 ? [] : [{
+		PNRBFSecondaryBldChgMods: [
+			{ItemAry: params.addRemarks.map(rec => ({
+				Item: [
+					{DataBlkInd: 'G'},
+					{GenRmkQual: [
+						{EditTypeInd: 'A'},
+						{AddQual: [
+							{Rmk: rec.content},
+						]},
+					]},
+				],
+			}))},
+		],
+	}]),
 ]);
 
 // parses travelport soap request response body and build corresponding object

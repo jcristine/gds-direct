@@ -231,6 +231,16 @@ const RunRealCmd = ({
 			// all commands between >DN...; and >F; affect only the new PNR
 			$msg = await CommonDataHelper.createCredentialMessage(stateful);
 			await runCommand('@:5' + $msg);
+		} else if ($cmd.match(/^\s*XT\s*$/)) {
+			// attempt to cancel pricing - should remove all "STORE AS FXD" remarks in PNR if any
+			const pnr = await GetCurrentPnr.inApollo(stateful);
+			const fxdRemarkNums = pnr.getRemarks()
+				.filter(r => r.remarkType === 'FXD_REMARK')
+				.map(r => r.lineNumber);
+			if (fxdRemarkNums.length > 0) {
+				const cmd = 'C:' + fxdRemarkNums.join('*') + '@:5';
+				await runCmd(cmd);
+			}
 		}
 	};
 

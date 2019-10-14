@@ -33,6 +33,16 @@ class GenericRemarkParser
 		}
 	}
 
+	static parseFxdRemark(remark) {
+		if (remark.match(/FARE STORED AS FXD/)) {
+			return {
+				storedAsFxd: true,
+			};
+		} else {
+			return null;
+		}
+	}
+
 	/**
      * @param string $line =
      * 'SFOHT/ALEX/ID1/CREATED FOR LEPIN/ID346/REQ+ ID-1' ||
@@ -114,6 +124,8 @@ class GenericRemarkParser
 			$type = this.CMS_LEAD_REMARK;
 		} else if ($data = this.parsePriceRemark($remark)) {
 			$type = this.PRICE_REMARK;
+		} else if ($data = this.parseFxdRemark($remark)) {
+			$type = this.FXD_REMARK;
 		} else {
 			$type = 'UNKNOWN';
 			$data = $remark;
@@ -127,5 +139,6 @@ class GenericRemarkParser
 
 GenericRemarkParser.CMS_LEAD_REMARK = 'CMS_LEAD_REMARK';
 GenericRemarkParser.PRICE_REMARK = 'PRICE_REMARK';
+GenericRemarkParser.FXD_REMARK = 'FXD_REMARK';
 
 module.exports = GenericRemarkParser;
