@@ -199,13 +199,13 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
 									'mileageSurcharge': '5M',
 									'fare': '1930.95',
 									'fareBasis': 'YUSAF',
-									'ticketDesignator': 'CH'
+									'ticketDesignator': 'CH',
 								},
 								{'airline': 'VS', 'destination': 'LON'},
 								{'airline': 'VS', 'destination': 'NYC',
 									'fare': '1930.95',
 									'fareBasis': 'YUSAF',
-									'ticketDesignator': 'CH'
+									'ticketDesignator': 'CH',
 								},
 							],
 							'currency': 'NUC',
@@ -644,7 +644,7 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
 								{'airline': 'ET', 'destination': 'DLA',
 									'fare': '199.50',
 									'fareBasis': 'ULPRUS',
-									'nextDeparture': {'city': 'YAO'}
+									'nextDeparture': {'city': 'YAO'},
 								},
 								{'airline': 'ET', 'destination': 'ADD'},
 								{'airline': 'ET', 'destination': 'WAS',
@@ -1834,6 +1834,65 @@ class FxParserTest extends require('../../../../Lib/TestCase.js')
 								{destination: 'BNA', fare: '445.00', fareBasis: 'QKE0ZNML'},
 							],
 							fare: '890.00',
+						},
+					},
+				},
+			},
+		]);
+
+		// no time in a segment, when I price it now, the time is 0001,
+		// dunno maybe WB airline has does distinct 00:00 time from null =-D
+		// 1  WB 203 N 12NOV 2 LOSKGL GK1   330P 900P 12NOV  A
+		//    SEE RTSVC
+		// 2  WB 464 N 13NOV 3 KGLEBB GK1  1201A 200A 13NOV  A
+		//    SEE RTSVC
+		// 3  WB 465 N 20DEC 5 EBBKGL GK1   650A 630A 20DEC  A
+		//    SEE RTSVC
+		// 4  WB 202 N 20DEC 5 KGLLOS GK1  1000A 130P 20DEC  A
+		//    SEE RTSVC
+		$list.push([
+			[
+				'FXA/K',
+				'',
+				'01 P1',
+				'NO REBOOKING REQUIRED FOR LOWEST AVAILABLE FARE',
+				'LAST TKT DTE 12NOV19 - DATE OF ORIGIN',
+				'------------------------------------------------------------',
+				'     AL FLGT  BK   DATE  TIME  FARE BASIS      NVB  NVA   BG',
+				' LOS',
+				'XKGL WB   203 N    12NOV 1530  NPROMONG        12NOV12NOV 2P',
+				' EBB WB   464 N    13NOV       NPROMONG        13NOV13NOV 2P',
+				'XKGL WB   465 N    20DEC 0650  NPROMONG        20DEC20DEC 2P',
+				' LOS WB   202 N    20DEC 1000  NPROMONG        20DEC20DEC 2P',
+				'',
+				'USD   317.00      12NOV19LOS WB X/KGL WB EBB158.50NPROMONG',
+				'                  WB X/KGL WB LOS158.50NPROMONG NUC317.00END',
+				'USD   120.00-YR   ROE1.000000',
+				'USD    50.00-QT   XT USD 20.00-TE USD 21.85-NG USD 47.20-UL',
+				'USD    99.05-XT   USD 10.00-UG',
+				'USD   586.05',
+				'NO CHARGEABLE ANCILLARY SERVICE',
+				'TICKET STOCK RESTRICTION',
+				'BG CXR: 2*WB/2*WB',
+				'PRICED WITH VALIDATING CARRIER WB - REPRICE IF DIFFERENT VC',
+				'TICKETS ARE NON-REFUNDABLE',
+				'ENDOS NON-ENDO/PENALITIES APPLY',
+				'ATTN* CABIN Y(M)/S1-4',
+				'13OCT19 PER GAF REQUIREMENTS FARE NOT VALID UNTIL TICKETED',
+			].join('\n'),
+			{
+				commandCopy: 'FXA/K',
+				data: {
+					fareConstruction: {
+						raw: '12NOV19LOS WB X/KGL WB EBB158.50NPROMONG WB X/KGL WB LOS158.50NPROMONG NUC317.00END ROE1.000000',
+						parsed: {
+							segments: [
+								{destination: 'KGL'},
+								{destination: 'EBB', fare: '158.50'},
+								{destination: 'KGL'},
+								{destination: 'LOS', fare: '158.50'},
+							],
+							fare: '317.00',
 						},
 					},
 				},
