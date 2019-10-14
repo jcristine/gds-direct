@@ -31,5 +31,11 @@ export const RESET_SESSION = ({gds}) => {
 		.then(rsData => {
 			notify({msg: 'Session Areas Reloaded', timeout: 3000, type: 'success', progressBar: false});
 			UPDATE_ALL_AREA_STATE(gds, rsData.fullState);
+		})
+		.catch(exc => {
+			if (exc) {
+				exc.message = 'Failed to resetToDefaultPcc - ' + exc.message;
+			}
+			return Promise.reject(exc);
 		});
 };
