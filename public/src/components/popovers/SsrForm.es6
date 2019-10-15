@@ -7,7 +7,8 @@ import moment from "moment";
 const Component = require('../../modules/component.es6').default;
 const Cmp = (...args) => new Component(...args);
 
-const paxToTsaTrCmp = (pax, paxes) => {
+const paxToTsaTrCmp = (pax, paxes, ssrs) => {
+	const ssrData = ssrs.map(ssr => ssr.data).slice(-1)[0] || {};
 	const makeNumOpts = (pax) => {
 		const abs = pax.nameNumber.absolute;
 		return paxes
@@ -26,6 +27,11 @@ const paxToTsaTrCmp = (pax, paxes) => {
 		Cmp('td').attach([
 			Cmp('select', {name: 'nameNumber'})
 				.attach(makeNumOpts(pax)),
+			Cmp('input', {
+				type: 'hidden',
+				name: 'oldSsrs',
+				value: JSON.stringify(ssrs),
+			}),
 		]),
 		Cmp('td').attach([
 			Cmp('input', {
@@ -33,13 +39,13 @@ const paxToTsaTrCmp = (pax, paxes) => {
 				name: 'dob',
 				max: new Date().toISOString().slice(0, 10),
 				min: '1903-01-02', // Kane Tanaka
-				value: (pax.dob || {}).parsed || null,
+				value: (ssrData.dob || {}).parsed || (pax.dob || {}).parsed || null,
 			}),
 		]),
 		Cmp('td').attach([
 			Cmp('select', {name: 'gender'}).attach([
-				Cmp('option[male]'),
-				Cmp('option[female]'),
+				Cmp('option[male]', ssrData.gender !== 'M' ? {} : {selected: 'selected'}),
+				Cmp('option[female]', ssrData.gender !== 'F' ? {} : {selected: 'selected'}),
 			]),
 		]),
 		Cmp('td').attach([
@@ -49,13 +55,13 @@ const paxToTsaTrCmp = (pax, paxes) => {
 			}),
 		]),
 		Cmp('td').attach([
-			Cmp('input', {name: 'lastName', type: 'text', value: pax.lastName}),
+			Cmp('input', {name: 'lastName', type: 'text', value: ssrData.lastName || pax.lastName}),
 		]),
 		Cmp('td').attach([
-			Cmp('input', {name: 'firstName', type: 'text', value: firstName}),
+			Cmp('input', {name: 'firstName', type: 'text', value: ssrData.firstName || firstName}),
 		]),
 		Cmp('td').attach([
-			Cmp('input', {name: 'middleName', type: 'text', value: middleName || ''}),
+			Cmp('input', {name: 'middleName', type: 'text', value: ssrData.middleName || middleName || ''}),
 		]),
 	]);
 };
@@ -69,6 +75,7 @@ const tsaTrToData = (tr) => {
 		lastName: tr.querySelector('[name="lastName"]').value,
 		firstName: tr.querySelector('[name="firstName"]').value,
 		middleName: tr.querySelector('[name="middleName"]').value,
+		oldSsrs: JSON.parse(tr.querySelector('[name="oldSsrs"]').value),
 	};
 };
 
@@ -81,13 +88,11 @@ const tsaTrToData = (tr) => {
  *                   || ['3DOCSA/DB/27AUG09/M/DAVIDSONIV/WILLIAMJOSEPH-4.1']
  *                   || ['SRDOCSYYHK1-----17JAN54-F--QUIROZII-ELMA-FERNANDEZ/P1']
  */
-const tsaDataToCmds = (tsaData) => {
+const tsaDataToCmds = (tsaData, gds) => {
 	if (!tsaData.dob) {
 		// do not write SSR for passengers with no dob specified
 		return [];
 	}
-	const gdsSwitch = getStore().app.gdsSwitch;
-	const gds = gdsSwitch.getCurrentName();
 
 	const {fieldNumber, firstNameNumber} = tsaData.nameNumber;
 	const gdsDob = moment(tsaData.dob, 'YYYY-MM-DD').format('DDMMMYY');
@@ -105,6 +110,26 @@ const tsaDataToCmds = (tsaData) => {
 		],
 		'amadeus': [`SRDOCSYYHK1-----${gdsDob}-${genderLetter}${infantMark}--${lastName}-${firstName}-${middleName}/P${fieldNumber}`],
 	}[gds];
+};
+
+const cancelOldSsrs = (deleteSsrs, gds) => {
+	if (deleteSsrs.length > 0) {
+		const nums = deleteSsrs.map(ssr => ssr.lineNumber);
+		const cmd = {
+			apollo: 'C:' + nums.join('*') + '@:3',
+			// cancel SSR-s from end so following line numbers were not affected
+			sabre: deleteSsrs
+				.sort((a,b) => b.lineNumber - a.lineNumber)
+				.map(ssr => (ssr.isForAmericanAirlines ? '4' : '3') + ssr.lineNumber + '¤')
+				.join('§'),
+			// not sure if in galileo should be sorted backwards as well...
+			galileo: nums
+				.map(n => 'SI.' + n + '@')
+				.join('|'),
+			amadeus: 'XE' + nums.join(','),
+		}[gds];
+		DEV_CMD_STACK_RUN(cmd);
+	}
 };
 
 const makeSectionsSwitchCmp = () => {
@@ -125,16 +150,23 @@ const makeSectionsSwitchCmp = () => {
 		Cmp('div', {'data-section': 'tsa'}).attach([
 			Cmp('form', {onsubmit: (e) => {
 				e.preventDefault();
+				const gdsSwitch = getStore().app.gdsSwitch;
+				const gds = gdsSwitch.getCurrentName();
+
+				const dataRecords = [...tbodyCmp.context.querySelectorAll(':scope > tr')]
+					.map(tsaTrToData);
+				const deleteSsrs = dataRecords.flatMap(rec => rec.oldSsrs);
+				cancelOldSsrs(deleteSsrs, gds);
 				let changed = false;
-				for (const tr of tbodyCmp.context.querySelectorAll(':scope > tr')) {
-					const tsaData = tsaTrToData(tr);
-					const cmds = tsaDataToCmds(tsaData);
+				for (const tsaData of dataRecords) {
+					deleteSsrs.push(...tsaData.oldSsrs);
+					const cmds = tsaDataToCmds(tsaData, gds);
 					for (const cmd of cmds) {
 						DEV_CMD_STACK_RUN(cmd);
 						changed = true;
 					}
 				}
-				if (changed) {
+				if (changed && deleteSsrs.length === 0) {
 					DEV_CMD_STACK_RUN('ER');
 				}
 				return false; // no page reload
@@ -225,11 +257,18 @@ export default class SsrForm extends ButtonPopOver
 		this.segListCmp = Cmp('div.segment-list');
 	}
 
-	updateTsaBlock(paxes)
+	updateTsaBlock(paxes, docSsrs)
 	{
 		const tbody = this.rootCmp.context.querySelector('[data-section="tsa"] tbody');
 		tbody.innerHTML = '';
-		Cmp({context: tbody}).attach(paxes.map(pax => paxToTsaTrCmp(pax, paxes)));
+		Cmp({context: tbody}).attach(paxes.map((pax, i) => {
+			const ssrs = docSsrs.filter(ssr =>
+				ssr.ssrCode === 'DOCS' &&
+				ssr.nameNumber && ssr.data &&
+				ssr.nameNumber.absolute == +i +1
+			);
+			return paxToTsaTrCmp(pax, paxes, ssrs);
+		}));
 	}
 
 	onOpen()
@@ -244,7 +283,8 @@ export default class SsrForm extends ButtonPopOver
 		};
 
 		/** @param reservation = require('ImportApolloPnrFormatAdapter.js').transformReservation() */
-		const updateFromPnr = (reservation) => {
+		const updateFromPnr = (imported) => {
+			const {reservation, docSsrList} = imported;
 			this.paxListCmp.context.innerHTML = '';
 			this.segListCmp.context.innerHTML = '';
 
@@ -273,12 +313,13 @@ export default class SsrForm extends ButtonPopOver
 				return Cmp('div', {textContent: seg.raw});
 			}));
 
-			this.updateTsaBlock(paxes);
+			this.updateTsaBlock(paxes, docSsrList.data || []);
 			this.rootCmp.context.querySelector('[data-section="tsa"] input[name="dob"]').focus();
 		};
 		setStatus('loading', 'Loading PNR...');
-		plugin._withSpinner(() => post('/terminal/getCurrentPnr', {gds})
-			.then(updateFromPnr)
+		plugin._withSpinner(() => post('/terminal/getCurrentPnr', {
+			gds, pnrFields: ['reservation', 'docSsrList'],
+		}).then(updateFromPnr)
 			.catch(exc => {
 				setStatus('error', 'Failed to fetch PNR - ' + exc);
 				return Promise.reject(exc);

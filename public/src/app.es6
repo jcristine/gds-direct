@@ -5,6 +5,7 @@ import GdsDirectPlusApp from  "./modules/GdsDirectPlusApp";
 import HighlightRulesAdminApp from "./modules/HighlightRulesAdminApp";
 import TerminalThemesAdminApp from "./modules/TerminalThemesAdminApp";
 import {cookies, syncJsCache, initGlobEvents, initThemeStyles, addExternalStyle} from "./helpers/appInitialization";
+import './abstract/polyfills.js';
 
 const addExternalStyles = () => {
 	addExternalStyle('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');

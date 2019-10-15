@@ -1,3 +1,4 @@
+const GetSsrDocs = require('../Actions/GetDocSsrList.js');
 const FluentLogger = require('../LibWrappers/FluentLogger.js');
 const GetCurrentPnr = require('../Actions/GetCurrentPnr.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
@@ -196,7 +197,12 @@ exports.addCrossRefOsi = async ({rqBody, ...controllerData}) => {
 exports.getCurrentPnr = async ({rqBody, ...controllerData}) => {
 	const stateful = await StatefulSession.makeFromDb(controllerData);
 	const pnr = await GetCurrentPnr(stateful);
-	return pnr.getReservation(stateful.getStartDt());
+	const reservation = pnr.getReservation(stateful.getStartDt());
+	const docSsrList = await GetSsrDocs({pnr, stateful});
+	return {
+		reservation,
+		docSsrList,
+	};
 };
 
 exports.makeMco = async ({rqBody, session, emcUser}) => {

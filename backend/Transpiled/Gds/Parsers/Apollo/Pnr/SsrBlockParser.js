@@ -201,7 +201,7 @@ class SsrBlockParser {
 				raw: $dob,
 				parsed: this.parseDateOfBirth($dob),
 			},
-			gender: $gender,
+			gender: $gender[0],
 			expirationDate: {
 				raw: $expirationDate,
 				parsed: $parsedExpirationDate ? '20' + $parsedExpirationDate : null,
