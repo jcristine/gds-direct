@@ -8,35 +8,37 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /** @implements {IPnr} */
 class AmadeusPnr {
-	static makeFromDump($dump) {
-		let $parse, $self;
+	constructor(dump) {
+		this.dump = dump;
+		this.parsed = PnrParser.parse(dump);
+	}
 
-		$parse = PnrParser.parse($dump);
-		$self = new this();
-		$self.$dump = $dump;
-		$self.$parsed = $parse;
-		return $self;
+	static makeFromDump(dump) {
+		return new this(dump);
 	}
 
 	static getKnownPccs() {
-
 		return ['SFO1S2195', 'SFO1S21D2', 'NYC1S2186'];
 	}
 
 	getDump() {
-		return this.$dump;
+		return this.dump;
 	}
 
 	getParsedData() {
-		return this.$parsed;
+		return this.parsed;
 	}
 
 	getRecordLocator() {
-		return (((this.$parsed || {})['parsed'] || {})['pnrInfo'] || {})['recordLocator'];
+		return (((this.parsed || {})['parsed'] || {})['pnrInfo'] || {})['recordLocator'];
 	}
 
 	getGdsName() {
 		return 'amadeus';
+	}
+
+	getPassengers() {
+		return ((this.parsed || {})['parsed'] || {})['passengers'] || [];
 	}
 
 	getItinerary() {
@@ -46,26 +48,30 @@ class AmadeusPnr {
 	getSegmentsWithType($types) {
 		let $itinerary, $matches;
 
-		$itinerary = ((this.$parsed || {})['parsed'] || {})['itinerary'] || [];
+		$itinerary = ((this.parsed || {})['parsed'] || {})['itinerary'] || [];
 		$matches = ($seg) => {
 			return php.in_array($seg['segmentType'], $types);
 		};
 		return php.array_values(Fp.filter($matches, $itinerary));
 	}
 
+	getSsrList() {
+		return this.parsed.parsed.ssrData || [];
+	}
+
 	getReservation(baseDate) {
-		return AmadeusPnrCommonFormatAdapter.transform(this.$parsed, baseDate);
+		return AmadeusPnrCommonFormatAdapter.transform(this.parsed, baseDate);
 	}
 
 	hasEtickets() {
-		return php.count(((this.$parsed || {})['parsed'] || {})['tickets'] || []) > 0;
+		return php.count(((this.parsed || {})['parsed'] || {})['tickets'] || []) > 0;
 	}
 
 	getReservationDt($fetchedDt) {
 		let $date, $time;
 
-		$date = ((((this.$parsed || {})['parsed'] || {})['pnrInfo'] || {})['date'] || {})['parsed'];
-		$time = ((((this.$parsed || {})['parsed'] || {})['pnrInfo'] || {})['time'] || {})['parsed'];
+		$date = ((((this.parsed || {})['parsed'] || {})['pnrInfo'] || {})['date'] || {})['parsed'];
+		$time = ((((this.parsed || {})['parsed'] || {})['pnrInfo'] || {})['time'] || {})['parsed'];
 
 		return $date && $time ? $date + ' ' + $time : null;
 	}
@@ -90,29 +96,24 @@ class AmadeusPnr {
 		return Fp.filter($hasStatus, this.getItinerary());
 	}
 
-	getPassengers() {
-
-		return ((this.$parsed || {})['parsed'] || {})['passengers'] || [];
-	}
-
 	getAgentInitials() {
 
-		return (((this.$parsed || {})['parsed'] || {})['pnrInfo'] || {})['agentInitials'];
+		return (((this.parsed || {})['parsed'] || {})['pnrInfo'] || {})['agentInitials'];
 	}
 
 	getSsrList() {
 
-		return ((this.$parsed || {})['parsed'] || {})['ssrData'] || [];
+		return ((this.parsed || {})['parsed'] || {})['ssrData'] || [];
 	}
 
 	getRemarks() {
 
-		return ((this.$parsed || {})['parsed'] || {})['remarks'] || [];
+		return ((this.parsed || {})['parsed'] || {})['remarks'] || [];
 	}
 
 	getBookingPcc() {
 
-		return (((this.$parsed || {})['parsed'] || {})['pnrCreationInfo'] || {})['officeId'] || this.$parsed['parsed']['pnrInfo']['responsibleOfficeId'];
+		return (((this.parsed || {})['parsed'] || {})['pnrCreationInfo'] || {})['officeId'] || this.parsed['parsed']['pnrInfo']['responsibleOfficeId'];
 	}
 
 	wasCreatedInGdsDirect() {

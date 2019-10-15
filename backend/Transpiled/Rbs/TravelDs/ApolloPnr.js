@@ -119,6 +119,10 @@ class ApolloPnr {
 		return this.parsed['remarks'] || [];
 	}
 
+	getSsrList() {
+		return this.parsed.ssrData || [];
+	}
+
 	getValidatingCarrier() {
 		let list = [];
 		for (const store of this.getStoredPricingList()) {

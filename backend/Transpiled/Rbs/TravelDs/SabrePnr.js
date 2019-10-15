@@ -67,6 +67,19 @@ class SabrePnr {
 		return ImportSabrePnrFormatAdapter.transformReservation(this.parsed, baseDate);
 	}
 
+	/**
+	 * note, some SSRs are not displayed in *R by default, so they will not be present
+	 * here, unless you instantiated this class with an explicitly full PNR dump
+	 */
+	getSsrList() {
+		return [
+			...(this.parsed.parsedData.aaFacts || [])
+				.map(aaSsr => ({...aaSsr, isForAmericanAirlines: true})),
+			...(this.parsed.parsedData.generalFacts || [])
+				.map(aaSsr => ({...aaSsr, isForAmericanAirlines: false})),
+		];
+	}
+
 	getSegmentsWithType($types) {
 		return php.array_values(php.array_filter(this.parsed.parsedData.itinerary, (seg) => {
 			return php.in_array(seg['segmentType'], $types);
