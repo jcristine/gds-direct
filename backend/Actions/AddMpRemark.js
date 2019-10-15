@@ -11,7 +11,7 @@ const writeToLog = async ({stateful, airline, pcc}) => {
 	const agentId = stateful.getAgent().getId();
 	const reservation = pnr.getReservation(stateful.getStartDt());
 	const destinations = RbsUtils.getDestinations(reservation.itinerary);
-	if (destinations.length > 0) {
+	if (destinations.length > 0 && recordLocator) {
 		const destinationAirport = destinations[0][0].destinationAirport;
 		MpRemarkLogs.storeNew({
 			airline, pcc, agentId,
