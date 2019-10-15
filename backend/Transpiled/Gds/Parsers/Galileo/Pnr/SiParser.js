@@ -204,12 +204,12 @@ class SiParser
 	}
 
 	static parseSsrContent($ssrCode, $content)  {
-		let $matches, $_, $paxName, $data;
+		let $matches, $_, $pnrPaxName, $data;
 
 		if (php.preg_match(/^(.*)-1([A-Z][^\/]*\/[A-Z][^\/]*)$/, $content, $matches = [])) {
-			[$_, $content, $paxName] = $matches;
+			[$_, $content, $pnrPaxName] = $matches;
 		} else {
-			$paxName = null;
+			$pnrPaxName = null;
 		}
 		if ($ssrCode === 'DOCS') {
 			$data = this.parseDocsContent($content);
@@ -218,7 +218,7 @@ class SiParser
 		}
 		return {
 			content: $content,
-			paxName: $paxName,
+			pnrPaxName: $pnrPaxName,
 			data: $data,
 		};
 	}
@@ -306,9 +306,9 @@ class SiParser
 			const parsed = this.parseSsrContent(ssr.ssrCode, ssr.content);
 			ssr.content = parsed.content;
 			ssr.data = parsed.data;
-			if (parsed.paxName) {
+			if (parsed.pnrPaxName) {
 				ssr.data = ssr.data || {};
-				ssr.data.paxName = parsed.paxName;
+				ssr.data.pnrPaxName = parsed.pnrPaxName;
 			}
 			return ssr;
 		});
