@@ -39,6 +39,26 @@ const getApolloNameNumber = (ssr, pnr) => {
 	}
 };
 
+const getSabreNameNumber = (ssr, pnr) => {
+	const nameNumbers = pnr.getPassengers()
+		.map(pnrPax => pnrPax.nameNumber);
+	const paxNum = (ssr.data || {}).paxNum;
+	if (paxNum) {
+		const matching = nameNumbers
+			.filter(numRec => {
+				const pnrPaxNum =
+					numRec.fieldNumber + '.' +
+					numRec.firstNameNumber;
+				return paxNum === pnrPaxNum;
+			});
+		return matching.length !== 1 ? null : matching[0];
+	} else if (nameNumbers.length === 1) {
+		return nameNumbers[0];
+	} else {
+		return null;
+	}
+};
+
 /** @param {IPnr|ApolloPnr|AmadeusPnr} pnr */
 const GetDocSsrList = ({pnr, stateful}) => {
 	const getSsrs = async () => {
@@ -48,7 +68,10 @@ const GetDocSsrList = ({pnr, stateful}) => {
 				.map(ssr => ({...ssr,
 					nameNumber: getApolloNameNumber(ssr, pnr),
 				})),
-			sabre: () => getAllSabreSsrs({stateful}),
+			sabre: () => getAllSabreSsrs({stateful})
+				.map(ssr => ({...ssr,
+					nameNumber: getSabreNameNumber(ssr, pnr),
+				})),
 			galileo: () => getGalileoOtherSsrs({stateful}),
 			amadeus: () => pnr.getSsrList(),
 		}[gds]();
