@@ -39,8 +39,6 @@ interface IPnr {
     // from other methods defined in this interface
 
     hasItinerary();
-    hasSegmentsWithStatus($segmentStatus);
-    getSegmentsWithStatus($segmentStatus);
 
     getPassengers();
     getRemarks();

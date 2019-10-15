@@ -11,32 +11,30 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 /** @implements {IPnr} */
 class SabrePnr {
 	constructor() {
-		this.$parsed = null;
-		this.$dump = null;
+		this.parsed = null;
+		this.dump = null;
 	}
 
 	/**
 	 * @return self
 	 */
 	static makeFromDump($dump) {
-		let $obj;
-
-		$obj = new this();
-		$obj.$dump = $dump;
-		$obj.$parsed = PnrParser.parse($dump);
-		return $obj;
+		const obj = new this();
+		obj.dump = $dump;
+		obj.parsed = PnrParser.parse($dump);
+		return obj;
 	}
 
 	getDump($unwrap) {
-		return $unwrap ? PnrParser.cleanupHandPastedDump(this.$dump) : this.$dump;
+		return $unwrap ? PnrParser.cleanupHandPastedDump(this.dump) : this.dump;
 	}
 
 	getParsedData() {
-		return this.$parsed;
+		return this.parsed;
 	}
 
 	getRecordLocator() {
-		return (this.$parsed['parsedData']['pnrInfo'] || {})['recordLocator'];
+		return (this.parsed['parsedData']['pnrInfo'] || {})['recordLocator'];
 	}
 
 	getGdsName() {
@@ -44,23 +42,21 @@ class SabrePnr {
 	}
 
 	getAgentInitials() {
-		return (this.$parsed['parsedData']['pnrInfo'] || {})['agentInitials'];
+		return (this.parsed['parsedData']['pnrInfo'] || {})['agentInitials'];
 	}
 
 	wasCreatedInGdsDirect() {
-		let $initials, $homePcc;
-
-		$initials = this.getAgentInitials();
-		$homePcc = (((this.$parsed || {})['parsedData'] || {})['pnrInfo'] || {})['homePcc'];
-		return $homePcc === 'L3II' && php.in_array($initials, ['WS', 'VWS']);
+		const initials = this.getAgentInitials();
+		const homePcc = (((this.parsed || {}).parsedData || {}).pnrInfo || {}).homePcc;
+		return homePcc === 'L3II' && php.in_array(initials, ['WS', 'VWS']);
 	}
 
 	getPassengers() {
-		return ((((this.$parsed || {})['parsedData'] || {})['passengers'] || {})['parsedData'] || {})['passengerList'] || [];
+		return ((((this.parsed || {})['parsedData'] || {})['passengers'] || {})['parsedData'] || {})['passengerList'] || [];
 	}
 
 	getRemarks() {
-		return ((this.$parsed || {})['parsedData'] || {})['remarks'] || [];
+		return ((this.parsed || {})['parsedData'] || {})['remarks'] || [];
 	}
 
 	getItinerary() {
@@ -68,12 +64,12 @@ class SabrePnr {
 	}
 
 	getReservation(baseDate) {
-		return ImportSabrePnrFormatAdapter.transformReservation(this.$parsed, baseDate);
+		return ImportSabrePnrFormatAdapter.transformReservation(this.parsed, baseDate);
 	}
 
 	getSegmentsWithType($types) {
-		return php.array_values(php.array_filter(this.$parsed['parsedData']['itinerary'], ($seg) => {
-			return php.in_array($seg['segmentType'], $types);
+		return php.array_values(php.array_filter(this.parsed.parsedData.itinerary, (seg) => {
+			return php.in_array(seg['segmentType'], $types);
 		}));
 	}
 
@@ -82,50 +78,45 @@ class SabrePnr {
 	}
 
 	hasEtickets() {
-
-		return this.$parsed['parsedData']['misc']['isInvoiced']
-			|| (((((this.$parsed || {})['parsedData'] || {})['tktgData'] || {})['ticketingInfo'] || {})['type']) === 'ticketed';
+		return this.parsed['parsedData']['misc']['isInvoiced']
+			|| (((((this.parsed || {})['parsedData'] || {})['tktgData'] || {})['ticketingInfo'] || {})['type']) === 'ticketed';
 	}
 
 	hasFrequentFlyerInfo() {
-		return this.$parsed['parsedData']['misc']['ffDataExists']
-			|| php.count((((this.$parsed || {})['parsedData'] || {})['frequentTraveler'] || {})['mileagePrograms'] || []) > 0;
+		return this.parsed['parsedData']['misc']['ffDataExists']
+			|| php.count((((this.parsed || {})['parsedData'] || {})['frequentTraveler'] || {})['mileagePrograms'] || []) > 0;
 	}
 
 	hasPriceQuote() {
-		return this.$parsed['parsedData']['misc']['priceQuoteRecordExists'] ? true : false;
+		return this.parsed['parsedData']['misc']['priceQuoteRecordExists'] ? true : false;
 	}
 
 	hasFormOfPayment() {
-		return this.$parsed['parsedData']['misc']['fopDataExists'] ? true : false;
+		return this.parsed['parsedData']['misc']['fopDataExists'] ? true : false;
 	}
 
 	hasSecurityInfo() {
-		return this.$parsed['parsedData']['misc']['securityInfoExists'] ? true : false;
+		return this.parsed['parsedData']['misc']['securityInfoExists'] ? true : false;
 	}
 
 	hasEmergencyInfo() {
-		return this.$parsed['parsedData']['misc']['pctcDataExists'] ? true : false;
+		return this.parsed['parsedData']['misc']['pctcDataExists'] ? true : false;
 	}
 
 	hasEmergencyInfoAa() {
-		return this.$parsed['parsedData']['misc']['pctcDataExistsAa'] ? true : false;
+		return this.parsed['parsedData']['misc']['pctcDataExistsAa'] ? true : false;
 	}
 
 	belongsToItn() {
-		let $homePcc;
-
-		$homePcc = this.$parsed['parsedData']['pnrInfo']['homePcc'];
-		return php.in_array($homePcc, ['6IIF', 'Y2CG', 'L3II']);
+		const homePcc = this.parsed.parsedData.pnrInfo.homePcc;
+		return php.in_array(homePcc, ['6IIF', 'Y2CG', 'L3II']);
 	}
 
 	getReservationDt($fetchedDt) {
-		let $date, $time;
+		const date = ((((this.parsed || {}).parsedData || {}).pnrInfo || {}).date || {}).parsed;
+		const time = ((((this.parsed || {}).parsedData || {}).pnrInfo || {}).time || {}).parsed;
 
-		$date = ((((this.$parsed || {})['parsedData'] || {})['pnrInfo'] || {})['date'] || {})['parsed'];
-		$time = ((((this.$parsed || {})['parsedData'] || {})['pnrInfo'] || {})['time'] || {})['parsed'];
-
-		return $date && $time ? $date + ' ' + $time : null;
+		return date && time ? date + ' ' + time : null;
 	}
 
 	/** @deprecated - use SabreUtils directly */
@@ -139,19 +130,12 @@ class SabrePnr {
 	}
 
 	isNotExisting() {
-
 		return this.constructor.checkDumpIsNotExisting(this.getDump());
 	}
 
 	isRestricted() {
-
 		return this.constructor.checkDumpIsRestricted(this.getDump());
 	}
-
-
-//    public function getPricingPcc()
-//    public function getSsrList(): array
-//    public function hasLinearFare(): bool
 }
 
 module.exports = SabrePnr;
