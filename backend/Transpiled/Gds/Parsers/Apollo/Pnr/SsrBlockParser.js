@@ -181,14 +181,14 @@ class SsrBlockParser {
 	 * '   8 SSRDOCSPRHK1/////02APR94/FI//STROBEL/AUDREY-1LIBERMANE/MARINA'
 	 */
 	static parseSsrDocsLine($line) {
-		let $paxNumTokens, $paxNum, $paxInf, $documentInfo, $paxName, $pre, $travelDocType, $issuingCountry,
+		let $paxNumTokens, $paxNum, $paxInf, $documentInfo, $pnrPaxName, $pre, $travelDocType, $issuingCountry,
 			$travelDocNumber, $nationality, $dob, $gender, $expirationDate, $lastName, $firstName, $middleName,
 			$primaryPassportHolderToken, $parsedExpirationDate;
 		$line = php.substr($line, php.mb_strlen('GFAX-SSRDOCS'));
 		php.preg_match(/-(?<paxNum>\d+)(?<paxInf>I\/)?/, $line, $paxNumTokens = []);
 		$paxNum = php.array_key_exists('paxNum', $paxNumTokens) ? $paxNumTokens['paxNum'] : '';
 		$paxInf = $paxNumTokens['paxInf'] ? true : false;
-		[$documentInfo, $paxName] = php.array_pad($line.split(/-\d+(?:I\/)?/), 2, '');
+		[$documentInfo, $pnrPaxName] = php.array_pad($line.split(/-\d+(?:I\/)?/), 2, '');
 		[$pre, $travelDocType, $issuingCountry, $travelDocNumber, $nationality, $dob, $gender, $expirationDate, $lastName, $firstName, $middleName, $primaryPassportHolderToken] = php.array_pad(php.explode('/', $documentInfo), 12, '');
 		$parsedExpirationDate = CommonParserHelpers.parseApolloFullDate($expirationDate);
 		return {
@@ -210,9 +210,13 @@ class SsrBlockParser {
 			firstName: $firstName,  // May also contain middle name (separated by space)
 			middleName: $middleName,  // Optional
 			primaryPassportHolderToken: $primaryPassportHolderToken,  // Optional
+			/**
+			 * I may only guess that this is the order of
+			 * passengers with both same last name and first name
+			 */
 			paxNum: $paxNum,
 			paxIsInfant: $paxInf,
-			paxName: $paxName,
+			pnrPaxName: $pnrPaxName,
 		};
 	}
 
@@ -223,13 +227,13 @@ class SsrBlockParser {
 	 * '   6 SSRDOCACAHK1/R/US/1800 SMITH STREET/HOUSTON/TX/12345-1LIBERMANE/MARINA'
 	 */
 	static parseSsrDocaLine($line) {
-		let $paxNumTokens, $paxNum, $paxInf, $documentInfo, $paxName, $pre, $addressType, $country, $addressDetails,
+		let $paxNumTokens, $paxNum, $paxInf, $documentInfo, $pnrPaxName, $pre, $addressType, $country, $addressDetails,
 			$city, $province, $postalCode;
 		$line = php.substr($line, php.mb_strlen('GFAX-SSRDOCA'));
 		php.preg_match(/-(?<paxNum>\d+)(?<paxInf>I\/)?/, $line, $paxNumTokens = []);
 		$paxNum = php.array_key_exists('paxNum', $paxNumTokens) ? $paxNumTokens['paxNum'] : '';
 		$paxInf = $paxNumTokens['paxInf'] ? true : false;
-		[$documentInfo, $paxName] = php.array_pad($line.split(/-\d+(?:I\/)?/), 2, '');
+		[$documentInfo, $pnrPaxName] = php.array_pad($line.split(/-\d+(?:I\/)?/), 2, '');
 		[$pre, $addressType, $country, $addressDetails, $city, $province, $postalCode] = php.array_pad(php.explode('/', $documentInfo), 7, '');
 		return {
 			//'pre' => $pre,
@@ -241,7 +245,7 @@ class SsrBlockParser {
 			postalCode: $postalCode,
 			paxNum: $paxNum,
 			paxIsInfant: $paxInf,
-			paxName: $paxName,
+			pnrPaxName: $pnrPaxName,
 		};
 	}
 
@@ -257,13 +261,13 @@ class SsrBlockParser {
 	 * '   5 SSRDOCOCAHK1/PARIS FR/V/12345123/LONDON GBR/14MAR11/US-1LIBERMANE/MARINA'
 	 */
 	static parseSsrDocoLine($line) {
-		let $paxNumTokens, $paxNum, $paxInf, $documentInfo, $paxName, $pre, $placeOfBirth, $travelDocType,
+		let $paxNumTokens, $paxNum, $paxInf, $documentInfo, $pnrPaxName, $pre, $placeOfBirth, $travelDocType,
 			$travelDocNumber, $issuingCountry, $dateOfBirth, $countryWhereApplies;
 		$line = php.substr($line, php.mb_strlen('GFAX-SSRDOCO'));
 		php.preg_match(/-(?<paxNum>\d+)(?<paxInf>I\/)?/, $line, $paxNumTokens = []);
 		$paxNum = php.array_key_exists('paxNum', $paxNumTokens) ? $paxNumTokens['paxNum'] : '';
 		$paxInf = $paxNumTokens['paxInf'] ? true : false;
-		[$documentInfo, $paxName] = php.array_pad($line.split(/-\d+(?:I\/)?/), 2, '');
+		[$documentInfo, $pnrPaxName] = php.array_pad($line.split(/-\d+(?:I\/)?/), 2, '');
 		[$pre, $placeOfBirth, $travelDocType, $travelDocNumber, $issuingCountry, $dateOfBirth, $countryWhereApplies] = php.array_pad(php.explode('/', $documentInfo), 7, '');
 		return {
 			//'pre' => $pre,
@@ -278,7 +282,7 @@ class SsrBlockParser {
 			countryWhereApplies: $countryWhereApplies,
 			paxNum: $paxNum,
 			paxIsInfant: $paxInf,
-			paxName: $paxName,
+			pnrPaxName: $pnrPaxName,
 		};
 	}
 
@@ -333,7 +337,7 @@ class SsrBlockParser {
 			'(?<content>.*?)' +
 			'(-1' +
 			'(?<paxInf>I\\\/)?' +
-			'(?<paxName>[A-Z][^\\\/\\.]*\\\/?([A-Z][^\\\/\\.]*?)?)\\s*' +
+			'(?<pnrPaxName>[A-Z][^\\\/\\.]*\\\/?([A-Z][^\\\/\\.]*?)?)\\s*' +
 			'(\\.(?<comment>.*))?' +
 			')?' +
 			'$/';
@@ -347,7 +351,7 @@ class SsrBlockParser {
 				statusNumber: $matches['statusNumber'] || null,
 				content: $matches['content'],
 				paxIsInfant: !php.empty($matches['paxInf']),
-				paxName: $matches['paxName'] || null,
+				pnrPaxName: $matches['pnrPaxName'] || null,
 				comment: $matches['comment'] || null,
 			};
 		} else {
@@ -355,46 +359,46 @@ class SsrBlockParser {
 		}
 	}
 
-	static parse($dump) {
-		let $result, $line, $lineNumber, $ssrCode, $airline, $extracted, $lineData;
-		$result = [];
-		for ($line of StringUtil.lines($dump)) {
-			$lineNumber = this.getLineNumber($line);
-			$ssrCode = this.getSsrCode($line);
-			$airline = this.getAirline($line);
-			$extracted = this.extractContent($line);
-			if ($ssrCode === 'DOCS') {
-				$lineData = this.parseSsrDocsLine($line);
-			} else if ($ssrCode === 'DOCA') {
-				$lineData = this.parseSsrDocaLine($line);
-			} else if ($ssrCode === 'DOCO') {
-				$lineData = this.parseSsrDocoLine($line);
-			} else if ($extracted && $extracted['ssrCode'] === 'TKNE') {
-				$lineData = this.parseSsrTkneData($extracted);
-			} else if (this.isMealSsrCode($ssrCode)) {
-				$lineData = this.parseMealOrDisabilityLine($line);
-			} else if (this.isDisabilitySsrCode($ssrCode)) {
-				$lineData = this.parseMealOrDisabilityLine($line);
+	static parse(dump) {
+		const ssrs = [];
+		for (const line of dump.split('\n')) {
+			const lineNumber = this.getLineNumber(line);
+			const ssrCode = this.getSsrCode(line);
+			const airline = this.getAirline(line);
+			const extracted = this.extractContent(line);
+			let lineData;
+			if (ssrCode === 'DOCS') {
+				lineData = this.parseSsrDocsLine(line);
+			} else if (ssrCode === 'DOCA') {
+				lineData = this.parseSsrDocaLine(line);
+			} else if (ssrCode === 'DOCO') {
+				lineData = this.parseSsrDocoLine(line);
+			} else if (extracted && extracted['ssrCode'] === 'TKNE') {
+				lineData = this.parseSsrTkneData(extracted);
+			} else if (this.isMealSsrCode(ssrCode)) {
+				lineData = this.parseMealOrDisabilityLine(line);
+			} else if (this.isDisabilitySsrCode(ssrCode)) {
+				lineData = this.parseMealOrDisabilityLine(line);
 				// TODO: there's also ADMD support, which is currently unused,
 				// because there's no real need in that
 			} else {
-				$lineData = null
+				lineData = null
 				//?? static::parseSsrAdmdLine($line)
 				;
 			}
-			if ($lineData && $extracted && $extracted['paxName']) {
-				$lineData['paxName'] = $extracted['paxName'];
+			if (lineData && extracted && extracted.pnrPaxName) {
+				lineData.pnrPaxName = extracted.pnrPaxName;
 			}
-			$result.push({
-				lineNumber: $lineNumber,
-				airline: $airline,
-				ssrCode: $ssrCode,
-				content: $extracted ? $extracted['content'] : null,
-				data: $lineData,
-				line: $line,
+			ssrs.push({
+				lineNumber: lineNumber,
+				airline: airline,
+				ssrCode: ssrCode,
+				content: extracted ? extracted.content : null,
+				data: lineData,
+				line: line,
 			});
 		}
-		return $result;
+		return ssrs;
 	}
 }
 
