@@ -59,7 +59,7 @@ const onEmcSessionId = (emcSessionId, params) => {
 
 	return Promise.all([loadView, loadThemes])
 		.then(([viewData, themeData]) => {
-			syncJsCache();
+			syncJsCache(rootUrl);
 			initThemeStyles(themeData, params.htmlRootDom);
 			[...params.htmlRootDom.querySelectorAll('.pls-wait-placeholder')]
 				.forEach(ph => ph.remove());
