@@ -12,9 +12,8 @@ const {coverExc} = require('klesun-node-tools/src/Lang.js');
  * like MDA or RE/ generic for all GDS-es
  */
 class AliasParser {
-	static parseRe($cmd) {
-		let $regex, $matches;
-		$regex =
+	static parseRe(cmd) {
+		const regex =
 			'/^RE\/' +
 			'(?<pcc>[A-Z0-9]{3,9})' +
 			'(\/' +
@@ -23,12 +22,19 @@ class AliasParser {
 			')?' +
 			'(?<keepOriginalMark>\\+|\\||)' +
 			'$/';
-		if (php.preg_match($regex, $cmd, $matches = [])) {
+		let matches;
+		if (php.preg_match(regex, cmd, matches = [])) {
+			let segmentStatus = matches.status || '';
+			if (segmentStatus === 'AG') {
+				// agents mistype it way too often to not correct that,
+				// because of similarity with SEM/2G52/AG format
+				segmentStatus = 'GK';
+			}
 			return {
-				pcc: $matches['pcc'],
-				segmentStatus: $matches['status'] || '',
-				seatCount: $matches['seatCount'] || '',
-				keepOriginal: !php.empty($matches['keepOriginalMark']),
+				pcc: matches.pcc,
+				segmentStatus: segmentStatus,
+				seatCount: matches.seatCount || '',
+				keepOriginal: !php.empty(matches.keepOriginalMark),
 			};
 		} else {
 			return null;
