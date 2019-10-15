@@ -21,12 +21,33 @@ const getGalileoOtherSsrs = async ({stateful}) => {
 	return parsed.otherSsrs;
 };
 
+const getApolloNameNumber = (ssr, pnr) => {
+	const pnrPaxes = pnr.getPassengers();
+	const pnrPaxName = (ssr.data || {}).pnrPaxName;
+	if (pnrPaxName) {
+		const [lastName, firstName] = pnrPaxName.split('/');
+		const matching = pnrPaxes
+			.filter(pnrPax =>
+				pnrPax.lastName === lastName &&
+				pnrPax.firstName === firstName)
+			.map(pnrPax => pnrPax.nameNumber);
+		return matching.length !== 1 ? null : matching[0];
+	} else if (pnrPaxes.length === 1) {
+		return pnrPaxes[0].nameNumber;
+	} else {
+		return null;
+	}
+};
+
 /** @param {IPnr|ApolloPnr|AmadeusPnr} pnr */
 const GetDocSsrList = ({pnr, stateful}) => {
 	const getSsrs = async () => {
 		const gds = pnr.getGdsName();
 		return {
-			apollo: () => pnr.getSsrList(),
+			apollo: () => pnr.getSsrList()
+				.map(ssr => ({...ssr,
+					nameNumber: getApolloNameNumber(ssr, pnr),
+				})),
 			sabre: () => getAllSabreSsrs({stateful}),
 			galileo: () => getGalileoOtherSsrs({stateful}),
 			amadeus: () => pnr.getSsrList(),
@@ -36,7 +57,7 @@ const GetDocSsrList = ({pnr, stateful}) => {
 	const main = async () => {
 		const ssrs = await getSsrs();
 		const isDoc = ssr => ['DOCS', 'DOCA', 'DOCO']
-			.includes(ssr.code);
+			.includes(ssr.ssrCode);
 		return {data: ssrs.filter(isDoc)};
 	};
 
