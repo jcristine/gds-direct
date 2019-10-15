@@ -21,7 +21,7 @@ const getGalileoOtherSsrs = async ({stateful}) => {
 	return parsed.otherSsrs;
 };
 
-const getApolloNameNumber = (ssr, pnr) => {
+const getTravelportNameNumber = (ssr, pnr) => {
 	const pnrPaxes = pnr.getPassengers();
 	const pnrPaxName = (ssr.data || {}).pnrPaxName;
 	if (pnrPaxName) {
@@ -66,13 +66,16 @@ const GetDocSsrList = ({pnr, stateful}) => {
 		return {
 			apollo: () => pnr.getSsrList()
 				.map(ssr => ({...ssr,
-					nameNumber: getApolloNameNumber(ssr, pnr),
+					nameNumber: getTravelportNameNumber(ssr, pnr),
 				})),
 			sabre: () => getAllSabreSsrs({stateful})
 				.map(ssr => ({...ssr,
 					nameNumber: getSabreNameNumber(ssr, pnr),
 				})),
-			galileo: () => getGalileoOtherSsrs({stateful}),
+			galileo: () => getGalileoOtherSsrs({stateful})
+				.map(ssr => ({...ssr,
+					nameNumber: getTravelportNameNumber(ssr, pnr),
+				})),
 			amadeus: () => pnr.getSsrList(),
 		}[gds]();
 	};
