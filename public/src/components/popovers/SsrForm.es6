@@ -76,12 +76,16 @@ const tsaTrToData = (tr) => {
  * note, all GDS-es except for Apollo allow joining them all into one
  * through "|", "§", ";" in Galileo, Sabre and Amadeus respectively
  *
- * @return {string} = '¤:3SSRDOCSYYHK1/N1-2/////24SEP60/M//ROSS/KENNETH/DEVONNE'
- *                    'SI.P1/SSRDOCSYYHK1/////18MAR54/F//ESTRELLA/PATRICIA /ESTEE'
- *                    '3DOCSA/DB/27AUG09/M/DAVIDSONIV/WILLIAMJOSEPH-4.1'
- *                    'SRDOCSYYHK1-----17JAN54-F--QUIROZII-ELMA-FERNANDEZ/P1'
+ * @return {string[]} = ['¤:3SSRDOCSYYHK1/N1-2/////24SEP60/M//ROSS/KENNETH/DEVONNE']
+ *                   || ['SI.P1/SSRDOCSYYHK1/////18MAR54/F//ESTRELLA/PATRICIA /ESTEE']
+ *                   || ['3DOCSA/DB/27AUG09/M/DAVIDSONIV/WILLIAMJOSEPH-4.1']
+ *                   || ['SRDOCSYYHK1-----17JAN54-F--QUIROZII-ELMA-FERNANDEZ/P1']
  */
 const tsaDataToCmds = (tsaData) => {
+	if (!tsaData.dob) {
+		// do not write SSR for passengers with no dob specified
+		return [];
+	}
 	const gdsSwitch = getStore().app.gdsSwitch;
 	const gds = gdsSwitch.getCurrentName();
 
@@ -124,7 +128,7 @@ const makeSectionsSwitchCmp = () => {
 				let changed = false;
 				for (const tr of tbodyCmp.context.querySelectorAll(':scope > tr')) {
 					const tsaData = tsaTrToData(tr);
-					const cmds = [...tsaDataToCmds(tsaData), 'ER'];
+					const cmds = tsaDataToCmds(tsaData);
 					for (const cmd of cmds) {
 						DEV_CMD_STACK_RUN(cmd);
 						changed = true;
