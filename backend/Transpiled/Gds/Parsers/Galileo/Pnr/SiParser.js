@@ -1,6 +1,5 @@
 
 
-const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 
@@ -227,21 +226,20 @@ class SiParser
 	// '  1. YY  1CHD SHIELDS/BMISS AGED 6YRS',
 	// '  2. YY  1 CHLD AGED 5 ASDSD ASD ASD AS NJAS DASD HJASB DHASD H-'.
 	// '         AVS DHJVAS DASV DHJVASDAS',
-	static parseOsiLine($line)  {
-		let $regex, $matches;
-
-		$regex =
+	static parseOsiLine(line)  {
+		const regex =
             '/^\\s*'+
             '(?<lineNumber>\\d+)\\.\\s+'+
             '(?<airline>[A-Z0-9]{2})\\s+'+
             '(?<content>\\S.*?)'+
             '\\s*$/';
-		if (php.preg_match($regex, $line, $matches = [])) {
+		let matches;
+		if (php.preg_match(regex, line, matches = [])) {
 			return {
-				lineNumber: $matches['lineNumber'],
+				lineNumber: matches.lineNumber,
 				ssrCode: 'OSI',
-				airline: $matches['airline'],
-				content: $matches['content'],
+				airline: matches.airline,
+				content: matches.content,
 			};
 		} else {
 			return null;
@@ -278,75 +276,71 @@ class SiParser
 		}
 	}
 
-	static parseOtherSsrBlock($linesLeft)  {
-		let $headerLine, $ssrIndent, $osiIndent, $ssrs, $line, $ssr;
-
-		if ($headerLine = php.array_shift($linesLeft)) {
-			if (php.trim($headerLine) !== 'CARRIER RELATED') {
-				php.array_unshift($linesLeft, $headerLine);
+	static parseOtherSsrBlock(linesLeft)  {
+		const headerLine = php.array_shift(linesLeft);
+		if (headerLine) {
+			if (php.trim(headerLine) !== 'CARRIER RELATED') {
+				php.array_unshift(linesLeft, headerLine);
 			}
 		}
-		$ssrIndent = php.str_repeat(' ', 21);
-		$osiIndent = php.str_repeat(' ', 9);
-		$ssrs = [];
-		while ($line = php.array_shift($linesLeft)) {
-			$ssr = this.parseOsiLine($line) || this.parseOtherSsrLine($line);
-			if ($ssrs && StringUtil.startsWith($line, $ssrIndent)) {
-				$ssrs[php.count($ssrs) - 1]['content'] = this.unwrap($ssrs[php.count($ssrs) - 1]['content'],
-					php.substr($line, php.strlen($ssrIndent)));
-			} else if ($ssrs && StringUtil.startsWith($line, $osiIndent)) {
-				$ssrs[php.count($ssrs) - 1]['content'] = this.unwrap($ssrs[php.count($ssrs) - 1]['content'],
-					php.substr($line, php.strlen($osiIndent)));
-			} else if ($ssr) {
-				$ssrs.push($ssr);
+		const ssrIndent = php.str_repeat(' ', 21);
+		const osiIndent = php.str_repeat(' ', 9);
+		let ssrs = [];
+		let line;
+		while (line = php.array_shift(linesLeft)) {
+			const ssr = this.parseOsiLine(line) || this.parseOtherSsrLine(line);
+			if (ssrs && StringUtil.startsWith(line, ssrIndent)) {
+				ssrs[php.count(ssrs) - 1].content = this.unwrap(ssrs[php.count(ssrs) - 1].content,
+					php.substr(line, php.strlen(ssrIndent)));
+			} else if (ssrs && StringUtil.startsWith(line, osiIndent)) {
+				ssrs[php.count(ssrs) - 1].content = this.unwrap(ssrs[php.count(ssrs) - 1].content,
+					php.substr(line, php.strlen(osiIndent)));
+			} else if (ssr) {
+				ssrs.push(ssr);
 			} else {
-				php.array_unshift($linesLeft, $line);
+				php.array_unshift(linesLeft, line);
 				break;
 			}
 		}
-		$ssrs = Fp.map(($ssr) => {
-			let $parsed;
-
-			$parsed = this.parseSsrContent($ssr['ssrCode'], $ssr['content']);
-			$ssr['content'] = $parsed['content'];
-			$ssr['data'] = $parsed['data'];
-			if ($parsed['paxName']) {
-				$ssr['data'] = $ssr['data'] || {};
-				$ssr['data']['paxName'] = $parsed['paxName'];
+		ssrs = ssrs.map((ssr) => {
+			const parsed = this.parseSsrContent(ssr.ssrCode, ssr.content);
+			ssr.content = parsed.content;
+			ssr.data = parsed.data;
+			if (parsed.paxName) {
+				ssr.data = ssr.data || {};
+				ssr.data.paxName = parsed.paxName;
 			}
-			return $ssr;
-		}, $ssrs);
-		return [$ssrs, $linesLeft];
+			return ssr;
+		});
+		return [ssrs, linesLeft];
 	}
 
-	static parse($dump)  {
-		let $linesLeft, $headerLine, $ssrSegments, $otherSsrs;
-
-		$dump = StringUtil.wrapLinesAt($dump, 64);
-		$linesLeft = StringUtil.lines($dump);
-		$headerLine = php.array_shift($linesLeft);
-		$ssrSegments = [];
-		$otherSsrs = [];
-		if (php.trim($headerLine) === '** SPECIAL SERVICE REQUIREMENT **') {
-			[$ssrSegments, $linesLeft] = this.parseSegmentSsrBlock($linesLeft);
-			$headerLine = php.array_shift($linesLeft);
+	static parse(dump)  {
+		dump = StringUtil.wrapLinesAt(dump, 64);
+		let linesLeft = StringUtil.lines(dump);
+		let headerLine = php.array_shift(linesLeft);
+		let ssrSegments = [];
+		let otherSsrs = [];
+		if (php.trim(headerLine) === '** SPECIAL SERVICE REQUIREMENT **') {
+			[ssrSegments, linesLeft] = this.parseSegmentSsrBlock(linesLeft);
+			headerLine = php.array_shift(linesLeft);
 		}
-		if (php.trim($headerLine) === 'NO OSI EXISTS') {
-			$headerLine = php.array_shift($linesLeft);
+		if (php.trim(headerLine) === 'NO OSI EXISTS') {
+			headerLine = php.array_shift(linesLeft);
 		}
-		if (php.trim($headerLine) === '** OTHER SUPPLEMENTARY INFORMATION **' ||
-            php.trim($headerLine) === '** MANUAL SSR DATA **'
+		if (php.trim(headerLine) === '** OTHER SUPPLEMENTARY INFORMATION **' ||
+            php.trim(headerLine) === '** MANUAL SSR DATA **'
 		) {
-			[$otherSsrs, $linesLeft] = this.parseOtherSsrBlock($linesLeft);
-			$headerLine = php.array_shift($linesLeft);
+			[otherSsrs, linesLeft] = this.parseOtherSsrBlock(linesLeft);
+			headerLine = php.array_shift(linesLeft);
 		}
-		if ($headerLine !== null) {
-			php.array_unshift($linesLeft, $headerLine);
+		if (headerLine !== null) {
+			php.array_unshift(linesLeft, headerLine);
 		}
 		return {
-			ssrSegments: $ssrSegments,
-			otherSsrs: $otherSsrs,
-			linesLeft: $linesLeft,
+			ssrSegments,
+			otherSsrs,
+			linesLeft,
 		};
 	}
 }
