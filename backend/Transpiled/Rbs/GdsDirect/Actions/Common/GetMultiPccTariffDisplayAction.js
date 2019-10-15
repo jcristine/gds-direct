@@ -60,14 +60,24 @@ class GetMultiPccTariffDisplayAction {
 		rpcParams = {...rpcParams};
 		if (pccRec.gds !== sessionData.gds) {
 			delete rpcParams.ptc;
-			delete rpcParams.fareType;
 			delete rpcParams.accountCode;
+		}
+		if (rpcParams.fareType) {
+			const isTp = ['apollo', 'galileo'].includes(pccRec.gds);
+			rpcParams.fareType = {
+				published: 'published',
+				private: 'private',
+				agency_private: isTp ? 'agency_private' : undefined,
+				airline_private: isTp ? 'airline_private' : 'private',
+				net_private: isTp ? 'net_private' : undefined,
+			}[rpcParams.fareType];
 		}
 		rpcParams.pcc = pccRec.pcc;
 		rpcParams.gds = pccRec.gds;
-		delete pccRec.pcc;
-		delete pccRec.gds;
-		if (php.empty(php.array_intersect_key(rpcParams, pccRec))) {
+		const intersection = php.array_intersect_key(rpcParams, pccRec);
+		const hasConflicts = Object.entries(intersection)
+			.some(([k,v]) => v != pccRec[k]);
+		if (!hasConflicts) {
 			rpcParams = php.array_merge(rpcParams, pccRec);
 		}
 		return rpcParams;

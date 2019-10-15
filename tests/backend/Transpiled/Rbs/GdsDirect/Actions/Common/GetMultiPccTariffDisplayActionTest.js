@@ -222,6 +222,26 @@ class GetMultiPccTariffDisplayActionTest extends require('../../../../../../../b
 			]),
 		]);
 
+		// with /:A/ fareType specified
+		$list.push([
+			{
+				'gds': 'apollo', 'pcc': '2G52',
+				'fareType': 'airline_private',
+				'cmd': '$DV5NOVTULAMS22NOV:A',
+			},
+			ArrayUtil.makeTableRows([
+				['pcc'       , 'gds'     , 'ptc', 'fareType' , 'departureAirport' , 'destinationAirport' , 'departureDate' , 'returnDate'],
+				['1O3K'      , 'apollo'  , 'JWZ', 'airline_private', 'TUL'              , 'AMS'                , '2018-11-05'    , '2018-11-22'],
+				['2G2H'      , 'apollo'  , 'JWZ', 'airline_private', 'TUL'              , 'AMS'                , '2018-11-05'    , '2018-11-22'],
+				['2G52'      , 'apollo'  , 'JWZ', 'airline_private', 'TUL'              , 'AMS'                , '2018-11-05'    , '2018-11-22'],
+				['13NM'      , 'apollo'  , 'JWZ', 'airline_private', 'TUL'              , 'AMS'                , '2018-11-05'    , '2018-11-22'],
+				['U2E5'      , 'sabre'   , 'JCB', 'private'  , 'TUL'              , 'AMS'                , '2018-11-05'    , '2018-11-22'],
+				['DK8H'      , 'sabre'   , 'JCB', 'private'  , 'TUL'              , 'AMS'                , '2018-11-05'    , '2018-11-22'],
+				['5E9H'      , 'sabre'   , 'JCB', 'private'  , 'TUL'              , 'AMS'                , '2018-11-05'    , '2018-11-22'],
+				['LAXGO3106' , 'amadeus' , null , 'private'  , 'TUL'              , 'AMS'                , '2018-11-05'    , '2018-11-22'],
+			]),
+		]);
+
 		// Apollo US -> US with airline select
 		// does not work anymore as we do not try looking by destination used as departure
 		// $list.push([
