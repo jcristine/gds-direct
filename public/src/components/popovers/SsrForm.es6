@@ -121,12 +121,17 @@ const makeSectionsSwitchCmp = () => {
 		Cmp('div', {'data-section': 'tsa'}).attach([
 			Cmp('form', {onsubmit: (e) => {
 				e.preventDefault();
+				let changed = false;
 				for (const tr of tbodyCmp.context.querySelectorAll(':scope > tr')) {
 					const tsaData = tsaTrToData(tr);
 					const cmds = [...tsaDataToCmds(tsaData), 'ER'];
 					for (const cmd of cmds) {
 						DEV_CMD_STACK_RUN(cmd);
+						changed = true;
 					}
+				}
+				if (changed) {
+					DEV_CMD_STACK_RUN('ER');
 				}
 				return false; // no page reload
 			}}).attach([
