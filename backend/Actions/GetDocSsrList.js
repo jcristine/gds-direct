@@ -59,6 +59,15 @@ const getSabreNameNumber = (ssr, pnr) => {
 	}
 };
 
+const getAmadeusNameNumber = (ssr, pnr) => {
+	const nameNumbers = pnr.getPassengers()
+		.map(pnrPax => pnrPax.nameNumber);
+	const paxNum = (ssr.data || {}).paxNum;
+	return nameNumbers.length === 1
+		? nameNumbers[0]
+		: nameNumbers.filter(numRec => numRec.fieldNumber == paxNum)[0];
+};
+
 /** @param {IPnr|ApolloPnr|AmadeusPnr} pnr */
 const GetDocSsrList = ({pnr, stateful}) => {
 	const getSsrs = async () => {
@@ -76,7 +85,10 @@ const GetDocSsrList = ({pnr, stateful}) => {
 				.map(ssr => ({...ssr,
 					nameNumber: getTravelportNameNumber(ssr, pnr),
 				})),
-			amadeus: () => pnr.getSsrList(),
+			amadeus: () => pnr.getSsrList()
+				.map(ssr => ({...ssr,
+					nameNumber: getAmadeusNameNumber(ssr, pnr),
+				})),
 		}[gds]();
 	};
 
