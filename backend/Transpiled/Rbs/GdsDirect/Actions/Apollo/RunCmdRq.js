@@ -393,8 +393,11 @@ const RunCmdRq = ({
 		// note that Amadeus has different format instead of this 'remark', so a
 		// better approach would be to generate command for pure parsed dob/ptc
 		const cmd = passengers
-			.map(pax => 'N:' + pax.lastName + '/' + pax.firstName +
-				(!pax.remark ? '' : '*' + pax.remark))
+			.map(pax => {
+				const infMark = pax.nameNumber.isInfant ? 'I/' : '';
+				return 'N:' + infMark + pax.lastName + '/' + pax.firstName +
+					(!pax.remark ? '' : '*' + pax.remark);
+			})
 			.join('|');
 		const cmdRec = await runCmd(cmd);
 		return {calledCommands: [cmdRec]};
