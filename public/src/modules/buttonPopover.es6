@@ -40,7 +40,7 @@ export default class ButtonPopOver
 			target		: this.getTrigger(),
 			content		: this.getPopContent(),
 			classes		: CLASS_NAME + ' terminal-popover-root',
-			position	: 'left top',
+			position	: this.settings.position || 'left top',
 			openOn		: 'click',
 			remove		: true,
 		});
