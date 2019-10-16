@@ -275,6 +275,8 @@ export default class SsrForm extends ButtonPopOver
 			const ssrs = docSsrs.filter(ssr =>
 				ssr.ssrCode === 'DOCS' &&
 				ssr.nameNumber && ssr.data &&
+				// if there is a travel doc number, it's APIS, not TSA
+				!ssr.data.travelDocNumber &&
 				ssr.nameNumber.absolute == +i +1
 			);
 			return paxToTsaTrCmp(pax, paxes, ssrs);
