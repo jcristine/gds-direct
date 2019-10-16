@@ -78,13 +78,13 @@ const GetDocSsrList = ({pnr, stateful}) => {
 					nameNumber: getTravelportNameNumber(ssr, pnr),
 				})),
 			sabre: () => getAllSabreSsrs({stateful})
-				.map(ssr => ({...ssr,
+				.then(ssrs => ssrs.map(ssr => ({...ssr,
 					nameNumber: getSabreNameNumber(ssr, pnr),
-				})),
+				}))),
 			galileo: () => getGalileoOtherSsrs({stateful})
-				.map(ssr => ({...ssr,
+				.then(ssrs => ssrs.map(ssr => ({...ssr,
 					nameNumber: getTravelportNameNumber(ssr, pnr),
-				})),
+				}))),
 			amadeus: () => pnr.getSsrList()
 				.map(ssr => ({...ssr,
 					nameNumber: getAmadeusNameNumber(ssr, pnr),

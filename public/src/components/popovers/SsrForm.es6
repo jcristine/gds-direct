@@ -132,6 +132,16 @@ const cancelOldSsrs = (deleteSsrs, gds) => {
 	}
 };
 
+const saveChanges = (gds) => {
+	const cmd = {
+		apollo: 'R:GRECT|ER',
+		sabre: '6GRECT§ER',
+		galileo: 'R.GRECT|ER',
+		amadeus: 'RFGRECT;ER',
+	}[gds];
+	DEV_CMD_STACK_RUN(cmd);
+};
+
 const makeSectionsSwitchCmp = () => {
 	const sectionButtons = [
 		Cmp('span[TSA].active-section-btn', {'data-section': 'tsa'}),
@@ -167,7 +177,7 @@ const makeSectionsSwitchCmp = () => {
 					}
 				}
 				if (changed && deleteSsrs.length === 0) {
-					DEV_CMD_STACK_RUN('ER');
+					saveChanges(gds);
 				}
 				return false; // no page reload
 			}}).attach([
