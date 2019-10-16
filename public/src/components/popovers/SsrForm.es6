@@ -142,7 +142,7 @@ const saveChanges = (gds) => {
 	DEV_CMD_STACK_RUN(cmd);
 };
 
-const makeSectionsSwitchCmp = () => {
+const makeSectionsSwitchCmp = (ssrForm) => {
 	const sectionButtons = [
 		Cmp('span[TSA].active-section-btn', {'data-section': 'tsa'}),
 		Cmp('span[APIS]'                  , {'data-section': 'apis'}),
@@ -179,6 +179,7 @@ const makeSectionsSwitchCmp = () => {
 				if (changed && deleteSsrs.length === 0) {
 					saveChanges(gds);
 				}
+				ssrForm.popover.close();
 				return false; // no page reload
 			}}).attach([
 				Cmp('table.tsa-data').attach([
@@ -361,7 +362,7 @@ export default class SsrForm extends ButtonPopOver
 					// ]),
 				]),
 			]),
-			makeSectionsSwitchCmp(),
+			makeSectionsSwitchCmp(this),
 		]);
 		this.rootCmp = rootCmp;
 		this.popContent.appendChild(rootCmp.context);
