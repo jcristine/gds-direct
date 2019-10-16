@@ -324,7 +324,9 @@ export default class SsrForm extends ButtonPopOver
 			}));
 
 			this.updateTsaBlock(paxes, docSsrList.data || []);
-			this.rootCmp.context.querySelector('[data-section="tsa"] input[name="dob"]').focus();
+			const selector = '[data-section="tsa"] input[name="dob"]';
+			[...this.rootCmp.context.querySelectorAll(selector)]
+				.forEach(inp => inp.focus());
 		};
 		setStatus('loading', 'Loading PNR...');
 		plugin._withSpinner(() => post('/terminal/getCurrentPnr', {
