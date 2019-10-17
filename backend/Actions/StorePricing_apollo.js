@@ -152,7 +152,8 @@ const StorePricing_apollo = ({
 			return Rej.BadRequest(msg);
 		}
 		for (const seg of pnr.getItinerary()) {
-			if (['UC', 'US', 'KK', 'PN'].includes(seg.segmentStatus)) {
+			// would result in "INVALID NUMBER OF SEGMENTS SELECTED"
+			if (['UC', 'US', 'KK', 'PN', 'NO'].includes(seg.segmentStatus)) {
 				const msg = 'Invalid segment #' + seg.segmentNumber +
 					' status - ' + seg.segmentStatus;
 				return Rej.BadRequest(msg);
