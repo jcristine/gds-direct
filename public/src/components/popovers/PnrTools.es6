@@ -30,27 +30,29 @@ const makeCrossRefBtn = () => {
 	});
 };
 
-const makeSsrBtn = () => {
+const makeSsrBtn = ({popoverTarget}) => {
 	const btnCmp = Cmp('article').attach([
-		new SsrForm({
+		SsrForm({
 			icon: '<i class="fa t-f-size-14">PNR Services</i>',
-		}).getTrigger(),
+			popoverTarget,
+		}).dom,
 	]);
 	return btnCmp.context;
 };
 
 export default class PnrTools extends ButtonPopOver
 {
-	constructor({icon})
+	constructor({icon, parentNode})
 	{
 		super( {icon}, 'div.terminal-menu-popover' );
 
 		this.buttons = [];
 
+		const triggerBtn = this.makeTrigger({});
 		this.buttons.push(makeCrossRefBtn());
-		this.buttons.push(makeSsrBtn());
+		// show the popover next to the white panel, same as PNR Tools list
+		this.buttons.push(makeSsrBtn({popoverTarget: parentNode}));
 
-		this.makeTrigger({});
 	}
 
 	build()

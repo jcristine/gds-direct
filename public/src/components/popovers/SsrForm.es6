@@ -3,6 +3,8 @@ import {post} from './../../helpers/requests';
 import {getStore} from "../../store";
 import {DEV_CMD_STACK_RUN} from "../../actions";
 import moment from "moment";
+import Drop		from 'tether-drop';
+import Dom 		from '../../helpers/dom.es6';
 
 const Component = require('../../modules/component.es6').default;
 const Cmp = (...args) => new Component(...args);
@@ -257,20 +259,66 @@ const formatNameNum = (nameNumber) => {
 	return fieldNumber + '.' + (isInfant ? 'I/' : '') + firstNameNumber;
 };
 
-export default class SsrForm extends ButtonPopOver
-{
-	constructor({icon})
-	{
-		super( {icon, onOpen: () => this.onOpen()}, 'div' );
-		this.makeTrigger({});
-		this.statusHolderCmp = Cmp('div.status-holder');
-		this.paxListCmp = Cmp('div.passenger-list');
-		this.segListCmp = Cmp('div.segment-list');
-	}
+const onClickOutside = (element, callback) => {
+	const outsideClickListener = event => {
+		if (!element.contains(event.target)) {
+			callback();
+		}
+	};
+	document.addEventListener('click', outsideClickListener);
+	return {
+		removeListener: () => document.removeEventListener('click', outsideClickListener),
+	};
+};
 
-	updateTsaBlock(paxes, docSsrs)
-	{
-		const tbody = this.rootCmp.context.querySelector('[data-section="tsa"] tbody');
+/** @param {string} icon - html */
+const SsrForm = ({icon, popoverTarget}) => {
+	const statusHolderCmp = Cmp('div.status-holder');
+	const paxListCmp = Cmp('div.passenger-list');
+	const segListCmp = Cmp('div.segment-list');
+	const popContent = Dom('div');
+	const popover = new Drop({
+		target		: popoverTarget,
+		content		: popContent,
+		classes		: 'drop-theme-twipsy terminal-popover-root pnr-services-form-popover',
+		position	: 'left middle',
+		openOn		: null, // open/close only with code
+		remove		: true,
+		tetherOptions: {
+			constraints: [
+				{
+					to: 'window',
+					attachment: 'none',
+				},
+			],
+		},
+	});
+
+	const rootCmp = Cmp('div.pnr-services-form', {style: 'min-height: 450px'}).attach([
+		statusHolderCmp,
+		Cmp('h2[PNR Services]'),
+		Cmp('div', {style: 'display: flex'}).attach([
+			Cmp('div.passenger-list-block', {style: 'width: 200px'}).attach([
+				paxListCmp,
+				// Cmp('label').attach([
+				// 	Cmp('input', {type: 'checkbox'}),
+				// 	Cmp('span[Select all]'),
+				// ]),
+			]),
+			Cmp('div.segment-list-block', {style: 'width: 400px'}).attach([
+				segListCmp,
+				// Cmp('label').attach([
+				// 	Cmp('input', {type: 'checkbox'}),
+				// 	Cmp('span[Select all]'),
+				// ]),
+			]),
+		]),
+		makeSectionsSwitchCmp({popover}),
+	]);
+	popContent.appendChild(rootCmp.context);
+
+	const updateTsaBlock = (paxes, docSsrs) => {
+		const tbody = rootCmp.context.querySelector('[data-section="tsa"] tbody');
 		tbody.innerHTML = '';
 		Cmp({context: tbody}).attach(paxes.map((pax, i) => {
 			const ssrs = docSsrs.filter(ssr =>
@@ -282,24 +330,23 @@ export default class SsrForm extends ButtonPopOver
 			);
 			return paxToTsaTrCmp(pax, paxes, ssrs);
 		}));
-	}
+	};
 
-	onOpen()
-	{
+	const render = (onRendered) => {
 		const gdsSwitch = getStore().app.gdsSwitch;
 		const plugin = gdsSwitch.getActivePlugin();
 		const gds = gdsSwitch.getCurrentName();
 
 		const setStatus = (status, msg = '') => {
-			this.statusHolderCmp.context.setAttribute('data-status', status);
-			this.statusHolderCmp.context.textContent = msg;
+			statusHolderCmp.context.setAttribute('data-status', status);
+			statusHolderCmp.context.textContent = msg;
 		};
 
 		/** @param reservation = require('ImportApolloPnrFormatAdapter.js').transformReservation() */
 		const updateFromPnr = (imported) => {
 			const {reservation, docSsrList} = imported;
-			this.paxListCmp.context.innerHTML = '';
-			this.segListCmp.context.innerHTML = '';
+			paxListCmp.context.innerHTML = '';
+			segListCmp.context.innerHTML = '';
 
 			const paxes = reservation.passengers;
 			const segs = reservation.itinerary;
@@ -309,7 +356,7 @@ export default class SsrForm extends ButtonPopOver
 				setStatus('success');
 			}
 
-			this.paxListCmp.attach(paxes.map(pax => {
+			paxListCmp.attach(paxes.map(pax => {
 				const {nameNumber, lastName, firstName, dob = null, ptc = null} = pax;
 				let remark = null;
 				if (dob) {
@@ -322,13 +369,15 @@ export default class SsrForm extends ButtonPopOver
 					(remark ? '*' + remark : '');
 				return Cmp('div', {textContent: paxStr});
 			}));
-			this.segListCmp.attach(segs.map(seg => {
+			segListCmp.attach(segs.map(seg => {
 				return Cmp('div', {textContent: seg.raw});
 			}));
 
-			this.updateTsaBlock(paxes, docSsrList.data || []);
+			updateTsaBlock(paxes, docSsrList.data || []);
+			onRendered();
+
 			const selector = '[data-section="tsa"] input[name="dob"]';
-			[...this.rootCmp.context.querySelectorAll(selector)]
+			[...rootCmp.context.querySelectorAll(selector)]
 				.forEach(inp => inp.focus());
 		};
 		setStatus('loading', 'Loading PNR...');
@@ -339,32 +388,28 @@ export default class SsrForm extends ButtonPopOver
 				setStatus('error', 'Failed to fetch PNR - ' + exc);
 				return Promise.reject(exc);
 			}));
-	}
+	};
 
-	build()
-	{
-		const rootCmp = Cmp('div.pnr-services-form', {style: 'min-height: 450px'}).attach([
-			this.statusHolderCmp,
-			Cmp('h2[PNR Services]'),
-			Cmp('div', {style: 'display: flex'}).attach([
-				Cmp('div.passenger-list-block', {style: 'width: 200px'}).attach([
-					this.paxListCmp,
-					// Cmp('label').attach([
-					// 	Cmp('input', {type: 'checkbox'}),
-					// 	Cmp('span[Select all]'),
-					// ]),
-				]),
-				Cmp('div.segment-list-block', {style: 'width: 400px'}).attach([
-					this.segListCmp,
-					// Cmp('label').attach([
-					// 	Cmp('input', {type: 'checkbox'}),
-					// 	Cmp('span[Select all]'),
-					// ]),
-				]),
-			]),
-			makeSectionsSwitchCmp(this),
-		]);
-		this.rootCmp = rootCmp;
-		this.popContent.appendChild(rootCmp.context);
-	}
-}
+	const main = () => {
+		const trigger = Dom('button.btn btn-primary font-bold', {innerHTML: icon});
+		trigger.addEventListener('click', () => {
+			render(() => {
+				popover.open();
+				// setTimeout - to not include current click to the handler
+				setTimeout(() => {
+					const listening = onClickOutside(popContent, () => {
+						popover.close();
+						listening.removeListener();
+					});
+				}, 1);
+			});
+		});
+		return {
+			dom: trigger,
+		};
+	};
+
+	return main();
+};
+
+export default SsrForm;

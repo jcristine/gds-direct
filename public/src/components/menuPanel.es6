@@ -61,11 +61,13 @@ export default class MenuPanel extends Component
 			);
 		}
 
+		const toolsBtnCmp = new Component('article');
 		this.observe(
-			new Component('article')
+			toolsBtnCmp
 				.attach([
 					new PnrTools({
 						icon: '<i class="fa t-f-size-14">Tools</i>',
+						parentNode: toolsBtnCmp.getContext(),
 					}).getTrigger(),
 				])
 		);
