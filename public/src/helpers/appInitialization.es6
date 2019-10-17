@@ -115,6 +115,10 @@ export const initGlobEvents = (htmlRootDom) => {
 	};
 	/** @param {PromiseRejectionEvent} e */
 	let onrejection = (e) => {
+		if (e.httpStatusCode) {
+			// server error responses, already reported to diag if relevant
+			return;
+		}
 		handleGenericError(e.reason || {message: 'Rejection with empty reason', error: e});
 	};
 	window.addEventListener('error', onerror);
