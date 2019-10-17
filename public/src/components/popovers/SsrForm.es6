@@ -261,7 +261,7 @@ export default class SsrForm extends ButtonPopOver
 {
 	constructor({icon})
 	{
-		super( {icon, position: 'right', onOpen: () => this.onOpen()}, 'div' );
+		super( {icon, onOpen: () => this.onOpen()}, 'div' );
 		this.makeTrigger({});
 		this.statusHolderCmp = Cmp('div.status-holder');
 		this.paxListCmp = Cmp('div.passenger-list');
