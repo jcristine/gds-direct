@@ -169,7 +169,6 @@ const RunCmdRq = ({
 	};
 
 	const getSessionData =  () => {
-
 		return stateful.getSessionData();
 	};
 
@@ -851,34 +850,32 @@ const RunCmdRq = ({
 		return galileoRawMods;
 	};
 
-	const makeStorePricingCmd = async ($pnr, $aliasData, $needsColonN) => {
-		let $adultPtc, $errors, $tripEndDate, $tripEndDt, $paxCmdParts, $i, $pax, $cmd;
+	const makeStorePricingCmd = async (pnr, aliasData, needsColonN) => {
+		let adultPtc = aliasData.ptc || 'ADT';
+		if (needsColonN && adultPtc === 'ITX') {
+			adultPtc = 'ADT';
+		}
+		const errors = CommonDataHelper.checkSeatCount(pnr);
+		if (!php.empty(errors)) {
+			return Rej.BadRequest('Invalid PNR - ' + errors.join('; '));
+		}
+		const tripEndDate = ((ArrayUtil.getLast(pnr.getItinerary()) || {}).departureDate || {}).parsed;
+		const tripEndDt = tripEndDate ? DateTime.addYear(tripEndDate, stateful.getStartDt()) : null;
 
-		$adultPtc = $aliasData['ptc'] || 'ADT';
-		if ($needsColonN && $adultPtc === 'ITX') {
-			$adultPtc = 'ADT';
+		const paxCmdParts = [];
+		for (const [i, pax] of Object.entries(pnr.getPassengers())) {
+			const ptc = await PtcUtil.convertPtcAgeGroup(adultPtc, pax, tripEndDt);
+			paxCmdParts.push(pax.nameNumber.absolute + '*' + ptc);
 		}
 
-		if (!php.empty($errors = CommonDataHelper.checkSeatCount($pnr))) {
-			return Rej.BadRequest('Invalid PNR - ' + $errors.join('; '));
+		let cmd = 'FQP' + paxCmdParts.join('.');
+		if (needsColonN) {
+			cmd += '/:N';
 		}
-		$tripEndDate = ((ArrayUtil.getLast($pnr.getItinerary()) || {})['departureDate'] || {})['parsed'];
-		$tripEndDt = $tripEndDate ? DateTime.decodeRelativeDateInFuture($tripEndDate, stateful.getStartDt()) : null;
+		const customMods = await translateMods(aliasData.pricingModifiers);
+		cmd += customMods.map(m => '/' + m).join('');
 
-		$paxCmdParts = [];
-		for ([$i, $pax] of Object.entries($pnr.getPassengers())) {
-			const ptc = await PtcUtil.convertPtcAgeGroup($adultPtc, $pax, $tripEndDt);
-			$paxCmdParts.push($pax['nameNumber']['absolute'] + '*' + ptc);
-		}
-
-		$cmd = 'FQP' + php.implode('.', $paxCmdParts);
-		if ($needsColonN) {
-			$cmd += '/:N';
-		}
-		const customMods = await translateMods($aliasData.pricingModifiers);
-		$cmd += customMods.map(m => '/' + m).join('');
-
-		return {cmd: $cmd, paxCmdParts: $paxCmdParts};
+		return {cmd, paxCmdParts};
 	};
 
 	const makePriceAllCmd = async (aliasData) => {
