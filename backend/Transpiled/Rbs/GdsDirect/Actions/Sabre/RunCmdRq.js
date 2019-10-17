@@ -776,9 +776,9 @@ const execute = ({
 
 		const sabreRawMods = [];
 		for (const mod of normalized.pricingModifiers) {
-			const translated = TranslatePricingCmd.mod_sabre(mod);
-			if (translated) {
-				sabreRawMods.push(translated);
+			const moreSabreMods = TranslatePricingCmd.mod_sabre(mod);
+			if (moreSabreMods) {
+				sabreRawMods.push(...moreSabreMods);
 			} else if (mod.raw === 'FXD') {
 				const msg = 'Bad modifier /FXD/ - Sabre does not ' +
 					'have a direct format to exclude basic economy';
