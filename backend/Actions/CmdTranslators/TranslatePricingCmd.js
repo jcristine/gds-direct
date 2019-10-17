@@ -38,12 +38,10 @@ const translatePaxes_apollo = ({ptcs, paxNums}) => {
 		const ptc = ptcs[0];
 		return '*' + ptc + (php.in_array(ptc, ['CNN', 'C05']) ? '/ACC' : '');
 	} else {
-		const paxParts = Fp.map(($i) => {
-			let $paxNum, $ptc;
-
-			$paxNum = paxNums[$i] || $i + 1;
-			$ptc = ptcs[$i];
-			return $paxNum + ($ptc ? '*' + $ptc : '');
+		const paxParts = Fp.map((i) => {
+			const paxNum = paxNums[i] || i + 1;
+			const ptc = ptcs[i];
+			return paxNum + (ptc ? '*' + ptc : '');
 		}, php.range(0, cnt - 1));
 		return 'N' + php.implode('|', paxParts);
 	}
@@ -55,12 +53,10 @@ const translatePaxes_galileo = ({ptcs, paxNums}) => {
 		const ptc = ptcs[0];
 		return php.in_array(ptc, ['CNN', 'C05']) ? '*' + ptc + '/ACC' : '*' + ptc;
 	} else {
-		const paxParts = Fp.map(($i) => {
-			let $paxNum, $ptc;
-
-			$paxNum = paxNums[$i] || $i + 1;
-			$ptc = ptcs[$i];
-			return $paxNum + ($ptc ? '*' + $ptc : '');
+		const paxParts = Fp.map((i) => {
+			const paxNum = paxNums[i] || i + 1;
+			const ptc = ptcs[i];
+			return paxNum + (ptc ? '*' + ptc : '');
 		}, php.range(0, cnt - 1));
 		return 'P' + php.implode('.', paxParts);
 	}
@@ -288,6 +284,33 @@ const inApollo = (norm) => {
 	return [effectiveBaseCmd, ...effectiveMods].join('/');
 };
 
+/** note, signatures are different from Amadeus and Sabre - to not add /ACC/ modifier twice */
+const mod_galileo = (effectiveMods, mod) => {
+	if (processTravelportMod(effectiveMods, mod, '.', '-')) {
+		// following is Galileo-specific
+	} else if (mod.type === 'fareType') {
+		const letter = AtfqParser.encodeFareType(mod.parsed);
+		if (letter) {
+			effectiveMods.push(':' + letter);
+		} else {
+			throw Rej.NotImplemented.makeExc('Unsupported fare type ' + mod.parsed.parsed + ' - ' + mod.raw);
+		}
+	} else if (mod.type === 'ticketingDate') {
+		effectiveMods.push('.T' + mod.parsed.raw);
+	} else if (mod.type === 'cabinClass') {
+		const typeToLetter = php.array_flip(FqCmdParser.getCabinClassMapping());
+		const letter = typeToLetter[mod.parsed.parsed];
+		if (letter) {
+			effectiveMods.push('++-' + letter);
+		} else {
+			throw Rej.NotImplemented('Unsupported cabin class ' + mod.parsed.parsed + ' - ' + mod.raw);
+		}
+	} else {
+		return false;
+	}
+	return true;
+};
+
 const inGalileo = (norm) => {
 	let {effectiveBaseCmd, effectiveMods, pushPaxMod} = init('galileo', norm);
 	if (!effectiveBaseCmd) {
@@ -298,27 +321,10 @@ const inGalileo = (norm) => {
 		}
 	}
 	for (const mod of norm.pricingModifiers) {
-		if (processTravelportMod(effectiveMods, mod, '.', '-')) {
-			// following is Galileo-specific
-		} else if (mod.type === 'fareType') {
-			const letter = AtfqParser.encodeFareType(mod.parsed);
-			if (letter) {
-				effectiveMods.push(':' + letter);
-			} else {
-				throw Rej.NotImplemented.makeExc('Unsupported fare type ' + mod.parsed.parsed + ' - ' + mod.raw);
-			}
+		if (mod_galileo(effectiveMods, mod)) {
+			// handled
 		} else if (mod.type === 'namePosition') {
 			pushPaxMod();
-		} else if (mod.type === 'ticketingDate') {
-			effectiveMods.push('.T' + mod.parsed.raw);
-		} else if (mod.type === 'cabinClass') {
-			const typeToLetter = php.array_flip(FqCmdParser.getCabinClassMapping());
-			const letter = typeToLetter[mod.parsed.parsed];
-			if (letter) {
-				effectiveMods.push('++-' + letter);
-			} else {
-				throw Rej.NotImplemented('Unsupported cabin class ' + mod.parsed.parsed + ' - ' + mod.raw);
-			}
 		} else {
 			throw Rej.NotImplemented.makeExc('Unsupported modifier ' + mod.type + ' - ' + mod.raw);
 		}
@@ -533,6 +539,7 @@ const TranslatePricingCmd = ({
 TranslatePricingCmd.subMod_amadeus = subMod_amadeus;
 TranslatePricingCmd.mod_amadeus = mod_amadeus;
 TranslatePricingCmd.mod_sabre = mod_sabre;
+TranslatePricingCmd.mod_galileo = mod_galileo;
 
 TranslatePricingCmd.fromData = fromData;
 TranslatePricingCmd.translatePaxes = translatePaxes;
