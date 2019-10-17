@@ -38,6 +38,7 @@ const parseOutput = (output) => {
 			output.trim() === 'ORIG TKT NBR ERR' ||
 			output.trim() === 'PENALTY ERROR' ||
 			output.trim() === 'TAX TOTAL ERROR' ||
+			output.trim() === 'TX2 ERROR-DECIMAL PLACEMENT' ||
 			output.match(/^\s*TX\d+ ERROR\s*$/)
 		) {
 			// if agent accidentally entered amount
