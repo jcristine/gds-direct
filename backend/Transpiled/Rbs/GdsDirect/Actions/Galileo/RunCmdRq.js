@@ -1,3 +1,5 @@
+const TranslatePricingCmd = require('../../../../../Actions/CmdTranslators/TranslatePricingCmd.js');
+const NormalizePricingCmd = require('gds-utils/src/cmd_translators/NormalizePricingCmd.js');
 const SortItinerary = require('../../../../../Actions/SortItinerary.js');
 const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
 const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
@@ -837,14 +839,24 @@ const RunCmdRq = ({
 		return rbsInfo.isPrivateFare && rbsInfo.isBrokenFare;
 	};
 
-	const translateMods = async (pricingModifiers) => {
+	const translateMods = async (apolloPricingModifiers) => {
+		const normalized = NormalizePricingCmd.inApollo({
+			type: 'storePricing',
+			data: {
+				baseCmd: '$B',
+				pricingModifiers: apolloPricingModifiers,
+			},
+		});
 		const galileoRawMods = [];
-		for (const apolloMod of pricingModifiers) {
-			const translated = translateApolloPricingModifier(apolloMod);
-			if (translated) {
-				galileoRawMods.push(translated);
+		for (const mod of normalized.pricingModifiers) {
+			const effectiveMods = [];
+			if (TranslatePricingCmd.mod_galileo(effectiveMods, mod)) {
+				galileoRawMods.push(...effectiveMods);
 			} else {
-				return Rej.NotImplemented('Unsupported modifier - ' + apolloMod.raw);
+				const msg = mod.type
+					? 'Unsupported Apollo modifier - ' + mod.type + ' - ' + mod.raw
+					: 'Unsupported modifier - ' + mod.raw;
+				return Rej.NotImplemented(msg);
 			}
 		}
 		return galileoRawMods;
