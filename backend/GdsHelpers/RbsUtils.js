@@ -27,6 +27,13 @@ const isSameSet = (a, b) => {
 const getTdFareTypeV2 = async (gds, ptcBlock) => {
 	const tdTypes = new Set();
 	const hasPrivateMsg = ptcBlock.hasPrivateFaresSelectedMessage;
+	const error = ptcBlock.fareInfo.fareConstruction.error;
+	if (error) {
+		const msg = 'Invalid Fare Calculation format in pricing - ' +
+			error + ' - FC is mandatory for fare type - ' +
+			ptcBlock.fareInfo.fareConstruction.raw;
+		return Rej.UnprocessableEntity(msg);
+	}
 	for (const seg of ptcBlock.fareInfo.fareConstruction.segments) {
 		if (seg.fare) {
 			const td = seg.ticketDesignator || '';
