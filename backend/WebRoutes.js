@@ -28,6 +28,7 @@ const {withAuth} = require("./HttpControllers/MainController");
 const Settings = require("./Repositories/Settings");
 const SocketIo = require('./LibWrappers/SocketIo.js');
 const ParsersController = require("./HttpControllers/ParsersController");
+const JsonService = require('./HttpControllers/JsonService.js');
 
 const app = express();
 
@@ -384,4 +385,5 @@ exports.initListeners = () => {
 		expressInst: app,
 		socketIoInst: socketIo,
 	});
+	(new JsonService()).run(app);
 };
