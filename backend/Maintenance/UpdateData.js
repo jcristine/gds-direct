@@ -1,3 +1,4 @@
+const CleanupRedisKeys = require('./CleanupRedisKeys.js');
 
 const schedule = require('node-schedule');
 const TicketDesignators = require("../Repositories/TicketDesignators");
@@ -34,6 +35,7 @@ const UpdateData = async () => {
 		PtcFareTypes.updateFromService,
 		Airports.updateFromService,
 		CmdRsLog.cleanupOutdated,
+		CleanupRedisKeys.run,
 	];
 
 	const withLock = async (job, i) => {
