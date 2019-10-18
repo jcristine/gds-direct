@@ -4,6 +4,14 @@ const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const php = require("klesun-node-tools/src/Transpiled/php.js");
 const FqLineParser = require("./FqLineParser.js");
 
+const parseFqLine = (line) => {
+	try {
+		return FqLineParser.parseFqLine(line);
+	} catch (exc) {
+		return {raw: line, error: exc + ''};
+	}
+};
+
 class AtfqParser {
 	static parse($dump) {
 		let $result, $atfqBlocks, $block, $lines;
@@ -43,16 +51,16 @@ class AtfqParser {
 	}
 
 	static parseAtfqBlock($lines) {
-		let $line, $atfqInfo;
-		$line = php.trim($lines[0]);
-		if (!($atfqInfo = this.parseAtfqLine($line))) {
-			throw new Error('First line expected to be ATFQ line, something else found: [' + $line + ']');
+		let line, $atfqInfo;
+		line = php.trim($lines[0]);
+		if (!($atfqInfo = this.parseAtfqLine(line))) {
+			throw new Error('First line expected to be ATFQ line, something else found: [' + line + ']');
 		}
-		if ($line = php.trim($lines[1] || '')) {
-			if (php.preg_match(/^FQ-/, $line)) {
-				$atfqInfo['FQ'] = FqLineParser.parseFqLine($line);
-			} else if (php.preg_match(/^FM-/, $line)) {
-				$atfqInfo['FQ'] = FqLineParser.parseFqLine($line);
+		if (line = php.trim($lines[1] || '')) {
+			if (php.preg_match(/^FQ-/, line)) {
+				$atfqInfo['FQ'] = parseFqLine(line);
+			} else if (php.preg_match(/^FM-/, line)) {
+				$atfqInfo['FQ'] = parseFqLine(line);
 			} else {
 				$atfqInfo['FQ'] = null;
 			}

@@ -1577,6 +1577,83 @@ class PnrParserTest extends require('../../../../../../../backend/Transpiled/Lib
 
 			},
 		]);
+
+		// ATFQ FQ line containing just "USD" - should not cause
+		// "TypeError: Cannot convert undefined or null to object [object Promise]" error
+		$list.push([
+			[
+				'** THIS PNR IS CURRENTLY IN USE **',
+				'SPLINTER',
+				'PQX830/WS QSBYC DPBVWS  AG 23854526 04JUL',
+				' 1.1AGUILA/RECHELLE VILLAROSA  2.1AGUILA/DENNIS DECASTRO ',
+				' 3.1AGUILA/JACOB PEREZ*P-C11  4.1AGUILA/DENIELLE PEREZ*P-C05 ',
+				' 5.1AGUILA/JADEN PEREZ*P-C04 ',
+				' 1 AA1038O 18DEC ICTDFW HK5   800A  934A *         WE   E  1',
+				' 2 AA2248O 18DEC DFWSFO HK5  1101A  107P *         WE   E  1',
+				' 3 AA8400O 18DEC SFOHND HK5   215P  645P|*      WE/TH   E  1',
+				'         OPERATED BY JAPAN AIRLINES INTL',
+				' 4 JL  77O 20DEC HNDMNL HK5   130A  530A *         FR   E',
+				' 5 JL 746O 17JAN MNLNRT HK5   940A  250P *         FR   E',
+				' 6 AA8446O 17JAN NRTSEA HK5   635P 1030A *         FR   E  3',
+				'          OPERATED BY JAPAN AIRLINES INTL',
+				' 7 AA1045O 17JAN SEAORD HK5   129P  741P *         FR   E  3',
+				' 8 AA3765O 17JAN ORDICT HK5   845P 1048P *         FR   E  3',
+				'         OPERATED BY ENVOY AIR AS AMERICAN EAGLE',
+				'*** PROFILE ASSOCIATIONS EXIST *** &gt;*PA; ',
+				'*** SEAT DATA EXISTS *** &gt;9D; ',
+				'FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT',
+				'   2 ATLAS/212-481-5516-SPLINTER',
+				'   3 SFOR/800-750-2238-ITN',
+				'ADRS-INTERNATIONAL TRAVEL NETWORK@100 PINE STREET@SUITE 1925@SAN FRANCISCO CA Z/94111',
+				'FOP:-CAXXXXXXXXXXXX1393/D0723/*291370',
+				'TKTG-T/QSB 04JUL1814Z TT AG **ELECTRONIC DATA EXISTS** >*HTE;',
+				'*** TIN REMARKS EXIST *** &gt;*T; ',
+				'*** LINEAR FARE DATA EXISTS *** &gt;*LF; ',
+				'1/ATFQ-REPR/$BN1*JCB*IF160|2*JCB*IF160/-*2G8P/:A/Z$160.00/ET/TA2G8P/CAA',
+				' FQ-USD 2448.00/USD 74.40US/USD 462.86XT/USD 2985.26 - 4JUL *JCB*IF160-OHX08CN2.OHX08CN2.OHX08CN2.OHX08CN2.OHW08CN2.OHW08CN2.OHW08CN2/*JCB*IF160-OHX08CN2.OHX08CN2.OHX08CN2.OHX08CN2.OHW08CN2.OHW08CN2.OHW08CN2  ',
+				'2/ATFQ-REPR/$BN3*J11*IF199|4*J05*IF199|5*J04*IF199/-*2G8P/:A/Z$199.00/ACC1JCB/ET/TA2G8P/CAA',
+				' FQ-USD',
+				'GFAX-SSRADTK1VTOJL BY 11JUL 2359 SFO TIME ZONE OTHERWISE WILL BE XLD',
+			].join('\n'),
+			{
+				atfqData: [
+					{
+						lineNumber: '1',
+						atfqType: 'ATFQ-REPR',
+						isManualPricingRecord: false,
+						baseCmd: '$B',
+						pricingModifiers: [
+							{raw: 'N1*JCB*IF160|2*JCB*IF160'},
+							{raw: '-*2G8P'},
+							{raw: ':A'},
+							{raw: 'Z$160.00'},
+							{raw: 'ET'},
+							{raw: 'TA2G8P'},
+							{raw: 'CAA'},
+						],
+						FQ: {},
+					},
+					{
+						lineNumber: '2',
+						atfqType: 'ATFQ-REPR',
+						isManualPricingRecord: false,
+						baseCmd: '$B',
+						pricingModifiers: [
+							{raw: 'N3*J11*IF199|4*J05*IF199|5*J04*IF199'},
+							{raw: '-*2G8P'},
+							{raw: ':A'},
+							{raw: 'Z$199.00'},
+							{raw: 'ACC1JCB'},
+							{raw: 'ET'},
+							{raw: 'TA2G8P'},
+							{raw: 'CAA'},
+						],
+						FQ: {raw: 'FQ-USD'},
+					},
+				],
+			},
+		]);
+
 		return $list;
 	}
 
