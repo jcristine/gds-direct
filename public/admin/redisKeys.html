@@ -3,8 +3,9 @@
 <div>
     <textarea rows="20" cols="100" id="all-key-list">Please, Wait...</textarea>
     <br/>
-    <input type="text" id="redis-operation"/>
-    <input type="text" id="operated-key"/>
+    <input type="text" id="redis-operation" placeholder="operation"/>
+    <input type="text" id="operated-key" placeholder="key"/>
+    <input type="text" id="redis-args" placeholder="args"/>
     <button id="perform-operation">Submit</button>
     <br/>
     <textarea rows="20" cols="100" id="operation-output"></textarea>
@@ -14,6 +15,7 @@
     let allKeyList = document.querySelector('#all-key-list');
     let keyInp = document.querySelector('#operated-key');
     let operationInp = document.querySelector('#redis-operation');
+    let argsInp = document.querySelector('#redis-args');
     let performBtn = document.querySelector('#perform-operation');
     let outputHolder = document.querySelector('#operation-output');
     let getEmcSessionId = () => document.cookie
@@ -38,6 +40,7 @@
                 emcSessionId: getEmcSessionId(),
                 key: keyInp.value,
                 operation: operationInp.value,
+                args: argsInp.value.split(' ').filter(a => a),
             }),
         })  .then(rs => rs.json())
             .then(({redisData}) => {

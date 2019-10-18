@@ -19,9 +19,9 @@ exports.getAllRedisKeys = async (reqBody, emcResult) => {
 };
 
 exports.operateRedisKey = async (reqBody, emcResult) => {
-	const {key, operation} = reqBody;
+	const {key, operation, args} = reqBody;
 	const redis = await Redis.getClient();
-	const redisData = await redis[operation.toLowerCase()](key);
+	const redisData = await redis[operation.toLowerCase()](key, ...args);
 	return {redisData};
 };
 

@@ -27,6 +27,11 @@
 				}
 			},
 			isForeignProjectEmcId: false,
+			/**
+			 * optional, can be supplied instead of emcSessionId to authorize user
+			 * in GDS Direct project instead of using your project EMC token
+			 */
+			getCrossAuthToken: null,
 		}).then(nodeApp => {
 			// nodeApp.preEnterCommand({cmd: 'V24Z84/WS QSBYC DPBVWS  AG 05578602 02JUL\n 1.1KLESUN/ARTUR\n 1 PS 188X 20DEC RIXKBP HK1   600A  735A *         FR   E', terminalId: 1});
 			// nodeApp.runPnr({pnrCode: 'QWE123'});
