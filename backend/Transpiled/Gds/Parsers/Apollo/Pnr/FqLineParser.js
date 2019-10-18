@@ -55,16 +55,16 @@ class FqLineParser
 
 	static parsePriceConstructionToken(token)  {
 		let matches = [];
-		php.preg_match_all(/([A-Z]{3}) (\d+(\.\d{2})?)([A-Z]{2})?/, token, matches);
-		if (php.count(matches[1]) > 0 && php.count(matches[2]) > 0) {
-			return {
-				currency: matches[1][0],
-				amount: matches[2][0],
-				taxType: matches[4][0] ? matches[4][0] : null,
-			};
-		} else {
-			return false;
+		if (php.preg_match_all(/([A-Z]{3}) (\d+(\.\d{2})?)([A-Z]{2})?/, token, matches)) {
+			if (php.count(matches[1]) > 0 && php.count(matches[2]) > 0) {
+				return {
+					currency: matches[1][0],
+					amount: matches[2][0],
+					taxType: matches[4][0] ? matches[4][0] : null,
+				};
+			}
 		}
+		return false;
 	}
 }
 FqLineParser.FQ_LINE_PARSER_STATE_WAITING_FOR_FARE = 0;
