@@ -871,6 +871,14 @@ class CommandParserTest extends require('../../../Lib/TestCase.js')
 				{'type': 'cabinClass', 'raw': '@W', 'parsed': 'premium_economy'},
 			],
 		}}]);
+		$list.push(['FD20MAYRIXLAX@LN3XPB', {type: 'fareSearch', 'data': {
+			departureAirport: 'RIX',
+			destinationAirport: 'LAX',
+			departureDate: {raw: '20MAY'},
+			modifiers: [
+				{type: 'fareBasis', raw: '@LN3XPB', parsed: 'LN3XPB'},
+			],
+		}}]);
 
 		// pricing command with cabin class modifier: "||" should not be parsed as command separator
 		// I wonder if it is safe to split bulk commands in Galileo by _non-repeating_ "|",
