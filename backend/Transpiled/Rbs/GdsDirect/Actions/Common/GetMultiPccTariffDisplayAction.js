@@ -134,6 +134,8 @@ class GetMultiPccTariffDisplayAction {
 				baseParams.accountCode = data;
 			} else if (type === 'bookingClass') {
 				baseParams.bookingClass = data;
+			} else if (type === 'fareBasis') {
+				baseParams.fareBasis = data;
 			} else {
 				return Rej.NotImplemented('Unsupported modifier - ' + type);
 			}

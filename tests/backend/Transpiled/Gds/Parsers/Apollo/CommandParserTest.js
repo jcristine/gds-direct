@@ -1245,6 +1245,14 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 				],
 			},
 		});
+		list.push(['$D20MAYRIXLAX@LN3XPB', {type: 'fareSearch', 'data': {
+			departureAirport: 'RIX',
+			destinationAirport: 'LAX',
+			departureDate: {raw: '20MAY'},
+			modifiers: [
+				{type: 'fareBasis', raw: '@LN3XPB', parsed: 'LN3XPB'},
+			],
+		}}]);
 
 		// TODO: parse!
 		// list.push({
