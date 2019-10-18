@@ -1,8 +1,5 @@
 const Db = require('../Utils/Db.js');
-const GdsSessions = require('../Repositories/GdsSessions.js');
-const Rej = require('klesun-node-tools/src/Rej.js');
 const Redis = require('../LibWrappers/Redis.js');
-const {nonEmpty, coverExc} = require('klesun-node-tools/src/Lang.js');
 
 /**
  * often due to system problems, server restarts, etc... some linked redis structures are
