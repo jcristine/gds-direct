@@ -83,7 +83,7 @@ const shouldRestart = (exc, session) => {
 		//|| isTypeError
 		//|| !exc.httpStatusCode // runtime errors, like null-pointer exceptions
 		// 1 hour, to exclude cases like outdated format of gdsData
-		|| lifetimeMs > 60 * 60 * 1000;
+		|| lifetimeMs > 24 * 60 * 60 * 1000;
 };
 
 /**
