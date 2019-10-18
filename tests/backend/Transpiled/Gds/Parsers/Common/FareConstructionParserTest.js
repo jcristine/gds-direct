@@ -1784,6 +1784,26 @@ class FareConstructionParserTest extends require('../../../Lib/TestCase.js') {
 			},
 		]);
 
+		// negative NUC due to LC100.00 discount being larger than
+		$list.push([
+			[
+				'NYC VS X/LON VS JNB M38.50OLRP7SMN/AO11 VS X/LON VS NYC',
+				'M38.50OLRP7SMN/AO11 LC100.00 NUC-23.00END ROE1.0',
+			].join('\n'),
+			{
+				parsed: {
+					segments: [
+						{destination: 'LON'},
+						{destination: 'JNB', fare: '38.50', fareBasis: 'OLRP7SMN', ticketDesignator: 'AO11'},
+						{destination: 'LON'},
+						{destination: 'NYC', fare: '38.50', fareBasis: 'OLRP7SMN', ticketDesignator: 'AO11'},
+					],
+					fare: '77.00',
+					fareAndMarkupInNuc: '-23.00',
+				},
+			},
+		]);
+
 		// ////================================================================
 		// /// following are some sabre FC formats not supported by Parser yet
 		// ////================================================================

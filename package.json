@@ -25,7 +25,7 @@
     "dynatech-client-component-rbs": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-rbs.git#f48cf222a679a1918c90f20974ba064e1eb1a2c3",
     "dynatech-diag-service": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/diag-service.git#v0.1.6",
     "dynatech-logger": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/logger#v0.1.9",
-    "gds-utils": "git+https://github.com/golotenko/gds-utils.git#5446d5b7b110927d46a3e6dafb60ebd036abe64f",
+    "gds-utils": "git+https://github.com/golotenko/gds-utils.git#098e03e18ce9bfa707cef2027168a07fba2dcef7",
     "express": "^4.16.4",
     "ioredis": "^4.3.0",
     "jsdom": "^13.0.0",
