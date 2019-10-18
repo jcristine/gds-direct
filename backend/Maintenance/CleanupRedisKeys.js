@@ -1,4 +1,8 @@
+const Db = require('../Utils/Db.js');
+const GdsSessions = require('../Repositories/GdsSessions.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 const Redis = require('../LibWrappers/Redis.js');
+const {nonEmpty, coverExc} = require('klesun-node-tools/src/Lang.js');
 
 /**
  * often due to system problems, server restarts, etc... some linked redis structures are
@@ -16,8 +20,13 @@ const CleanupRedisKeys = () => {
 		// over half year, whereas other structures around 10-20 of them...
 		const sessionIds = await redis.hkeys(Redis.keys.SESSION_TO_STATE);
 		const promises = sessionIds.map(async sessionId => {
-			const accessMs = await redis.zscore(Redis.keys.SESSION_ACTIVES, sessionId);
-			if (accessMs === null) {
+			const row = await Db.fetchOne({
+				table: 'terminal_sessions',
+				where: [['id', '=', sessionId]],
+			});
+			const msSinceStart = Date.now() - new Date(row.created_dt + 'Z').getTime();
+			const maxLifeTime = 2 * 24 * 60 * 60 * 1000; // 2 days
+			if (row.closed_dt || msSinceStart > maxLifeTime) {
 				return redis.hdel(Redis.keys.SESSION_TO_STATE, sessionId);
 			}
 		});
