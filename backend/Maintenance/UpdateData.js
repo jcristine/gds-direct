@@ -1,3 +1,4 @@
+const Diag = require('../LibWrappers/Diag.js');
 const CleanupRedisKeys = require('./CleanupRedisKeys.js');
 
 const schedule = require('node-schedule');
@@ -65,7 +66,11 @@ const UpdateData = async () => {
 						logit('INFO: Skipping job #' + i + ' ' + job.name + ' as it is already being handled by other process', result);
 					}
 				})
-				.catch(exc => logExc('ERROR: Job #' + i + ' ' + job.name + ' failed', exc));
+				.catch(exc => {
+					const msg = 'Job #' + i + ' ' + job.name + ' failed';
+					Diag.logExc(msg, exc);
+					return logExc('ERROR: ' + msg, exc);
+				});
 		}
 	};
 
