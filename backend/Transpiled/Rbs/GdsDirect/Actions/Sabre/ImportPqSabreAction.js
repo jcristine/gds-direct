@@ -27,7 +27,6 @@ class ImportPqSabreAction extends AbstractGdsAction {
 	} = {}) {
 		super();
 		this.leadData = {};
-		this.$fetchOptionalFields = true;
 		this.baseDate = null;
 		this.cmdToOutput = {};
 		this.allCommands = [];
@@ -49,11 +48,6 @@ class ImportPqSabreAction extends AbstractGdsAction {
 
 	setBaseDate(baseDate) {
 		this.baseDate = baseDate;
-		return this;
-	}
-
-	fetchOptionalFields(fetchOptionalFields) {
-		this.$fetchOptionalFields = fetchOptionalFields;
 		return this;
 	}
 
@@ -87,12 +81,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		const raw = await this.runOrReuse('*R');
 		const parsed = PnrParser.parse(raw);
 		const common = ImportSabrePnrFormatAdapter.transformReservation(parsed, this.getBaseDate());
-		const result = {raw: raw};
-		if (result.error = common.error) {
-			return result;
-		} else {
-			result.parsed = common;
-		}
+		const result = {raw: raw, parsed: common};
 		const errors = CanCreatePqRules.checkPnrData(common);
 		if (!php.empty(errors)) {
 			return Rej.BadRequest('Invalid PNR data - ' + php.implode(';', errors));
@@ -223,7 +212,8 @@ class ImportPqSabreAction extends AbstractGdsAction {
 			: Rej.UnprocessableEntity('Failed to determine current pricing command');
 	}
 
-	async fetch_pricing(reservation) {
+	async fetch_currentPricing() {
+		const reservation = (await this.get_reservation()).parsed;
 		const collected = await this.collectPricingCmds(reservation.itinerary);
 		const cmdRecords = collected.cmdRecords;
 		const result = {
@@ -262,7 +252,9 @@ class ImportPqSabreAction extends AbstractGdsAction {
 	 * @param currentStore = AmadeusGetPricingPtcBlocksAction::execute().pricingList[0]
 	 * fetches published pricing if current pricing fare is private
 	 */
-	async fetch_publishedPricing(pricingList, nameRecords) {
+	async fetch_publishedPricing() {
+		const nameRecords = (await this.get_reservation()).parsed.passengers;
+		const pricingList = (await this.get_currentPricing()).pricingPart.parsed.pricingList;
 		const isPrivateFare = pricingList
 			.some(store => store.pricingBlockList
 				.some(b => b.hasPrivateFaresSelectedMessage));
@@ -330,7 +322,9 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		};
 	}
 
-	async fetchFareRules(pricingList, itinerary) {
+	async fetchFareRules() {
+		const itinerary = (await this.get_reservation()).parsed.itinerary;
+		const pricingList = (await this.get_currentPricing()).pricingPart.parsed.pricingList;
 		const sections = [16];
 		const common = await this.getSabreFareRules(sections, itinerary, pricingList);
 		const error = common.error;
@@ -350,41 +344,57 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		};
 	}
 
+	async get_reservation() {
+		return this.fetchedPnrFields['reservation']
+			|| (this.fetchedPnrFields['reservation'] = this.fetch_reservation());
+	}
+
+	async get_currentPricing() {
+		return this.fetchedPnrFields['currentPricing']
+			|| (this.fetchedPnrFields['currentPricing'] = this.fetch_currentPricing());
+	}
+
+	async get_flightServiceInfo() {
+		return this.fetchedPnrFields['flightServiceInfo']
+			|| (this.fetchedPnrFields['flightServiceInfo'] = this.fetch_flightServiceInfo());
+	}
+
 	async collectPnrData() {
 		const result = {pnrData: {}};
 
-		const reservationRecord = await this.fetch_reservation();
-		if (result.error = reservationRecord.error) return result;
-		result.pnrData.reservation = reservationRecord;
-
-		const nameRecords = reservationRecord.parsed.passengers;
-		const pricingRecord = await this.fetch_pricing(reservationRecord.parsed);
-		if (result.error = pricingRecord.error) return result;
-		result.pnrData.currentPricing = pricingRecord.pricingPart;
-		result.pnrData.bagPtcPricingBlocks = pricingRecord.bagPtcPricingBlocks;
-
-		if (this.$fetchOptionalFields) {
-			const flightServiceRecord = await this.fetch_flightServiceInfo();
+		if (this.shouldFetch('reservation')) {
+			const reservationRecord = await this.get_reservation();
+			if (result.error = reservationRecord.error) return result;
+			result.pnrData.reservation = reservationRecord;
+		}
+		if (this.shouldFetch('currentPricing')) {
+			const pricingRecord = await this.get_currentPricing();
+			if (result.error = pricingRecord.error) return result;
+			result.pnrData.currentPricing = pricingRecord.pricingPart;
+			result.pnrData.bagPtcPricingBlocks = pricingRecord.bagPtcPricingBlocks;
+		}
+		if (this.shouldFetch('flightServiceInfo')) {
+			const flightServiceRecord = await this.get_flightServiceInfo();
 			if (result.error = flightServiceRecord.error) return result;
 			result.pnrData.flightServiceInfo = flightServiceRecord;
-
-			const pricingList = pricingRecord.pricingPart.parsed.pricingList;
-			const fareRuleData = await this.fetchFareRules(pricingList, reservationRecord.parsed.itinerary)
+		}
+		if (this.shouldFetch('fareRules')) {
+			const fareRuleData = await this.fetchFareRules()
 				.catch(exc => ({error: 'Fare Rules error - ' + exc}))
 			;
 			if (result.error = fareRuleData.error) return result;
 
 			result.pnrData.fareComponentListInfo = fareRuleData.fareListRecords;
 			result.pnrData.fareRules = fareRuleData.ruleRecords;
-
+		}
+		if (this.shouldFetch('publishedPricing')) {
 			// it is important that it's at the end cuz it affects fare rules
-			const publishedPricingRecord = await this.fetch_publishedPricing(pricingList, nameRecords)
+			const publishedPricingRecord = await this.fetch_publishedPricing()
 				.catch(exc => ({error: 'Published Pricing error - ' + exc}))
 			;
 			if (result.error = publishedPricingRecord.error) return result;
 			result.pnrData.publishedPricing = publishedPricingRecord;
 		}
-
 		return result;
 	}
 
@@ -410,7 +420,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 
 	async execute() {
 		const result = await this.collectPnrData();
-		result.allCommands = this.allCommands.map((...args) => this.constructor.transformCmdForCms(...args));
+		result.allCommands = this.allCommands.map(cmdRec => this.constructor.transformCmdForCms(cmdRec));
 		return result;
 	}
 }

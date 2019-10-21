@@ -1266,21 +1266,19 @@ class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
 	 * @test
 	 * @dataProvider provideTestCases
 	 */
-	async testAction($input, $output, $sessionInfo) {
-		let $session, $action, $actualOutput;
-
-		$session = GdsDirectDefaults.makeStatefulSession('sabre', $input, $sessionInfo);
-		$action = (new ImportPqSabreAction()).setSession($session);
-
-		$actualOutput = await $action
-			.fetchOptionalFields($input.fetchOptionalFields)
-			.setPreCalledCommandsFromDb($sessionInfo.initialCommands || [])
+	async testAction(input, output, sessionInfo) {
+		const session = GdsDirectDefaults.makeStatefulSession('sabre', input, sessionInfo);
+		const action = (new ImportPqSabreAction({
+			pnrFields: input.fetchOptionalFields ? [] : ['reservation', 'currentPricing'],
+		})).setSession(session);
+		const actualOutput = await action
+			.setPreCalledCommandsFromDb(sessionInfo.initialCommands || [])
 			.setBaseDate('2018-03-20')
 			.execute()
 			.catch(exc => ({error: exc + ''}));
 
-		this.assertArrayElementsSubset($output, $actualOutput, ($actualOutput || {}).error || '');
-		this.assertSame(true, $session.getGdsSession().wereAllCommandsUsed(), 'not all session commands were used');
+		this.assertArrayElementsSubset(output, actualOutput, (actualOutput || {}).error || '');
+		this.assertSame(true, session.getGdsSession().wereAllCommandsUsed(), 'not all session commands were used');
 	}
 
 	getTestMapping() {

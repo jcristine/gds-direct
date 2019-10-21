@@ -189,8 +189,7 @@ const ImportPq = async ({
 		if (gds === 'apollo') {
 			importAct = new ImportPqApolloAction({travelport, agent, pnrFields});
 		} else if (gds === 'sabre') {
-			importAct = new ImportPqSabreAction({agent, pnrFields})
-				.fetchOptionalFields(fetchOptionalFields);
+			importAct = new ImportPqSabreAction({agent, pnrFields});
 		} else if (gds === 'galileo') {
 			importAct = new ImportPqGalileoAction({travelport, agent, pnrFields})
 				.fetchOptionalFields(fetchOptionalFields);
