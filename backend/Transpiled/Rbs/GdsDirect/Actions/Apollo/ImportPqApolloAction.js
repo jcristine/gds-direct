@@ -93,11 +93,6 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		return result;
 	}
 
-	async get_reservation() {
-		return this.fetchedPnrFields['reservation']
-			|| (this.fetchedPnrFields['reservation'] = this.fetch_reservation());
-	}
-
 	async fetch_flightServiceInfo(itinerary = null) {
 		itinerary = itinerary || (await this.get_reservation()).parsed.itinerary;
 
@@ -285,7 +280,8 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	 * @param $currentStore = AmadeusGetPricingPtcBlocksAction::execute()['pricingList'][0]
 	 * fetches published pricing if current pricing fare is private
 	 */
-	async fetch_publishedPricing(pricing) {
+	async fetch_publishedPricing() {
+		const pricing = (await this.get_currentPricing()).pricingPart.parsed;
 		const nameRecords = (await this.get_reservation()).parsed.passengers;
 		let isPrivateFare = false;
 		for (const store of pricing.pricingList) {
@@ -330,7 +326,8 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		};
 	}
 
-	async fetchFareRules(pricing) {
+	async fetchFareRules() {
+		const pricing = (await this.get_currentPricing()).pricingPart.parsed;
 		const itinerary = (await this.get_reservation()).parsed.itinerary;
 
 		let $sections, $common, $error, $raw;
@@ -359,31 +356,42 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		};
 	}
 
+	async get_reservation() {
+		return this.fetchedPnrFields['reservation']
+			|| (this.fetchedPnrFields['reservation'] = this.fetch_reservation());
+	}
+
+	async get_currentPricing() {
+		return this.fetchedPnrFields['currentPricing']
+			|| (this.fetchedPnrFields['currentPricing'] = this.fetch_currentPricing());
+	}
+
 	async collectPnrData() {
 		const result = {pnrData: {}};
 
 		if (this.shouldFetch('reservation')) {
 			result.pnrData.reservation = await this.get_reservation();
 		}
-		const pricingRecord = await this.fetch_currentPricing();
-		if (result.error = pricingRecord.error || null) return result;
+		if (this.shouldFetch('currentPricing')) {
+			const pricingRecord = await this.get_currentPricing();
+			if (result.error = pricingRecord.error || null) return result;
 
-		result.pnrData.currentPricing = pricingRecord.pricingPart;
-		result.pnrData.bagPtcPricingBlocks = pricingRecord.bagPtcPricingBlocks;
+			result.pnrData.currentPricing = pricingRecord.pricingPart;
+			result.pnrData.bagPtcPricingBlocks = pricingRecord.bagPtcPricingBlocks;
+		}
 		if (this.$fetchOptionalFields) {
 			const flightServiceRecord = await this.fetch_flightServiceInfo();
 			if (result.error = flightServiceRecord.error || null) return result;
 			result.pnrData.flightServiceInfo = flightServiceRecord;
 
-			const pricing = pricingRecord.pricingPart.parsed;
-			const fareRuleData = await this.fetchFareRules(pricing)
+			const fareRuleData = await this.fetchFareRules()
 				.catch(exc => ({error: 'Exc - ' + exc}));
 			if (result.error = fareRuleData.error || null) return result;
 
 			result.pnrData.fareRules = fareRuleData.ruleRecords;
 
 			// it is important that it's at the end because it affects fare rules
-			const publishedPricingRecord = await this.fetch_publishedPricing(pricing)
+			const publishedPricingRecord = await this.fetch_publishedPricing()
 				.catch(exc => ({error: 'Exc - ' + exc}));
 			if (result.error = publishedPricingRecord.error || null) return result;
 			result.pnrData.publishedPricing = publishedPricingRecord;
