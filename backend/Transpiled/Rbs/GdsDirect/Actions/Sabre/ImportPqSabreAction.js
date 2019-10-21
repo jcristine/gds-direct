@@ -282,29 +282,28 @@ class ImportPqSabreAction extends AbstractGdsAction {
 	 * @param pricing = ImportSabrePnrFormatAdapter::transformPricing()
 	 */
 	async getSabreFareRules(sections, itinerary, pricingList) {
-		let fareListRecords, ruleRecords, i, ptc, common, error, recordBase, raw;
 		if (php.count(pricingList) > 1) {
 			return {error: 'Fare rules are not supported in multi-pricing PQ'};
 		}
 		const pricing = pricingList[0];
-
-		fareListRecords = [];
-		ruleRecords = [];
+		const fareListRecords = [];
+		let ruleRecords = [];
 
 		const ptcInfos = php.array_column(php.array_column(pricing.pricingBlockList, 'ptcInfo'), 'ptc');
-		for ([i, ptc] of Object.entries(ptcInfos)) {
+		for (const [i, ptc] of Object.entries(ptcInfos)) {
 			const capturing = withCapture(this.session);
-			common = await (new ImportSabreFareRulesActions())
+			const common = await (new ImportSabreFareRulesActions())
 				.setSession(capturing)
 				.execute(pricing, itinerary, sections, ptc);
-			if (error = common.error) return {error: error};
 
-			recordBase = {
+			if (common.error) return {error: common.error};
+
+			const recordBase = {
 				pricingNumber: null,
 				subPricingNumber: +i + 1,
 			};
 
-			raw = capturing.getCalledCommands()
+			const raw = capturing.getCalledCommands()
 				.map(cmdRec => '>' + cmdRec.cmd + ';\n' + cmdRec.output)
 				.join('\n-----------------------------\n');
 			this.allCommands.push(...capturing.getCalledCommands());
