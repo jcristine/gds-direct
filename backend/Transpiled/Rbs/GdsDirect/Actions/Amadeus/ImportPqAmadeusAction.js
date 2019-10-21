@@ -48,6 +48,12 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		this.agent = agent;
 		this.amadeus = amadeus;
 		this.pnrFields = pnrFields;
+		this.fetchedPnrFields = {};
+	}
+
+	shouldFetch(pnrField) {
+		return this.pnrFields.length === 0
+			|| this.pnrFields.includes(pnrField);
 	}
 
 	setLeadData(leadData) {
@@ -155,7 +161,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		return output;
 	}
 
-	async getReservation() {
+	async fetch_reservation() {
 		const raw = await this.runOrReuseRt('RT');
 		const parsed = PnrParser.parse(raw);
 		const result = {raw: raw};
@@ -171,7 +177,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		return result;
 	}
 
-	async getFlightService(itinerary) {
+	async fetch_flightServiceInfo(itinerary) {
 		const cmd = 'DO' +
 			ArrayUtil.getFirst(itinerary).segmentNumber + '-' +
 			ArrayUtil.getLast(itinerary).segmentNumber;
@@ -308,7 +314,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			: Rej.UnprocessableEntity('Failed to determine current pricing command');
 	}
 
-	async getPricing(reservation) {
+	async fetch_currentPricing(reservation) {
 		const cmdRecords = await this.collectPricingCmds(reservation.itinerary);
 		const result = {
 			currentPricing: {
@@ -355,7 +361,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		return (await AmadeusUtil.fetchAllFx(cmd, this.session)).output;
 	}
 
-	/** @param pricingRec = ImportPqAmadeusAction::getPricing().currentPricing */
+	/** @param pricingRec = require('ImportPqAmadeusAction.js').fetch_currentPricing().currentPricing */
 	async getPublishedPricing(pricingRec, nameRecords) {
 		const ptcBlocks = Fp.flatten(php.array_column(pricingRec.parsed.pricingList, 'pricingBlockList'));
 		const isPrivateFare = php.array_filter(php.array_column(ptcBlocks, 'hasPrivateFaresSelectedMessage')).length > 0;
@@ -489,15 +495,20 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		};
 	}
 
+	async get_reservation() {
+		return this.fetchedPnrFields['reservation']
+			|| (this.fetchedPnrFields['reservation'] = this.fetch_reservation());
+	}
+
 	async collectPnrData() {
 		const result = {pnrData: {}};
 
-		const reservationRecord = await this.getReservation();
+		const reservationRecord = await this.get_reservation();
 		if (result.error = reservationRecord.error) return result;
 		result.pnrData.reservation = reservationRecord;
 
 		const nameRecords = reservationRecord.parsed.passengers;
-		const fullPricing = await this.getPricing(reservationRecord.parsed);
+		const fullPricing = await this.fetch_currentPricing(reservationRecord.parsed);
 		if (result.error = fullPricing.error) return result;
 		const pricingRecord = fullPricing.currentPricing;
 		result.pnrData.currentPricing = pricingRecord;
@@ -505,7 +516,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		result.adultPricingInfoForPqt = fullPricing.pqtPricingInfo;
 
 		if (this.$fetchOptionalFields) {
-			const flightServiceRecord = await this.getFlightService(reservationRecord.parsed.itinerary);
+			const flightServiceRecord = await this.fetch_flightServiceInfo(reservationRecord.parsed.itinerary);
 			if (result.error = flightServiceRecord.error) return result;
 			result.pnrData.flightServiceInfo = flightServiceRecord;
 			const whenFareRuleData = this.useStatelessRules
@@ -531,9 +542,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	}
 
 	async execute() {
-		let result;
-
-		result = await this.collectPnrData();
+		const result = await this.collectPnrData();
 		result.allCommands = collectFullCmdRecs(this.allCommands)
 			.map((cmdRec) => this.constructor.transformCmdForCms(cmdRec));
 		return result;
