@@ -63,27 +63,24 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 	}
 
 	async runOrReuse(cmd) {
-		let output;
-
-		output = this.cmdToFullOutput[cmd] || (await fetchAll(cmd, this)).output;
+		const output = this.cmdToFullOutput[cmd] || (await fetchAll(cmd, this)).output;
 		this.cmdToFullOutput[cmd] = output;
 		this.allCommands.push({cmd: cmd, output: output});
 		return output;
 	}
 
 	async getReservation() {
-		let raw, parsed, common, result, errors;
-
-		raw = await this.runOrReuse('*R');
-		parsed = PnrParser.parse(raw);
-		common = GalileoPnrCommonFormatAdapter.transform(parsed, this.getBaseDate());
-		result = {raw: raw};
+		const raw = await this.runOrReuse('*R');
+		const parsed = PnrParser.parse(raw);
+		const common = GalileoPnrCommonFormatAdapter.transform(parsed, this.getBaseDate());
+		const result = {raw: raw};
 		if (result.error = common.error) {
 			return result;
 		} else {
 			result.parsed = common;
 		}
-		if (!php.empty(errors = CanCreatePqRules.checkPnrData(common))) {
+		const errors = CanCreatePqRules.checkPnrData(common);
+		if (!php.empty(errors)) {
 			result.error = 'Invalid PNR data - ' + php.implode(';', errors);
 			return result;
 		}
