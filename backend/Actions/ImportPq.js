@@ -189,12 +189,15 @@ const ImportPq = async ({
 		if (gds === 'apollo') {
 			importAct = new ImportPqApolloAction({travelport, agent, pnrFields});
 		} else if (gds === 'sabre') {
-			importAct = new ImportPqSabreAction({agent, pnrFields});
+			importAct = new ImportPqSabreAction({agent, pnrFields})
+				.fetchOptionalFields(fetchOptionalFields);
 		} else if (gds === 'galileo') {
-			importAct = new ImportPqGalileoAction({travelport, agent, pnrFields});
+			importAct = new ImportPqGalileoAction({travelport, agent, pnrFields})
+				.fetchOptionalFields(fetchOptionalFields);
 		} else if (gds === 'amadeus') {
 			const amadeus = AmadeusClient.makeCustom({PersistentHttpRq});
-			importAct = new ImportPqAmadeusAction({amadeus, agent, pnrFields});
+			importAct = new ImportPqAmadeusAction({amadeus, agent, pnrFields})
+				.fetchOptionalFields(fetchOptionalFields);
 		} else {
 			return Rej.NotImplemented('Unsupported GDS for importPq - ' + gds);
 		}
@@ -206,8 +209,7 @@ const ImportPq = async ({
 		importAct
 			.setPreCalledCommandsFromDb(cmdRecs, stateful.getSessionData())
 			.setLeadData(leadData)
-			.setSession(stateful)
-			.fetchOptionalFields(fetchOptionalFields);
+			.setSession(stateful);
 		const imported = await importAct.execute();
 		const userMessages = [];
 		let status = GdsDirect.STATUS_EXECUTED;

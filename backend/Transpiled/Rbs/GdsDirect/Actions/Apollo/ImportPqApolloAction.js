@@ -30,7 +30,6 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	} = {}) {
 		super();
 		this.leadData = {};
-		this.$fetchOptionalFields = true;
 		this.$baseDate = null;
 		this.cmdToFullOutput = {};
 		this.allCommands = [];
@@ -54,11 +53,6 @@ class ImportPqApolloAction extends AbstractGdsAction {
 
 	setBaseDate($baseDate) {
 		this.$baseDate = $baseDate;
-		return this;
-	}
-
-	fetchOptionalFields($fetchOptionalFields) {
-		this.$fetchOptionalFields = $fetchOptionalFields;
 		return this;
 	}
 
@@ -366,6 +360,11 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			|| (this.fetchedPnrFields['currentPricing'] = this.fetch_currentPricing());
 	}
 
+	async get_flightServiceInfo() {
+		return this.fetchedPnrFields['flightServiceInfo']
+			|| (this.fetchedPnrFields['flightServiceInfo'] = this.fetch_flightServiceInfo());
+	}
+
 	async collectPnrData() {
 		const result = {pnrData: {}};
 
@@ -379,17 +378,19 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			result.pnrData.currentPricing = pricingRecord.pricingPart;
 			result.pnrData.bagPtcPricingBlocks = pricingRecord.bagPtcPricingBlocks;
 		}
-		if (this.$fetchOptionalFields) {
-			const flightServiceRecord = await this.fetch_flightServiceInfo();
+		if (this.shouldFetch('flightServiceInfo')) {
+			const flightServiceRecord = await this.get_flightServiceInfo();
 			if (result.error = flightServiceRecord.error || null) return result;
 			result.pnrData.flightServiceInfo = flightServiceRecord;
-
+		}
+		if (this.shouldFetch('fareRules')) {
 			const fareRuleData = await this.fetchFareRules()
 				.catch(exc => ({error: 'Exc - ' + exc}));
 			if (result.error = fareRuleData.error || null) return result;
 
 			result.pnrData.fareRules = fareRuleData.ruleRecords;
-
+		}
+		if (this.shouldFetch('publishedPricing')) {
 			// it is important that it's at the end because it affects fare rules
 			const publishedPricingRecord = await this.fetch_publishedPricing()
 				.catch(exc => ({error: 'Exc - ' + exc}));

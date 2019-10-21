@@ -411,7 +411,7 @@ class ImportPqApolloActionXmlTest extends require('../../../../Lib/TestCase.js')
 				runCmd: cmd => {
 					const calledCmd = calledCommands.shift();
 
-					if(cmd === calledCmd.cmd) {
+					if (cmd === calledCmd.cmd) {
 						return Promise.resolve(calledCmd);
 					}
 
@@ -421,7 +421,6 @@ class ImportPqApolloActionXmlTest extends require('../../../../Lib/TestCase.js')
 		});
 
 		const actual = await (new ImportPqApolloAction({useXml: true, travelport}))
-			.fetchOptionalFields(true)
 			.setSession(stateful)
 			.setPreCalledCommandsFromDb(input['previousCommands'])
 			.setBaseDate('2018-03-20')
