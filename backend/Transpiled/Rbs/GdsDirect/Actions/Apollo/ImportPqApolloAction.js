@@ -32,13 +32,14 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		this.leadData = {};
 		this.$fetchOptionalFields = true;
 		this.$baseDate = null;
-		this.$cmdToFullOutput = {};
-		this.$allCommands = [];
+		this.cmdToFullOutput = {};
+		this.allCommands = [];
 		this.$preCalledCommands = [];
 		this.useXml = useXml;
 		this.travelport = travelport;
 		this.agent = agent;
 		this.pnrFields = pnrFields;
+		this.fetchedPnrFields = {};
 	}
 
 	shouldFetch(pnrField) {
@@ -64,7 +65,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 	/** @param $commands = await require('CmdLog.js')().getLastStateSafeCommands() */
 	setPreCalledCommandsFromDb($commands) {
 		this.$preCalledCommands = $commands;
-		this.$cmdToFullOutput = collectCmdToFullOutput($commands);
+		this.cmdToFullOutput = collectCmdToFullOutput($commands);
 		return this;
 	}
 
@@ -73,45 +74,47 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			|| (this.$baseDate = php.date('Y-m-d H:i:s'));
 	}
 
-	async runOrReuse($cmd) {
-		let $output;
-		$output = this.$cmdToFullOutput[$cmd] || (await fetchAll($cmd, this)).output;
-		this.$cmdToFullOutput[$cmd] = $output;
-		this.$allCommands.push({cmd: $cmd, output: $output});
-		return $output;
+	async runOrReuse(cmd) {
+		const output = this.cmdToFullOutput[cmd] || (await fetchAll(cmd, this)).output;
+		this.cmdToFullOutput[cmd] = output;
+		this.allCommands.push({cmd: cmd, output: output});
+		return output;
 	}
 
-	async fetchReservation() {
-		let $raw, $parsed, $common, $result, $errors;
-		$raw = await this.runOrReuse('*R');
-		$parsed = PnrParser.parse($raw);
-		$common = ImportApolloPnrFormatAdapter.transformReservation($parsed, this.getBaseDate());
-		$result = {raw: $raw};
-		if ($result['error'] = $common['error'] || null) {
-			return $result;
-		} else {
-			$result['parsed'] = $common;
+	async fetch_reservation() {
+		const raw = await this.runOrReuse('*R');
+		const parsed = PnrParser.parse(raw);
+		const common = ImportApolloPnrFormatAdapter.transformReservation(parsed, this.getBaseDate());
+		const result = {raw: raw, parsed: common};
+		const errors = CanCreatePqRules.checkPnrData(common);
+		if (!php.empty(errors)) {
+			return Rej.BadRequest('Invalid PNR data - ' + errors.join(';'));
 		}
-		if (!php.empty($errors = CanCreatePqRules.checkPnrData($common))) {
-			return Rej.BadRequest('Invalid PNR data - ' + php.implode(';', $errors));
-		}
-		return $result;
+		return result;
 	}
 
-	async fetchFlightService($itinerary) {
-		let $actionResult, $common, $result = {};
+	async get_reservation() {
+		return this.fetchedPnrFields['reservation']
+			|| (this.fetchedPnrFields['reservation'] = this.fetch_reservation());
+	}
+
+	async fetch_flightServiceInfo(itinerary = null) {
+		itinerary = itinerary || (await this.get_reservation()).parsed.itinerary;
 
 		const capturing = withCapture(this.session);
-		$actionResult = await (new RetrieveFlightServiceInfoAction())
-			.setSession(capturing).execute($itinerary);
-		$common = ImportApolloPnrFormatAdapter.transformFlightServiceInfo($actionResult, this.getBaseDate());
-		this.$allCommands.push(...capturing.getCalledCommands());
-		if ($result['error'] = $common['error'] || null) {
-			return $result;
+		const actionResult = await (new RetrieveFlightServiceInfoAction())
+			.setSession(capturing).execute(itinerary);
+		const common = ImportApolloPnrFormatAdapter
+			.transformFlightServiceInfo(actionResult, this.getBaseDate());
+		this.allCommands.push(...capturing.getCalledCommands());
+
+		const result = {};
+		if (result.error = common.error || null) {
+			return result;
 		} else {
-			$result['parsed'] = $common;
+			result.parsed = common;
 		}
-		return $result;
+		return result;
 	}
 
 	static parsePricing($dump, $nameRecords, $cmd) {
@@ -232,90 +235,93 @@ class ImportPqApolloAction extends AbstractGdsAction {
 			: Rej.UnprocessableEntity('Failed to determine current pricing command');
 	}
 
-	async fetchPricing($reservation) {
-		let $collected, $cmdRecords, $result, $i, $cmdRecord, $pricingCommand, $errors, $cmd, $raw, $processed;
-		$collected = await this.collectPricingCmds($reservation['itinerary']);
-		$cmdRecords = $collected['cmdRecords'];
-		$result = {
+	async fetch_currentPricing() {
+		const reservation = (await this.get_reservation()).parsed;
+		const collected = await this.collectPricingCmds(reservation.itinerary);
+		const cmdRecords = collected.cmdRecords;
+		const result = {
 			pricingPart: {
-				cmd: php.implode('&', php.array_column($cmdRecords, 'cmd')),
-				raw: php.implode(php.PHP_EOL + '&' + php.PHP_EOL, php.array_column($cmdRecords, 'output')),
+				cmd: php.implode('&', php.array_column(cmdRecords, 'cmd')),
+				raw: php.implode(php.PHP_EOL + '&' + php.PHP_EOL, php.array_column(cmdRecords, 'output')),
 				parsed: {pricingList: []},
 			},
 			bagPtcPricingBlocks: [],
 		};
-		for ([$i, $cmdRecord] of Object.entries($cmdRecords)) {
-			$pricingCommand = $cmdRecord['cmd'];
-			$errors = CanCreatePqRules.checkPricingCommand('apollo', $pricingCommand, this.leadData, this.agent);
-			if (!php.empty($errors)) {
+		for (const [i, cmdRecord] of Object.entries(cmdRecords)) {
+			const pricingCommand = cmdRecord['cmd'];
+			const errors = CanCreatePqRules.checkPricingCommand('apollo', pricingCommand, this.leadData, this.agent);
+			if (!php.empty(errors)) {
 				const error = 'Invalid pricing command - ' +
-					$pricingCommand + ' - ' + php.implode(';', $errors);
+					pricingCommand + ' - ' + php.implode(';', errors);
 				return Rej.BadRequest(error);
 			}
-			if (CmsApolloTerminal.isScrollingAvailable($cmdRecord['output'])) {
-				if ($i == php.count($cmdRecords) - 1) { // last (current) pricing command
-					$cmd = StringUtil.startsWith($pricingCommand, '$BB') ? '*$BB' : '*$B';
-					$raw = await this.runOrReuse($cmd);
+			let raw;
+			if (CmsApolloTerminal.isScrollingAvailable(cmdRecord['output'])) {
+				if (i == php.count(cmdRecords) - 1) { // last (current) pricing command
+					const cmd = pricingCommand.startsWith('$BB') ? '*$BB' : '*$B';
+					raw = await this.runOrReuse(cmd);
 				} else {
-					const error = 'Some unscrolled output left in the >' + $cmdRecord['cmd'] + ';';
+					const error = 'Some unscrolled output left in the >' + cmdRecord['cmd'] + ';';
 					return Rej.InternalServerError(error); // should not happen, PQ button would be disabled
 				}
 			} else {
-				$raw = $cmdRecord['output'];
-				this.$allCommands.push($cmdRecord);
+				raw = cmdRecord['output'];
+				this.allCommands.push(cmdRecord);
 			}
-			$processed = this.processPricingOutput($raw, $pricingCommand, $reservation['passengers']);
-			if (!php.empty($processed['error'])) {
-				return Rej.BadRequest($processed['error']);
+			const processed = this.processPricingOutput(raw, pricingCommand, reservation['passengers']);
+			if (!php.empty(processed.error)) {
+				return Rej.BadRequest(processed.error);
 			}
-			$processed['store']['pricingNumber'] = $i + 1;
-			const $bagBlocks = $processed['bagPtcPricingBlocks']
-				.map(($bagBlock) => ({...$bagBlock, pricingNumber: $i + 1}));
-			$result['pricingPart']['parsed']['pricingList'].push($processed['store']);
-			$result['bagPtcPricingBlocks'] = php.array_merge($result['bagPtcPricingBlocks'], $bagBlocks);
+			processed.store.pricingNumber = i + 1;
+			const bagBlocks = processed.bagPtcPricingBlocks
+				.map((bagBlock) => ({...bagBlock, pricingNumber: i + 1}));
+			result.pricingPart.parsed.pricingList.push(processed.store);
+			result.bagPtcPricingBlocks = php.array_merge(result.bagPtcPricingBlocks, bagBlocks);
 		}
-		return Promise.resolve($result);
+		return Promise.resolve(result);
 	}
 
 	/**
 	 * @param $currentStore = AmadeusGetPricingPtcBlocksAction::execute()['pricingList'][0]
 	 * fetches published pricing if current pricing fare is private
 	 */
-	async fetchPublishedPricing(pricing, nameRecords) {
-		let $isPrivateFare, $store, $ptcBlock, $result, $cmd, $raw, $processed, $error;
-		$isPrivateFare = false;
-		for ($store of pricing['pricingList']) {
-			for ($ptcBlock of $store['pricingBlockList']) {
-				if ($ptcBlock['hasPrivateFaresSelectedMessage']) {
-					$isPrivateFare = true;
+	async fetch_publishedPricing(pricing) {
+		const nameRecords = (await this.get_reservation()).parsed.passengers;
+		let isPrivateFare = false;
+		for (const store of pricing.pricingList) {
+			for (const ptcBlock of store.pricingBlockList) {
+				if (ptcBlock.hasPrivateFaresSelectedMessage) {
+					isPrivateFare = true;
 				}
 			}
 		}
-		$result = {isRequired: $isPrivateFare, raw: null, parsed: null};
-		if (!$isPrivateFare) return $result;
-		$cmd = '$BB/:N';
-		$raw = await this.runOrReuse($cmd);
-		$processed = this.constructor.parsePricing($raw, nameRecords, $cmd);
-		$result['cmd'] = $cmd;
-		$result['raw'] = $raw;
-		if ($error = $processed['error'] || null) {
-			return {error: 'Failed to fetch published pricing - ' + $error};
+		const result = {isRequired: isPrivateFare, raw: null, parsed: null};
+		if (!isPrivateFare) return result;
+		const cmd = '$BB/:N';
+		const raw = await this.runOrReuse(cmd);
+		const processed = this.constructor.parsePricing(raw, nameRecords, cmd);
+		result.cmd = cmd;
+		result.raw = raw;
+		const error = processed.error || null;
+		if (error) {
+			return {error: 'Failed to fetch published pricing - ' + error};
 		}
-		$result['parsed'] = {pricingList: [$processed['store']]};
-		return $result;
+		result.parsed = {pricingList: [processed.store]};
+		return result;
 	}
 
-	async getApolloFareRules($sections, $itinerary) {
-		let $result, $error;
-		$result = await (new ImportFareComponentsAction())
+	async getApolloFareRules($sections) {
+		const result = await (new ImportFareComponentsAction())
 			.useXml(this.useXml)
 			.setTravelportClient(this.travelport)
 			.setSession(this.session).execute($sections, 1);
-		if ($error = $result['error'] || null) return {error: $error};
 
-		this.$allCommands.push($result.cmdRec);
-		for (const $fareData of Object.values($result['fareList'])) {
-			this.$allCommands.push($fareData.cmdRec);
+		const error = result['error'] || null;
+		if (error) return {error: error};
+
+		this.allCommands.push(result.cmdRec);
+		for (const fareData of Object.values(result.fareList)) {
+			this.allCommands.push(fareData.cmdRec);
 		}
 		return {
 			// could parse them, but nah for now
@@ -324,7 +330,9 @@ class ImportPqApolloAction extends AbstractGdsAction {
 		};
 	}
 
-	async fetchFareRules(pricing, itinerary) {
+	async fetchFareRules(pricing) {
+		const itinerary = (await this.get_reservation()).parsed.itinerary;
+
 		let $sections, $common, $error, $raw;
 		if (php.count(pricing['pricingList']) > 1) {
 			return {error: 'Fare rules are not supported in multi-pricing PQ'};
@@ -353,30 +361,29 @@ class ImportPqApolloAction extends AbstractGdsAction {
 
 	async collectPnrData() {
 		const result = {pnrData: {}};
-		const reservationRecord = await this.fetchReservation();
-		if (result.error = reservationRecord.error || null) return result;
 
-		result.pnrData.reservation = reservationRecord;
-		const nameRecords = reservationRecord.parsed.passengers;
-		const pricingRecord = await this.fetchPricing(reservationRecord.parsed);
+		if (this.shouldFetch('reservation')) {
+			result.pnrData.reservation = await this.get_reservation();
+		}
+		const pricingRecord = await this.fetch_currentPricing();
 		if (result.error = pricingRecord.error || null) return result;
 
 		result.pnrData.currentPricing = pricingRecord.pricingPart;
 		result.pnrData.bagPtcPricingBlocks = pricingRecord.bagPtcPricingBlocks;
 		if (this.$fetchOptionalFields) {
-			const flightServiceRecord = await this.fetchFlightService(reservationRecord.parsed.itinerary);
+			const flightServiceRecord = await this.fetch_flightServiceInfo();
 			if (result.error = flightServiceRecord.error || null) return result;
 			result.pnrData.flightServiceInfo = flightServiceRecord;
 
 			const pricing = pricingRecord.pricingPart.parsed;
-			const fareRuleData = await this.fetchFareRules(pricing,
-				reservationRecord.parsed.itinerary).catch(exc => ({error: 'Exc - ' + exc}));
+			const fareRuleData = await this.fetchFareRules(pricing)
+				.catch(exc => ({error: 'Exc - ' + exc}));
 			if (result.error = fareRuleData.error || null) return result;
 
 			result.pnrData.fareRules = fareRuleData.ruleRecords;
 
 			// it is important that it's at the end because it affects fare rules
-			const publishedPricingRecord = await this.fetchPublishedPricing(pricing, nameRecords)
+			const publishedPricingRecord = await this.fetch_publishedPricing(pricing)
 				.catch(exc => ({error: 'Exc - ' + exc}));
 			if (result.error = publishedPricingRecord.error || null) return result;
 			result.pnrData.publishedPricing = publishedPricingRecord;
@@ -406,7 +413,7 @@ class ImportPqApolloAction extends AbstractGdsAction {
 
 	async execute() {
 		const result = await this.collectPnrData();
-		result.allCommands = collectFullCmdRecs(this.$allCommands)
+		result.allCommands = collectFullCmdRecs(this.allCommands)
 			.map(c => this.constructor.transformCmdForCms(c));
 		return result;
 	}
