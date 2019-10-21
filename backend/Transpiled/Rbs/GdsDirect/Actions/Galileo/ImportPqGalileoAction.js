@@ -33,6 +33,12 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		this.useXml = useXml;
 		this.travelport = travelport;
 		this.pnrFields = pnrFields;
+		this.fetchedPnrFields = {};
+	}
+
+	shouldFetch(pnrField) {
+		return this.pnrFields.length === 0
+			|| this.pnrFields.includes(pnrField);
 	}
 
 	setLeadData(leadData) {
@@ -69,16 +75,11 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		return output;
 	}
 
-	async getReservation() {
+	async fetch_reservation() {
 		const raw = await this.runOrReuse('*R');
 		const parsed = PnrParser.parse(raw);
 		const common = GalileoPnrCommonFormatAdapter.transform(parsed, this.getBaseDate());
-		const result = {raw: raw};
-		if (result.error = common.error) {
-			return result;
-		} else {
-			result.parsed = common;
-		}
+		const result = {raw: raw, parsed: common};
 		const errors = CanCreatePqRules.checkPnrData(common);
 		if (!php.empty(errors)) {
 			result.error = 'Invalid PNR data - ' + php.implode(';', errors);
@@ -218,7 +219,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 			: Rej.UnprocessableEntity('Failed to determine current pricing command');
 	}
 
-	async getPricing(reservation) {
+	async fetch_currentPricing(reservation) {
 		const cmdRecords = await this.collectPricingCmds(reservation.itinerary);
 		const result = {
 			currentPricing: {
@@ -257,7 +258,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		return result;
 	}
 
-	async getFlightService(itinerary) {
+	async fetch_flightServiceInfo(itinerary) {
 		const action = (new GalileoGetFlightServiceInfoAction())
 			.setSession(this.session)
 			.setCmdToFullDump(this.cmdToFullOutput);
@@ -304,7 +305,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		};
 	}
 
-	async getPublishedPricing(pricingList) {
+	async fetch_publishedPricing(pricingList) {
 		const isPrivateFare = pricingList
 			.some(store => store.pricingBlockList
 				.some(b => b.hasPrivateFaresSelectedMessage));
@@ -338,15 +339,19 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		} || {})[parsedCmdType];
 	}
 
+	async get_reservation() {
+		return this.fetchedPnrFields['reservation']
+			|| (this.fetchedPnrFields['reservation'] = this.fetch_reservation());
+	}
+
 	async collectPnrData() {
 		const result = {pnrData: {}};
 
-		const reservationRecord = await this.getReservation();
+		const reservationRecord = await this.get_reservation();
 		if (result.error = reservationRecord.error) return result;
 		result.pnrData.reservation = reservationRecord;
 
-		const nameRecords = reservationRecord.parsed.passengers;
-		const pricingRecord = await this.getPricing(reservationRecord.parsed);
+		const pricingRecord = await this.fetch_currentPricing(reservationRecord.parsed);
 		if (result.error = pricingRecord.error) return result;
 		result.pnrData.currentPricing = pricingRecord.currentPricing;
 		result.pnrData.bagPtcPricingBlocks = pricingRecord.bagPtcPricingBlocks;
@@ -354,7 +359,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		result.adultPricingInfoForPqt.linearFareDump = pricingRecord.linearFare.raw;
 
 		if (this.$fetchOptionalFields) {
-			const flightServiceRecord = await this.getFlightService(reservationRecord.parsed.itinerary);
+			const flightServiceRecord = await this.fetch_flightServiceInfo(reservationRecord.parsed.itinerary);
 			if (result.error = flightServiceRecord.error) return result;
 			result.pnrData.flightServiceInfo = flightServiceRecord;
 
@@ -366,7 +371,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 			result.pnrData.fareRules = fareRuleData.ruleRecords;
 
 			// it is important that it's at the end because it affects fare rules
-			const publishedPricingRecord = await this.getPublishedPricing(pricingList)
+			const publishedPricingRecord = await this.fetch_publishedPricing(pricingList)
 				.catch(exc => ({error: exc + ''}));
 			if (result.error = publishedPricingRecord.error) return result;
 			result.pnrData.publishedPricing = publishedPricingRecord;

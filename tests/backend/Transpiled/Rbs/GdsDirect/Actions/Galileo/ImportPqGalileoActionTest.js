@@ -1223,7 +1223,7 @@ class ImportPqGalileoActionTest extends require('../../../../../../../backend/Tr
 			.setPreCalledCommandsFromDb($input['previousCommands'])
 			.setBaseDate('2018-03-21')
 			.execute()
-			.catch(exc => ({error: exc + ''}));
+			.catch(exc => ({error: exc + '', stack: exc.stack}));
 
 		this.assertArrayElementsSubset($expectedOutput, $actual);
 	}
