@@ -17,6 +17,7 @@ import PricePccMixList from '../components/popovers/PricePccMixList.es6';
 import promptForTicketedPnrCancelConfirm from "../components/popovers/promptForTicketedPnrCancelConfirm";
 import TariffPccMixList from "../components/popovers/TariffPccMixList";
 import tetherDrop from 'tether-drop';
+import ReprotectionButton from "../components/menu/ReprotectionButton";
 
 const BORDER_SIZE = 2;
 
@@ -103,7 +104,7 @@ export default class GdsDirectPlusApp
 	{
 		const {
 			htmlRootDom, PqPriceModal = null, travelRequestId, chatContainerId,
-			onTokenExpired = () => {},
+			onTokenExpired = () => {}, reprotectionBtnCallback = null,
 		} = params;
 		const terminalThemes = themeData.terminalThemes;
 		const {settings, buffer, auth} = viewData;
@@ -127,6 +128,11 @@ export default class GdsDirectPlusApp
 		this.gdsSwitch = gdsSwitch;
 		if (PqPriceModal) {
 			this.pqParser = new PqParser(PqPriceModal, gdsSwitch);
+		}
+		if (reprotectionBtnCallback) {
+			this.reprotectionBtn = ReprotectionButton({
+				reprotectionBtnCallback, gdsSwitch,
+			});
 		}
 
 		let handleMessageFromServer = toHandleMessageFromServer(gdsSwitch);

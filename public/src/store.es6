@@ -18,6 +18,7 @@ class Store
 		return this.app;
 	}
 
+	/** @param {GdsDirectPlusApp} app */
 	setApp(app)
 	{
 		this.app = app;

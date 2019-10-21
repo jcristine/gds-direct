@@ -10,6 +10,8 @@ import {LogButton} 			    from "./popovers/logButton";
 import {Quotes}                 from "./menu/quotes";
 import {MenuHideButton}         from "./menu/hideMenu";
 import {PQ_MODAL_PROVIDED}         from "./../actions/priceQuoutes.es6";
+import {getStore} from "../store";
+import ReprotectionButton from "./menu/ReprotectionButton";
 let Help = require('./popovers/help.es6').default;
 let PnrTools = require('./popovers/PnrTools.es6').default;
 
@@ -60,6 +62,10 @@ export default class MenuPanel extends Component
 					)
 			);
 		}
+		const reprotectionBtn = getStore().app.reprotectionBtn || null;
+		if (reprotectionBtn) {
+			this.observe(new Component({context: reprotectionBtn.dom}));
+		}
 
 		const toolsBtnCmp = new Component('article');
 		this.observe(
@@ -102,7 +108,7 @@ export default class MenuPanel extends Component
 					).observe(
 						new LogButton()
 					)
-			)
+			);
 		}
 
 		let isStandalone = window.location.href.startsWith(window.GdsDirectPlusParams.rootUrl);

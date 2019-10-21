@@ -16,8 +16,8 @@ export default class CurrentLeadPqButton extends Component
 	{
 		return super.setState({
 			canCreatePq : state.curGds.get('canCreatePq'),
-			requestId 	: requestId
-		})
+			requestId 	: requestId,
+		});
 	}
 
 	_renderer()
