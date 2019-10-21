@@ -116,7 +116,9 @@ export default class Session
 	static resetWaitingQueue()
 	{
 		lastGlobalPromise = Promise.resolve();
-		rejectPending(new Error('Session Manual Reset'));
+		const exc = new Error('Session Manual Reset');
+		exc.httpStatusCode = 410; // Gone, setting to avoid diag
+		rejectPending(exc);
 	}
 
 	static isBusy()
