@@ -38,7 +38,6 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	} = {}) {
 		super();
 		this.useStatelessRules = true;
-		this.$fetchOptionalFields = true;
 		this.geoProvider = null;
 		this.baseDate = null;
 
@@ -68,12 +67,6 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 
 	setGeoProvider(geoProvider) {
 		this.geoProvider = geoProvider;
-		return this;
-	}
-
-	fetchOptionalFields(fetchOptionalFields) {
-
-		this.$fetchOptionalFields = fetchOptionalFields;
 		return this;
 	}
 
@@ -177,7 +170,8 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 		return result;
 	}
 
-	async fetch_flightServiceInfo(itinerary) {
+	async fetch_flightServiceInfo() {
+		const itinerary = (await this.get_reservation()).parsed.itinerary;
 		const cmd = 'DO' +
 			ArrayUtil.getFirst(itinerary).segmentNumber + '-' +
 			ArrayUtil.getLast(itinerary).segmentNumber;
@@ -314,7 +308,8 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			: Rej.UnprocessableEntity('Failed to determine current pricing command');
 	}
 
-	async fetch_currentPricing(reservation) {
+	async fetch_currentPricing() {
+		const reservation = (await this.get_reservation()).parsed;
 		const cmdRecords = await this.collectPricingCmds(reservation.itinerary);
 		const result = {
 			currentPricing: {
@@ -362,7 +357,9 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	}
 
 	/** @param pricingRec = require('ImportPqAmadeusAction.js').fetch_currentPricing().currentPricing */
-	async getPublishedPricing(pricingRec, nameRecords) {
+	async fetch_publishedPricing() {
+		const nameRecords = (await this.get_reservation()).parsed.passengers;
+		const pricingRec = (await this.get_currentPricing()).currentPricing;
 		const ptcBlocks = Fp.flatten(php.array_column(pricingRec.parsed.pricingList, 'pricingBlockList'));
 		const isPrivateFare = php.array_filter(php.array_column(ptcBlocks, 'hasPrivateFaresSelectedMessage')).length > 0;
 		const result = {isRequired: isPrivateFare, raw: null, parsed: null};
@@ -388,7 +385,9 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	 * does not include sections over 19-th page - Amadeus simply
 	 * says "NO MORE PAGE AVAILABLE" in the middle of text
 	 */
-	async getStatefulFareRules(pricing, itinerary) {
+	async getStatefulFareRules() {
+		const pricing = (await this.get_currentPricing()).currentPricing.parsed.pricingList[0];
+		const itinerary = (await this.get_reservation()).parsed.itinerary;
 		const sections = [16];
 		const fareListRecords = [];
 		const ruleRecords = [];
@@ -435,7 +434,9 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	 * @param stores = AmadeusGetPricingPtcBlocksAction::execute().pricingList
 	 * fetches all rule sections, no matter how long they are
 	 */
-	async getStatelessFareRules(stores, itinerary) {
+	async getStatelessFareRules() {
+		const stores = (await this.get_currentPricing()).currentPricing.parsed.pricingList;
+		const itinerary = (await this.get_reservation()).parsed.itinerary;
 		const ruleRecords = [];
 		const result = await new AmadeusGetStatelessRulesAction({
 			amadeus: this.amadeus,
@@ -500,44 +501,54 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 			|| (this.fetchedPnrFields['reservation'] = this.fetch_reservation());
 	}
 
+	async get_currentPricing() {
+		return this.fetchedPnrFields['currentPricing']
+			|| (this.fetchedPnrFields['currentPricing'] = this.fetch_currentPricing());
+	}
+
+	async get_flightServiceInfo() {
+		return this.fetchedPnrFields['flightServiceInfo']
+			|| (this.fetchedPnrFields['flightServiceInfo'] = this.fetch_flightServiceInfo());
+	}
+
 	async collectPnrData() {
 		const result = {pnrData: {}};
 
-		const reservationRecord = await this.get_reservation();
-		if (result.error = reservationRecord.error) return result;
-		result.pnrData.reservation = reservationRecord;
-
-		const nameRecords = reservationRecord.parsed.passengers;
-		const fullPricing = await this.fetch_currentPricing(reservationRecord.parsed);
-		if (result.error = fullPricing.error) return result;
-		const pricingRecord = fullPricing.currentPricing;
-		result.pnrData.currentPricing = pricingRecord;
-		result.pnrData.bagPtcPricingBlocks = fullPricing.bagPtcPricingBlocks;
-		result.adultPricingInfoForPqt = fullPricing.pqtPricingInfo;
-
-		if (this.$fetchOptionalFields) {
-			const flightServiceRecord = await this.fetch_flightServiceInfo(reservationRecord.parsed.itinerary);
+		if (this.shouldFetch('reservation')) {
+			const reservationRecord = await this.get_reservation();
+			if (result.error = reservationRecord.error) return result;
+			result.pnrData.reservation = reservationRecord;
+		}
+		if (this.shouldFetch('currentPricing')) {
+			const fullPricing = await this.get_currentPricing();
+			if (result.error = fullPricing.error) return result;
+			const pricingRecord = fullPricing.currentPricing;
+			result.pnrData.currentPricing = pricingRecord;
+			result.pnrData.bagPtcPricingBlocks = fullPricing.bagPtcPricingBlocks;
+			result.adultPricingInfoForPqt = fullPricing.pqtPricingInfo;
+		}
+		if (this.shouldFetch('flightServiceInfo')) {
+			const flightServiceRecord = await this.get_flightServiceInfo();
 			if (result.error = flightServiceRecord.error) return result;
 			result.pnrData.flightServiceInfo = flightServiceRecord;
+		}
+		if (this.shouldFetch('fareRules')) {
 			const whenFareRuleData = this.useStatelessRules
-				? this.getStatelessFareRules(pricingRecord.parsed.pricingList,
-					reservationRecord.parsed.itinerary)
-				: this.getStatefulFareRules(pricingRecord.parsed.pricingList[0],
-					reservationRecord.parsed.itinerary);
+				? this.getStatelessFareRules()
+				: this.getStatefulFareRules();
 			const fareRuleData = await whenFareRuleData.catch(coverExc(Rej.list, exc => ({
 				error: 'Failed to fetch Fare Rules - ' + exc,
 			})));
 			if (result.error = fareRuleData.error) return result;
-
 			result.pnrData.fareComponentListInfo = fareRuleData.fareListRecords;
 			result.pnrData.fareRules = fareRuleData.ruleRecords;
-
+		}
+		if (this.shouldFetch('publishedPricing')) {
 			// it is important that it's at the end cuz it affects fare rules
-			const publishedPricingRecord = await this.getPublishedPricing(pricingRecord, nameRecords);
+			const publishedPricingRecord = await this.fetch_publishedPricing();
 			if (result.error = publishedPricingRecord.error) return result;
 			result.pnrData.publishedPricing = publishedPricingRecord;
 		}
-
 		return result;
 	}
 

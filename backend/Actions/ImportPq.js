@@ -194,8 +194,7 @@ const ImportPq = async ({
 			importAct = new ImportPqGalileoAction({travelport, agent, pnrFields});
 		} else if (gds === 'amadeus') {
 			const amadeus = AmadeusClient.makeCustom({PersistentHttpRq});
-			importAct = new ImportPqAmadeusAction({amadeus, agent, pnrFields})
-				.fetchOptionalFields(fetchOptionalFields);
+			importAct = new ImportPqAmadeusAction({amadeus, agent, pnrFields});
 		} else {
 			return Rej.NotImplemented('Unsupported GDS for importPq - ' + gds);
 		}

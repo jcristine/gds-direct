@@ -2498,24 +2498,22 @@ class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
 	 * @dataProvider provideTestCases
 	 */
 	async testAction($input, $expectedOutput, $calledCommands) {
-		let $actual;
-
-		let full = $input['fetchOptionalFields'];
+		let full = $input.fetchOptionalFields;
 		full = full === undefined || full === true;
 
-		let session = new AnyGdsStubSession($calledCommands);
-		$actual = await (new ImportPqAmadeusAction())
-			.setGeoProvider(new StubLocationGeographyProvider([]))
+		const session = new AnyGdsStubSession($calledCommands);
+		const actual = await (new ImportPqAmadeusAction({
+			pnrFields: full ? [] : ['reservation', 'currentPricing'],
+		})).setGeoProvider(new StubLocationGeographyProvider([]))
 			.useStatefulRules($input['useStatefulRules'])
 			.setSession(session)
 			.setPreCalledCommandsFromDb($input['previousCommands'],
 				GdsDirectDefaults.makeDefaultAmadeusState())
 			.setBaseDate($input.baseDate || '2018-03-20')
-			.fetchOptionalFields(full)
 			.execute()
 			.catch(exc => ({error: exc + ''}));
 
-		this.assertArrayElementsSubset($expectedOutput, $actual);
+		this.assertArrayElementsSubset($expectedOutput, actual);
 		this.assertEquals([], session.getCommandsLeft());
 	}
 

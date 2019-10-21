@@ -1867,7 +1867,6 @@ class ImportPqAmadeusActionXmlTest extends require('../../Lib/TestCase.js') {
 				.setPreCalledCommandsFromDb(input['previousCommands'],
 					GdsDirectDefaults.makeDefaultAmadeusState())
 				.setBaseDate(input.baseDate || '2018-03-20')
-				.fetchOptionalFields(true)
 				.execute()
 				.catch(exc => ({error: exc + ''}));
 
