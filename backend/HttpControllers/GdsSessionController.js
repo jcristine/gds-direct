@@ -148,6 +148,16 @@ exports.getPqItinerary = async ({rqBody, session, emcUser}) => {
 	return imported;
 };
 
+exports.getReprotectionData = async ({rqBody, ...controllerData}) => {
+	const stateful = await StatefulSession.makeFromDb(controllerData);
+	const PersistentHttpRq = GdsSession.initHttpRq(controllerData.session);
+	return ImportPq({
+		stateful, leadData: {}, fetchOptionalFields: false,
+		pnrFields: ['reservation', 'flightServiceInfo'],
+		PersistentHttpRq,
+	});
+};
+
 exports.importPq = async ({rqBody, session, emcUser}) => {
 	// could Promise.all to save some time...
 	const leadData = await CmsClient.getLeadData(rqBody.pqTravelRequestId);

@@ -10,13 +10,17 @@ const withBtnLock = (btn, action) => {
 		});
 };
 
-/** @param reprotectionAction = require('ReprotectionAction.es6')() */
+/**
+ * @param reprotectionAction = require('ReprotectionAction.es6')()
+ * @param {GdsSwitch} gdsSwitch
+ */
 const ReprotectionButton = ({reprotectionBtnCallback, gdsSwitch}) => {
+	const gds = gdsSwitch.getCurrentName();
 	const btn = Dom('button', {
 		className: 'btn btn-sm btn-mozilla font-bold',
 		textContent: 'RO',
 		onclick: () => withBtnLock(btn, () =>
-			get('/terminal/getReprotectionData')
+			get(`/terminal/getReprotectionData?gds=${gds}`)
 				.then(reprotectionBtnCallback)),
 	});
 	return {dom: Dom('article', {}, [btn])};

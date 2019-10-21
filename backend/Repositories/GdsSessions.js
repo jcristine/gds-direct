@@ -1,7 +1,8 @@
 
 const {getClient, keys, withNewConnection} = require('./../LibWrappers/Redis.js');
 const FluentLogger = require('./../LibWrappers/FluentLogger.js');
-const {NoContent, Conflict, NotFound} = require('klesun-node-tools/src/Rej.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
+const {NoContent, Conflict, NotFound} = Rej;
 const Misc = require('../Utils/TmpLib.js');
 const {chunk} = Misc;
 const Db = require('../Utils/Db.js');
@@ -11,6 +12,10 @@ const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
 const TABLE = 'terminal_sessions';
 
 const normalizeContext = (reqBody) => {
+	if (!reqBody.agentId || !reqBody.gds) {
+		const msg = 'Invalid GRECT session context: agentId or gds was not supplied';
+		throw Rej.BadRequest(msg, reqBody);
+	}
 	return {
 		agentId: +reqBody.agentId,
 		gds: reqBody.gds,

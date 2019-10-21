@@ -302,6 +302,7 @@ const routes = {
 	'/terminal/goToPricing': withGdsSession(GdsSessionController.goToPricing),
 	'/terminal/addCrossRefOsi': withGdsSession(GdsSessionController.addCrossRefOsi),
 	'/terminal/getCurrentPnr': withGdsSession(GdsSessionController.getCurrentPnr),
+	'/terminal/getReprotectionData': withGdsSession(GdsSessionController.getReprotectionData),
 	'/api/js/admin/multi-pcc-tariff/list-rules': toHandleHttp(MultiPccTariffRules.getAll),
 	'/api/js/data/locations': toHandleHttp(Airports.getAllLocations),
 	'/api/js/admin/multi-pcc-tariff/store-rule': withRoleAuth([

@@ -19,13 +19,13 @@ const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 /** @param stateful = require('StatefulSession.js')() */
 const ImportPq = async ({
-	stateful, leadData, fetchOptionalFields = true, pnrFields = [],
+	stateful, leadData, fetchOptionalFields = true, pnrFields = null,
 	PersistentHttpRq = require('klesun-node-tools/src/Utils/PersistentHttpRq.js'),
 }) => {
 	// compatibility, should remove after refactored
-	if (fetchOptionalFields === false) {
-		pnrFields = ['reservation', 'currentPricing'];
-	}
+	pnrFields = pnrFields || (fetchOptionalFields ? [] :
+		['reservation', 'currentPricing']);
+
 	const gds = stateful.gds;
 	const geo = new LocationGeographyProvider();
 	const agent = stateful.getAgent();
@@ -112,11 +112,11 @@ const ImportPq = async ({
 		return store;
 	};
 
-	const postProcessPricing = async ($currentPricing) => {
-		for (const store of $currentPricing['parsed']['pricingList']) {
+	const postProcessPricing = async (currentPricing) => {
+		for (const store of currentPricing.parsed.pricingList) {
 			await extendPricingStore(store);
 		}
-		return $currentPricing;
+		return currentPricing;
 	};
 
 	const makeUtcDtRec = async (localDtRec, airportCode) => {
@@ -137,38 +137,38 @@ const ImportPq = async ({
 	/**
 	 * add fields that do not require GDS-specific logic
 	 */
-	const postprocessPnrData = async ($pnrData) => {
-		$pnrData['currentPricing'] = await postProcessPricing($pnrData['currentPricing']);
-
-		const pricingList = $pnrData['currentPricing'].parsed.pricingList;
-		$pnrData['contractInfo'] = await RbsUtils.makeContractInfo(gds, pricingList);
-
-		let itinerary = $pnrData['reservation']['parsed']['itinerary'];
-		for (const segment of itinerary) {
-			await addUtcTimes(segment);
+	const postprocessPnrData = async (pnrData) => {
+		if (pnrData.currentPricing) {
+			pnrData.currentPricing = await postProcessPricing(pnrData.currentPricing);
+			const pricingList = pnrData.currentPricing.parsed.pricingList;
+			pnrData.contractInfo = await RbsUtils.makeContractInfo(gds, pricingList);
 		}
-
-		const svcSegments = (($pnrData['flightServiceInfo'] || {})['parsed'] || {})['segments'] || [];
-		if (svcSegments.length > 0) {
-			itinerary = ImportPnrAction.combineItineraryAndSvc(itinerary, svcSegments);
+		if (pnrData.reservation) {
+			let itinerary = pnrData.reservation.parsed.itinerary;
+			for (const segment of itinerary) {
+				await addUtcTimes(segment);
+			}
+			const svcSegments = ((pnrData.flightServiceInfo || {}).parsed || {}).segments || [];
+			if (svcSegments.length > 0) {
+				itinerary = ImportPnrAction.combineItineraryAndSvc(itinerary, svcSegments);
+			}
+			pnrData.reservation.parsed.itinerary = itinerary;
 		}
-		$pnrData['reservation']['parsed']['itinerary'] = itinerary;
-
-		return $pnrData;
+		return pnrData;
 	};
 
-	const checkCurrency = ($pnrData) => {
-		const $currencies = [];
-		for (const $store of Object.values($pnrData['currentPricing']['parsed']['pricingList'])) {
-			for (const $ptcBlock of Object.values($store['pricingBlockList'])) {
-				$currencies.push($ptcBlock['fareInfo']['totalFare']['currency']);
+	const checkCurrency = (currentPricing) => {
+		const currencies = [];
+		for (const store of currentPricing.parsed.pricingList) {
+			for (const ptcBlock of store.pricingBlockList) {
+				currencies.push(ptcBlock.fareInfo.totalFare.currency);
 			}
 		}
-		const unique = php.array_unique($currencies);
+		const unique = php.array_unique(currencies);
 		if (php.count(unique) > 1) {
-			return Rej.BadRequest('Pricing has conflicting currencies - ' + $currencies.join(', '));
+			return Rej.BadRequest('Pricing has conflicting currencies - ' + currencies.join(', '));
 		}
-		for (const store of $pnrData.currentPricing.parsed.pricingList) {
+		for (const store of currentPricing.parsed.pricingList) {
 			const pcc = store.pricingPcc;
 			const isDv2Travel =
 				gds === 'sabre' && pcc === 'C5VD' ||
@@ -201,9 +201,11 @@ const ImportPq = async ({
 		} else {
 			return Rej.NotImplemented('Unsupported GDS for importPq - ' + gds);
 		}
-		const stateErrors = await SessionStateHelper.checkCanCreatePq(stateful.getLog(), leadData, agent);
-		if (stateErrors.length > 0) {
-			return {userMessages: ['Invalid PQ state'].concat(stateErrors)};
+		if (!pnrFields.length || pnrFields.includes('currentPricing')) {
+			const stateErrors = await SessionStateHelper.checkCanCreatePq(stateful.getLog(), leadData, agent);
+			if (stateErrors.length > 0) {
+				return {userMessages: ['Invalid PQ state'].concat(stateErrors)};
+			}
 		}
 		const cmdRecs = await getCurrentStateCommands();
 		importAct
@@ -227,7 +229,9 @@ const ImportPq = async ({
 		imported.sessionInfo = await SessionStateHelper.makeSessionInfo(stateful.getLog(), leadData);
 		if (status === GdsDirect.STATUS_EXECUTED) {
 			imported.pnrData = await postprocessPnrData(imported.pnrData);
-			await checkCurrency(imported.pnrData);
+			if (imported.pnrData.currentPricing) {
+				await checkCurrency(imported.pnrData.currentPricing);
+			}
 			return imported;
 		} else {
 			return UnprocessableEntity('PQ not imported - ' + userMessages.join('; '));
