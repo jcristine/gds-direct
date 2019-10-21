@@ -17,22 +17,17 @@ class ImportSabrePnrFormatAdapter {
 	//  1-st level
 	// =====================
 
-	/** @param $parsedData = SabreReservationParser::parse() */
-	static transformReservation($parsedData, $creationDate) {
-		let $nameRecords, $reservation, $pnrInfo;
+	/** @param parsedData = require('PnrParser.js').parse() */
+	static transformReservation(parsedData, creationDate) {
+		const nameRecords = (((parsedData.parsedData || {}).passengers || {}).parsedData || {}).passengerList || [];
+		let reservation = {};
 
-		if (php.isset($parsedData['error'])) {
-			return $parsedData;
-		}
-
-		$nameRecords = ((($parsedData['parsedData'] || {})['passengers'] || {})['parsedData'] || {})['passengerList'] || [];
-		$reservation = {};
-
-		$pnrInfo = php.isset($parsedData['parsedData']['pnrInfo']) ? this.transformPnrInfo($parsedData['parsedData']['pnrInfo']) : null;
-		const baseDate = !$pnrInfo ? $creationDate : $pnrInfo.reservationDate.full;
-		$reservation['pnrInfo'] = $pnrInfo;
-		$reservation['passengers'] = $nameRecords;
-		$reservation['itinerary'] = FormatAdapter.adaptSabreItineraryParseForClient(($parsedData['parsedData'] || {})['itinerary'] || [], baseDate);
+		const pnrInfo = !php.isset(parsedData.parsedData['pnrInfo']) ? null :
+			this.transformPnrInfo(parsedData.parsedData['pnrInfo']);
+		const baseDate = !pnrInfo ? creationDate : pnrInfo.reservationDate.full;
+		reservation.pnrInfo = pnrInfo;
+		reservation.passengers = nameRecords;
+		reservation.itinerary = FormatAdapter.adaptSabreItineraryParseForClient((parsedData.parsedData || {}).itinerary || [], baseDate);
 
 		// commenting til we really need these fields
 
@@ -48,24 +43,24 @@ class ImportSabrePnrFormatAdapter {
 		//            ];
 		//        }, $parsedData['parsedData']['phones'] ?? []);
 
-		$reservation['remarks'] = FormatAdapter.transformSabreRemarks(($parsedData['parsedData'] || {})['remarks'] || []);
-		$reservation['confirmationNumbers'] = ImportPnrCommonFormatAdapter.collectConfirmationNumbers(($parsedData['parsedData'] || {})['itinerary'] || []);
+		reservation.remarks = FormatAdapter.transformSabreRemarks((parsedData['parsedData'] || {})['remarks'] || []);
+		reservation.confirmationNumbers = ImportPnrCommonFormatAdapter.collectConfirmationNumbers((parsedData['parsedData'] || {})['itinerary'] || []);
 
-		$reservation['dataExistsInfo'] = {
-			mileageProgramsExist: $parsedData['parsedData']['misc']['ffDataExists'],
-			fareQuoteExists: $parsedData['parsedData']['misc']['priceQuoteRecordExists'],
-			dividedBookingExists: php.in_array('DIVIDED_REMARK', php.array_column(($parsedData['parsedData'] || {})['remarks'] || [], 'remarkType')),
-			isInvoicedExists: $parsedData['parsedData']['misc']['isInvoiced'],
-			formOfPaymentExists: $parsedData['parsedData']['misc']['fopDataExists'],
-			passengerEmailDataExists: $parsedData['parsedData']['misc']['passengerEmailDataExists'],
-			pctcDataExists: $parsedData['parsedData']['misc']['pctcDataExists'],
-			pqfDataExists: $parsedData['parsedData']['misc']['pqfDataExists'],
-			securityInfoExists: $parsedData['parsedData']['misc']['securityInfoExists'],
+		reservation.dataExistsInfo = {
+			mileageProgramsExist: parsedData['parsedData']['misc']['ffDataExists'],
+			fareQuoteExists: parsedData['parsedData']['misc']['priceQuoteRecordExists'],
+			dividedBookingExists: php.in_array('DIVIDED_REMARK', php.array_column((parsedData['parsedData'] || {})['remarks'] || [], 'remarkType')),
+			isInvoicedExists: parsedData['parsedData']['misc']['isInvoiced'],
+			formOfPaymentExists: parsedData['parsedData']['misc']['fopDataExists'],
+			passengerEmailDataExists: parsedData['parsedData']['misc']['passengerEmailDataExists'],
+			pctcDataExists: parsedData['parsedData']['misc']['pctcDataExists'],
+			pqfDataExists: parsedData['parsedData']['misc']['pqfDataExists'],
+			securityInfoExists: parsedData['parsedData']['misc']['securityInfoExists'],
 		};
 
-		$reservation['dumpNumbers'] = $parsedData['dumpNumbers'];
-		$reservation = ImportPnrCommonFormatAdapter.addContextDataToPaxes($reservation);
-		return $reservation;
+		reservation.dumpNumbers = parsedData['dumpNumbers'];
+		reservation = ImportPnrCommonFormatAdapter.addContextDataToPaxes(reservation);
+		return reservation;
 	}
 
 	static transformFormOfPaymentInfo($parsedData) {
