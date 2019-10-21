@@ -20,81 +20,83 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 	constructor({
 		useXml = true, agent = null,
 		travelport = TravelportClient(),
+		pnrFields = [],
 	}) {
 		super();
 		this.leadData = {};
 		this.agent = agent;
 		this.$fetchOptionalFields = true;
-		this.$baseDate = null;
-		this.$cmdToFullOutput = {};
-		this.$allCommands = [];
-		this.$preCalledCommands = [];
+		this.baseDate = null;
+		this.cmdToFullOutput = {};
+		this.allCommands = [];
+		this.preCalledCommands = [];
 		this.useXml = useXml;
 		this.travelport = travelport;
+		this.pnrFields = pnrFields;
 	}
 
-	setLeadData($leadData) {
-		this.leadData = $leadData;
+	setLeadData(leadData) {
+		this.leadData = leadData;
 		return this;
 	}
 
-	setBaseDate($baseDate) {
-		this.$baseDate = $baseDate;
+	setBaseDate(baseDate) {
+		this.baseDate = baseDate;
 		return this;
 	}
 
-	fetchOptionalFields($fetchOptionalFields) {
-		this.$fetchOptionalFields = $fetchOptionalFields;
+	fetchOptionalFields(fetchOptionalFields) {
+		this.$fetchOptionalFields = fetchOptionalFields;
 		return this;
 	}
 
-	/** @param $commands = [at('CmdLog.js').makeRow()] */
-	setPreCalledCommandsFromDb($commands) {
-		this.$preCalledCommands = $commands;
-		this.$cmdToFullOutput = collectCmdToFullOutput($commands);
+	/** @param commands = [at('CmdLog.js').makeRow()] */
+	setPreCalledCommandsFromDb(commands) {
+		this.preCalledCommands = commands;
+		this.cmdToFullOutput = collectCmdToFullOutput(commands);
 		return this;
 	}
 
 	getBaseDate() {
-		return this.$baseDate
-			|| (this.$baseDate = php.date('Y-m-d H:i:s'));
+		return this.baseDate
+			|| (this.baseDate = php.date('Y-m-d H:i:s'));
 	}
 
-	async runOrReuse($cmd) {
-		let $output;
+	async runOrReuse(cmd) {
+		let output;
 
-		$output = this.$cmdToFullOutput[$cmd] || (await fetchAll($cmd, this)).output;
-		this.$cmdToFullOutput[$cmd] = $output;
-		this.$allCommands.push({cmd: $cmd, output: $output});
-		return $output;
+		output = this.cmdToFullOutput[cmd] || (await fetchAll(cmd, this)).output;
+		this.cmdToFullOutput[cmd] = output;
+		this.allCommands.push({cmd: cmd, output: output});
+		return output;
 	}
 
 	async getReservation() {
-		let $raw, $parsed, $common, $result, $errors;
+		let raw, parsed, common, result, errors;
 
-		$raw = await this.runOrReuse('*R');
-		$parsed = PnrParser.parse($raw);
-		$common = GalileoPnrCommonFormatAdapter.transform($parsed, this.getBaseDate());
-		$result = {raw: $raw};
-		if ($result['error'] = $common['error']) {
-			return $result;
+		raw = await this.runOrReuse('*R');
+		parsed = PnrParser.parse(raw);
+		common = GalileoPnrCommonFormatAdapter.transform(parsed, this.getBaseDate());
+		result = {raw: raw};
+		if (result.error = common.error) {
+			return result;
 		} else {
-			$result['parsed'] = $common;
+			result.parsed = common;
 		}
-		if (!php.empty($errors = CanCreatePqRules.checkPnrData($common))) {
-			$result['error'] = 'Invalid PNR data - ' + php.implode(';', $errors);
-			return $result;
+		if (!php.empty(errors = CanCreatePqRules.checkPnrData(common))) {
+			result.error = 'Invalid PNR data - ' + php.implode(';', errors);
+			return result;
 		}
-		return $result;
+		return result;
 	}
 
-	static transformBagPtcBlock($ptcBlock, $i) {
+	static transformBagPtcBlock(ptcBlock, i) {
 		return {
-			subPricingNumber: +$i + 1,
-			passengerNameNumbers: $ptcBlock['passengerNameNumbers'],
-			ptcInfo: $ptcBlock['ptcInfo'],
-			raw: $ptcBlock['baggageInfo']['raw'],
-			parsed: $ptcBlock['baggageInfo']['parsed'],
+			subPricingNumber: +i + 1,
+			passengerNameNumbers: ptcBlock.passengerNameNumbers,
+			ptcInfo: ptcBlock.ptcInfo,
+			raw: ptcBlock.baggageInfo.raw,
+			parsed: ptcBlock.baggageInfo.parsed,
 		};
 	}
 
@@ -130,12 +132,12 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		};
 	}
 
-	async fetchPricingFcData($raw, $cmd) {
+	async fetchPricingFcData(raw, cmd) {
 		const linearRec = await fetchAll('F*Q', this);
-		this.$allCommands.push(linearRec);
+		this.allCommands.push(linearRec);
 		return this.processPricingOutput({
-			cmd: $cmd,
-			output: $raw,
+			cmd: cmd,
+			output: raw,
 			linearOutput: linearRec.output,
 		});
 	}
@@ -182,7 +184,7 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		const cmdRecords = [];
 		let linearOutput = null;
 		let mrs = [];
-		for (const cmdRec of [...this.$preCalledCommands].reverse()) {
+		for (const cmdRec of [...this.preCalledCommands].reverse()) {
 			mrs.unshift(cmdRec.output);
 			const parsed = CommandParser.parse(cmdRec.cmd);
 			const output = joinFullOutput(mrs);
@@ -234,8 +236,8 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		};
 		for (const [i, cmdRec] of Object.entries(cmdRecords)) {
 			const {cmd, output, linearOutput} = cmdRec;
-			this.$allCommands.push({cmd, output});
-			this.$allCommands.push({cmd: 'F*Q', output: linearOutput});
+			this.allCommands.push({cmd, output});
+			this.allCommands.push({cmd: 'F*Q', output: linearOutput});
 
 			const errors = CanCreatePqRules.checkPricingCommand('galileo', cmd, this.leadData, this.agent);
 			if (errors.length > 0) {
@@ -258,47 +260,45 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		return result;
 	}
 
-	async getFlightService($itinerary) {
-		let $action, $common, $commands, $raw, $cmdRec, $result;
-
-		$action = (new GalileoGetFlightServiceInfoAction())
+	async getFlightService(itinerary) {
+		const action = (new GalileoGetFlightServiceInfoAction())
 			.setSession(this.session)
-			.setCmdToFullDump(this.$cmdToFullOutput);
-		$common = await $action.execute($itinerary);
-		$commands = $action.getCalledCommands();
+			.setCmdToFullDump(this.cmdToFullOutput);
+		const common = await action.execute(itinerary);
+		const commands = action.getCalledCommands();
 
-		$raw = null;
-		for ($cmdRec of Object.values($commands)) {
-			this.$allCommands.push($cmdRec);
-			if ($cmdRec['cmd'] === '*SVC') {
-				$raw = $cmdRec['output'];
+		let raw = null;
+		for (const cmdRec of Object.values(commands)) {
+			this.allCommands.push(cmdRec);
+			if (cmdRec.cmd === '*SVC') {
+				raw = cmdRec.output;
 			}
 		}
 
-		$result = {raw: $raw, parsed: $common};
-		if ($result['error'] = $common['error']) {
-			return $result;
+		const result = {raw: raw, parsed: common};
+		if (result.error = common.error) {
+			return result;
 		} else {
-			$result['parsed'] = $common;
+			result.parsed = common;
 		}
-		return $result;
+		return result;
 	}
 
-	async getFareRules(pricingList, $itinerary) {
-		let $result, $error;
+	async getFareRules(pricingList, itinerary) {
 		if (pricingList.length > 1) {
 			return {error: 'Fare rules are not supported in multi-pricing PQ'};
 		}
 
-		$result = await (new ImportFareComponentsAction())
+		const result = await (new ImportFareComponentsAction())
 			.useXml(this.useXml)
 			.setTravelportClient(this.travelport)
 			.setSession(this.session).execute([16], 1);
-		if ($error = $result['error']) return {error: $error};
+		const error = result.error;
+		if (error) return {error: error};
 
-		this.$allCommands.push($result.cmdRec);
-		for (const $fareData of Object.values($result['fareList'])) {
-			this.$allCommands.push($fareData.cmdRec);
+		this.allCommands.push(result.cmdRec);
+		for (const fareData of Object.values(result.fareList)) {
+			this.allCommands.push(fareData.cmdRec);
 		}
 		return {
 			// could parse them, but nah for now
@@ -308,27 +308,26 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 	}
 
 	async getPublishedPricing(pricingList) {
-		let $isPrivateFare, $result, $cmd, $raw, $processed, $error;
-
-		$isPrivateFare = pricingList
+		const isPrivateFare = pricingList
 			.some(store => store.pricingBlockList
 				.some(b => b.hasPrivateFaresSelectedMessage));
-		$result = {isRequired: $isPrivateFare, raw: null, parsed: null};
-		if (!$isPrivateFare) return $result;
+		const result = {isRequired: isPrivateFare, raw: null, parsed: null};
+		if (!isPrivateFare) return result;
 
-		$cmd = 'FQ/:N';
-		$raw = await this.runOrReuse($cmd);
-		$processed = await this.fetchPricingFcData($raw, $cmd);
-		$result['cmd'] = $cmd;
-		$result['raw'] = $raw;
-		if ($error = $processed['error']) {
-			return {error: 'Failed to fetch published pricing - ' + $error};
+		const cmd = 'FQ/:N';
+		const raw = await this.runOrReuse(cmd);
+		const processed = await this.fetchPricingFcData(raw, cmd);
+		result.cmd = cmd;
+		result.raw = raw;
+		const error = processed.error;
+		if (error) {
+			return {error: 'Failed to fetch published pricing - ' + error};
 		}
-		$result['parsed'] = $processed['currentPricing']['parsed'];
-		return $result;
+		result.parsed = processed.currentPricing.parsed;
+		return result;
 	}
 
-	static transformCmdType($parsedCmdType) {
+	static transformCmdType(parsedCmdType) {
 
 		return ({
 			redisplayPnr: 'redisplayPnr',
@@ -339,65 +338,58 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 			timeTable: 'flightRoutingAndTimes',
 			fareList: 'fareList',
 			fareRules: 'fareRules',
-		} || {})[$parsedCmdType];
+		} || {})[parsedCmdType];
 	}
 
 	async collectPnrData() {
-		let $result, $reservationRecord, $nameRecords, $pricingRecord, $flightServiceRecord,
-			$fareRuleData, $publishedPricingRecord;
+		const result = {pnrData: {}};
 
-		$result = {pnrData: {}};
+		const reservationRecord = await this.getReservation();
+		if (result.error = reservationRecord.error) return result;
+		result.pnrData.reservation = reservationRecord;
 
-		$reservationRecord = await this.getReservation();
-		if ($result['error'] = $reservationRecord['error']) return $result;
-		$result['pnrData']['reservation'] = $reservationRecord;
-
-		$nameRecords = $reservationRecord['parsed']['passengers'];
-		$pricingRecord = await this.getPricing($reservationRecord.parsed);
-		if ($result['error'] = $pricingRecord['error']) return $result;
-		$result['pnrData']['currentPricing'] = $pricingRecord['currentPricing'];
-		$result['pnrData']['bagPtcPricingBlocks'] = $pricingRecord['bagPtcPricingBlocks'];
-		$result['adultPricingInfoForPqt'] = {};
-		$result['adultPricingInfoForPqt']['linearFareDump'] = $pricingRecord['linearFare']['raw'];
+		const nameRecords = reservationRecord.parsed.passengers;
+		const pricingRecord = await this.getPricing(reservationRecord.parsed);
+		if (result.error = pricingRecord.error) return result;
+		result.pnrData.currentPricing = pricingRecord.currentPricing;
+		result.pnrData.bagPtcPricingBlocks = pricingRecord.bagPtcPricingBlocks;
+		result.adultPricingInfoForPqt = {};
+		result.adultPricingInfoForPqt.linearFareDump = pricingRecord.linearFare.raw;
 
 		if (this.$fetchOptionalFields) {
-			$flightServiceRecord = await this.getFlightService($reservationRecord['parsed']['itinerary']);
-			if ($result['error'] = $flightServiceRecord['error']) return $result;
-			$result['pnrData']['flightServiceInfo'] = $flightServiceRecord;
+			const flightServiceRecord = await this.getFlightService(reservationRecord.parsed.itinerary);
+			if (result.error = flightServiceRecord.error) return result;
+			result.pnrData.flightServiceInfo = flightServiceRecord;
 
-			const pricingList = $pricingRecord['currentPricing']['parsed']['pricingList'];
-			$fareRuleData = await this.getFareRules(pricingList, $reservationRecord['parsed']['itinerary'])
+			const pricingList = pricingRecord.currentPricing.parsed.pricingList;
+			const fareRuleData = await this.getFareRules(pricingList, reservationRecord.parsed.itinerary)
 				.catch(exc => ({error: exc + ''}));
-			if ($result['error'] = $fareRuleData['error']) return $result;
+			if (result.error = fareRuleData.error) return result;
 
-			$result['pnrData']['fareRules'] = $fareRuleData['ruleRecords'];
+			result.pnrData.fareRules = fareRuleData.ruleRecords;
 
 			// it is important that it's at the end because it affects fare rules
-			$publishedPricingRecord = await this.getPublishedPricing(pricingList)
+			const publishedPricingRecord = await this.getPublishedPricing(pricingList)
 				.catch(exc => ({error: exc + ''}));
-			if ($result['error'] = $publishedPricingRecord['error']) return $result;
-			$result['pnrData']['publishedPricing'] = $publishedPricingRecord;
+			if (result.error = publishedPricingRecord.error) return result;
+			result.pnrData.publishedPricing = publishedPricingRecord;
 		}
 
-		return $result;
+		return result;
 	}
 
-	static transformCmdForCms($calledCommand) {
-		let $cmdRec, $cmdType;
-
-		$cmdRec = (new CmsGalileoTerminal()).transformCalledCommand($calledCommand);
-		$cmdType = CommandParser.parse($cmdRec['cmd'])['type'];
-		$cmdRec['type'] = $cmdType ? this.transformCmdType($cmdType) : null;
-		return $cmdRec;
+	static transformCmdForCms(calledCommand) {
+		const cmdRec = (new CmsGalileoTerminal()).transformCalledCommand(calledCommand);
+		const cmdType = CommandParser.parse(cmdRec.cmd).type;
+		cmdRec.type = cmdType ? this.transformCmdType(cmdType) : null;
+		return cmdRec;
 	}
 
 	async execute() {
-		let $result;
-
-		$result = await this.collectPnrData();
-		$result['allCommands'] = this.$allCommands
+		const result = await this.collectPnrData();
+		result.allCommands = this.allCommands
 			.map((a) => this.constructor.transformCmdForCms(a));
-		return $result;
+		return result;
 	}
 }
 
