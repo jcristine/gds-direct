@@ -1386,7 +1386,7 @@ class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 		return $argumentTuples;
 	}
 
-	provide_getFlightService() {
+	provide_fetchFlightService() {
 		let testCases = [];
 
 		testCases.push({
@@ -1515,19 +1515,19 @@ class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
 		this.assertArrayElementsSubset($expectedOutput, $actual);
 	}
 
-	async test_getFlightService(testCase) {
+	async test_fetchFlightService(testCase) {
 		await GdsActionTestUtil.testGdsAction(this, testCase, (gdsSession, input) => {
 			return (new ImportPqApolloAction(false))
 				.setSession(gdsSession)
 				.setBaseDate('2019-04-08 15:28:42')
-				.getFlightService(input.itinerary);
+				.fetchFlightService(input.itinerary);
 		});
 	}
 
 	getTestMapping() {
 		return [
 			[this.provideTestCases, this.testAction],
-			[this.provide_getFlightService, this.test_getFlightService],
+			[this.provide_fetchFlightService, this.test_fetchFlightService],
 		];
 	}
 }
