@@ -25,7 +25,6 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		super();
 		this.leadData = {};
 		this.agent = agent;
-		this.$fetchOptionalFields = true;
 		this.baseDate = null;
 		this.cmdToFullOutput = {};
 		this.allCommands = [];
@@ -48,11 +47,6 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 
 	setBaseDate(baseDate) {
 		this.baseDate = baseDate;
-		return this;
-	}
-
-	fetchOptionalFields(fetchOptionalFields) {
-		this.$fetchOptionalFields = fetchOptionalFields;
 		return this;
 	}
 
@@ -219,7 +213,8 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 			: Rej.UnprocessableEntity('Failed to determine current pricing command');
 	}
 
-	async fetch_currentPricing(reservation) {
+	async fetch_currentPricing() {
+		const reservation = (await this.get_reservation()).parsed;
 		const cmdRecords = await this.collectPricingCmds(reservation.itinerary);
 		const result = {
 			currentPricing: {
@@ -258,7 +253,8 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		return result;
 	}
 
-	async fetch_flightServiceInfo(itinerary) {
+	async fetch_flightServiceInfo() {
+		const itinerary = (await this.get_reservation()).parsed.itinerary;
 		const action = (new GalileoGetFlightServiceInfoAction())
 			.setSession(this.session)
 			.setCmdToFullDump(this.cmdToFullOutput);
@@ -282,7 +278,9 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		return result;
 	}
 
-	async getFareRules(pricingList, itinerary) {
+	async getFareRules() {
+		const pricingList = (await this.get_currentPricing())
+			.currentPricing.parsed.pricingList;
 		if (pricingList.length > 1) {
 			return {error: 'Fare rules are not supported in multi-pricing PQ'};
 		}
@@ -305,7 +303,9 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 		};
 	}
 
-	async fetch_publishedPricing(pricingList) {
+	async fetch_publishedPricing() {
+		const pricingList = (await this.get_currentPricing())
+			.currentPricing.parsed.pricingList;
 		const isPrivateFare = pricingList
 			.some(store => store.pricingBlockList
 				.some(b => b.hasPrivateFaresSelectedMessage));
@@ -344,39 +344,51 @@ class ImportPqGalileoAction extends AbstractGdsAction {
 			|| (this.fetchedPnrFields['reservation'] = this.fetch_reservation());
 	}
 
+	async get_currentPricing() {
+		return this.fetchedPnrFields['currentPricing']
+			|| (this.fetchedPnrFields['currentPricing'] = this.fetch_currentPricing());
+	}
+
+	async get_flightServiceInfo() {
+		return this.fetchedPnrFields['flightServiceInfo']
+			|| (this.fetchedPnrFields['flightServiceInfo'] = this.fetch_flightServiceInfo());
+	}
+
 	async collectPnrData() {
 		const result = {pnrData: {}};
 
-		const reservationRecord = await this.get_reservation();
-		if (result.error = reservationRecord.error) return result;
-		result.pnrData.reservation = reservationRecord;
-
-		const pricingRecord = await this.fetch_currentPricing(reservationRecord.parsed);
-		if (result.error = pricingRecord.error) return result;
-		result.pnrData.currentPricing = pricingRecord.currentPricing;
-		result.pnrData.bagPtcPricingBlocks = pricingRecord.bagPtcPricingBlocks;
-		result.adultPricingInfoForPqt = {};
-		result.adultPricingInfoForPqt.linearFareDump = pricingRecord.linearFare.raw;
-
-		if (this.$fetchOptionalFields) {
-			const flightServiceRecord = await this.fetch_flightServiceInfo(reservationRecord.parsed.itinerary);
+		if (this.shouldFetch('reservation')) {
+			const reservationRecord = await this.get_reservation();
+			if (result.error = reservationRecord.error) return result;
+			result.pnrData.reservation = reservationRecord;
+		}
+		if (this.shouldFetch('currentPricing')) {
+			const pricingRecord = await this.get_currentPricing();
+			if (result.error = pricingRecord.error) return result;
+			result.pnrData.currentPricing = pricingRecord.currentPricing;
+			result.pnrData.bagPtcPricingBlocks = pricingRecord.bagPtcPricingBlocks;
+			result.adultPricingInfoForPqt = {};
+			result.adultPricingInfoForPqt.linearFareDump = pricingRecord.linearFare.raw;
+		}
+		if (this.shouldFetch('flightServiceInfo')) {
+			const flightServiceRecord = await this.get_flightServiceInfo();
 			if (result.error = flightServiceRecord.error) return result;
 			result.pnrData.flightServiceInfo = flightServiceRecord;
-
-			const pricingList = pricingRecord.currentPricing.parsed.pricingList;
-			const fareRuleData = await this.getFareRules(pricingList, reservationRecord.parsed.itinerary)
+		}
+		if (this.shouldFetch('fareRules')) {
+			const fareRuleData = await this.getFareRules()
 				.catch(exc => ({error: exc + ''}));
 			if (result.error = fareRuleData.error) return result;
 
 			result.pnrData.fareRules = fareRuleData.ruleRecords;
-
+		}
+		if (this.shouldFetch('publishedPricing')) {
 			// it is important that it's at the end because it affects fare rules
-			const publishedPricingRecord = await this.fetch_publishedPricing(pricingList)
+			const publishedPricingRecord = await this.fetch_publishedPricing()
 				.catch(exc => ({error: exc + ''}));
 			if (result.error = publishedPricingRecord.error) return result;
 			result.pnrData.publishedPricing = publishedPricingRecord;
 		}
-
 		return result;
 	}
 

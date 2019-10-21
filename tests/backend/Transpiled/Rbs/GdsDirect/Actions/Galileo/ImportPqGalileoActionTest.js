@@ -1214,18 +1214,16 @@ class ImportPqGalileoActionTest extends require('../../../../../../../backend/Tr
 	 * @test
 	 * @dataProvider provideTestCases
 	 */
-	async testAction($input, $expectedOutput, $calledCommands) {
-		let $actual;
-
-		$actual = await new ImportPqGalileoAction({useXml: false})
-			.fetchOptionalFields($input.fetchOptionalFields)
-			.setSession((new AnyGdsStubSession($calledCommands)).setGds('galileo'))
-			.setPreCalledCommandsFromDb($input['previousCommands'])
+	async testAction(input, expectedOutput, calledCommands) {
+		const actual = await new ImportPqGalileoAction({
+			useXml: false, pnrFields: input.fetchOptionalFields ? [] : ['reservation', 'currentPricing'],
+		}).setSession((new AnyGdsStubSession(calledCommands)).setGds('galileo'))
+			.setPreCalledCommandsFromDb(input['previousCommands'])
 			.setBaseDate('2018-03-21')
 			.execute()
 			.catch(exc => ({error: exc + '', stack: exc.stack}));
 
-		this.assertArrayElementsSubset($expectedOutput, $actual);
+		this.assertArrayElementsSubset(expectedOutput, actual);
 	}
 
 	getTestMapping() {

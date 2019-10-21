@@ -191,8 +191,7 @@ const ImportPq = async ({
 		} else if (gds === 'sabre') {
 			importAct = new ImportPqSabreAction({agent, pnrFields});
 		} else if (gds === 'galileo') {
-			importAct = new ImportPqGalileoAction({travelport, agent, pnrFields})
-				.fetchOptionalFields(fetchOptionalFields);
+			importAct = new ImportPqGalileoAction({travelport, agent, pnrFields});
 		} else if (gds === 'amadeus') {
 			const amadeus = AmadeusClient.makeCustom({PersistentHttpRq});
 			importAct = new ImportPqAmadeusAction({amadeus, agent, pnrFields})

@@ -4,7 +4,7 @@ const TravelportClient = require('../../../../../../../backend/GdsClients/Travel
 const GdsDirectDefaults = require('../../../../../../../backend/Utils/Testing/GdsDirectDefaults.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
-class ImportPqGalileoActionTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js') {
+class ImportPqGalileoXmlActionTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {
 		const list = [];
 
@@ -420,7 +420,7 @@ class ImportPqGalileoActionTest extends require('../../../../../../../backend/Tr
 				runCmd: cmd => {
 					const calledCmd = calledCommands.shift();
 
-					if(cmd === calledCmd.cmd) {
+					if (cmd === calledCmd.cmd) {
 						return Promise.resolve(calledCmd);
 					}
 
@@ -429,9 +429,10 @@ class ImportPqGalileoActionTest extends require('../../../../../../../backend/Tr
 			},
 		});
 
-		const actual = await (new ImportPqGalileoAction({useXml: true, travelport}))
-			.fetchOptionalFields(input.fetchOptionalFields)
-			.setSession(stateful)
+		const actual = await (new ImportPqGalileoAction({
+			useXml: true, travelport, pnrFields: input.fetchOptionalFields
+				? [] : ['reservation', 'currentPricing'],
+		})).setSession(stateful)
 			.setPreCalledCommandsFromDb(input['previousCommands'])
 			.setBaseDate('2018-03-21')
 			.execute()
@@ -447,5 +448,5 @@ class ImportPqGalileoActionTest extends require('../../../../../../../backend/Tr
 	}
 }
 
-ImportPqGalileoActionTest.count = 0;
-module.exports = ImportPqGalileoActionTest;
+ImportPqGalileoXmlActionTest.count = 0;
+module.exports = ImportPqGalileoXmlActionTest;
