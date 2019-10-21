@@ -24,7 +24,7 @@ class UpdateSabreState
 		const type = CommandParser.parse(cmd).type;
 		const tooShortToBeValid = !php.preg_match(/\n.*\n/, output);
 		const isError = tooShortToBeValid ||
-            output.match(/^PSGR TYPE  ADT.*\nATTN\*VERIFY BOOKING CLASS/);
+            output.match(/^PSGR TYPE  [A-Z0-9]{3}.*\nATTN\*VERIFY BOOKING CLASS/);
 		return type === 'priceItinerary' && !isError;
 	}
 
