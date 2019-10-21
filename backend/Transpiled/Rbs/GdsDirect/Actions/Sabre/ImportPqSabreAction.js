@@ -34,6 +34,12 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		this.preCalledCommands = [];
 		this.agent = agent;
 		this.pnrFields = pnrFields;
+		this.fetchedPnrFields = {};
+	}
+
+	shouldFetch(pnrField) {
+		return this.pnrFields.length === 0
+			|| this.pnrFields.includes(pnrField);
 	}
 
 	setLeadData(leadData) {
@@ -77,7 +83,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		return output;
 	}
 
-	async getReservation() {
+	async fetch_reservation() {
 		const raw = await this.runOrReuse('*R');
 		const parsed = PnrParser.parse(raw);
 		const common = ImportSabrePnrFormatAdapter.transformReservation(parsed, this.getBaseDate());
@@ -94,7 +100,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		return result;
 	}
 
-	async getFlightService(itinerary) {
+	async fetch_flightServiceInfo() {
 		const raw = await this.runOrReuse('VI*');
 		const parsed = SabreVerifyParser.parse(raw);
 		const common = ImportSabrePnrFormatAdapter.transformFlightServiceInfo(parsed, this.getBaseDate());
@@ -217,7 +223,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 			: Rej.UnprocessableEntity('Failed to determine current pricing command');
 	}
 
-	async getPricing(reservation) {
+	async fetch_pricing(reservation) {
 		const collected = await this.collectPricingCmds(reservation.itinerary);
 		const cmdRecords = collected.cmdRecords;
 		const result = {
@@ -256,7 +262,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 	 * @param currentStore = AmadeusGetPricingPtcBlocksAction::execute().pricingList[0]
 	 * fetches published pricing if current pricing fare is private
 	 */
-	async getPublishedPricing(pricingList, nameRecords) {
+	async fetch_publishedPricing(pricingList, nameRecords) {
 		const isPrivateFare = pricingList
 			.some(store => store.pricingBlockList
 				.some(b => b.hasPrivateFaresSelectedMessage));
@@ -324,7 +330,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		};
 	}
 
-	async getFareRules(pricingList, itinerary) {
+	async fetchFareRules(pricingList, itinerary) {
 		const sections = [16];
 		const common = await this.getSabreFareRules(sections, itinerary, pricingList);
 		const error = common.error;
@@ -347,23 +353,23 @@ class ImportPqSabreAction extends AbstractGdsAction {
 	async collectPnrData() {
 		const result = {pnrData: {}};
 
-		const reservationRecord = await this.getReservation();
+		const reservationRecord = await this.fetch_reservation();
 		if (result.error = reservationRecord.error) return result;
 		result.pnrData.reservation = reservationRecord;
 
 		const nameRecords = reservationRecord.parsed.passengers;
-		const pricingRecord = await this.getPricing(reservationRecord.parsed);
+		const pricingRecord = await this.fetch_pricing(reservationRecord.parsed);
 		if (result.error = pricingRecord.error) return result;
 		result.pnrData.currentPricing = pricingRecord.pricingPart;
 		result.pnrData.bagPtcPricingBlocks = pricingRecord.bagPtcPricingBlocks;
 
 		if (this.$fetchOptionalFields) {
-			const flightServiceRecord = await this.getFlightService(reservationRecord.parsed.itinerary);
+			const flightServiceRecord = await this.fetch_flightServiceInfo();
 			if (result.error = flightServiceRecord.error) return result;
 			result.pnrData.flightServiceInfo = flightServiceRecord;
 
 			const pricingList = pricingRecord.pricingPart.parsed.pricingList;
-			const fareRuleData = await this.getFareRules(pricingList, reservationRecord.parsed.itinerary)
+			const fareRuleData = await this.fetchFareRules(pricingList, reservationRecord.parsed.itinerary)
 				.catch(exc => ({error: 'Fare Rules error - ' + exc}))
 			;
 			if (result.error = fareRuleData.error) return result;
@@ -372,7 +378,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 			result.pnrData.fareRules = fareRuleData.ruleRecords;
 
 			// it is important that it's at the end cuz it affects fare rules
-			const publishedPricingRecord = await this.getPublishedPricing(pricingList, nameRecords)
+			const publishedPricingRecord = await this.fetch_publishedPricing(pricingList, nameRecords)
 				.catch(exc => ({error: 'Published Pricing error - ' + exc}))
 			;
 			if (result.error = publishedPricingRecord.error) return result;
