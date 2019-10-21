@@ -23,139 +23,120 @@ class ImportPqSabreAction extends AbstractGdsAction {
 
 	constructor({
 		agent = null,
+		pnrFields = [],
 	} = {}) {
 		super();
 		this.leadData = {};
 		this.$fetchOptionalFields = true;
-		this.$baseDate = null;
-		this.$cmdToOutput = {};
-		this.$allCommands = [];
-		this.$preCalledCommands = [];
+		this.baseDate = null;
+		this.cmdToOutput = {};
+		this.allCommands = [];
+		this.preCalledCommands = [];
 		this.agent = agent;
+		this.pnrFields = pnrFields;
 	}
 
-	setLeadData($leadData) {
-		this.leadData = $leadData;
+	setLeadData(leadData) {
+		this.leadData = leadData;
 		return this;
 	}
 
-	setBaseDate($baseDate) {
-		this.$baseDate = $baseDate;
+	setBaseDate(baseDate) {
+		this.baseDate = baseDate;
 		return this;
 	}
 
-	fetchOptionalFields($fetchOptionalFields) {
-		this.$fetchOptionalFields = $fetchOptionalFields;
+	fetchOptionalFields(fetchOptionalFields) {
+		this.$fetchOptionalFields = fetchOptionalFields;
 		return this;
 	}
 
-	/** @param $commands = [at('CmdLog.js').makeRow()] */
-	setPreCalledCommandsFromDb($commands) {
-		this.$preCalledCommands = $commands;
-		this.$cmdToOutput = php.array_combine(
-			php.array_column(this.$preCalledCommands, 'cmd'),
-			php.array_column(this.$preCalledCommands, 'output'),
+	/** @param commands = [at('CmdLog.js').makeRow()] */
+	setPreCalledCommandsFromDb(commands) {
+		this.preCalledCommands = commands;
+		this.cmdToOutput = php.array_combine(
+			php.array_column(this.preCalledCommands, 'cmd'),
+			php.array_column(this.preCalledCommands, 'output'),
 		);
 		return this;
 	}
 
-	static sanitizeOutput($inWsEncoding) {
-		return (new CmsSabreTerminal()).sanitizeOutput($inWsEncoding);
+	static sanitizeOutput(inWsEncoding) {
+		return (new CmsSabreTerminal()).sanitizeOutput(inWsEncoding);
 	}
 
 	getBaseDate() {
-		return this.$baseDate || (this.$baseDate = php.date('Y-m-d H:i:s'));
+		return this.baseDate || (this.baseDate = php.date('Y-m-d H:i:s'));
 	}
 
-	async runOrReuse($cmd) {
-		const $output = (this.$cmdToOutput || {})[$cmd]
-			|| (await this.runCmd($cmd)).output;
-		this.$cmdToOutput[$cmd] = $output;
-		this.$allCommands.push({cmd: $cmd, output: $output});
-		return $output;
-	}
-
-	findLastCommand($cmdType) {
-		let $cmdRecord, $logCmdType;
-
-		for ($cmdRecord of Object.values(php.array_reverse(this.$preCalledCommands))) {
-			$logCmdType = CommandParser.parse($cmdRecord['cmd'])['type'];
-			if ($logCmdType === $cmdType) {
-				return $cmdRecord;
-			}
-		}
-		return null;
+	async runOrReuse(cmd) {
+		const output = (this.cmdToOutput || {})[cmd]
+			|| (await this.runCmd(cmd)).output;
+		this.cmdToOutput[cmd] = output;
+		this.allCommands.push({cmd: cmd, output: output});
+		return output;
 	}
 
 	async getReservation() {
-		let $raw, $parsed, $common, $result, $errors;
-
-		$raw = await this.runOrReuse('*R');
-
-		$parsed = PnrParser.parse($raw);
-		$common = ImportSabrePnrFormatAdapter.transformReservation($parsed, this.getBaseDate());
-		$result = {raw: $raw};
-		if ($result['error'] = $common['error']) {
-			return $result;
+		const raw = await this.runOrReuse('*R');
+		const parsed = PnrParser.parse(raw);
+		const common = ImportSabrePnrFormatAdapter.transformReservation(parsed, this.getBaseDate());
+		const result = {raw: raw};
+		if (result.error = common.error) {
+			return result;
 		} else {
-			$result['parsed'] = $common;
+			result.parsed = common;
 		}
-		if (!php.empty($errors = CanCreatePqRules.checkPnrData($common))) {
-			return Rej.BadRequest('Invalid PNR data - ' + php.implode(';', $errors));
+		const errors = CanCreatePqRules.checkPnrData(common);
+		if (!php.empty(errors)) {
+			return Rej.BadRequest('Invalid PNR data - ' + php.implode(';', errors));
 		}
-		return $result;
+		return result;
 	}
 
-	async getFlightService($itinerary) {
-		let $raw, $parsed, $common, $result;
-
-		$raw = await this.runOrReuse('VI*');
-
-		$parsed = SabreVerifyParser.parse($raw);
-		$common = ImportSabrePnrFormatAdapter.transformFlightServiceInfo($parsed, this.getBaseDate());
-		$result = {raw: $raw};
-		if ($result['error'] = $common['error']) {
-			return $result;
+	async getFlightService(itinerary) {
+		const raw = await this.runOrReuse('VI*');
+		const parsed = SabreVerifyParser.parse(raw);
+		const common = ImportSabrePnrFormatAdapter.transformFlightServiceInfo(parsed, this.getBaseDate());
+		const result = {raw: raw};
+		if (result.error = common.error) {
+			return result;
 		} else {
-			$result['parsed'] = $common;
+			result.parsed = common;
 		}
-		return $result;
+		return result;
 	}
 
-	parsePricing($dump, nameRecords, $cmd) {
-		let $parsed, $wrapped, $result = {}, $ptcPricingBlocks;
-
-		$parsed = SabrePricingParser.parse($dump);
-		if ($result['error'] = $parsed['error']) return $result;
+	parsePricing(dump, nameRecords, cmd) {
+		const result = {};
+		const parsed = SabrePricingParser.parse(dump);
+		if (result.error = parsed.error) return result;
 
 		const store = (new SabrePricingAdapter())
-			.setPricingCommand($cmd)
+			.setPricingCommand(cmd)
 			.setReservationDate(this.getBaseDate())
 			// should return after implementation supports 2 paxes priced on same PTC
 			//.setNameRecords(nameRecords)
-			.transform($parsed);
+			.transform(parsed);
 		if (store.error) return {error: store.error};
 
-		$wrapped = {pricingList: [store]};
-
-		$ptcPricingBlocks = $wrapped['pricingList'][0]['pricingBlockList'];
+		const wrapped = {pricingList: [store]};
+		const ptcPricingBlocks = wrapped.pricingList[0].pricingBlockList;
 		return {
-			pricingPart: {parsed: $wrapped},
-			bagPtcPricingBlocks: php.array_map(($priceQuote, $i) => {
-				let $ptcPricing, $parsed;
-
-				$ptcPricing = $ptcPricingBlocks[$i];
-				$parsed = $priceQuote['baggageInfo'];
+			pricingPart: {parsed: wrapped},
+			bagPtcPricingBlocks: php.array_map((priceQuote, i) => {
+				const ptcPricing = ptcPricingBlocks[i];
+				const parsed = priceQuote.baggageInfo;
 				return {
-					subPricingNumber: +$i + 1,
-					passengerNameNumbers: $ptcPricing['passengerNameNumbers'],
-					ptcInfo: $ptcPricing['ptcInfo'],
-					parsed: $parsed
-						? ImportSabrePnrFormatAdapter.transformBaggageInfo($parsed, $ptcPricing['ptcInfo']['ptc'])
+					subPricingNumber: +i + 1,
+					passengerNameNumbers: ptcPricing.passengerNameNumbers,
+					ptcInfo: ptcPricing.ptcInfo,
+					parsed: parsed
+						? ImportSabrePnrFormatAdapter.transformBaggageInfo(parsed, ptcPricing.ptcInfo.ptc)
 						: null,
-					raw: $priceQuote['baggageInfoDump'],
+					raw: priceQuote.baggageInfoDump,
 				};
-			}, $parsed['pqList'], php.array_keys($parsed['pqList'])),
+			}, parsed.pqList, Object.keys(parsed.pqList)),
 		};
 	}
 
@@ -211,7 +192,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 
 	collectPricingCmds(segmentsLeft) {
 		const cmdRecords = [];
-		for (const cmdRec of [...this.$preCalledCommands].reverse()) {
+		for (const cmdRec of [...this.preCalledCommands].reverse()) {
 			const parsed = CommandParser.parse(cmdRec.cmd);
 			if (parsed.type === 'priceItinerary') {
 				const calculated = this.constructor.calcPricedSegments(segmentsLeft, parsed, cmdRecords);
@@ -237,7 +218,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 	}
 
 	async getPricing(reservation) {
-		const collected = await this.collectPricingCmds(reservation['itinerary']);
+		const collected = await this.collectPricingCmds(reservation.itinerary);
 		const cmdRecords = collected.cmdRecords;
 		const result = {
 			pricingPart: {
@@ -249,7 +230,7 @@ class ImportPqSabreAction extends AbstractGdsAction {
 		};
 		for (const [i, cmdRec] of Object.entries(cmdRecords)) {
 			const cmd = cmdRec.cmd;
-			this.$allCommands.push(cmdRec);
+			this.allCommands.push(cmdRec);
 
 			const errors = CanCreatePqRules.checkPricingCommand('sabre', cmd, this.leadData, this.agent);
 			if (errors.length > 0) {
@@ -272,148 +253,137 @@ class ImportPqSabreAction extends AbstractGdsAction {
 	}
 
 	/**
-	 * @param $currentStore = AmadeusGetPricingPtcBlocksAction::execute()['pricingList'][0]
+	 * @param currentStore = AmadeusGetPricingPtcBlocksAction::execute().pricingList[0]
 	 * fetches published pricing if current pricing fare is private
 	 */
-	async getPublishedPricing(pricingList, $nameRecords) {
-		let $isPrivateFare, $result, $cmd, $raw, $processed, $error;
-
-		$isPrivateFare = pricingList
-			.some(store => store['pricingBlockList']
+	async getPublishedPricing(pricingList, nameRecords) {
+		const isPrivateFare = pricingList
+			.some(store => store.pricingBlockList
 				.some(b => b.hasPrivateFaresSelectedMessage));
-		$result = {isRequired: $isPrivateFare, raw: null, parsed: null};
-		if (!$isPrivateFare) return $result;
+		const result = {isRequired: isPrivateFare, raw: null, parsed: null};
+		if (!isPrivateFare) return result;
 
-		$cmd = 'WPNC¥PL';
-		$raw = await this.runOrReuse($cmd);
-		$processed = this.parsePricing($raw, $nameRecords, $cmd);
+		const cmd = 'WPNC¥PL';
+		const raw = await this.runOrReuse(cmd);
+		const processed = this.parsePricing(raw, nameRecords, cmd);
 
-		$result['cmd'] = $cmd;
-		$result['raw'] = $raw;
-		if ($error = $processed['error']) {
-			return {error: 'Failed to fetch published pricing - ' + $error};
+		result.cmd = cmd;
+		result.raw = raw;
+		const error = processed.error;
+		if (error) {
+			return {error: 'Failed to fetch published pricing - ' + error};
 		}
-		$result['parsed'] = $processed['pricingPart']['parsed'];
+		result.parsed = processed.pricingPart.parsed;
 
-		return $result;
+		return result;
 	}
 
 	/**
-	 * @param $pricing = ImportSabrePnrFormatAdapter::transformPricing()
+	 * @param pricing = ImportSabrePnrFormatAdapter::transformPricing()
 	 */
-	async getSabreFareRules($sections, $itinerary, pricingList) {
-		let $fareListRecords, $ruleRecords, $i, $ptc, $common, $error, $recordBase, $raw;
+	async getSabreFareRules(sections, itinerary, pricingList) {
+		let fareListRecords, ruleRecords, i, ptc, common, error, recordBase, raw;
 		if (php.count(pricingList) > 1) {
 			return {error: 'Fare rules are not supported in multi-pricing PQ'};
 		}
-		const $pricing = pricingList[0];
+		const pricing = pricingList[0];
 
-		$fareListRecords = [];
-		$ruleRecords = [];
+		fareListRecords = [];
+		ruleRecords = [];
 
-		const ptcInfos = php.array_column(php.array_column($pricing['pricingBlockList'], 'ptcInfo'), 'ptc');
-		for ([$i, $ptc] of Object.entries(ptcInfos)) {
+		const ptcInfos = php.array_column(php.array_column(pricing.pricingBlockList, 'ptcInfo'), 'ptc');
+		for ([i, ptc] of Object.entries(ptcInfos)) {
 			const capturing = withCapture(this.session);
-			$common = await (new ImportSabreFareRulesActions())
+			common = await (new ImportSabreFareRulesActions())
 				.setSession(capturing)
-				.execute($pricing, $itinerary, $sections, $ptc);
-			if ($error = $common['error']) return {error: $error};
+				.execute(pricing, itinerary, sections, ptc);
+			if (error = common.error) return {error: error};
 
-			$recordBase = {
+			recordBase = {
 				pricingNumber: null,
-				subPricingNumber: +$i + 1,
+				subPricingNumber: +i + 1,
 			};
 
-			$raw = capturing.getCalledCommands()
+			raw = capturing.getCalledCommands()
 				.map(cmdRec => '>' + cmdRec.cmd + ';\n' + cmdRec.output)
 				.join('\n-----------------------------\n');
-			this.$allCommands.push(...capturing.getCalledCommands());
-			$fareListRecords.push(php.array_merge($recordBase, {
-				parsed: $common['fareList'],
-				raw: $raw,
+			this.allCommands.push(...capturing.getCalledCommands());
+			fareListRecords.push(php.array_merge(recordBase, {
+				parsed: common.fareList,
+				raw: raw,
 			}));
-			$ruleRecords = php.array_merge($ruleRecords, Fp.map(($ruleRecord) => {
-				return php.array_merge($recordBase, {
-					fareComponentNumber: $ruleRecord['componentNumber'],
-					sections: $ruleRecord['sections'],
+			ruleRecords = php.array_merge(ruleRecords, Fp.map((ruleRecord) => {
+				return php.array_merge(recordBase, {
+					fareComponentNumber: ruleRecord.componentNumber,
+					sections: ruleRecord.sections,
 				});
-			}, $common['ruleRecords']));
+			}, common.ruleRecords));
 		}
 		return {
-			fareListRecords: $fareListRecords,
-			ruleRecords: $ruleRecords,
+			fareListRecords: fareListRecords,
+			ruleRecords: ruleRecords,
 		};
 	}
 
-	async getFareRules(pricingList, $itinerary) {
-		let $sections, $common, $error, $raw, $sanitized;
-
-		$sections = [16];
-
-		$common = await this.getSabreFareRules($sections, $itinerary, pricingList);
-		if ($error = $common['error']) {
-			$raw = $common['raw'];
-			$sanitized = $raw ? this.constructor.sanitizeOutput($raw) : null;
-			return {error: $error, raw: $raw};
+	async getFareRules(pricingList, itinerary) {
+		const sections = [16];
+		const common = await this.getSabreFareRules(sections, itinerary, pricingList);
+		const error = common.error;
+		if (error) {
+			return {error: error, raw: common.raw};
 		}
-
 		return {
-			fareListRecords: $common['fareListRecords'],
-			ruleRecords: Fp.map(($fareComp) => {
-				let $sections, $byNumber;
-
-				$sections = $fareComp['sections'] || [];
-				$byNumber = php.array_combine(php.array_column($sections, 'sectionNumber'), $sections);
-				$fareComp['sections'] = {
-					exchange: $byNumber[16],
+			fareListRecords: common.fareListRecords,
+			ruleRecords: Fp.map((fareComp) => {
+				const sections = fareComp.sections || [];
+				const byNumber = php.array_combine(php.array_column(sections, 'sectionNumber'), sections);
+				fareComp.sections = {
+					exchange: byNumber[16],
 				};
-				return $fareComp;
-			}, $common['ruleRecords']),
+				return fareComp;
+			}, common.ruleRecords),
 		};
 	}
 
 	async collectPnrData() {
-		let $result, $reservationRecord, $nameRecords, $pricingRecord, $flightServiceRecord,
-			$fareRuleData, $publishedPricingRecord;
+		const result = {pnrData: {}};
 
-		$result = {pnrData: {}};
+		const reservationRecord = await this.getReservation();
+		if (result.error = reservationRecord.error) return result;
+		result.pnrData.reservation = reservationRecord;
 
-		$reservationRecord = await this.getReservation();
-		if ($result['error'] = $reservationRecord['error']) return $result;
-		$result['pnrData']['reservation'] = $reservationRecord;
-
-		$nameRecords = $reservationRecord['parsed']['passengers'];
-		$pricingRecord = await this.getPricing($reservationRecord['parsed']);
-		if ($result['error'] = $pricingRecord['error']) return $result;
-		$result['pnrData']['currentPricing'] = $pricingRecord['pricingPart'];
-		$result['pnrData']['bagPtcPricingBlocks'] = $pricingRecord['bagPtcPricingBlocks'];
+		const nameRecords = reservationRecord.parsed.passengers;
+		const pricingRecord = await this.getPricing(reservationRecord.parsed);
+		if (result.error = pricingRecord.error) return result;
+		result.pnrData.currentPricing = pricingRecord.pricingPart;
+		result.pnrData.bagPtcPricingBlocks = pricingRecord.bagPtcPricingBlocks;
 
 		if (this.$fetchOptionalFields) {
-			$flightServiceRecord = await this.getFlightService($reservationRecord['parsed']['itinerary']);
-			if ($result['error'] = $flightServiceRecord['error']) return $result;
-			$result['pnrData']['flightServiceInfo'] = $flightServiceRecord;
+			const flightServiceRecord = await this.getFlightService(reservationRecord.parsed.itinerary);
+			if (result.error = flightServiceRecord.error) return result;
+			result.pnrData.flightServiceInfo = flightServiceRecord;
 
-			const pricingList = $pricingRecord['pricingPart']['parsed']['pricingList'];
-			$fareRuleData = await this.getFareRules(pricingList, $reservationRecord['parsed']['itinerary'])
+			const pricingList = pricingRecord.pricingPart.parsed.pricingList;
+			const fareRuleData = await this.getFareRules(pricingList, reservationRecord.parsed.itinerary)
 				.catch(exc => ({error: 'Fare Rules error - ' + exc}))
 			;
-			if ($result['error'] = $fareRuleData['error']) return $result;
+			if (result.error = fareRuleData.error) return result;
 
-			$result['pnrData']['fareComponentListInfo'] = $fareRuleData['fareListRecords'];
-			$result['pnrData']['fareRules'] = $fareRuleData['ruleRecords'];
+			result.pnrData.fareComponentListInfo = fareRuleData.fareListRecords;
+			result.pnrData.fareRules = fareRuleData.ruleRecords;
 
 			// it is important that it's at the end cuz it affects fare rules
-			$publishedPricingRecord = await this.getPublishedPricing(pricingList, $nameRecords)
+			const publishedPricingRecord = await this.getPublishedPricing(pricingList, nameRecords)
 				.catch(exc => ({error: 'Published Pricing error - ' + exc}))
 			;
-			if ($result['error'] = $publishedPricingRecord['error']) return $result;
-			$result['pnrData']['publishedPricing'] = $publishedPricingRecord;
+			if (result.error = publishedPricingRecord.error) return result;
+			result.pnrData.publishedPricing = publishedPricingRecord;
 		}
 
-		return $result;
+		return result;
 	}
 
-	static transformCmdType($parsedCmdType) {
+	static transformCmdType(parsedCmdType) {
 
 		return ({
 			redisplayPnr: 'redisplayPnr',
@@ -423,24 +393,20 @@ class ImportPqSabreAction extends AbstractGdsAction {
 			flightRoutingAndTimes: 'flightRoutingAndTimes',
 			fareList: 'fareList',
 			fareRules: 'fareRules',
-		} || {})[$parsedCmdType];
+		} || {})[parsedCmdType];
 	}
 
-	static transformCmdForCms($calledCommand) {
-		let $cmdRec, $cmdType;
-
-		$cmdRec = (new CmsSabreTerminal()).transformCalledCommand($calledCommand);
-		$cmdType = CommandParser.parse($cmdRec['cmd'])['type'];
-		$cmdRec['type'] = $cmdType ? this.transformCmdType($cmdType) : null;
-		return $cmdRec;
+	static transformCmdForCms(calledCommand) {
+		const cmdRec = (new CmsSabreTerminal()).transformCalledCommand(calledCommand);
+		const cmdType = CommandParser.parse(cmdRec.cmd).type;
+		cmdRec.type = cmdType ? this.transformCmdType(cmdType) : null;
+		return cmdRec;
 	}
 
 	async execute() {
-		let $result;
-
-		$result = await this.collectPnrData();
-		$result['allCommands'] = php.array_map((...args) => this.constructor.transformCmdForCms(...args), this.$allCommands);
-		return $result;
+		const result = await this.collectPnrData();
+		result.allCommands = this.allCommands.map((...args) => this.constructor.transformCmdForCms(...args));
+		return result;
 	}
 }
 
