@@ -49,7 +49,14 @@ exports.FIELDS = FIELDS;
 exports.parse = async (mask) => {
 	const parsed = NmeScreenParser.parse(mask);
 	if (parsed.error) {
-		return Rej.UnprocessableEntity('Bad HHPR reply - ' + parsed.error);
+		if (mask.includes('NO FILL-IN-FORMAT EXISTS') ||
+			mask.includes('NO PRICING RECORD EXISTS')
+		) {
+			const msg = mask.trim() + ' manual pricing not possible in current context';
+			return Rej.BadRequest(msg);
+		} else {
+			return Rej.UnprocessableEntity('Bad HHPR reply - ' + parsed.error);
+		}
 	}
 	const items = await AbstractMaskParser.getPositionValues({
 		mask: mask,
