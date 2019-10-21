@@ -71,21 +71,27 @@ const Ask = (url, fetchParams) => {
 		.then( showUserMessages );
 };
 
+const getContextParams = () => {
+	return {
+		emcSessionId: window.GdsDirectPlusParams.emcSessionId || '',
+		globalAuthLogin: window.GdsDirectPlusParams.globalAuthLogin || '',
+		globalAuthPassword: window.GdsDirectPlusParams.globalAuthPassword || '',
+		travelRequestId: window.GdsDirectPlusParams.travelRequestId || 0,
+		isForeignProjectEmcId: window.GdsDirectPlusParams.isForeignProjectEmcId ? '1' : '',
+	};
+};
+
 export const get = (url) => {
-	let delim = url.indexOf('?') > -1 ? '&' : '?';
-	url += delim + [
-		'emcSessionId=' + window.GdsDirectPlusParams.emcSessionId,
-		'travelRequestId=' + (window.GdsDirectPlusParams.travelRequestId || 0),
-		'isForeignProjectEmcId=' + window.GdsDirectPlusParams.isForeignProjectEmcId ? '1' : '',
-	].join('&');
+	const delim = url.indexOf('?') > -1 ? '&' : '?';
+	const esc = encodeURIComponent;
+	url += delim + Object.entries(getContextParams())
+		.map(([k,v]) => esc(k) + '=' + esc(v))
+		.join('&');
 	return Ask( url, { credentials: 'include' });
 };
 
 export const post = (url, postParams = {}) => {
-	postParams = {...postParams,
-		emcSessionId: window.GdsDirectPlusParams.emcSessionId || '',
-		travelRequestId: window.GdsDirectPlusParams.travelRequestId || 0,
-		isForeignProjectEmcId: window.GdsDirectPlusParams.isForeignProjectEmcId ? true : false,
+	postParams = {...getContextParams(), ...postParams,
 		disabledRoles: window.GdsDirectPlusParams.disabledRoles || [],
 	};
 

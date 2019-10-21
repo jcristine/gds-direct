@@ -24,6 +24,8 @@ export default class MenuPanel extends Component
 
 	mount(state)
 	{
+		const hideSpecial = window.GdsDirectPlusParams.hideSpecialButtons;
+
 		this.observe(
 			new Component('article')
 				.observe(
@@ -67,7 +69,7 @@ export default class MenuPanel extends Component
 			this.observe(new Component({context: reprotectionBtn.dom}));
 		}
 
-		const toolsBtnCmp = new Component('article');
+		const toolsBtnCmp = new Component('article', {style: hideSpecial ? 'display: none;' : ''});
 		this.observe(
 			toolsBtnCmp
 				.attach([
@@ -79,7 +81,7 @@ export default class MenuPanel extends Component
 		);
 
 		this.observe(
-			new Component('article')
+			new Component('article', {style: hideSpecial ? 'display: none;' : ''})
 				.attach([
 					new Help({
 						icon: '<i class="fa t-f-size-14">HELP</i>',

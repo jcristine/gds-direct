@@ -1,0 +1,41 @@
+
+<html>
+<head>
+    <title>Airline GRECT</title>
+    <meta charset="utf-8"/>
+    <link rel="shortcut icon" href="../favicon.png">
+</head>
+<body style="margin: 0px">
+<div id="terminal-context" style="height: 100%;"></div>
+
+<script src="../terminal-bundle.js"></script>
+<script>
+	const redirectMsg = 'Invalid credentials, press "OK" to return to login form';
+    window.InitGdsDirectPlusApp({
+        htmlRootDom: document.getElementById('terminal-context'),
+        globalAuthLogin: prompt('Login'),
+        globalAuthPassword: prompt('Password'),
+        hideSpecialButtons: true,
+    }).catch(exc => {
+        if (!(exc + '').includes('TypeError')) {
+            if (confirm(redirectMsg)) {
+                window.location.reload();
+            }
+        }
+        return Promise.reject(exc);
+    });
+</script>
+
+</body>
+
+<style>
+    td, th {
+        padding: 0px;
+    }
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+</style>
+
+</html>
