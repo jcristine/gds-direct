@@ -128,11 +128,11 @@ class CommandParser {
 		return null;
 	}
 
-	static parseOpenPnr($cmd) {
-		let $filter, $matches;
-		$filter = /^\*([A-Z][A-Z0-9]{4,5})$/;
-		if (php.preg_match($filter, $cmd, $matches = [])) {
-			return $matches[1];
+	static parseOpenPnr(cmd) {
+		let filter, matches;
+		filter = /^\*([A-Z][A-Z0-9]{4,5})$/;
+		if (php.preg_match(filter, cmd, matches = [])) {
+			return matches[1];
 		} else {
 			return null;
 		}
@@ -148,16 +148,16 @@ class CommandParser {
 		if (textLeft.startsWith('C')) {
 			result.cloneItinerary = true;
 			textLeft = textLeft.slice(1);
-			// $result.actionData = ['raw' => $textLeft];
+			// result.actionData = ['raw' => textLeft];
 			textLeft = '';
 		} else if (textLeft.startsWith('L')) {
-			// $result.action = 'leaveOnQueue';
+			// result.action = 'leaveOnQueue';
 			textLeft = textLeft.slice(1);
 		} else if (textLeft.startsWith('R')) {
 			result.keepPnr = true;
 			textLeft = textLeft.slice(1);
 		} else if (textLeft.startsWith('W')) {
-			// $result.action = 'updateScheduleChanges';
+			// result.action = 'updateScheduleChanges';
 			textLeft = textLeft.slice(1);
 			if (textLeft.startsWith('R')) {
 				result.keepPnr = true;
@@ -186,7 +186,7 @@ class CommandParser {
 				},
 				modifiers: rawModifiers.map((mod) => ({raw: mod})),
 			};
-			// $result.actionData = $actionData;
+			// result.actionData = actionData;
 			textLeft = '';
 		}
 		if (textLeft) {
@@ -212,10 +212,10 @@ class CommandParser {
 		}
 	}
 
-	static parseArea($cmd) {
+	static parseArea(cmd) {
 		const filter = /^(?:\¤|\[)([A-F])$/;
 		let matches;
-		if (php.preg_match(filter, $cmd, matches = [])) {
+		if (php.preg_match(filter, cmd, matches = [])) {
 			return matches[1];
 		} else {
 			return null;
@@ -273,8 +273,8 @@ class CommandParser {
 		if (!expr) {
 			return [];
 		}
-		const parseRange = ($text) => {
-			const pair = $text.split('-');
+		const parseRange = (text) => {
+			const pair = text.split('-');
 			return php.range(pair[0], pair[1] || pair[0]);
 		};
 		return expr.trim().split(',').flatMap(parseRange);
@@ -287,22 +287,22 @@ class CommandParser {
 	 * '5¤TEST' => 'changePnrRemarks',
 	 */
 	static parseRemarkCmd(cmd) {
-		let $content, $matches, $_, $rangesRaw, $newText, $type, $data;
+		let content, matches, $_, rangesRaw, newText, type, data;
 		if (cmd.startsWith('5')) {
-			$content = cmd.slice(1);
-			if (php.preg_match(/^([-,\d]+|)¤(.*)$/, $content, $matches = [])) {
-				[$_, $rangesRaw, $newText] = $matches;
-				$type = 'changePnrRemarks';
-				$data = {
-					ranges: this.parseRemarkRanges($rangesRaw),
-					newText: $newText,
+			content = cmd.slice(1);
+			if (php.preg_match(/^([-,\d]+|)¤(.*)$/, content, matches = [])) {
+				[$_, rangesRaw, newText] = matches;
+				type = 'changePnrRemarks';
+				data = {
+					ranges: this.parseRemarkRanges(rangesRaw),
+					newText: newText,
 				};
 			} else {
 				// '5ELDAR/ID20744/CREATED FOR VANCE/ID8122/REQ. ID-4777760'
-				$type = 'addRemark';
-				$data = $content;
+				type = 'addRemark';
+				data = content;
 			}
-			return {type: $type, data: $data};
+			return {type: type, data: data};
 		} else {
 			return null;
 		}
@@ -311,9 +311,9 @@ class CommandParser {
 	// 'FFUA12345678910-1.1', 'FFUA12345678910/LH-1.1', 'FF¤ALL', 'FFLH992006441415400'
 	// 'FF1¤UA5522123', 'FF1¤UA5522123-3.1', 'FFAA987654321/CX,AS,EI,QF-2.2',
 	// 'FFAA987654321/1,2-2.3', 'FFAA987654321/CX-HOFFMAN/REICHE', 'FF1,3¤'
-	static parseFfChange($cmd) {
-		let $regex, $matches;
-		$regex =
+	static parseFfChange(cmd) {
+		let regex, matches;
+		regex =
 			'/^FF' +
 			'(' +
 			'(?<lineNums>\\d+[-,\\d]*|)' +
@@ -337,21 +337,21 @@ class CommandParser {
 			'))?' +
 			')' +
 			'$/';
-		if (php.preg_match($regex, $cmd, $matches = [])) {
+		if (php.preg_match(regex, cmd, matches = [])) {
 			return {
-				type: php.empty($matches.pillow)
+				type: php.empty(matches.pillow)
 					? 'addFrequentFlyerNumber'
 					: 'changeFrequentFlyerNumber',
 				data: {
-					lineNums: this.flattenRange($matches.lineNums || ''),
-					airline: $matches.airline || '',
-					code: $matches.code || '',
-					partners: php.empty($matches.partners) ? [] :
-						php.explode(',', $matches.partners),
-					segNums: this.flattenRange($matches.segNums || ''),
-					majorPaxNum: $matches.majorPaxNum || '',
-					minorPaxNum: $matches.minorPaxNum || '',
-					paxName: $matches.paxName || '',
+					lineNums: this.flattenRange(matches.lineNums || ''),
+					airline: matches.airline || '',
+					code: matches.code || '',
+					partners: php.empty(matches.partners) ? [] :
+						php.explode(',', matches.partners),
+					segNums: this.flattenRange(matches.segNums || ''),
+					majorPaxNum: matches.majorPaxNum || '',
+					minorPaxNum: matches.minorPaxNum || '',
+					paxName: matches.paxName || '',
 				},
 			};
 		} else {
@@ -360,9 +360,9 @@ class CommandParser {
 	}
 
 	// '4GXALL', '4GX1/25AB', '4G2,3/2EF-1.1-1.2', '4G2,3/2EF-2.1,1.1'
-	static parseSeatChange($cmd) {
-		let $regex, $matches, $seatCodesStr, $seatMatches, $seatCodes, $_, $rowNumber, $letters, $letter, $segNums;
-		$regex =
+	static parseSeatChange(cmd) {
+		let regex, matches, seatCodesStr, seatMatches, seatCodes, $_, rowNumber, letters, letter, segNums;
+		regex =
 			'/^4G' +
 			'(?<cancelMark>X|)' +
 			'(?<segNums>\\d+[,\\d]*|A|ALL|)' +
@@ -370,33 +370,33 @@ class CommandParser {
 			'(\\\/(?<seatCodes>(\\d+[A-Z]+)+))?' +
 			'(-(?<paxNums>\\d+\\.\\d+([-,]\\d+\\.\\d+)*))?' +
 			'$/';
-		if (php.preg_match($regex, $cmd, $matches = [])) {
-			$seatCodesStr = $matches.seatCodes || '';
-			php.preg_match_all(/(\d+)([A-Z]+)/, $seatCodesStr, $seatMatches = [], php.PREG_SET_ORDER);
-			$seatCodes = [];
-			for ([$_, $rowNumber, $letters] of Object.values($seatMatches || {})) {
-				for ($letter of Object.values(php.str_split($letters, 1))) {
-					$seatCodes.push($rowNumber + $letter);
+		if (php.preg_match(regex, cmd, matches = [])) {
+			seatCodesStr = matches.seatCodes || '';
+			php.preg_match_all(/(\d+)([A-Z]+)/, seatCodesStr, seatMatches = [], php.PREG_SET_ORDER);
+			seatCodes = [];
+			for ([$_, rowNumber, letters] of Object.values(seatMatches || {})) {
+				for (letter of Object.values(php.str_split(letters, 1))) {
+					seatCodes.push(rowNumber + letter);
 				}
 			}
-			if (php.in_array($matches.segNums, ['A', 'ALL'])) {
-				$segNums = []; // all
+			if (php.in_array(matches.segNums, ['A', 'ALL'])) {
+				segNums = []; // all
 			} else {
-				$segNums = this.flattenRange($matches.segNums);
+				segNums = this.flattenRange(matches.segNums);
 			}
 			return {
-				type: php.empty($matches.cancelMark)
+				type: php.empty(matches.cancelMark)
 					? 'requestSeats' : 'cancelSeats',
 				data: {
-					paxRanges: php.empty($matches.paxNums) ? [] :
-						this.parsePaxRanges($matches.paxNums),
-					segNums: $segNums,
-					location: php.empty($matches.location) ? null : {
-						raw: $matches.location,
-						parsed: ({A: 'aisle', W: 'window', X: 'bulkhead'} || {})[$matches.location],
+					paxRanges: php.empty(matches.paxNums) ? [] :
+						this.parsePaxRanges(matches.paxNums),
+					segNums: segNums,
+					location: php.empty(matches.location) ? null : {
+						raw: matches.location,
+						parsed: ({A: 'aisle', W: 'window', X: 'bulkhead'} || {})[matches.location],
 					},
 					zone: null,
-					seatCodes: $seatCodes,
+					seatCodes: seatCodes,
 				},
 			};
 		} else {
@@ -447,9 +447,9 @@ class CommandParser {
 		return firstCmd;
 	}
 
-	/** @param {String} $cmd */
-	static parse($cmd) {
-		return this.parseBulkCommand($cmd);
+	/** @param {String} cmd */
+	static parse(cmd) {
+		return this.parseBulkCommand(cmd);
 	}
 
 	static parseSingleCommand(cmd) {

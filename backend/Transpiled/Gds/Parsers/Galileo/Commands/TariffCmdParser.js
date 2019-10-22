@@ -6,30 +6,30 @@ const Lexer = require('gds-utils/src/lexer/Lexer.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 
-const parseDate = ($raw) => {
-	return !$raw ? null : {
-		raw: $raw,
-		partial: CommonParserHelpers.parsePartialDate($raw),
-		full: CommonParserHelpers.parseCurrentCenturyFullDate($raw)['parsed'],
+const parseDate = (raw) => {
+	return !raw ? null : {
+		raw: raw,
+		partial: CommonParserHelpers.parsePartialDate(raw),
+		full: CommonParserHelpers.parseCurrentCenturyFullDate(raw)['parsed'],
 	};
 };
 
-const getFirst = ($matches) => $matches[1];
-const $parseDate = ($matches) => parseDate($matches[1]);
+const getFirst = (matches) => matches[1];
+const parseDateToken = (matches) => parseDate(matches[1]);
 const end  = '(?![A-Z0-9])';
 
 const lexer = new Lexer([
 	(new Lexeme('tripType', '/^-(RT|OW)'+ end +'/')).preprocessData(getFirst),
 	(new Lexeme('bookingClass', '/^-([A-Z])'+ end +'/')).preprocessData(getFirst),
-	(new Lexeme('cabinClass', '/^@([A-Z])'+ end +'/')).preprocessData(($matches) => (ApoCmdParser.getCabinClasses() || {})[$matches[1]]),
+	(new Lexeme('cabinClass', '/^@([A-Z])'+ end +'/')).preprocessData((matches) => (ApoCmdParser.getCabinClasses() || {})[matches[1]]),
 	(new Lexeme('fareBasis', '/^@([A-Z][A-Z0-9]*)'+ end +'/')).preprocessData(getFirst),
-	(new Lexeme('airlines', '/^(\\\/[A-Z0-9]{2})+'+ end +'/')).preprocessData(($matches) => php.explode('/', php.ltrim($matches[0], '/'))),
-	(new Lexeme('ticketingDate', '/^\\.T(\\d{1,2}[A-Z]{3}\\d*)'+ end +'/')).preprocessData($parseDate),
+	(new Lexeme('airlines', '/^(\\\/[A-Z0-9]{2})+'+ end +'/')).preprocessData((matches) => php.explode('/', php.ltrim(matches[0], '/'))),
+	(new Lexeme('ticketingDate', '/^\\.T(\\d{1,2}[A-Z]{3}\\d*)'+ end +'/')).preprocessData(parseDateToken),
 	(new Lexeme('allianceCode', '/^\\\/\\\/\\*([A-Z])'+ end +'/')).preprocessData(getFirst),
 	(new Lexeme('currency', '/^:([A-Z]{3})'+ end +'/')).preprocessData(getFirst),
-	(new Lexeme('fareType', '/^:([A-Z])'+ end +'/')).preprocessData(($matches) => AtfqParser.decodeFareType($matches[1])),
+	(new Lexeme('fareType', '/^:([A-Z])'+ end +'/')).preprocessData((matches) => AtfqParser.decodeFareType(matches[1])),
 	(new Lexeme('ptc', '/^\\*([A-Z0-9]{3})'+ end +'/')).preprocessData(getFirst),
-	(new Lexeme('accountCodes', '/^-PRI((-[A-Z0-9]+)*)'+ end +'/')).preprocessData(($matches) => $matches[1] ? php.explode('-', php.ltrim($matches[1], '-')) : []),
+	(new Lexeme('accountCodes', '/^-PRI((-[A-Z0-9]+)*)'+ end +'/')).preprocessData((matches) => matches[1] ? php.explode('-', php.ltrim(matches[1], '-')) : []),
 	// base mods follows (may preceed a letter)
 	(new Lexeme('dates', '/^(\\d{1,2}[A-Z]{3}\\d{0,2})/')).preprocessData(matches => ({
 		departureDate: parseDate(matches[1]),
@@ -44,13 +44,13 @@ const lexer = new Lexer([
 	})),
 ]);
 
-exports.parse = ($cmd) => {
-	let $matches;
-	if (php.preg_match(/^FD(?<modsPart>.*)$/, $cmd, $matches = {})) {
-		const $lexed = lexer.lex($matches['modsPart']);
-		const modifiers = Fp.map(($rec) => ({
-			type: $rec['lexeme'], raw: $rec['raw'], parsed: $rec['data'],
-		}), $lexed['lexemes']);
+exports.parse = (cmd) => {
+	let matches;
+	if (php.preg_match(/^FD(?<modsPart>.*)$/, cmd, matches = {})) {
+		const lexed = lexer.lex(matches['modsPart']);
+		const modifiers = Fp.map((rec) => ({
+			type: rec['lexeme'], raw: rec['raw'], parsed: rec['data'],
+		}), lexed['lexemes']);
 
 		// code expects them to be separate from rest modifiers
 		const baseModNames = new Set(['dates', 'airports']);
@@ -64,7 +64,7 @@ exports.parse = ($cmd) => {
 			departureAirport: baseData.departureAirport || '',
 			destinationAirport: baseData.destinationAirport || '',
 			modifiers: modifiers.filter(m => !baseModNames.has(m.type)),
-			unparsed: $lexed['text'],
+			unparsed: lexed['text'],
 		};
 	} else {
 		return null;

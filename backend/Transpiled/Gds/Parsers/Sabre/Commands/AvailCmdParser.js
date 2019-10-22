@@ -1,7 +1,7 @@
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 const Str = require('../../../../../Utils/Str.js');
 const Lexeme = require('gds-utils/src/lexer/Lexeme.js');
 const Lexer = require('gds-utils/src/lexer/Lexer.js');
-const CommonParserHelpers = require('../../Apollo/CommonParserHelpers.js');
 
 const {mkReg} = require('klesun-node-tools/src/Utils/Misc.js');
 
@@ -62,7 +62,7 @@ exports.parse = (cmd) => {
 			scan: match.groups.scanMark === 'S',
 			departureDate: {
 				raw: groups.departureDate,
-				parsed: CommonParserHelpers.parsePartialDate(groups.departureDate),
+				parsed: ParserUtil.parsePartialDate(groups.departureDate),
 			},
 			departureAirport: groups.departureAirport,
 			destinationAirport: groups.destinationAirport,

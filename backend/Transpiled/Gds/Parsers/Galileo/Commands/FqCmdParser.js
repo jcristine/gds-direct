@@ -10,20 +10,20 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 class FqCmdParser
 {
 
-	static parsePModPtcGroup($ptcToken)  {
-		let $matches, $_, $range, $ptc, $ptcDesc, $from, $to;
+	static parsePModPtcGroup(ptcToken)  {
+		let matches, $_, range, ptc, ptcDesc, from, to;
 
-		if (php.preg_match(/^(\d+(?:-\d+|)|)(\*[A-Z0-9]{1,3}|)([A-Z0-9]*)/, $ptcToken, $matches = [])) {
-			if (!$matches[0]) {
+		if (php.preg_match(/^(\d+(?:-\d+|)|)(\*[A-Z0-9]{1,3}|)([A-Z0-9]*)/, ptcToken, matches = [])) {
+			if (!matches[0]) {
 				return null;
 			}
-			[$_, $range, $ptc, $ptcDesc] = $matches;
-			[$from, $to] = php.array_pad(php.explode('-', $range), 2, '');
+			[$_, range, ptc, ptcDesc] = matches;
+			[from, to] = php.array_pad(php.explode('-', range), 2, '');
 			return {
-				passengerNumbers: $range ? php.range($from, $to || $from) : [],
-				ptc: php.ltrim($ptc, '*'),
-				ptcDescription: $ptcDesc,
-				raw: $matches[0],
+				passengerNumbers: range ? php.range(from, to || from) : [],
+				ptc: php.ltrim(ptc, '*'),
+				ptcDescription: ptcDesc,
+				raw: matches[0],
 			};
 		} else {
 			return null;
@@ -33,39 +33,39 @@ class FqCmdParser
 	// 'P1-3*JCB.5.7*INF'
 	// 'P1*ITX.2*C03.3*INS'
 	// 'P1*SRC65LGB.2*SRC75LGB', '*CH'
-	static parsePassengerModifier($rawMod)  {
-		let $records, $raw, $parsed, $appliesToAll, $content, $ptcTokens, $ptcToken;
+	static parsePassengerModifier(rawMod)  {
+		let records, raw, parsed, appliesToAll, content, ptcTokens, ptcToken;
 
-		$records = [];
-		$raw = null;
-		if (StringUtil.startsWith($rawMod, '*')) {
-			if ($parsed = this.parsePModPtcGroup($rawMod)) {
-				$appliesToAll = true;
-				$raw = $parsed['raw'];
-				$records.push($parsed);
+		records = [];
+		raw = null;
+		if (StringUtil.startsWith(rawMod, '*')) {
+			if (parsed = this.parsePModPtcGroup(rawMod)) {
+				appliesToAll = true;
+				raw = parsed['raw'];
+				records.push(parsed);
 			} else {
 				return null;
 			}
-		} else if (StringUtil.startsWith($rawMod, 'P')) {
-			$appliesToAll = false;
-			$content = php.substr($rawMod, php.strlen('P'));
-			$ptcTokens = php.explode('.', $content);
-			for ($ptcToken of Object.values($ptcTokens)) {
-				$parsed = this.parsePModPtcGroup($ptcToken);
-				if ($parsed && !php.empty($parsed['passengerNumbers'])) {
-					$records.push($parsed);
+		} else if (StringUtil.startsWith(rawMod, 'P')) {
+			appliesToAll = false;
+			content = php.substr(rawMod, php.strlen('P'));
+			ptcTokens = php.explode('.', content);
+			for (ptcToken of Object.values(ptcTokens)) {
+				parsed = this.parsePModPtcGroup(ptcToken);
+				if (parsed && !php.empty(parsed['passengerNumbers'])) {
+					records.push(parsed);
 				} else {
 					break;
 				}}
-			$raw = 'P'+php.implode('.', php.array_column($records, 'raw'));
+			raw = 'P'+php.implode('.', php.array_column(records, 'raw'));
 		} else {
 			return null;
 		}
-		$parsed = {appliesToAll: $appliesToAll, ptcGroups: $records};
+		parsed = {appliesToAll: appliesToAll, ptcGroups: records};
 		return {
 			type: 'passengers',
-			raw: $raw,
-			parsed: $parsed,
+			raw: raw,
+			parsed: parsed,
 		};
 	}
 
@@ -137,17 +137,17 @@ class FqCmdParser
 		}
 	}
 
-	static decodeFareType($letter)  {
-		let $codes;
+	static decodeFareType(letter)  {
+		let codes;
 
-		$codes = {
+		codes = {
 			N: 'public',
 			P: 'private',
 			G: 'agencyPrivate',
 			A: 'airlinePrivate',
 			C: 'netAirlinePrivate',
 		};
-		return $codes[$letter];
+		return codes[letter];
 	}
 
 	static getCabinClassMapping() {
@@ -160,91 +160,91 @@ class FqCmdParser
 		};
 	}
 
-	static parseMod($gluedModsPart)  {
-		let $matches, $raw, $type, $parsed, $mod;
+	static parseMod(gluedModsPart)  {
+		let matches, raw, type, parsed, mod;
 
-		if (php.preg_match(/^C([A-Z0-9]{2})(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
-			[$raw, $type, $parsed] = [$matches[0], 'validatingCarrier', $matches[1]];
-		} else if (php.preg_match(/^OC([A-Z0-9]{2})(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
-			[$raw, $type, $parsed] = [$matches[0], 'overrideCarrier', $matches[1]];
-		} else if (php.preg_match(/^TA([A-Z0-9]{3,4})(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
-			[$raw, $type, $parsed] = [$matches[0], 'ticketingAgencyPcc', $matches[1]];
-		} else if (php.preg_match(/^::?([A-Z]{3})(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
-			[$raw, $type, $parsed] = [$matches[0], 'currency', $matches[1]];
-		} else if (php.preg_match(/^ET(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
-			[$raw, $type, $parsed] = [$matches[0], 'areElectronicTickets', true];
-		} else if (php.preg_match(/^ACC\d*(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
-			[$raw, $type, $parsed] = [$matches[0], 'accompaniedChild', true];
-		} else if (php.preg_match(/^\.T(\d{1,2}[A-Z]{3}\d*)(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
+		if (php.preg_match(/^C([A-Z0-9]{2})(?![A-Z0-9])/, gluedModsPart, matches = [])) {
+			[raw, type, parsed] = [matches[0], 'validatingCarrier', matches[1]];
+		} else if (php.preg_match(/^OC([A-Z0-9]{2})(?![A-Z0-9])/, gluedModsPart, matches = [])) {
+			[raw, type, parsed] = [matches[0], 'overrideCarrier', matches[1]];
+		} else if (php.preg_match(/^TA([A-Z0-9]{3,4})(?![A-Z0-9])/, gluedModsPart, matches = [])) {
+			[raw, type, parsed] = [matches[0], 'ticketingAgencyPcc', matches[1]];
+		} else if (php.preg_match(/^::?([A-Z]{3})(?![A-Z0-9])/, gluedModsPart, matches = [])) {
+			[raw, type, parsed] = [matches[0], 'currency', matches[1]];
+		} else if (php.preg_match(/^ET(?![A-Z0-9])/, gluedModsPart, matches = [])) {
+			[raw, type, parsed] = [matches[0], 'areElectronicTickets', true];
+		} else if (php.preg_match(/^ACC\d*(?![A-Z0-9])/, gluedModsPart, matches = [])) {
+			[raw, type, parsed] = [matches[0], 'accompaniedChild', true];
+		} else if (php.preg_match(/^\.T(\d{1,2}[A-Z]{3}\d*)(?![A-Z0-9])/, gluedModsPart, matches = [])) {
 			// may be either full or partial
-			[$raw, $type, $parsed] = [$matches[0], 'ticketingDate', {raw: $matches[1]}];
-		} else if (php.preg_match(/^:([A-Z])(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
-			[$raw, $type, $parsed] = [$matches[0], 'fareType', this.decodeFareType($matches[1])];
-		} else if (php.preg_match(/^[|+][|+]-([A-Z]+)(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
-			const raw = $matches[1];
-			const parsed = this.getCabinClassMapping()[raw];
-			[$raw, $type, $parsed] = [$matches[0], 'cabinClass', {raw, parsed}];
-		} else if (php.preg_match(/^\.([A-Z])(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
-			[$raw, $type, $parsed] = [$matches[0], 'bookingClass', $matches[1]];
-		} else if (php.preg_match(/^\.([A-Z]{3})([A-Z]{3})(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
-			[$raw, $type, $parsed] = [$matches[0], 'pointOfSale', {
-				sellingCity: $matches[1],
-				ticketingCity: $matches[2],
+			[raw, type, parsed] = [matches[0], 'ticketingDate', {raw: matches[1]}];
+		} else if (php.preg_match(/^:([A-Z])(?![A-Z0-9])/, gluedModsPart, matches = [])) {
+			[raw, type, parsed] = [matches[0], 'fareType', this.decodeFareType(matches[1])];
+		} else if (php.preg_match(/^[|+][|+]-([A-Z]+)(?![A-Z0-9])/, gluedModsPart, matches = [])) {
+			const letter = matches[1];
+			const cabin = this.getCabinClassMapping()[letter];
+			[raw, type, parsed] = [matches[0], 'cabinClass', {raw: letter, parsed: cabin}];
+		} else if (php.preg_match(/^\.([A-Z])(?![A-Z0-9])/, gluedModsPart, matches = [])) {
+			[raw, type, parsed] = [matches[0], 'bookingClass', matches[1]];
+		} else if (php.preg_match(/^\.([A-Z]{3})([A-Z]{3})(?![A-Z0-9])/, gluedModsPart, matches = [])) {
+			[raw, type, parsed] = [matches[0], 'pointOfSale', {
+				sellingCity: matches[1],
+				ticketingCity: matches[2],
 			}];
-		} else if (php.preg_match(/^:([A-Z]{2})(?![A-Z0-9])/, $gluedModsPart, $matches = [])) {
-			[$raw, $type, $parsed] = [$matches[0], 'ignoreRule', {
-				abbreviation: $matches[1],
+		} else if (php.preg_match(/^:([A-Z]{2})(?![A-Z0-9])/, gluedModsPart, matches = [])) {
+			[raw, type, parsed] = [matches[0], 'ignoreRule', {
+				abbreviation: matches[1],
 			}];
-		} else if (php.preg_match(/^-([A-Z0-9]+)/, $gluedModsPart, $matches = [])) {
-			[$raw, $type, $parsed] = [$matches[0], 'accountCode', {
+		} else if (php.preg_match(/^-([A-Z0-9]+)/, gluedModsPart, matches = [])) {
+			[raw, type, parsed] = [matches[0], 'accountCode', {
 				// there are more formats like -:BSAG and possibly -BSAG@@EUR8
-				code: $matches[1],
+				code: matches[1],
 			}];
-		} else if ($mod = this.parsePassengerModifier($gluedModsPart)) {
-			$raw = $mod['raw'];
-			$type = $mod['type'];
-			$parsed = $mod['parsed'];
-		} else if ($mod = this.parseSegmentModifier($gluedModsPart)) {
-			$raw = $mod['raw'];
-			$type = $mod['type'];
-			$parsed = $mod['parsed'];
-		} else if ($gluedModsPart === 'FXD') {
+		} else if (mod = this.parsePassengerModifier(gluedModsPart)) {
+			raw = mod['raw'];
+			type = mod['type'];
+			parsed = mod['parsed'];
+		} else if (mod = this.parseSegmentModifier(gluedModsPart)) {
+			raw = mod['raw'];
+			type = mod['type'];
+			parsed = mod['parsed'];
+		} else if (gluedModsPart === 'FXD') {
 			// Is used if w/o it basic economy is proposed by GDS
-			[$raw, $type, $parsed] = [$gluedModsPart, 'forceProperEconomy', true];
+			[raw, type, parsed] = [gluedModsPart, 'forceProperEconomy', true];
 		} else {
-			[$raw, $type, $parsed] = [$gluedModsPart, null, null];
+			[raw, type, parsed] = [gluedModsPart, null, null];
 		}
 		return {
-			raw: $raw,
-			type: $type,
-			parsed: $parsed,
+			raw: raw,
+			type: type,
+			parsed: parsed,
 		};
 	}
 
-	static parse($cmd)  {
-		let $matches, $_, $baseCmd, $modsPart, $mods, $gluedModsPart, $mod;
+	static parse(cmd)  {
+		let matches, $_, baseCmd, modsPart, mods, gluedModsPart, mod;
 
 		// there are probably more 'baseCmd' variations,
 		// but we don't currently have access to the HELP
-		if (php.preg_match(/^(FQ(?:A|BB(?:K|)|BA|))\/?(.*)$/, $cmd, $matches = [])) {
-			[$_, $baseCmd, $modsPart] = $matches;
+		if (php.preg_match(/^(FQ(?:A|BB(?:K|)|BA|))\/?(.*)$/, cmd, matches = [])) {
+			[$_, baseCmd, modsPart] = matches;
 			// some mods in Galileo starting with non-letters may have no slash before them
-			$mods = [];
-			for ($gluedModsPart of Object.values(php.explode('/', $modsPart))) {
-				while ($gluedModsPart) {
-					$mod = this.parseMod($gluedModsPart);
-					if ($mod['raw']) {
-						$gluedModsPart = php.substr($gluedModsPart, php.strlen($mod['raw']));
-						$mods.push($mod);
+			mods = [];
+			for (gluedModsPart of Object.values(php.explode('/', modsPart))) {
+				while (gluedModsPart) {
+					mod = this.parseMod(gluedModsPart);
+					if (mod['raw']) {
+						gluedModsPart = php.substr(gluedModsPart, php.strlen(mod['raw']));
+						mods.push(mod);
 					} else {
-						$mods.push({raw: $gluedModsPart, type: null, data: null});
+						mods.push({raw: gluedModsPart, type: null, data: null});
 						break;
 					}
 				}
 			}
 			return {
-				baseCmd: $baseCmd,
-				pricingModifiers: $mods,
+				baseCmd: baseCmd,
+				pricingModifiers: mods,
 			};
 		} else {
 			return null;
