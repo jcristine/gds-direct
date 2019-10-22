@@ -4,15 +4,15 @@ const DateTime = require('../../Transpiled/Lib/Utils/DateTime.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
-/** takes gds and tariff cmd like $D10DECKIVRIX and parses it into a structure common to all GDS-es */
+/** takes gds and tariff cmd like D10DECKIVRIX and parses it into a structure common to all GDS-es */
 class NormalizeTariffCmd
 {
 	constructor()  {
-		this.$baseDate = php.date('Y-m-d H:i:s');
+		this.baseDate = php.date('Y-m-d H:i:s');
 	}
 
-	setBaseDate($baseDate)  {
-		this.$baseDate = $baseDate;
+	setBaseDate(baseDate)  {
+		this.baseDate = baseDate;
 		return this;
 	}
 
@@ -20,7 +20,7 @@ class NormalizeTariffCmd
 		if (!cmdData) {
 			return null;
 		} else if (cmdData.unparsed) {
-			const msg = 'Failed to parse part of $D - ' + cmdData.unparsed;
+			const msg = 'Failed to parse part of D - ' + cmdData.unparsed;
 			throw Rej.NotImplemented.makeExc(msg);
 		}
 		const typeToData = php.array_combine(
@@ -31,74 +31,73 @@ class NormalizeTariffCmd
 		return cmdData;
 	}
 
-	static normalizeGalileoCmd($cmdData)  {
-		let $typeToData;
-		if (!$cmdData || !php.empty($cmdData['unparsed'])) {
+	static normalizeGalileoCmd(cmdData)  {
+		if (!cmdData || !php.empty(cmdData.unparsed)) {
 			return null;
 		}
-		$typeToData = php.array_combine(
-			php.array_column($cmdData['modifiers'] || [], 'type'),
-			php.array_column($cmdData['modifiers'] || [], 'parsed')
+		const typeToData = php.array_combine(
+			php.array_column(cmdData.modifiers || [], 'type'),
+			php.array_column(cmdData.modifiers || [], 'parsed')
 		);
-		$cmdData['typeToData'] = $typeToData;
-		if (!php.empty($cmdData['typeToData']['accountCodes'])) {
-			$cmdData['typeToData']['accountCode'] = php.array_shift($cmdData['typeToData']['accountCodes']);
-			delete($cmdData['typeToData']['accountCodes']);
+		cmdData.typeToData = typeToData;
+		if (!php.empty(cmdData.typeToData.accountCodes)) {
+			cmdData.typeToData.accountCode = php.array_shift(cmdData.typeToData.accountCodes);
+			delete(cmdData.typeToData.accountCodes);
 		}
-		return $cmdData;
+		return cmdData;
 	}
 
-	static normalizeAmadeusCmd($cmdData)  {
-		let $typeToData;
-		if (!$cmdData) {
+	static normalizeAmadeusCmd(cmdData)  {
+		let typeToData;
+		if (!cmdData) {
 			return null;
 		}
-		$typeToData = php.array_combine(php.array_column($cmdData['modifiers'], 'type'),
-			php.array_column($cmdData['modifiers'], 'parsed'));
-		$typeToData = php.array_merge($typeToData, php.array_combine(
-			php.array_column(($typeToData['generic'] || {})['rSubModifiers'] || [], 'type'),
-			php.array_column(($typeToData['generic'] || {})['rSubModifiers'] || [], 'parsed')
+		typeToData = php.array_combine(php.array_column(cmdData.modifiers, 'type'),
+			php.array_column(cmdData.modifiers, 'parsed'));
+		typeToData = php.array_merge(typeToData, php.array_combine(
+			php.array_column((typeToData.generic || {}).rSubModifiers || [], 'type'),
+			php.array_column((typeToData.generic || {}).rSubModifiers || [], 'parsed')
 		));
-		if (php.array_key_exists(null, $typeToData)) {
+		if (php.array_key_exists(null, typeToData)) {
 			return null; // failed to parse some modifiers
 		}
-		$cmdData['departureDate'] = $typeToData['travelDates']['departureDate'] || null;
-		$cmdData['returnDate'] = $typeToData['travelDates']['returnDate'] || null;
-		delete($typeToData['travelDates']);
-		delete($typeToData['generic']);
-		$cmdData['typeToData'] = $typeToData;
-		return $cmdData;
+		cmdData.departureDate = typeToData.travelDates.departureDate || null;
+		cmdData.returnDate = typeToData.travelDates.returnDate || null;
+		delete(typeToData.travelDates);
+		delete(typeToData.generic);
+		cmdData.typeToData = typeToData;
+		return cmdData;
 	}
 
-	static normalizeSabreCmd($cmdData)  {
-		let $typeToData, $ticketingDate;
-		if (!$cmdData || !php.empty($cmdData['unparsed'])) {
+	static normalizeSabreCmd(cmdData)  {
+		let typeToData, ticketingDate;
+		if (!cmdData || !php.empty(cmdData.unparsed)) {
 			return null;
 		}
-		$typeToData = php.array_combine(
-			php.array_column($cmdData['modifiers'] || [], 'type'),
-			php.array_column($cmdData['modifiers'] || [], 'parsed')
+		typeToData = php.array_combine(
+			php.array_column(cmdData.modifiers || [], 'type'),
+			php.array_column(cmdData.modifiers || [], 'parsed')
 		);
-		if ($ticketingDate = $cmdData['ticketingDate'] || null) {
-			$typeToData['ticketingDate'] = $ticketingDate;
+		if (ticketingDate = cmdData.ticketingDate || null) {
+			typeToData.ticketingDate = ticketingDate;
 		}
-		$cmdData['returnDate'] = $typeToData['returnDate'] || null;
-		delete($typeToData['returnDate']);
-		$cmdData['typeToData'] = $typeToData;
-		return $cmdData;
+		cmdData.returnDate = typeToData.returnDate || null;
+		delete(typeToData.returnDate);
+		cmdData.typeToData = typeToData;
+		return cmdData;
 	}
 
-	normalizeDate($dateRecord)  {
-		if (!($dateRecord || {})['full']) {
-			if (($dateRecord || {})['partial']) {
-				$dateRecord['full'] =
-                    DateTime.decodeRelativeDateInFuture($dateRecord['partial'], this.$baseDate);
+	normalizeDate(dateRecord)  {
+		if (!(dateRecord || {}).full) {
+			if ((dateRecord || {}).partial) {
+				dateRecord.full =
+                    DateTime.addYear(dateRecord.partial, this.baseDate);
 			} else {
 				// date not specified or invalid
 				return null;
 			}
 		}
-		return $dateRecord;
+		return dateRecord;
 	}
 
 	/**
