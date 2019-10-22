@@ -1,3 +1,4 @@
+const GkUtil = require('../../../../../Actions/BookViaGk/GkUtil.js');
 const BookViaGk = require('../../../../../Actions/BookViaGk/BookViaGk.js');
 const BookViaGk_apollo = require('../../../../../Actions/BookViaGk/BookViaGk_apollo.js');
 const DateTime = require('../../../../Lib/Utils/DateTime.js');
@@ -457,14 +458,14 @@ const RunCmdRq = ({
 	};
 
 	const guessGkMarriages = async (itinerary) => {
-		return BookViaGk.guessGkMarriages(itinerary, geo);
+		return GkUtil.guessGkMarriages(itinerary, geo);
 	};
 
 	const rebookAsSs = async (data) => {
 		const fallbackToGk = data.method !== 'allowCutting';
 		stateful.flushCalledCommands();
 		const pnr = await getCurrentPnr();
-		let itinerary = pnr.getReservation(stateful.getStartDt());
+		let itinerary = pnr.getReservation(stateful.getStartDt()).itinerary;
 		itinerary = await guessGkMarriages(itinerary)
 			.catch(coverExc([Rej.NotFound], exc => itinerary));
 		itinerary = itinerary
