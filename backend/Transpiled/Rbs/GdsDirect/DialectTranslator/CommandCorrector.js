@@ -1,10 +1,10 @@
+const Parse_airAvailability = require('gds-utils/src/text_format_processing/sabre/commands/Parse_airAvailability.js');
 
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const VariableTranslator = require("./VariableTranslator");
 const SimplePatternTranslator = require("./SimplePatternTranslator");
 const PatternTranslator = require("./PatternTranslator");
-const AvailCmdParser = require("../../../Gds/Parsers/Sabre/Commands/AvailCmdParser");
 
 const agnosticMap = {
 	'PRICEAL': 'PRICEALL',
@@ -291,7 +291,7 @@ class CommandCorrector {
 					message: 'CORRECTED! USE 1 INSTEAD OF A IN SABRE',
 					condition: ({output}) => {
 						const norm = output.replace('‡', '¥');
-						const parsed = AvailCmdParser.parse(norm);
+						const parsed = Parse_airAvailability(norm);
 						return parsed && !parsed.unparsed;
 					},
 				},

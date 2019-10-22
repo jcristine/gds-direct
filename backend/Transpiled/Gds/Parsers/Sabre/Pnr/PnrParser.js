@@ -1,3 +1,4 @@
+const Parse_priceItinerary = require('gds-utils/src/text_format_processing/sabre/commands/Parse_priceItinerary.js');
 
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
@@ -14,7 +15,7 @@ const PnrInfoBlockParser = require("./PnrInfoBlockParser");
 const RemarksParser = require("./RemarksParser");
 const AccountingDataParser = require("./AccountingDataParser");
 const PhonesBlockParser = require("./PhonesBlockParser");
-const PricingCmdParser = require("../Commands/PricingCmdParser");
+
 class PnrParser
 {
 	static markLines($lines)  {
@@ -160,7 +161,7 @@ class PnrParser
 			const [_, lineNumber, modsStr] = match;
 			const rawMods = !modsStr ? [] : modsStr.split('¥');
 			const pricingModifiers = rawMods
-				.map(PricingCmdParser.parseModifier);
+				.map(Parse_priceItinerary.parseModifier);
 			return {lineNumber, pricingModifiers};
 		} else {
 			return {raw: line};

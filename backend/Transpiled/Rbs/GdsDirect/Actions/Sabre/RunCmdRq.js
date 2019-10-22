@@ -1,8 +1,8 @@
+const Parse_priceItinerary = require('gds-utils/src/text_format_processing/sabre/commands/Parse_priceItinerary.js');
 const SortItinerary = require('../../../../../Actions/SortItinerary.js');
 const TranslatePricingCmd = require('../../../../../Actions/CmdTranslators/TranslatePricingCmd.js');
 const NormalizePricingCmd = require('gds-utils/src/cmd_translators/NormalizePricingCmd.js');
 const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
-const PricingCmdParser = require('../../../../Gds/Parsers/Sabre/Commands/PricingCmdParser.js');
 const BookViaGk_sabre = require('../../../../../Actions/BookViaGk/BookViaGk_sabre.js');
 const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
 const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
@@ -955,7 +955,7 @@ const execute = ({
 	};
 
 	const repriceInPccMix = (cleanCmd) => {
-		const data = PricingCmdParser.parse(cleanCmd);
+		const data = Parse_priceItinerary(cleanCmd);
 		if (!data) {
 			return Rej.NotImplemented('Unsupported pricing format: ' + cleanCmd);
 		} else {

@@ -1,8 +1,8 @@
+const Parse_priceItinerary = require('gds-utils/src/text_format_processing/sabre/commands/Parse_priceItinerary.js');
 const BookViaGk = require('../BookViaGk/BookViaGk.js');
 const SabrePricingParser = require('../../Transpiled/Gds/Parsers/Sabre/Pricing/SabrePricingParser.js');
 const BookingClasses = require('../../Repositories/BookingClasses.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const PricingCmdParser = require('../../Transpiled/Gds/Parsers/Sabre/Commands/PricingCmdParser.js');
 const SabrePricingAdapter = require('../../Transpiled/Rbs/FormatAdapters/SabrePricingAdapter.js');
 const _ = require('lodash');
 
@@ -21,7 +21,7 @@ const getItinCabinClass = async (itinerary) => {
 };
 
 const extendSabreCmd = async ({cmd, yFallback, srcItin}) => {
-	const data = PricingCmdParser.parse(cmd);
+	const data = Parse_priceItinerary(cmd);
 	if (!data) {
 		return cmd; // don't modify if could not parse
 	} else {

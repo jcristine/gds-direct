@@ -1,8 +1,8 @@
+const Parse_priceItinerary = require('gds-utils/src/text_format_processing/sabre/commands/Parse_priceItinerary.js');
 const DateTime = require('../../Lib/Utils/DateTime.js');
 const Fp = require('../../Lib/Utils/Fp.js');
 const PtcUtil = require('../../Rbs/Process/Common/PtcUtil.js');
 const ImportSabrePnrFormatAdapter = require('../../Rbs/Process/Sabre/ImportPnr/ImportSabrePnrFormatAdapter.js');
-const PricingCmdParser = require('../../Gds/Parsers/Sabre/Commands/PricingCmdParser.js');
 
 /** transforms parsed >WP; into importPnr format */
 const php = require('klesun-node-tools/src/Transpiled/php.js');
@@ -48,7 +48,7 @@ class SabrePricingAdapter {
 		if ($cmd) {
 			$modsPart = php.substr($cmd, php.strlen('WP'));
 			return !$modsPart ? [] : $modsPart.split('¥')
-				.map(m => PricingCmdParser.parseModifier(m));
+				.map(Parse_priceItinerary.parseModifier);
 		} else {
 			return [];
 		}

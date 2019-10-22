@@ -1,7 +1,7 @@
 const BookViaGk = require('../BookViaGk/BookViaGk.js');
 const CommonUtils = require('../../GdsHelpers/CommonUtils.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const PricingCmdParser = require('../../Transpiled/Gds/Parsers/Sabre/Commands/PricingCmdParser.js');
+const PricingCmdParser = require('../../Transpiled/Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
 const AmadeusUtils = require('../../GdsHelpers/AmadeusUtils.js');
 const AmadeusGetPricingPtcBlocksAction = require('../../Transpiled/Rbs/GdsDirect/Actions/Amadeus/AmadeusGetPricingPtcBlocksAction.js');
 

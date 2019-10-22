@@ -2,9 +2,9 @@ const BuilderUtil = require('gds-utils/src/text_format_processing/agnostic/Build
 const DateTime = require('../../Transpiled/Lib/Utils/DateTime.js');
 const CommonParserHelpers = require('../../Transpiled/Gds/Parsers/Apollo/CommonParserHelpers.js');
 const FqCmdParser = require('../../Transpiled/Gds/Parsers/Galileo/Commands/FqCmdParser.js');
-const SabPricingCmdParser = require('../../Transpiled/Gds/Parsers/Sabre/Commands/PricingCmdParser.js');
+const SabPricingCmdParser = require('gds-utils/src/text_format_processing/sabre/commands/Parse_priceItinerary');
+const ApoPricingCmdParser = require('gds-utils/src/text_format_processing/apollo/commands/Parse_priceItinerary');
 const AmaPricingCmdParser = require('../../Transpiled/Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
-const AtfqParser = require('../../Transpiled/Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
 
@@ -258,7 +258,7 @@ const inApollo = (norm) => {
 		} else if (mod.type === 'namePosition') {
 			pushPaxMod();
 		} else if (mod.type === 'fareType') {
-			const letter = AtfqParser.encodeFareType(mod.parsed);
+			const letter = ApoPricingCmdParser.encodeFareType(mod.parsed);
 			if (mod.parsed === 'private') {
 				effectiveMods.push(':A'); // usually agents need this one, not :P
 			} else if (letter) {
@@ -269,7 +269,7 @@ const inApollo = (norm) => {
 		} else if (mod.type === 'ticketingDate') {
 			effectiveMods.push(':' + mod.parsed.raw);
 		} else if (mod.type === 'cabinClass') {
-			const typeToLetter = php.array_flip(AtfqParser.getCabinClassMapping());
+			const typeToLetter = php.array_flip(ApoPricingCmdParser.getCabinClassMapping());
 			const letter = typeToLetter[mod.parsed.parsed];
 			if (letter) {
 				effectiveMods.push('/@' + letter);
@@ -289,7 +289,7 @@ const mod_galileo = (effectiveMods, mod) => {
 	if (processTravelportMod(effectiveMods, mod, '.', '-')) {
 		// following is Galileo-specific
 	} else if (mod.type === 'fareType') {
-		const letter = AtfqParser.encodeFareType(mod.parsed);
+		const letter = ApoPricingCmdParser.encodeFareType(mod.parsed);
 		if (letter) {
 			effectiveMods.push(':' + letter);
 		} else {

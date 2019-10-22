@@ -111,7 +111,7 @@ class NormalizeTariffCmd
 			cmdData = Parse_fareSearch(cmd);
 			cmdData = this.constructor.normalizeApolloCmd(cmdData);
 		} else if (gds === 'sabre') {
-			cmdData = require('../../Transpiled/Gds/Parsers/Sabre/Commands/TariffCmdParser.js').parse(cmd);
+			cmdData = require('gds-utils/src/text_format_processing/sabre/commands/Parse_priceItinerary.js')(cmd);
 			cmdData = this.constructor.normalizeSabreCmd(cmdData);
 		} else if (gds === 'amadeus') {
 			cmdData = require('../../Transpiled/Gds/Parsers/Amadeus/Commands/TariffCmdParser.js').parse(cmd);
