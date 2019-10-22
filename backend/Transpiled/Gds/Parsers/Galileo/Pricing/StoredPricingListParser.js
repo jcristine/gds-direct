@@ -1,3 +1,4 @@
+const Parse_priceItinerary = require('gds-utils/src/text_format_processing/galileo/commands/Parse_priceItinerary.js');
 
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
@@ -39,7 +40,6 @@ const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParser
 ... and so on ...
  */
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const FqCmdParser = require("../Commands/FqCmdParser");
 const StoredPtcPricingBlockParser = require("./StoredPtcPricingBlockParser");
 class StoredPricingListParser
 {
@@ -190,18 +190,16 @@ class StoredPricingListParser
 	// ' T P4/S1-2/CPS/ET/TA711M                                       '
 	// ' T P1-3/S1-2/CPS/ET/TA711M                                     '
 	// ' T S1/CAT/ET/TA711M                                            '
-	static parseStoreFooter($line)  {
-		let $matches, $rawMods, $mods, $types;
-
-		if (php.preg_match(/^\sT\s+(\S+)/, $line, $matches = [])) {
-			$rawMods = php.explode('/', $matches[1]);
-		} else {
+	static parseStoreFooter(line)  {
+		let matches;
+		if (!php.preg_match(/^\sT\s+(\S+)/, line, matches = [])) {
 			return null;
 		}
-		$mods = php.array_map((...args) => FqCmdParser.parseMod(...args), $rawMods);
-		$types = php.array_column($mods, 'type');
-		if (php.in_array('segments', $types)) {
-			return {normalizedPricingModifiers: $mods};
+		const rawMods = matches[1].split('/');
+		const mods = rawMods.map(Parse_priceItinerary.parseModifier);
+		const types = php.array_column(mods, 'type');
+		if (php.in_array('segments', types)) {
+			return {normalizedPricingModifiers: mods};
 		} else {
 			return null;
 		}

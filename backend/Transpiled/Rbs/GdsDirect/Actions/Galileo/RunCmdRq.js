@@ -1,9 +1,9 @@
+const Parse_priceItinerary = require('gds-utils/src/text_format_processing/galileo/commands/Parse_priceItinerary.js');
 const TranslatePricingCmd = require('../../../../../Actions/CmdTranslators/TranslatePricingCmd.js');
 const NormalizePricingCmd = require('gds-utils/src/cmd_translators/NormalizePricingCmd.js');
 const SortItinerary = require('../../../../../Actions/SortItinerary.js');
 const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
 const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
-const FqCmdParser = require('../../../../Gds/Parsers/Galileo/Commands/FqCmdParser.js');
 const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
 
 const CmsGalileoTerminal = require("../../GdsInterface/CmsApolloTerminal");
@@ -25,7 +25,7 @@ const Errors = require('../../../../Rbs/GdsDirect/Errors.js');
 const GdsDirect = require('../../../../Rbs/GdsDirect/GdsDirect.js');
 const UpdateGalileoSessionStateAction = require('../../SessionStateProcessor/UpdateGalileoState.js');
 const GenericRemarkParser = require('../../../../Gds/Parsers/Common/GenericRemarkParser.js');
-const CommandParser = require('../../../../Gds/Parsers/Galileo/CommandParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/galileo/commands/CmdParser.js');
 const PnrParser = require('../../../../Gds/Parsers/Galileo/Pnr/PnrParser.js');
 const GalileoPnr = require('../../../../Rbs/TravelDs/GalileoPnr.js');
 const RebuildInPccAction = require('./RebuildInPccAction.js');
@@ -943,7 +943,7 @@ const RunCmdRq = ({
 
 	const priceAll = async (aliasData) => {
 		const cmd = await makePriceAllCmd(aliasData);
-		const cmdData = FqCmdParser.parse(cmd);
+		const cmdData = Parse_priceItinerary(cmd);
 		return priceItinerary(cmd, cmdData);
 	};
 

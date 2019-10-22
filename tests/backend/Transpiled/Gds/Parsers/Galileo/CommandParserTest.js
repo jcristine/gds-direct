@@ -1,6 +1,6 @@
 
 
-const CommandParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Galileo/CommandParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/galileo/commands/CmdParser.js');
 class CommandParserTest extends require('../../../Lib/TestCase.js')
 {
 	provideCommands()  {

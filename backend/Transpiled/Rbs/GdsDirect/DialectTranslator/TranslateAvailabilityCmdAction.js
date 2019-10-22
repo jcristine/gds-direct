@@ -413,7 +413,7 @@ class TranslateAvailabilityCmdAction {
 	}
 
 	static normalizeGalileoParts($cmd) {
-		const parsed = require('../../../Gds/Parsers/Galileo/CommandParser.js').parse($cmd);
+		const parsed = require('gds-utils/src/text_format_processing/galileo/commands/CmdParser.js').parse($cmd);
 		if (parsed['type'] !== 'airAvailability' ||
 			!php.empty(parsed.data.unparsed) ||
 			!php.empty(parsed.followingCommands)

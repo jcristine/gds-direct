@@ -1,10 +1,10 @@
 const BuilderUtil = require('gds-utils/src/text_format_processing/agnostic/BuilderUtil.js');
 const DateTime = require('../../Transpiled/Lib/Utils/DateTime.js');
 const CommonParserHelpers = require('../../Transpiled/Gds/Parsers/Apollo/CommonParserHelpers.js');
-const FqCmdParser = require('../../Transpiled/Gds/Parsers/Galileo/Commands/FqCmdParser.js');
 const SabPricingCmdParser = require('gds-utils/src/text_format_processing/sabre/commands/Parse_priceItinerary');
 const ApoPricingCmdParser = require('gds-utils/src/text_format_processing/apollo/commands/Parse_priceItinerary');
 const AmaPricingCmdParser = require('../../Transpiled/Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
+const GalPricingCmdParser = require('gds-utils/src/text_format_processing/galileo/commands/Parse_priceItinerary.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
 
@@ -298,7 +298,7 @@ const mod_galileo = (effectiveMods, mod) => {
 	} else if (mod.type === 'ticketingDate') {
 		effectiveMods.push('.T' + mod.parsed.raw);
 	} else if (mod.type === 'cabinClass') {
-		const typeToLetter = php.array_flip(FqCmdParser.getCabinClassMapping());
+		const typeToLetter = php.array_flip(GalPricingCmdParser.getCabinClassMapping());
 		const letter = typeToLetter[mod.parsed.parsed];
 		if (letter) {
 			effectiveMods.push('++-' + letter);

@@ -1,14 +1,14 @@
+const Parse_priceItinerary = require('gds-utils/src/text_format_processing/galileo/commands/Parse_priceItinerary.js');
 const BookViaGk = require('../BookViaGk/BookViaGk.js');
 const GalileoPricingAdapter = require('../../Transpiled/Rbs/FormatAdapters/GalileoPricingAdapter.js');
 const LinearFareParser = require('../../Transpiled/Gds/Parsers/Galileo/Pricing/LinearFareParser.js');
 const FqParser = require('../../Transpiled/Gds/Parsers/Galileo/Pricing/FqParser.js');
 const TravelportUtils = require('../../GdsHelpers/TravelportUtils.js');
 const GalileoUtils = require('../../GdsHelpers/GalileoUtils.js');
-const FqCmdParser = require('../../Transpiled/Gds/Parsers/Galileo/Commands/FqCmdParser.js');
 const _ = require('lodash');
 
 const extendGalileoCmd = (cmd) => {
-	const data = FqCmdParser.parse(cmd);
+	const data = Parse_priceItinerary(cmd);
 	if (!data) {
 		return cmd; // don't modify if could not parse
 	} else {
@@ -30,7 +30,7 @@ const RepriceItinerary_galileo = ({pricingCmd, session, baseDate, ...bookParams}
 	const main = async () => {
 		const built = await BookViaGk.inGalileo({...bookParams, baseDate, session});
 		pricingCmd = extendGalileoCmd(pricingCmd);
-		const pricingModifiers = (FqCmdParser.parse(pricingCmd) || {}).pricingModifiers || [];
+		const pricingModifiers = (Parse_priceItinerary(pricingCmd) || {}).pricingModifiers || [];
 		const fqCmdRec = await GalileoUtils.withFakeNames({
 			pricingModifiers, session,
 			action: () => TravelportUtils.fetchAll(pricingCmd, session),

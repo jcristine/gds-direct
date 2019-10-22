@@ -1,5 +1,5 @@
 
-const CommandParser = require('../../../../Gds/Parsers/Galileo/CommandParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/galileo/commands/CmdParser.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CmsGalileoTerminal = require("../../GdsInterface/CmsGalileoTerminal");

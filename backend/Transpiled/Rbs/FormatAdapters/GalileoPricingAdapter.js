@@ -1,7 +1,7 @@
 
 const Fp = require('../../Lib/Utils/Fp.js');
 const ArrayUtil = require('../../Lib/Utils/ArrayUtil.js');
-const CommandParser = require('../../Gds/Parsers/Galileo/CommandParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/galileo/commands/CmdParser.js');
 const PtcUtil = require('../../Rbs/Process/Common/PtcUtil.js');
 
 /**

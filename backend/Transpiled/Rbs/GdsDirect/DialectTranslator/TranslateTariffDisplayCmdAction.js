@@ -358,7 +358,7 @@ class TranslateTariffDisplayCmdAction {
 	static normalizeGalileoParts($cmd) {
 		let $parsed, $data, $parts, $modPartNames, $mod, $partName;
 
-		$parsed = require('../../../Gds/Parsers/Galileo/CommandParser.js').parse($cmd);
+		$parsed = require('gds-utils/src/text_format_processing/galileo/commands/CmdParser.js').parse($cmd);
 		if ($parsed['type'] !== 'fareSearch' ||
 			!php.empty($parsed.data.unparsed) ||
 			!php.empty($parsed.followingCommands)
@@ -486,7 +486,7 @@ class TranslateTariffDisplayCmdAction {
 			return true;
 		} else if ($gds == 'amadeus' && php.preg_match('#^(MP)?FQD#', $input)) {
 			return true;
-		} else if ($gds == 'galileo' && require('../../../Gds/Parsers/Galileo/CommandParser.js').parse($input)['type'] === 'fareSearch') {
+		} else if ($gds == 'galileo' && require('gds-utils/src/text_format_processing/galileo/commands/CmdParser.js').parse($input)['type'] === 'fareSearch') {
 			return true;
 		}
 		return false;

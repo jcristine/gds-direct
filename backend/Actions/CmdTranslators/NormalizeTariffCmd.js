@@ -116,7 +116,7 @@ class NormalizeTariffCmd
 			cmdData = require('../../Transpiled/Gds/Parsers/Amadeus/Commands/TariffCmdParser.js').parse(cmd);
 			cmdData = this.constructor.normalizeAmadeusCmd(cmdData);
 		} else if (gds === 'galileo') {
-			cmdData = require('../../Transpiled/Gds/Parsers/Galileo/Commands/TariffCmdParser.js').parse(cmd);
+			cmdData = require('gds-utils/src/text_format_processing/galileo/commands/Parse_fareSearch')(cmd);
 			cmdData = this.constructor.normalizeGalileoCmd(cmdData);
 		} else {
 			return null;
