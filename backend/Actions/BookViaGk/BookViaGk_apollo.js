@@ -11,8 +11,13 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 const bookTp = async (params) => {
 	const built = await TravelportBuildItineraryActionViaXml(params);
 	if (built.errorType) {
-		const msg = Errors.getMessage(built.errorType, built.errorData);
-		return Rej.UnprocessableEntity(msg, built);
+		const response = (built.errorData || {}).response || '';
+		if (response.match(/INVALID DATE/)) {
+			return Rej.BadRequest(response);
+		} else {
+			const msg = Errors.getMessage(built.errorType, built.errorData);
+			return Rej.UnprocessableEntity(msg, built);
+		}
 	} else {
 		return Promise.resolve(built);
 	}
