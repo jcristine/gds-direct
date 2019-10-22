@@ -156,7 +156,6 @@ class BagAllowanceParser
      *                || static::parseBagFeeLine()
      */
 	static addRemarks($bagData, $remarks)  {
-
 		$remarks = Fp.map('rtrim', $remarks);
 		if (($bagData['noPriceDueTo']) === '*' && php.count($remarks) === 1) {
 			$bagData['noPriceDueTo'] = $remarks[0];
@@ -167,9 +166,7 @@ class BagAllowanceParser
 	}
 
 	static not($predicate)  {
-
 		return ($arg) => {
-
 			return !$predicate($arg);
 		};
 	}

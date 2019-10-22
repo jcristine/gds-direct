@@ -1,19 +1,16 @@
 
-const Rej = require('klesun-node-tools/src/Rej.js');
 const BagAllowanceParser = require("../../Transpiled/Gds/Parsers/Sabre/BagAllowanceParser");
-const {parseSequence} = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
+const {parseSequence, splitByPosition} = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 const CommonParserHelpers = require('../../Transpiled/Gds/Parsers/Apollo/CommonParserHelpers.js');
 const {matchAll} = require('../../Utils/Str.js');
 const PricingCommonHelper = require('../../Transpiled/Gds/Parsers/Sabre/Pricing/PricingCommonHelper.js');
 const FareConstructionParser = require("gds-utils/src/text_format_processing/agnostic/fare_calculation/FcParser");
-const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
-const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
 
 const parseFlightSegmentLine = (line) => {
 	//            'XTPE BR  V   02SEP VLXU            02SEP 02SEP 02P',
 	//            " BOM LH  G   11DEC G1                    10DEC 02P",
 	const pattern = 'XAAA CC  L   WWWWW IIIIIIIIIIIIIIIIOOOOO EEEEEBBBBB';
-	const split = StringUtil.splitByPosition(line, pattern, null, true);
+	const split = splitByPosition(line, pattern, null, true);
 
 	const date = CommonParserHelpers.parsePartialDate(split['W']);
 	const nvbDate = CommonParserHelpers.parsePartialDate(split['O']);
@@ -35,7 +32,7 @@ const parseFlightSegmentLine = (line) => {
 	};
 	if (date && split[' '].trim() === '' &&
 		result['bookingClass'] &&
-		!Fp.any((v) => v === '', result)
+		!Object.values(result).some((v) => v === '')
 	) {
 		return result;
 	} else {
@@ -231,7 +228,7 @@ const parseSingleBlock = (linesLeft) => {
 const parseTotalsLine = (totalsLine) => {
 	//            "           10232         196.00      52.80            248.80TTL",
 	const pattern = 'BBBBBBBBBBBBBBBB EEEEEEEEEEEEEE TTTTTTTTTT NNNNNNNNNNNNNNNNNLLL';
-	const split = StringUtil.splitByPosition(totalsLine, pattern, null, true);
+	const split = splitByPosition(totalsLine, pattern, null, true);
 	if (split['L'] === 'TTL') {
 		return {
 			baseFare: split['B'],

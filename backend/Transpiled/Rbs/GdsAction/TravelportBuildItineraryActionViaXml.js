@@ -18,9 +18,9 @@ const TravelportBuildItineraryActionViaXml = async ({
 	let reservation = null;
 
 	// Travelport returns SYSTEM ERROR if you book GK and SS segments at same time
-	for(const statusSegments of Object.values(byStatus)) {
+	for (const statusSegments of Object.values(byStatus)) {
 		// Travelport returns SYSTEM ERROR if you book more than 8 segments at same time
-		for(const chunk of _.chunk(statusSegments, 8)) {
+		for (const chunk of _.chunk(statusSegments, 8)) {
 			const airSegments = chunk.map(segment => ({
 				airline: segment.airline,
 				flightNumber: segment.flightNumber,
