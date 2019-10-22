@@ -92,6 +92,7 @@ class RebuildInPccAction extends AbstractGdsAction {
 			segmentStatus: {
 				GK: 'AK',
 				HK: 'NN',
+				HS: 'NN',
 				SS: 'NN',
 			}[s.segmentStatus] || s.segmentStatus,
 		}));
