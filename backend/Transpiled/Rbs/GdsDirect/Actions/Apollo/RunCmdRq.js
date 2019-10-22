@@ -538,7 +538,8 @@ const RunCmdRq = ({
 			return {errors: [error]};
 		}
 		itinerary = itinerary.map(seg => ({
-			...seg, seatCount, segmentStatus,
+			...seg, segmentStatus,
+			seatCount: seatCount || seg.seatCount,
 		}));
 		const fallbackToGk = segmentStatus === 'SS';
 		return bookItinerary({itinerary, fallbackToGk});
