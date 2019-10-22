@@ -73,10 +73,10 @@ const Ask = (url, fetchParams) => {
 
 const getContextParams = () => {
 	return {
+		travelRequestId: window.GdsDirectPlusParams.travelRequestId || 0,
 		emcSessionId: window.GdsDirectPlusParams.emcSessionId || '',
 		globalAuthLogin: window.GdsDirectPlusParams.globalAuthLogin || '',
 		globalAuthPassword: window.GdsDirectPlusParams.globalAuthPassword || '',
-		travelRequestId: window.GdsDirectPlusParams.travelRequestId || 0,
 		isForeignProjectEmcId: window.GdsDirectPlusParams.isForeignProjectEmcId ? '1' : '',
 	};
 };
