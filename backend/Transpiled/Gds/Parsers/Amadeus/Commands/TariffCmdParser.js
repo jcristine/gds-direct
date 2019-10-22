@@ -15,7 +15,7 @@ class TariffCmdParser
 		let partial, full;
 
 		partial = CommonParserHelpers.parsePartialDate(raw);
-		full = CommonParserHelpers.parseCurrentCenturyFullDate(raw)['parsed'];
+		full = CommonParserHelpers.parseCurrentCenturyFullDate(raw).parsed;
 		if (partial || full) {
 			return {raw: raw, partial: partial, full: full};
 		} else {

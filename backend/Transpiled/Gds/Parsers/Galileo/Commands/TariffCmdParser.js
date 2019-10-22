@@ -10,7 +10,7 @@ const parseDate = (raw) => {
 	return !raw ? null : {
 		raw: raw,
 		partial: CommonParserHelpers.parsePartialDate(raw),
-		full: CommonParserHelpers.parseCurrentCenturyFullDate(raw)['parsed'],
+		full: CommonParserHelpers.parseCurrentCenturyFullDate(raw).parsed,
 	};
 };
 
@@ -47,10 +47,10 @@ const lexer = new Lexer([
 exports.parse = (cmd) => {
 	let matches;
 	if (php.preg_match(/^FD(?<modsPart>.*)$/, cmd, matches = {})) {
-		const lexed = lexer.lex(matches['modsPart']);
+		const lexed = lexer.lex(matches.modsPart);
 		const modifiers = Fp.map((rec) => ({
-			type: rec['lexeme'], raw: rec['raw'], parsed: rec['data'],
-		}), lexed['lexemes']);
+			type: rec.lexeme, raw: rec.raw, parsed: rec.data,
+		}), lexed.lexemes);
 
 		// code expects them to be separate from rest modifiers
 		const baseModNames = new Set(['dates', 'airports']);
@@ -64,7 +64,7 @@ exports.parse = (cmd) => {
 			departureAirport: baseData.departureAirport || '',
 			destinationAirport: baseData.destinationAirport || '',
 			modifiers: modifiers.filter(m => !baseModNames.has(m.type)),
-			unparsed: lexed['text'],
+			unparsed: lexed.text,
 		};
 	} else {
 		return null;
