@@ -1,3 +1,4 @@
+const BookViaGk_apollo = require('../../../../../Actions/BookViaGk/BookViaGk_apollo.js');
 const DateTime = require('../../../../Lib/Utils/DateTime.js');
 const Parse_fareSearch = require('gds-utils/src/text_format_processing/apollo/commands/Parse_fareSearch.js');
 const SortItinerary = require('../../../../../Actions/SortItinerary.js');
@@ -33,7 +34,6 @@ const GdsDirect = require('../../../../Rbs/GdsDirect/GdsDirect.js');
 const CmsApolloTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
 
 // actions
-const ApolloBuildItineraryAction = require('../../../GdsAction/ApolloBuildItinerary.js');
 const ApolloMakeMcoAction = require('../../../../Rbs/GdsAction/ApolloMakeMcoAction.js');
 const MakeMcoApolloAction = require('../../../../Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
 const RepriceInAnotherPccAction = require('../../../../Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
@@ -121,7 +121,6 @@ const RunCmdRq = ({
 	PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js'),
 	Pccs = require("../../../../../Repositories/Pccs.js"),
 	gdsClients = GdsSession.makeGdsClients(),
-	useXml = true,
 }) => {
 	const travelport = gdsClients.travelport;
 	const agent = stateful.getAgent();
@@ -321,15 +320,8 @@ const RunCmdRq = ({
 			baseDate: stateful.getStartDt(),
 			session: stateful,
 		};
-		let built, segmentsSold;
-		if (useXml) {
-			built = await TravelportBuildItineraryActionViaXml(params);
-			segmentsSold = built.segments.filter(seg => seg.success).length;
-		} else {
-			// only in tests, should probably drop eventually...
-			built = await ApolloBuildItineraryAction({...params, useXml: false});
-			segmentsSold = built.segmentsSold;
-		}
+		const built = await TravelportBuildItineraryActionViaXml(params);
+		const segmentsSold = built.segments.filter(seg => seg.success).length;
 		if (segmentsSold > 0) {
 			stateful.updateAreaState({
 				type: '!xml:PNRBFManagement',

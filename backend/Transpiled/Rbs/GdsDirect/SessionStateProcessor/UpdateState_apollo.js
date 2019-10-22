@@ -1,6 +1,5 @@
-
+const ItineraryParser = require('gds-parsers/src/Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
 const ApolloAddCustomSegmentAction = require('../../../Rbs/GdsAction/ApolloAddCustomSegmentAction.js');
-const ApolloBuildItineraryAction = require('../../GdsAction/ApolloBuildItinerary.js');
 const TApolloSavePnr = require('../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
 const CmsApolloTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
 const PnrParser = require('../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
@@ -10,6 +9,15 @@ const ImportPnrAction = require('../../../Rbs/Process/Common/ImportPnr/ImportPnr
 const ApolloPnr = require('../../../Rbs/TravelDs/ApolloPnr.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const SessionStateHelper = require("./SessionStateHelper");
+
+const isValidSellOutput = (output) => {
+	for (const line of output.split('\n')) {
+		if (ItineraryParser.parseSegmentLine(line)) {
+			return true;
+		}
+	}
+	return false;
+};
 
 const isValidPricingOutput = (output) => {
 	const tooShortToBeValid = !output.match(/\n.*\n.*\n/);
@@ -142,7 +150,7 @@ const UpdateState_apollo = ({
 			areaData.area = data;
 			sessionState = {...areaData};
 		} else if (type === 'sell') {
-			if (ApolloBuildItineraryAction.isOutputValid(output) ||
+			if (isValidSellOutput(output) ||
 				ApolloAddCustomSegmentAction.parseAddSegmentOutput(clean)
 			) {
 				sessionState.hasPnr = true;

@@ -26,11 +26,9 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 	}
 
 	provideTestCases() {
-		let $list, $agentBaseDate, $argumentTuples, $testCase;
+		const list = [];
 
-		$list = [];
-
-		$list.push({
+		list.push({
 			'input': {
 				'title': '#0 - XI should be forbidden in a ticketed PNR for regular agents',
 				'cmdRequested': 'XI',
@@ -114,7 +112,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': '#1 - PCC emulation example - allowed',
 				'cmdRequested': 'SEM/2CV4/AG',
@@ -142,7 +140,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': '#2 - PCC emulation example - forbidden with "Please use..." suggestion',
 				'cmdRequested': 'SEM/2CX8/AG',
@@ -164,7 +162,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'PCC emulation example - forbidden without "Please use..." suggestion',
 				'cmdRequested': 'SEM/2F9H/AG',
@@ -186,7 +184,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': '$B implicit fetch all output',
 				'cmdRequested': '$B',
@@ -260,7 +258,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': '$BBA should not implicitly fetch all output',
 				'cmdRequested': '$BBA',
@@ -321,7 +319,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': '$B@TVO should implicitly fetch all output even though canCreatePq=false',
 				'cmdRequested': '$B@TVO',
@@ -409,7 +407,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'MDA test',
 				'cmdRequested': 'MDA',
@@ -651,7 +649,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		});
 		*/
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'PNR without prior >R:...; - should call it implicitly',
 				'cmdRequested': 'PNR',
@@ -717,7 +715,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'divided booking created from Focal Point PNR - should implicitly add a CREATED FOR remark',
 				'cmdRequested': 'F',
@@ -806,7 +804,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'another divided booking example, made by me this time',
 				'cmdRequested': 'F',
@@ -891,7 +889,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'new CMS lead remark format generation',
 				'cmdRequested': 'ER',
@@ -917,7 +915,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'new CMS lead remark format - everything should work same',
 				'cmdRequested': 'C:1@:5',
@@ -960,7 +958,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'if first call to >PNR; returned an open jaw warning, next call should not include >P:...; and other fields that would result in "SNGL ITEM FLD/NOT ENT/T:TAU/14NOV+R:AKLESUNS+ER" error',
 				'cmdRequested': 'PNR',
@@ -1035,7 +1033,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {'cmdRequested': '*R', 'baseDate': '2017-11-05', 'title': 'simple seats_taken test'},
 			'output': {'status': 'executed'},
 			'sessionInfo': {
@@ -1062,7 +1060,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {'cmdRequested': '*R', 'baseDate': '2017-11-05', 'title': '*R show same itinerary but with additional segment which is same as other but in different booking class'},
 			'output': {'status': 'executed'},
 			'sessionInfo': {
@@ -1121,7 +1119,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {'cmdRequested': 'MD', 'title': 'should replace >MD; with >MR; since it better suits for reuse of called commands in GDS Direct'},
 			'output': {'status': 'executed'},
 			'sessionInfo': {
@@ -1185,7 +1183,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {'cmdRequested': 'MD', 'title': 'should not replace >MD; with >MR; since >MR; does not work on >F:...; screen'},
 			'output': {'status': 'executed'},
 			'sessionInfo': {
@@ -1212,7 +1210,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {'cmdRequested': 'MD', 'title': 'should replace MD with TIPN on timatic screen'},
 			'output': {'status': 'executed'},
 			'sessionInfo': {
@@ -1283,7 +1281,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {'cmdRequested': 'XI', 'baseDate': '2017-11-05', 'title': '#20 - XI should remove only seats taken in current area'},
 			'output': {'status': 'executed'},
 			'sessionInfo': {
@@ -1528,7 +1526,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		*/
 
 		// at last we have fixed base date and can add a test with >PNR; command that writes current date in TAW
-		$list.push({
+		list.push({
 			'input': {
 				'cmdRequested': 'PNR',
 				'baseDate': '2018-02-14', // romantic test case
@@ -1810,105 +1808,8 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		});
 		*/
 
-		$list.push({
-			'input': {
-				'title': '2F9T RE/ example - should fallback to 2G55 to avoid PCC state artifacts',
-				'cmdRequested': 'RE/2F9T/SS1',
-				'baseDate': '2018-02-28',
-				'ticketDesignators': [],
-			},
-			'output': {
-				'status': 'forbidden',
-				'calledCommands': [],
-				'userMessages': [
-					'Failed to emulate PCC 2F9T - ERR: INVALID - NOT 2HJ9 - APOLLO' + php.PHP_EOL + '><',
-				],
-			},
-			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'hasPnr': false, 'area': 'A',
-				}),
-				'initialCommands': [
-					{
-						'cmd': 'I',
-						'output': php.implode(php.PHP_EOL, ['THIS IS A NEW PNR-ALL DATA WILL BE IGNORED WITH NEXT I OR IR', '><']),
-					},
-					{'cmd': 'I', 'output': php.implode(php.PHP_EOL, ['IGND ', '><'])},
-					{'cmd': 'SB', 'output': php.implode(php.PHP_EOL, ['A-OUT B-IN AG-NOT AUTH - APOLLO', '><'])},
-					{
-						'cmd': 'SEM/2CV4/AG',
-						'output': php.implode(php.PHP_EOL, ['PROCEED/09APR-TRAVEL SHOP              SFO - APOLLO', '><']),
-					},
-					{'cmd': 'N:LIBERMANE/MARINA', 'output': php.implode(php.PHP_EOL, [' *', '><'])},
-					{'cmd': 'SA', 'output': php.implode(php.PHP_EOL, ['B-OUT A-IN AG-OK - APOLLO', '><'])},
-					{
-						'cmd': '0PS 898D 10MAY KIVKBP SS1',
-						'output': php.implode(php.PHP_EOL, [
-							' 1 PS  898D  10MAY KIVKBP SS1   720A  825A *                 E',
-							'FULL PASSPORT DATA IS MANDATORY *',
-							'OFFER CAR/HOTEL    >CAL;     >HOA;',
-							'ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS',
-							'PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION',
-							'WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES',
-							'FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES',
-							'><',
-						]),
-					},
-					{
-						'cmd': '0PS 185D 10MAY KBPRIX SS1',
-						'output': php.implode(php.PHP_EOL, [
-							' 2 PS  185D  10MAY KBPRIX SS1   920A 1055A *      1          E',
-							'FULL PASSPORT DATA IS MANDATORY *',
-							'OFFER CAR/HOTEL    >CAL;     >HOA;',
-							'ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS',
-							'PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION',
-							'WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES',
-							'FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES',
-							'><',
-						]),
-					},
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'NO NAMES',
-							' 1 PS 898D 10MAY KIVKBP SS1   720A  825A *         TH   E  1',
-							' 2 PS 185D 10MAY KBPRIX SS1   920A 1055A *         TH   E  1',
-							'><',
-						]),
-					},
-				],
-				'performedCommands': [
-					{
-						'cmd': 'I',
-						'output': php.implode(php.PHP_EOL, ['THIS IS A NEW PNR-ALL DATA WILL BE IGNORED WITH NEXT I OR IR', '><']),
-					},
-					{'cmd': 'I', 'output': php.implode(php.PHP_EOL, ['IGND ', '><'])},
-					{
-						'cmd': 'SC',
-						'output': php.implode(php.PHP_EOL, [
-							'A-OUT C-IN AG-NOT AUTH - APOLLO',
-							'><',
-						]),
-					},
-					{
-						'cmd': 'SEM/2F9T/AG',
-						'output': php.implode(php.PHP_EOL, [
-							'ERR: INVALID - NOT 2HJ9 - APOLLO',
-							'><',
-						]),
-					},
-					{
-						'cmd': 'SEM/2G55/AG',
-						'output': php.implode(php.PHP_EOL, [
-							'PROCEED/28FEB-TRAVEL SHOP              SFO - APOLLO',
-						]),
-					},
-				],
-			},
-		});
-
 		// GD- remark should not include lead agent if operating agent is ticketing/CS
-		$list.push({
+		list.push({
 			'input': {
 				'cmdRequested': 'ER',
 				'baseDate': '2018-02-28',
@@ -1937,7 +1838,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 
 		// *Q2F1VU - " 538DN24MAY "
 		// *HA should not cause null-pointer exception when dump contains some unknown format segments
-		$list.push({
+		list.push({
 			'input': {
 				'cmdRequested': '*HA',
 				'baseDate': '2018-02-28',
@@ -2027,7 +1928,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 
 		// the previous test but with artificial rubbish in segment
 		// just to make sure we won't throw the exception no matter what
-		$list.push({
+		list.push({
 			'input': {
 				'cmdRequested': '*HA',
 				'baseDate': '2018-02-28',
@@ -2116,7 +2017,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		});
 
 		// replace $B@{tariffLineNum} with $B@{fareBasis}
-		$list.push({
+		list.push({
 			'input': {
 				'cmdRequested': '$B@8',
 				'baseDate': '2018-02-28',
@@ -2227,7 +2128,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		});
 
 		// there should not be Alex PNR-s in the search (4th line)
-		$list.push({
+		list.push({
 			'input': {
 				'cmdRequested': '**-WEINSTEIN',
 				'baseDate': '2018-02-28',
@@ -2279,7 +2180,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		});
 
 		// there should not be Alex PNR-s in the search (4th line)
-		$list.push({
+		list.push({
 			'input': {
 				'cmdRequested': 'MR',
 				'baseDate': '2018-02-28',
@@ -2393,7 +2294,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 
 		// when you try searching PNR not being emulated to a PCC, you get "DUTY CODE
 		// NOT AUTH FOR CRT" error, should not set isPnrStored = true in such case
-		$list.push({
+		list.push({
 			'input': {
 				'cmdRequested': 'PNR',
 				'baseDate': '2018-06-04',
@@ -2471,7 +2372,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		});
 
 		// Recovery after failed SEM in 2HJ9 service bureau, example: SEM/2F9T/AG
-		$list.push({
+		list.push({
 			'input': {
 				'cmdRequested': 'SEM/2F9T/AG',
 				'baseDate': '2018-07-16',
@@ -2560,7 +2461,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		*/
 
 		// multi-pricing alias
-		$list.push({
+		list.push({
 			'input': {
 				'cmdRequested': '$B/CBT/S1|2&3|4/CIB',
 				'baseDate': '2018-06-04',
@@ -2683,7 +2584,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 
 		// "UNA PROC  SEGMENT" example - should implicitly call *R and retry
 		// since we decided not to do this instantly after $BBQ01 and $BB0
-		$list.push({
+		list.push({
 			'input': {
 				'cmdRequested': '$B',
 				'baseDate': '2018-06-04',
@@ -2813,7 +2714,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		});
 
 		// SEM output should be replaced with static text to hide consolidator data
-		$list.push({
+		list.push({
 			'input': {
 				'cmdRequested': 'SEM/2G55/AG',
 				'baseDate': '2018-06-04',
@@ -2842,15 +2743,15 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 
 		// NEW_GDS_DIRECT_EDIT_VOID_TICKETED_PNR logic example - forbidden
 		// some tickets are void, but some are still active, so should not be allowed to change PNR
-		$agentBaseDate = GdsDirectDefaults.makeAgentBaseData();
-		$list.push({
+		let agentBaseData = GdsDirectDefaults.makeAgentBaseData();
+		list.push({
 			'input': {
 				'cmdRequested': 'XI',
 				'baseDate': '2018-06-04',
 				'ticketDesignators': [],
 				'stubAgents': [
 					Agent.makeStub(php.array_merge(GdsDirectDefaults.makeAgentBaseData(), {
-						'row': php.array_merge($agentBaseDate['row'], {
+						'row': php.array_merge(agentBaseData['row'], {
 							'id': '346',
 							'login': 'lepin',
 							'name': 'Lepin Lepin',
@@ -3058,15 +2959,15 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 
 		// NEW_GDS_DIRECT_EDIT_VOID_TICKETED_PNR logic example - success
 		// all tickets are void, so should be allowed to change PNR
-		$agentBaseDate = GdsDirectDefaults.makeAgentBaseData();
-		$list.push({
+		agentBaseData = GdsDirectDefaults.makeAgentBaseData();
+		list.push({
 			'input': {
 				'cmdRequested': 'XI',
 				'baseDate': '2018-06-04',
 				'ticketDesignators': [],
 				'stubAgents': [
 					Agent.makeStub(php.array_merge(GdsDirectDefaults.makeAgentBaseData(), {
-						'row': php.array_merge($agentBaseDate['row'], {
+						'row': php.array_merge(agentBaseData['row'], {
 							'id': '346',
 							'login': 'lepin',
 							'name': 'Lepin Lepin',
@@ -3213,156 +3114,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
-			'input': {
-				'title': 'Rebook segments: order is important! Order should be chronological, not by marriage value.',
-				'cmdRequested': [
-					"1 CM 435L 30NOV MCOPTY SS1   723A 1042A *         SA   E  6      3:19  738       ",
-					"2 CM 613L 30NOV PTYMDE SS1  1158A  123P *         SA   E  6      1:25  73G       ",
-					"3 CM 612L 12DEC MDEPTY SS1   417P  542P *         TH   E  4      1:25  73G       ",
-					"4 CM 434L 12DEC PTYMCO SS1   629P  954P *         TH   E  4      3:25  738       ",
-				].join('\n'),
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{
-						"cmd": "*R",
-						"output": [
-							"NO NAMES",
-							" 1 CM 435L 30NOV MCOPTY SS1   723A 1042A *         SA   E  1",
-							" 2 CM 613L 30NOV PTYMDE SS1  1158A  123P *         SA   E  1",
-							" 3 CM 612L 12DEC MDEPTY SS1   417P  542P *         TH   E  2",
-							" 4 CM 434L 12DEC PTYMCO SS1   629P  954P *         TH   E  2",
-							"",
-						].join("\n"),
-					},
-				],
-			},
-			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState()),
-				'initialCommands': [],
-				'performedCommands': [
-					{
-						"cmd": "0CM435Y30NOVMCOPTYGK1",
-						"output": [
-							" 1 CM  435Y  30NOV MCOPTY GK1   723A 1042A                    ",
-							"OFFER CAR/HOTEL    >CAL;     >HOA;",
-							"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-							"><",
-						].join("\n"),
-						"state": {
-							"area": "A",
-							"pcc": "2F3K",
-							"recordLocator": "",
-							"canCreatePq": false,
-							"scrolledCmd": "0CM435Y30NOVMCOPTYGK1",
-							"cmdCnt": 1,
-							"pricingCmd": null,
-							"hasPnr": true,
-							"cmdType": "sell",
-						},
-					},
-					{
-						"cmd": "0CM613Y30NOVPTYMDEGK1",
-						"output": [
-							" 2 CM  613Y  30NOV PTYMDE GK1  1158A  123P                    ",
-							"OFFER CAR/HOTEL    >CAL;     >HOA;",
-							"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-							"><",
-						].join("\n"),
-					},
-					{
-						"cmd": "0CM612Y12DECMDEPTYGK1",
-						"output": [
-							" 3 CM  612Y  12DEC MDEPTY GK1   417P  542P                    ",
-							"OFFER CAR/HOTEL    >CAL;     >HOA;",
-							"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-							"><",
-						].join("\n"),
-					},
-					{
-						"cmd": "0CM434Y12DECPTYMCOGK1",
-						"output": [
-							" 4 CM  434Y  12DEC PTYMCO GK1   629P  954P                    ",
-							"OFFER CAR/HOTEL    >CAL;     >HOA;",
-							"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-							"><",
-						].join("\n"),
-					},
-					{
-						"cmd": "X1+2/01L+2L",
-						"output": [
-							"   CM  435L  30NOV MCOPTY SS1   723A 1042A *      1          E",
-							"ETKT ELIGIBLE *",
-							"DUPLICATE LEG-UA7149 *",
-							"   CM  613L  30NOV PTYMDE SS1  1158A  123P *      1          E",
-							"ETKT ELIGIBLE *",
-							"OPERATED BY-P5 AEROREPUBLICA *",
-							"DUPLICATE LEG-UA7107 *",
-							"OFFER CAR/HOTEL    >CAL;     >HOA;",
-							"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-							"CANCEL REQUEST COMPLETED",
-							"><",
-						].join("\n"),
-					},
-					{
-						"cmd": "X3+4/03L+4L",
-						"output": [
-							"   CM  612L  12DEC MDEPTY SS1   417P  542P *      2          E",
-							"ETKT ELIGIBLE *",
-							"OPERATED BY-P5 AEROREPUBLICA *",
-							"DUPLICATE LEG-LH5503 UA7141 *",
-							"   CM  434L  12DEC PTYMCO SS1   629P  954P *      2          E",
-							"ETKT ELIGIBLE *",
-							"DUPLICATE LEG-UA7102 *",
-							"SECURE FLIGHT *",
-							"OFFER CAR/HOTEL    >CAL;     >HOA;",
-							"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-							")><",
-						].join("\n"),
-					},
-					{
-						"cmd": "MR",
-						"output": [
-							"CANCEL REQUEST COMPLETED",
-							"><",
-						].join("\n"),
-					},
-					{
-						"cmd": "*R",
-						"output": [
-							"NO NAMES",
-							" 1 CM 435L 30NOV MCOPTY SS1   723A 1042A *         SA   E  1",
-							" 2 CM 613L 30NOV PTYMDE SS1  1158A  123P *         SA   E  1",
-							" 3 CM 612L 12DEC MDEPTY SS1   417P  542P *         TH   E  2",
-							" 4 CM 434L 12DEC PTYMCO SS1   629P  954P *         TH   E  2",
-							"><",
-						].join("\n"),
-					},
-				],
-			},
-		});
-
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'tariff with fake modifier "*DF20" which decreases fare amount in output by 20 dollars',
 				'cmdRequested': '$D20SEPKIVRIX|PS*DF20',
@@ -3418,7 +3170,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': '$D DF with MDA3 - should decrease on all pages, not just first',
 				'cmdRequested': '$D20SEPKIVRIX|PS*DF20/MDA3',
@@ -3539,7 +3291,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 		});
 
 		// tariff with fake modifier "*DP5" which decreases fare amount in output by 5 percents
-		$list.push({
+		list.push({
 			'input': {
 				'cmdRequested': '$D20SEPKIVRIX|PS*DP5',
 				'baseDate': '2018-02-28',
@@ -3594,7 +3346,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'error >DN1; response should not result in null-pointer exception on >F;',
 				'cmdRequested': 'F',
@@ -3679,7 +3431,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'caused Cannot read property "cmd" of undefined',
 				'cmdRequested': '*QP800F',
@@ -3727,158 +3479,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
-			'input': {
-				'title': 'caused Cannot read property "parsed" of null',
-				'cmdRequested': [
-					"1 WS 703X 30APR T YYZYVR SS1   900A 1103A /DCWS /E",
-					" 2 WS 716T 03MAY F YVRYYZ SS1   300P 1030P /DCWS /E",
-					"719.30TTL",
-				].join('\n'),
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{
-						"cmd": "*R",
-						"output": [
-							"NO NAMES",
-							" 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E",
-							" 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E",
-							"",
-						].join("\n"),
-					},
-
-				],
-			},
-			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState()),
-				'initialCommands': [],
-				'performedCommands': [
-					{
-						"cmd": "0WS703Y30APRYYZYVRGK1",
-						"output": [
-							" 1 WS  703Y  30APR YYZYVR GK1   900A 1103A                    ",
-							"OFFER CAR/HOTEL    >CAL;     >HOA;",
-							"DEPARTS YYZ TERMINAL 3  - ARRIVES YVR TERMINAL M ",
-							"><",
-						].join("\n"),
-					},
-					{
-						"cmd": "0WS716Y03MAYYVRYYZGK1",
-						"output": [
-							" 2 WS  716Y   3MAY YVRYYZ GK1   300P 1030P                    ",
-							"OFFER CAR/HOTEL    >CAL;     >HOA;",
-							"DEPARTS YVR TERMINAL M  - ARRIVES YYZ TERMINAL 3 ",
-							"><",
-						].join("\n"),
-					},
-					{
-						"cmd": "X1+2/01X+2T",
-						"output": [
-							"   WS  703X  30APR YYZYVR SS1   900A 1103A *                 E",
-							"010 CX 7045 /CZ 7543 /KE 6525 /MU 8002 *",
-							"503 3/18/22/27/99 *",
-							"DEPARTS YYZ TERMINAL 3  - ARRIVES YVR TERMINAL M ",
-							"   WS  716T   3MAY YVRYYZ SS1   300P 1030P *                 E",
-							"010 CX 7040 /CZ 7544 /HX 3616 /JL 5806 /KE 6524 *",
-							"503 3/18/22/27/99 *",
-							"OFFER CAR/HOTEL    >CAL;     >HOA;",
-							"DEPARTS YVR TERMINAL M  - ARRIVES YYZ TERMINAL 3 ",
-							"CANCEL REQUEST COMPLETED",
-							"><",
-						].join("\n"),
-					},
-					{
-						"cmd": "*R",
-						"output": [
-							"NO NAMES",
-							" 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E",
-							" 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E",
-							"><",
-						].join("\n"),
-					},
-				],
-			},
-		});
-
-		$list.push({
-			'input': {
-				'title': 'caused Unsupported date str format - "+NaN day" because + was converted to |',
-				'cmdRequested': [
-					" 1  AC 084 P 21JUL 7 YYZTLV HK1        1   430P1000A|1 789 E0 B",
-					"     B787 DREAMLINER OFFER PREMIUM ECONOMY,BKG CLASS-N,E,O",
-					"     SEE RTSVC",
-					"  2  AC 085 P 29JUL 1 TLVYYZ HK1        3  1145A 430P   789 E0 L",
-					"     AC YYZ HUB-CONX TO MORE THAN 100 DEST IN NORTH AMERICA",
-					"     SEE RTSVC",
-				].join('\n'),
-			},
-			'output': {
-				'status': 'forbidden',
-				'userMessages': ['SOME FLIGHTS DID NOT HAVE ENOUGH SEATS AVAILABLE IN REQUESTED BOOKING CODE - 1,2'],
-				'calledCommands': [
-					{
-						"cmd": "*R",
-						"output": "NO NAMES\n 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E\n 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E\n 3 AC  84Y 21JUL YYZTLV GK1   430P 1000A+       SU/MO\n 4 AC  85Y 29JUL TLVYYZ GK1  1145A  430P           MO\n",
-					},
-				],
-			},
-			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState()),
-				'initialCommands': [],
-				'performedCommands': [
-					{
-						"cmd": "0AC084Y21JULYYZTLVGK1",
-						"output": [
-							" 3 AC   84Y  21JUL YYZTLV GK1   430P 1000A|                   ",
-							"OFFER CAR/HOTEL    >CAL;     >HOA;",
-							"DEPARTS YYZ TERMINAL 1  - ARRIVES TLV TERMINAL 3 ",
-							"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-							"THIS AIRLINE SUPPORTS CLAIM PNR - AC ",
-							"TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
-							"AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
-							"L@AC/*(RECORD LOCATOR)  OR  L@AC/*AC84/21JUL-(NAME)  ",
-							"><",
-						].join("\n"),
-					},
-					{
-						"cmd": "0AC085Y29JULTLVYYZGK1",
-						"output": [
-							" 4 AC   85Y  29JUL TLVYYZ GK1  1145A  430P                    ",
-							"OFFER CAR/HOTEL    >CAL;     >HOA;",
-							"DEPARTS TLV TERMINAL 3  - ARRIVES YYZ TERMINAL 1 ",
-							"ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-							"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-							"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-							"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-							"THIS AIRLINE SUPPORTS CLAIM PNR - AC ",
-							"TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
-							"AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
-							"L@AC/*(RECORD LOCATOR)  OR  L@AC/*AC85/29JUL-(NAME)  ",
-							"><",
-						].join("\n"),
-					},
-					{
-						"cmd": "X1+2/01P+2P",
-						"output": [
-							"0 AVAIL/WL CLOSED WS703 YYZYVR *",
-							"UNABLE TO CANCEL",
-							"><",
-						].join("\n"),
-					},
-					{
-						"cmd": "*R",
-						"output": "NO NAMES\n 1 WS 703X 30APR YYZYVR SS1   900A 1103A *         TU   E\n 2 WS 716T 03MAY YVRYYZ SS1   300P 1030P *         FR   E\n 3 AC  84Y 21JUL YYZTLV GK1   430P 1000A+       SU/MO\n 4 AC  85Y 29JUL TLVYYZ GK1  1145A  430P           MO\n",
-					},
-				],
-			},
-		});
-
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'HHPR example',
 				'cmdRequested': 'HHPR',
@@ -4045,7 +3646,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'HBT with >$FC mask response example',
 				'cmdRequested': 'HBT',
@@ -4138,437 +3739,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
-			'input': {
-				'title': 'example where you paste whole PNR, not just the itinerary',
-				'cmdRequested': [
-					"CREATED IN GDS DIRECT BY STIFLER",
-					"QKGMNN/WS QSBYC DPBVWS  AG 10741570 17MAY",
-					" 1.1SIACOTOS/MARIA  2.1COLYVAS/PANTELIS STEPHANOS ",
-					" 3.1COLYVAS/HARALAMBOS COLYVAS*02DEC08 ",
-					" 1 UA8020K 02JUL SFOYUL HK3   640A  308P *         TU   E",
-					"         OPERATED BY AIR CANADA",
-					" 2 UA8673K 02JUL YULATH HK3   440P  850A|*      TU/WE   E",
-					"         OPERATED BY AIR CANADA ROUGE",
-					" 3 AC1901L 26JUL ATHYYZ HK3  1255P  455P *         FR   E  1",
-					"         OPERATED BY AIR CANADA ROUGE",
-					" 4 AC 739L 26JUL YYZSFO HK3   655P  920P *         FR   E  1",
-					"FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
-					"TKTG-TAU/18MAY",
-				].join('\n'),
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{
-						"cmd": "N:SIACOTOS/MARIA|N:COLYVAS/PANTELIS STEPHANOS|N:COLYVAS/HARALAMBOS COLYVAS*02DEC08",
-						"output": [
-							"* ",
-							"><",
-						].join("\n"),
-					},
-					{
-						"cmd": "*R",
-						"output": [
-							" 1.1SIACOTOS/MARIA  2.1COLYVAS/PANTELIS STEPHANOS ",
-							" 3.1COLYVAS/HARALAMBOS COLYVAS*02DEC08 ",
-							" 1 UA8020K 02JUL SFOYUL SS3   640A  308P *         TU   E",
-							"         OPERATED BY AIR CANADA",
-							" 2 UA8673K 02JUL YULATH SS3   440P  850A|*      TU/WE   E",
-							"         OPERATED BY AIR CANADA ROUGE",
-							" 3 AC1901L 26JUL ATHYYZ SS3  1255P  455P *         FR   E  1",
-							"         OPERATED BY AIR CANADA ROUGE",
-							" 4 AC 739L 26JUL YYZSFO SS3   655P  920P *         FR   E  1",
-							"",
-						].join("\n"),
-					},
-				],
-			},
-			'sessionInfo': {
-				'initialState': {
-					...GdsDirectDefaults.makeDefaultApolloState(),
-				},
-				'initialCommands': [],
-				'performedCommands': [
-					{
-						"cmd": "N:SIACOTOS/MARIA|N:COLYVAS/PANTELIS STEPHANOS|N:COLYVAS/HARALAMBOS COLYVAS*02DEC08",
-						"output": [
-							"* ",
-							"><",
-						].join("\n"),
-					},
-					{
-					    "cmd": "0UA8020Y02JULSFOYULGK3",
-					    "output": [
-					        " 1 UA 8020Y   2JUL SFOYUL GK3   640A  308P                    ",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "OPERATED BY AIR CANADA",
-					        "SFO PASSENGER CHECK-IN WITH AIR CANADA                         ",
-					        "DEPARTS SFO TERMINAL I ",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "THIS AIRLINE SUPPORTS CLAIM PNR - UA ",
-					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
-					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
-					        "L@UA/*(RECORD LOCATOR)  OR  L@UA/*UA8020/2JUL-(NAME) ",
-					        "><",
-					    ].join("\n"),
-					    "duration": "0.168850149",
-					    "type": "sell",
-					    "scrolledCmd": "0UA8020Y02JULSFOYULGK3",
-					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":false,"scrolledCmd":"0UA8020Y02JULSFOYULGK3","cmdCnt":16,"pricingCmd":null,"hasPnr":true,"isPnrStored":false,"cmdType":"sell"},
-					},
-					{
-					    "cmd": "0UA8673Y02JULYULATHGK3",
-					    "output": [
-					        " 2 UA 8673Y   2JUL YULATH GK3   440P  850A|                   ",
-					        "VALID FOR ONLINE CONNECTIONS ONLY - UA",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "OPERATED BY AIR CANADA ROUGE",
-					        "YUL PASSENGER CHECK-IN WITH AIR CANADA                         ",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "THIS AIRLINE SUPPORTS CLAIM PNR - UA ",
-					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
-					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
-					        "L@UA/*(RECORD LOCATOR)  OR  L@UA/*UA8673/2JUL-(NAME) ",
-					        "><",
-					    ].join("\n"),
-					    "duration": "0.168293643",
-					},
-					{
-					    "cmd": "0AC1901Y26JULATHYYZGK3",
-					    "output": [
-					        " 3 AC 1901Y  26JUL ATHYYZ GK3  1255P  455P                    ",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "OPERATED BY AIR CANADA ROUGE",
-					        "                         ARRIVES YYZ TERMINAL 1 ",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "THIS AIRLINE SUPPORTS CLAIM PNR - AC ",
-					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
-					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
-					        "L@AC/*(RECORD LOCATOR)  OR  L@AC/*AC1901/26JUL-(NAME)",
-					        "><",
-					    ].join("\n"),
-					    "duration": "0.173780938",
-					},
-					{
-					    "cmd": "0AC739Y26JULYYZSFOGK3",
-					    "output": [
-					        " 4 AC  739Y  26JUL YYZSFO GK3   655P  920P                    ",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "DEPARTS YYZ TERMINAL 1  - ARRIVES SFO TERMINAL I ",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "THIS AIRLINE SUPPORTS CLAIM PNR - AC ",
-					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
-					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
-					        "L@AC/*(RECORD LOCATOR)  OR  L@AC/*AC739/26JUL-(NAME) ",
-					        "><",
-					    ].join("\n"),
-					    "duration": "0.174955025",
-					},
-					{
-					    "cmd": "X1+2/01K+2K",
-					    "output": [
-					        "   UA 8020K   2JUL SFOYUL SS3   640A  308P *                 E",
-					        "OPERATED BY AIR CANADA",
-					        "SFO PASSENGER CHECK-IN WITH AIR CANADA                         ",
-					        "DEPARTS SFO TERMINAL I ",
-					        "   UA 8673K   2JUL YULATH SS3   440P  850A|*                 E",
-					        "VALID FOR ONLINE CONNECTIONS ONLY - UA",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "OPERATED BY AIR CANADA ROUGE",
-					        "YUL PASSENGER CHECK-IN WITH AIR CANADA                         ",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        ")><",
-					    ].join("\n"),
-					    "duration": "0.431180541",
-					},
-					{
-					    "cmd": "MR",
-					    "output": [
-					        "CANCEL REQUEST COMPLETED",
-					        "><",
-					    ].join("\n"),
-					    "duration": "0.173532689",
-					},
-					{
-					    "cmd": "X3+4/03L+4L",
-					    "output": [
-					        "   AC 1901L  26JUL ATHYYZ SS3  1255P  455P *      1          E",
-					        "PREMIUM ROUGE N,E,O CLASS. DOWNLOAD AC APP FOR FREE IFE *",
-					        "OPERATED BY AIR CANADA ROUGE",
-					        "                         ARRIVES YYZ TERMINAL 1 ",
-					        "   AC  739L  26JUL YYZSFO SS3   655P  920P *      1          E",
-					        "PET RESTRICTIONS D ANIMAUX CRJ BAE AIRBUS CIC 70/13 *",
-					        "J CABIN-OFFER LIE FLAT SEATS ON 787,777,330,MAINLINE 767 *",
-					        "PLS ADV PSGR MOBILE AND/OR EMAIL AS SSR CTCM/CTCE *",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "DEPARTS YYZ TERMINAL 1  - ARRIVES SFO TERMINAL I ",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        ")><",
-					    ].join("\n"),
-					    "duration": "0.438913995",
-					},
-					{
-					    "cmd": "MR",
-					    "output": [
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "CANCEL REQUEST COMPLETED",
-					        "><",
-					    ].join("\n"),
-					    "duration": "0.190420122",
-					},
-					{
-					    "cmd": "*R",
-					    "output": [
-					        " 1.1SIACOTOS/MARIA  2.1COLYVAS/PANTELIS STEPHANOS ",
-					        " 3.1COLYVAS/HARALAMBOS COLYVAS*02DEC08 ",
-					        " 1 UA8020K 02JUL SFOYUL SS3   640A  308P *         TU   E",
-					        "         OPERATED BY AIR CANADA",
-					        " 2 UA8673K 02JUL YULATH SS3   440P  850A|*      TU/WE   E",
-					        "         OPERATED BY AIR CANADA ROUGE",
-					        " 3 AC1901L 26JUL ATHYYZ SS3  1255P  455P *         FR   E  1",
-					        "         OPERATED BY AIR CANADA ROUGE",
-					        " 4 AC 739L 26JUL YYZSFO SS3   655P  920P *         FR   E  1",
-					        "><",
-					    ].join("\n"),
-					    "duration": "0.175637379",
-					    "type": "redisplayPnr",
-					    "scrolledCmd": "*R",
-					    "state": {"area":"A","pcc":"2F3K","recordLocator":"","canCreatePq":false,"scrolledCmd":"*R","cmdCnt":10,"pricingCmd":null,"hasPnr":true,"cmdType":"redisplayPnr"},
-					},
-				],
-			},
-		});
-
-		// disabled, cause switched to xml
-		/*
-		$list.push({
-			'input': {
-				'title': 'STORE example with children and infants - should add /ACC even though not all paxes are clean "child"',
-				'cmdRequested': 'STORE',
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{"cmd": "T:$BN1-1*C02|2-1*INF/Z0/ACC"},
-				],
-			},
-			'sessionInfo': {
-				'initialState': {
-					...GdsDirectDefaults.makeDefaultApolloState(),
-					"area":"A","pcc":"2F3K","recordLocator":"N9JQ3Z",
-					"isPnrStored":true,"cmdType":"redisplayPnr",
-				},
-				'initialCommands': [],
-				'performedCommands': [
-					{
-					    "cmd": "*R",
-					    "output": [
-					        "** THIS PNR IS CURRENTLY IN USE **",
-					        "CREATED IN GDS DIRECT BY JOHANDRE",
-					        "2G2H - TRAVEL SHOP              SFO",
-					        "N9JQ3Z/WS QSBYC DPBVWS  AG 23854526 20MAY",
-					        " 1.1ZAVALETASANCHEZ/KHALESSI MASSIEL*P-C02 ",
-					        " 2.I/1ZAVALETASANCHEZ/VHANIA CATALINA*10FEB18 ",
-					        " 1 AV 583L 30MAY IADSAL HK1   425P  655P *         TH   E  1",
-					        "         OPERATED BY TACA INTERNATIONAL AIRLINES - TACA",
-					        " 2 AV 931L 30MAY SALLIM HK1   820P  140A|*      TH/FR   E  1",
-					        "         OPERATED BY AVIANCA PERU S.A.",
-					        " 3 AV 928W 24JUN LIMSAL HK1  1015A  139P *         MO   E  2",
-					        "         OPERATED BY AVIANCA PERU S.A.",
-					        " 4 AV 580W 24JUN SALIAD HK1   300P  915P *         MO   E  2",
-					        ")><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "MR",
-					    "output": [
-					        "         OPERATED BY TACA INTERNATIONAL AIRLINES - TACA",
-					        "FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT",
-					        "TKTG-TAU/20MAY",
-					        "GFAX-SSRINFTAVKK01 IADSAL 0583L 30MAY-1ZAVALETASANCHEZ/KHALESSI MASSIEL.ZAVALETASANCHEZ/VHANIA CATALINA 10FEB18",
-					        "   2 SSRINFTAVKK01 SALLIM 0931L 30MAY-1ZAVALETASANCHEZ/KHALESSI MASSIEL.ZAVALETASANCHEZ/VHANIA CATALINA 10FEB18",
-					        "   3 SSRINFTAVKK01 LIMSAL 0928W 24JUN-1ZAVALETASANCHEZ/KHALESSI MASSIEL.ZAVALETASANCHEZ/VHANIA CATALINA 10FEB18",
-					        "   4 SSRINFTAVKK01 SALIAD 0580W 24JUN-1ZAVALETASANCHEZ/KHALESSI MASSIEL.ZAVALETASANCHEZ/VHANIA CATALINA 10FEB18",
-					        "   5 SSRADTK1VTOTA BY 23MAY 2300 ZZZ TIME ZONE OTHERWISE WILL BE XLD",
-					        ")><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "MR",
-					    "output": [
-					        "   6 SSRCTCEAVHK1/TEFISANCHEZ26//GMAIL.COM-1ZAVALETASANCHEZ/KHALESSI MASSIEL",
-					        "   7 SSRCTCEAVHK1/TEFISANCHEZ26//GMAIL.COM-1I/ZAVALETASANCHEZ/VHANIA CATALINA",
-					        "   8 SSRCTCMAVHK1/5712456941-1ZAVALETASANCHEZ/KHALESSI MASSIEL",
-					        "   9 SSRCTCMAVHK1/5712456941-1I/ZAVALETASANCHEZ/VHANIA CATALINA",
-					        "  10 SSRDOCSAVHK1/////08OCT16/F//ZAVALETASANCHEZ/KHALESSI/MASSIEL-1ZAVALETASANCHEZ/KHALESSI MASSIEL",
-					        "RMKS-GD-JOHANDRE/23772/FOR JOHANDRE/23772/LEAD-11697928 IN 2G2H",
-					        "ACKN-1A P6FFRC   20MAY 2205",
-					        "   2 1A P6FFRC   20MAY 2205",
-					        "   3 1A P6FFRC   20MAY 2235",
-					        "><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "T:$BN1-1*C02|2-1*INF/Z0/ACC",
-					    "output": [
-					        ">$BN1-1*C02|2-1*INF/-*2F3K/Z0/ACC",
-					        "E-TKT REQUIRED",
-					        "** PRIVATE FARES SELECTED **  ",
-					        "*PENALTY APPLIES*",
-					        "TICKETING WITHIN 72 HOURS AFTER RESERVATION",
-					        "LAST DATE TO PURCHASE TICKET: 23MAY19 / 1504 SFO",
-					        "$B-1 P21MAY19 - CAT35",
-					        "WAS AV X/SAL AV LIM Q WASLIM135.00 130.50LEA00RISCH/SPL08SQHV0",
-					        "AV X/SAL AV WAS Q LIMWAS135.00 68.00WZO00TISCH/SPL08SQHV0",
-					        "NUC468.50 ----- MUST PRICE AS B/C -- ---END ROE1.0",
-					        "FARE USD 469.00 TAX 5.60AY TAX 37.20US TAX 3.96XA TAX 4.50XF",
-					        "TAX 7.00XY TAX 5.77YC TAX 15.00DY TAX 30.43HW TOT USD 578.46 ",
-					        "S1 NVB30MAY/NVA30MAY",
-					        ")><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "MR",
-					    "output": [
-					        "S2 NVB30MAY/NVA30MAY",
-					        "S3 NVB24JUN/NVA24JUN",
-					        "S4 NVB24JUN/NVA24JUN",
-					        "E SPL08SQHV0 - SPLT8USD50/25",
-					        "TICKETING AGENCY 2F3K",
-					        "DEFAULT PLATING CARRIER AV",
-					        "US PFC: XF IAD4.5 ",
-					        "BAGGAGE ALLOWANCE",
-					        "CNN                                                         ",
-					        " AV WASLIM  1PC                                             ",
-					        "   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
-					        "   BAG 2 -  60.00 USD    UPTO50LB/23KG AND UPTO62LI/158LCM",
-					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AV",
-					        ")><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "MR",
-					    "output": [
-					        "                                                                 AV LIMWAS  1PC                                             ",
-					        "   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM",
-					        "   BAG 2 -  60.00 USD    UPTO50LB/23KG AND UPTO62LI/158LCM",
-					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AV",
-					        "                                                                CARRY ON ALLOWANCE",
-					        " AV WASSAL  10K                                             ",
-					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        "                                    BDBF         ",
-					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        " AV SALLIM  10K                                             ",
-					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        ")><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "MR",
-					    "output": [
-					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        " AV LIMSAL  10K                                             ",
-					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        " AV SALWAS  10K                                             ",
-					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        "** BEST FARE FOR PRIVATE FARES REQUEST **",
-					        "*PENALTY APPLIES*",
-					        "TICKETING WITHIN 72 HOURS AFTER RESERVATION",
-					        "LAST DATE TO PURCHASE TICKET: 23MAY19 / 1504 SFO",
-					        "$B-2 C21MAY19     ",
-					        "WAS AV X/SAL AV LIM 22.50LEA00RIS/IN90 AV X/SAL AV WAS",
-					        ")><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "MR",
-					    "output": [
-					        "13.50WZO00TIS/IN90 NUC36.00END ROE1.0",
-					        "FARE USD 36.00 TAX 5.60AY TAX 37.20US TAX 3.96XA TAX 7.00XY TAX",
-					        "5.77YC TAX 15.00DY TAX 30.43HW TOT USD 140.96 ",
-					        "S1 NVB30MAY/NVA30MAY",
-					        "S2 NVB30MAY/NVA30MAY",
-					        "S3 NVB24JUN/NVA24JUN",
-					        "S4 NVB24JUN/NVA24JUN",
-					        "E REFUND FEE APPLIES/",
-					        "E CHANGE FEE APPLIES",
-					        "E AND PLUS FARE DIFF/NON END",
-					        "E NON REFUNDABLE/",
-					        "TICKETING AGENCY 2F3K",
-					        "DEFAULT PLATING CARRIER AV",
-					        ")><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "MR",
-					    "output": [
-					        "BAGGAGE ALLOWANCE",
-					        "INF                                                         ",
-					        " AV WASLIM  10K                                             ",
-					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AV",
-					        "                                                                 AV LIMWAS  10K                                             ",
-					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        "   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AV",
-					        "                                                                CARRY ON ALLOWANCE",
-					        ")><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "MR",
-					    "output": [
-					        " AV WASSAL  10K                                             ",
-					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        "                                    BDBF         ",
-					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        " AV SALLIM  10K                                             ",
-					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        " AV LIMSAL  10K                                             ",
-					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        " AV SALWAS  10K                                             ",
-					        "   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        "   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE",
-					        ")><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "MR",
-					    "output": [
-					        "BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/",
-					        "ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.",
-					        "><",
-					    ].join("\n"),
-					},
-				],
-			},
-		});
-		*/
-
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'return availability without month - should add it automatically, like in Sabre',
 				'cmdRequested': 'A*O15',
@@ -4602,7 +3773,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'same, but with one other return availability in between - should still add the month',
 				'cmdRequested': 'A*O25',
@@ -4643,157 +3814,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
-			'input': {
-				'title': 'PNR without record locator entered as command - should add both paxes and segments',
-				'cmdRequested': [
-					"1.1EBRAHIM/TAJUDIN AHMED  2.1ABDI/GENET",
-					" 1 UA 258S 14JUN SFOAUS SS1   800A  134P *         FR   E",
-					" 2 LH 469S 14JUN AUSFRA SS1   405P  910A|*      FR/SA   E  1",
-					" 3 LH 598S 15JUN FRAADD SS1   115P  910P *         SA   E  1",
-					"         OPERATED BY LUFTHANSA CITYLINE GMBH",
-					" 4 LH 599S 22JUL ADDFRA SS1  1110P  525A|*      MO/TU   E",
-					"         OPERATED BY LUFTHANSA CITYLINE GMBH",
-					" 5 UA  59S 23JUL FRASFO SS1   155P  430P *         TU   E",
-					"",
-				].join("\n"),
-			},
-			'output': {
-				'status': 'forbidden',
-				'userMessages': ['SOME FLIGHTS DID NOT HAVE ENOUGH SEATS AVAILABLE IN REQUESTED BOOKING CODE - 1,4,5'],
-				'calledCommands': [
-					{"cmd": "N:EBRAHIM/TAJUDIN AHMED|N:ABDI/GENET"},
-					{"cmd": "*R"},
-				],
-			},
-			'sessionInfo': {
-				'initialState': GdsDirectDefaults.makeDefaultApolloState(),
-				'initialCommands': [],
-				'performedCommands': [
-					{
-					    "cmd": "N:EBRAHIM/TAJUDIN AHMED|N:ABDI/GENET",
-					    "output": [
-					        " *",
-					        "><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "0UA258Y14JUNSFOAUSGK1",
-					    "output": [
-					        " 1 UA  258Y  14JUN SFOAUS GK1   800A  134P                    ",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "DEPARTS SFO TERMINAL 3 ",
-					        "THIS AIRLINE SUPPORTS CLAIM PNR - UA ",
-					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
-					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
-					        "L@UA/*(RECORD LOCATOR)  OR  L@UA/*UA258/14JUN-(NAME) ",
-					        "><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "0LH469Y14JUNAUSFRAGK1",
-					    "output": [
-					        " 2 LH  469Y  14JUN AUSFRA GK1   405P  910A|                   ",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "                         ARRIVES FRA TERMINAL 1 ",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "0LH598Y15JUNFRAADDGK1",
-					    "output": [
-					        " 3 LH  598Y  15JUN FRAADD GK1   115P  910P                    ",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "OPERATED BY LUFTHANSA CITYLINE GMBH",
-					        "DEPARTS FRA TERMINAL 1  - ARRIVES ADD TERMINAL 2 ",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "0LH599Y22JULADDFRAGK1",
-					    "output": [
-					        " 4 LH  599Y  22JUL ADDFRA GK1  1110P  525A|                   ",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "OPERATED BY LUFTHANSA CITYLINE GMBH",
-					        "DEPARTS ADD TERMINAL 2  - ARRIVES FRA TERMINAL 1 ",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "0UA59Y23JULFRASFOGK1",
-					    "output": [
-					        " 5 UA   59Y  23JUL FRASFO GK1   155P  430P                    ",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "DEPARTS FRA TERMINAL 1  - ARRIVES SFO TERMINAL I ",
-					        "ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS",
-					        "PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
-					        "WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
-					        "FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-					        "THIS AIRLINE SUPPORTS CLAIM PNR - UA ",
-					        "TO REQUEST CLAIM PNR PLEASE IGNORE AND ENTER THE",
-					        "AIRLINES INFORMATION IN ONE OF THE FOLLOWING FORMATS -",
-					        "L@UA/*(RECORD LOCATOR)  OR  L@UA/*UA59/23JUL-(NAME)  ",
-					        "><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "X1+4+5/01S+4S+5S",
-					    "output": [
-					        "0 AVAIL/WL CLOSED UA258 SFOAUS *",
-					        "UNABLE TO CANCEL",
-					        "><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "X2+3/02S+3S",
-					    "output": [
-					        "   LH  469S  14JUN AUSFRA SS1   405P  910A|*      1          E",
-					        "SEC FLT PSGR DATA REQUIRED 72 HBD SSR DOCS *",
-					        "US LAW SEE GGAIRLH PNR ACCESS OR NEWS KEYWORDS *",
-					        "ESTA REQUIRED FOR VISA WAIVER NATIONALS *",
-					        "FULLY FLAT BED IN BUSINESS CLASS. SEE WWW.LH.COM *",
-					        "                         ARRIVES FRA TERMINAL 1 ",
-					        "   LH  598S  15JUN FRAADD SS1   115P  910P *      1          E",
-					        "OPERATED BY CL *",
-					        "FULLY FLAT BED IN BUSINESS CLASS. SEE WWW.LH.COM *",
-					        "PLS INSERT PSGR CTC ALSO FOR RETURN FLIGHT *",
-					        "OFFER CAR/HOTEL    >CAL;     >HOA;",
-					        "OPERATED BY LUFTHANSA CITYLINE GMBH",
-					        "DEPARTS FRA TERMINAL 1  - ARRIVES ADD TERMINAL 2 ",
-					        "><",
-					    ].join("\n"),
-					},
-					{
-					    "cmd": "*R",
-					    "output": [
-					        " 1.1EBRAHIM/TAJUDIN AHMED  2.1ABDI/GENET ",
-					        " 1 UA 258Y 14JUN SFOAUS GK1   800A  134P           FR",
-					        " 2 LH 469S 14JUN AUSFRA SS1   405P  910A|*      FR/SA   E  1",
-					        " 3 LH 598S 15JUN FRAADD SS1   115P  910P *         SA   E  1",
-					        "         OPERATED BY LUFTHANSA CITYLINE GMBH",
-					        " 4 LH 599Y 22JUL ADDFRA GK1  1110P  525A|       MO/TU",
-					        "         OPERATED BY LUFTHANSA CITYLINE GMBH",
-					        " 5 UA  59Y 23JUL FRASFO GK1   155P  430P           TU",
-					        "><",
-					    ].join("\n"),
-					},
-				],
-			},
-		});
-
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'Same month availability should use month from last entered command, not from search initialization',
 				'cmdRequested': 'A*O6',
@@ -4829,7 +3850,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'Multi-city availability alias example',
 				'cmdRequested': 'A/T/20SEPNYCHUJ/PID/RAS/SFO/CHI/ATL/CLT/SEA/MSP|DL',
@@ -4856,7 +3877,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		$list.push({
+		list.push({
 			'input': {
 				'title': 'Should not add "/" before ".V", as it is apparently invalid format for Travelport',
 				'cmdRequested': '$B.V/:N',
@@ -4944,1306 +3965,12 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 			},
 		});
 
-		// problematic cases follow
-		/*
-		// STORE alias, same as previous, but this time let's remove
-		// SPL06VY4O3 from ticket designators we know about so we could not
-		// determine it as "informational" fare and had to reprice with /:N/
-		//
-		// need to either stub RBS response or move broken fare implementation to GDSD
-		$list.push({
-			'input': {
-				'cmdRequested': 'STORE',
-				'baseDate': '2018-02-28',
-				'ticketDesignators': [],
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{'cmd': 'T:$BN1-1*ADT/Z0/:N'},
-				],
-			},
-			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'hasPnr': true, 'area': 'A',
-				}),
-				'initialCommands': [
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							' 1.1LIBERMANE/MARINA ',
-							' 1 ET  51H 15MAR NBOLLW HK1   615A  730A           TH',
-							'         OPERATED BY MALAWIAN AIRLINES',
-							' 2 ET  20T 15MAR LLWBLZ HK1   820A  900A           TH',
-							'         OPERATED BY MALAWIAN AIRLINES',
-							' 3 ET  20H 19MAR BLZJNB HK1   945A 1200N           MO',
-							'         OPERATED BY MALAWIAN AIRLINES',
-							' 4 ET 808E 19MAR JNBADD HK1   210P  825P           MO',
-							' 5 ET 308E 19MAR ADDNBO HK1  1115P  120A|       MO/TU',
-							'><',
-						]),
-					},
-				],
-				'performedCommands': [
-					{
-						'cmd': 'T:$BN1-1*ADT/Z0',
-						'output': php.implode(php.PHP_EOL, [
-							'>$BN1-1*ADT/-*2G55/Z0',
-							'*FARE HAS A PLATING CARRIER RESTRICTION*',
-							'E-TKT REQUIRED',
-							'** PRIVATE FARES SELECTED **  ',
-							'*PENALTY APPLIES*',
-							'LAST DATE TO PURCHASE TICKET: 15MAR18',
-							'$B-1 P01MAR18 - CAT35',
-							'NBO ET LLW 67.68HES1YMWQ/SPL06VY4O3 ET BLZ 20.48TES1YMWQ ET JNB',
-							'60.16HES1YMWQ/SPL06VY4O3 ET X/ADD ET NBO 36.66EPRKE/SPL06VY4O3',
-							'Q NBONBO9.47NUC194.45 ----- MUST PRICE AS B ---- -END ROE1.0',
-							'FARE USD 194.00 TAX 50.00TU TAX 35.00LD TAX 7.00YZ TAX 1.90EV',
-							'TAX 2.00UM TAX 19.20ZA TAX 180.00YR TOT USD 489.10 ',
-							'S1 /NVA15APR',
-							')><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, [
-							'S2 /NVA15APR',
-							'S3 /NVA15APR',
-							'S4 NVB19MAR/NVA19MAR',
-							'S5 NVB19MAR/NVA19MAR',
-							'E TOUR CODE -  N/A',
-							'E SPL06VY4O3 - SPLT6',
-							'TOUR CODE: COM6           ',
-							'TICKETING AGENCY 2G55',
-							'DEFAULT PLATING CARRIER ET',
-							'BAGGAGE ALLOWANCE',
-							'ADT                                                         ',
-							' ET NBOBLZ  2PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO50LB/23KG                    ',
-							')><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, [
-							'   BAG 2 -  NO FEE       UPTO50LB/23KG                    ',
-							'   MYTRIPANDMORE.COM/BAGGAGEDETAILSET.BAGG',
-							'                                                                 ET BLZNBO  2PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO50LB/23KG                    ',
-							'   BAG 2 -  NO FEE       UPTO50LB/23KG                    ',
-							'   MYTRIPANDMORE.COM/BAGGAGEDETAILSET.BAGG',
-							'                                                                CARRY ON ALLOWANCE',
-							' ET NBOLLW  1PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
-							' ET LLWBLZ  1PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
-							')><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, [
-							' ET BLZJNB  1PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
-							' ET JNBADD  1PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
-							' ET ADDNBO  1PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
-							'BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/',
-							'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
-							'><',
-						]),
-					},
-					{
-						'cmd': 'XT1',
-						'output': php.implode(php.PHP_EOL, [
-							' ATFQ/PRICING RECORDS CANCELLED',
-							'><',
-						]),
-					},
-					{
-						'cmd': 'T:$BN1-1*ADT/Z0/:N',
-						'output': php.implode(php.PHP_EOL, [
-							'>$BN1-1*ADT/:N/Z0',
-							'*FARE GUARANTEED AT TICKET ISSUANCE*',
-							'',
-							'*FARE HAS A PLATING CARRIER RESTRICTION*',
-							'E-TKT REQUIRED',
-							'*PENALTY APPLIES*',
-							'LAST DATE TO PURCHASE TICKET: 15MAR18',
-							'$B-1 C01MAR18     ',
-							'NBO ET LLW 72.00HES1YMWQ ET BLZ 20.48TES1YMWQ ET JNB',
-							'64.00HES1YMWQ ET X/ADD ET NBO 39.00EPRKE Q',
-							'NBONBO10.08NUC205.56END ROE1.0',
-							'FARE USD 206.00 TAX 50.00TU TAX 35.00LD TAX 7.00YZ TAX 1.90EV',
-							'TAX 2.00UM TAX 19.20ZA TAX 180.00YR TOT USD 501.10 ',
-							')><',
-						]),
-					},
-				],
-			},
-		});
-
-		// would need to fake RBS response for that
-		$list.push({
-			'input': {
-				'cmdRequested': 'STORE',
-				'title': 'STORE alias, private broken fare, but should not reprice with /:N/ since it has our ticket designator SPL06VY4O3',
-				'baseDate': '2018-02-28',
-				'ticketDesignators': this.constructor.makeTableRows(
-					['code'      , 'ticketing_correct_pricing_command', 'is_published', 'ticketing_gds', 'ticketing_pcc'], [
-					['SPL06VY4O3', '$B/:N'                            , true          , 'apollo'       , '1O3K'],
-				]),
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{'cmd': 'T:$BN1-1*ADT/Z0'},
-				],
-			},
-			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'hasPnr': true, 'area': 'A',
-				}),
-				'initialCommands': [
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							' 1.1LIBERMANE/MARINA ',
-							' 1 ET  51H 15MAR NBOLLW HK1   615A  730A           TH',
-							'         OPERATED BY MALAWIAN AIRLINES',
-							' 2 ET  20T 15MAR LLWBLZ HK1   820A  900A           TH',
-							'         OPERATED BY MALAWIAN AIRLINES',
-							' 3 ET  20H 19MAR BLZJNB HK1   945A 1200N           MO',
-							'         OPERATED BY MALAWIAN AIRLINES',
-							' 4 ET 808E 19MAR JNBADD HK1   210P  825P           MO',
-							' 5 ET 308E 19MAR ADDNBO HK1  1115P  120A|       MO/TU',
-							'><',
-						]),
-					},
-				],
-				'performedCommands': [
-					{
-						'cmd': 'T:$BN1-1*ADT/Z0',
-						'output': php.implode(php.PHP_EOL, [
-							'>$BN1-1*ADT/-*2G2H/Z0',
-							'*FARE HAS A PLATING CARRIER RESTRICTION*',
-							'E-TKT REQUIRED',
-							'** PRIVATE FARES SELECTED **  ',
-							'*PENALTY APPLIES*',
-							'LAST DATE TO PURCHASE TICKET: 15MAR18',
-							'$B-1 P01MAR18 - CAT35',
-							'NBO ET LLW 67.68HES1YMWQ/SPL06VY4O3 ET BLZ 20.48TES1YMWQ ET JNB',
-							'60.16HES1YMWQ/SPL06VY4O3 ET X/ADD ET NBO 36.66EPRKE/SPL06VY4O3',
-							'Q NBONBO9.47NUC194.45 ----- MUST PRICE AS B ---- -END ROE1.0',
-							'FARE USD 194.00 TAX 50.00TU TAX 35.00LD TAX 7.00YZ TAX 1.90EV',
-							'TAX 2.00UM TAX 19.20ZA TAX 180.00YR TOT USD 489.10 ',
-							'S1 /NVA15APR',
-							')><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, [
-							'S2 /NVA15APR',
-							'S3 /NVA15APR',
-							'S4 NVB19MAR/NVA19MAR',
-							'S5 NVB19MAR/NVA19MAR',
-							'E TOUR CODE -  N/A',
-							'E SPL06VY4O3 - SPLT6',
-							'TOUR CODE: COM6           ',
-							'TICKETING AGENCY 2G2H',
-							'DEFAULT PLATING CARRIER ET',
-							'BAGGAGE ALLOWANCE',
-							'ADT                                                         ',
-							' ET NBOBLZ  2PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO50LB/23KG                    ',
-							')><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, [
-							'   BAG 2 -  NO FEE       UPTO50LB/23KG                    ',
-							'   MYTRIPANDMORE.COM/BAGGAGEDETAILSET.BAGG',
-							'                                                                 ET BLZNBO  2PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO50LB/23KG                    ',
-							'   BAG 2 -  NO FEE       UPTO50LB/23KG                    ',
-							'   MYTRIPANDMORE.COM/BAGGAGEDETAILSET.BAGG',
-							'                                                                CARRY ON ALLOWANCE',
-							' ET NBOLLW  1PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
-							' ET LLWBLZ  1PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
-							')><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, [
-							' ET BLZJNB  1PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
-							' ET JNBADD  1PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
-							' ET ADDNBO  1PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO15LB/7KG AND UPTO45LI/115LCM ',
-							'BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/',
-							'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
-							'><',
-						]),
-					},
-				],
-			},
-		});
-
-		// RSBS-1197 change PTC to default in case :N is needed
-		$list.push({
-			'input': {
-				'cmdRequested': 'STOREITX',
-				'baseDate': '2018-06-04',
-				'ticketDesignators': [],
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{'cmd': 'T:$BN1-1*ADT|2-1*ADT/Z0/:N'},
-				],
-			},
-			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), []),
-				'initialCommands': [],
-				'performedCommands': [
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'CREATED IN GDS DIRECT BY BAUTISTA',
-							'X6P932/WS QSBYC DPBVWS  AG 23612444 13JUL',
-							' 1.1RIOSGAONA/JUAN MANUEL  2.1CASTORLIZARAZO/DIANA MARITZA ',
-							' 1 B61505P 11SEP EWRFLL HK2   735A 1030A *         TU   E',
-							' 2 AV  37O 11SEP FLLBOG HK2   404P  650P *         TU   E',
-							'         OPERATED BY AVIANCA',
-							'FONE-SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT',
-							'TKTG-TAU/13JUL',
-							'GFAX-SSROTHS1V PLEASE SEND AVTA TKNA BY 1534/16JUL GMT USING APOLLO',
-							'   2 SSROTHS1V /// ENTRY',
-							'RMKS-GD-BAUTISTA/23400/FOR BAUTISTA/23400/LEAD-8741240 IN 15JE',
-							'ACKN-B6 FXSPHG   13JUL 1534',
-							')><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, [
-							'   2 1A QFXKOM   13JUL 1535',
-							'   3 1A QFXKOM   13JUL 1535',
-							'><',
-						]),
-					},
-					{
-						'cmd': 'T:$BN1-1*ITX|2-1*ITX/Z0',
-						'output': php.implode(php.PHP_EOL, [
-							'>$BN1-1*ITX|2-1*ITX/-*15JE/Z0',
-							'E-TKT REQUIRED',
-							'** PRIVATE FARES SELECTED **  ',
-							'*PENALTY APPLIES*',
-							'BEST FARE FOR PSGR TYPE',
-							'LAST DATE TO PURCHASE TICKET: 14JUL18',
-							'$B-1-2 A13JUL18     ',
-							'EWR B6 FLL 51.16PL4ABEN5 AV BOG 154.70OEO00RI9/TAV NUC205.86END',
-							'ROE1.0',
-							'FARE USD 206.00 TAX 5.60AY TAX 18.30US TAX 9.00XF TAX 15.00JS',
-							'TOT USD 253.90 ',
-							'S1 NVB11SEP/NVA11SEP',
-							'S2 NVB11SEP/NVA11SEP',
-							')><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, [
-							'E NONREF - FEE FOR CHG/CXL',
-							'E REFUND FEE APPLIES/',
-							'E CHANGE FEE APPLIES',
-							'E AND PLUS FARE DIFF/NON END',
-							'TOUR CODE: ITU381         ',
-							'TICKETING AGENCY 15JE',
-							'DEFAULT PLATING CARRIER AV',
-							'US PFC: XF EWR4.5 FLL4.5 ',
-							'BAGGAGE ALLOWANCE',
-							'ITX                                                         ',
-							' AV EWRBOG  2PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM',
-							'   BAG 2 -  NO FEE       UPTO50LB/23KG AND UPTO62LI/158LCM',
-							')><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, [
-							'   VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/AV',
-							'                                                                CARRY ON ALLOWANCE',
-							' B6 EWRFLL  2PC                                             ',
-							'   BAG 1 -  NO FEE       UPTO45LI/115LCM                  ',
-							'   BAG 2 -  NO FEE       CARRYON HAND BAGGAGE ALLOWANCE   ',
-							' AV FLLBOG  10K                                             ',
-							'   BAG 1 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
-							'   BAG 2 -  CHGS MAY APPLY IF BAGS EXCEED TTL WT ALLOWANCE',
-							'                                                                EMBARGO - FOR BAGGAGE LIMITATIONS SEE ',
-							' B6 EWRFLL  VIEWTRIP.TRAVELPORT.COM/BAGGAGEPOLICY/B6        ',
-							'                                                                )><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, [
-							'BAGGAGE DISCOUNTS MAY APPLY BASED ON FREQUENT FLYER STATUS/',
-							'ONLINE CHECKIN/FORM OF PAYMENT/MILITARY/ETC.',
-							'><',
-						]),
-					},
-					{
-						'cmd': 'XT1',
-						'output': php.implode(php.PHP_EOL, [
-							' ATFQ/PRICING RECORDS CANCELLED',
-							'><',
-						]),
-					},
-					{
-						'cmd': 'T:$BN1-1*ADT|2-1*ADT/Z0/:N',
-						'output': php.implode(php.PHP_EOL, [
-							'>$BN1-1*ADT|2-1*ADT/:N/Z0',
-							'*FARE GUARANTEED AT TICKET ISSUANCE*',
-							'',
-							'E-TKT REQUIRED',
-							'*PENALTY APPLIES*',
-							'BEST FARE FOR PSGR TYPE',
-							'LAST DATE TO PURCHASE TICKET: 14JUL18',
-							'$B-1-2 C13JUL18     ',
-							'EWR B6 FLL 51.16PL4ABEN AV BOG 182.00OEO00RI9 NUC233.16END',
-							'ROE1.0',
-							'FARE USD 233.00 TAX 5.60AY TAX 18.30US TAX 9.00XF TAX 15.00JS',
-							'TOT USD 280.90 ',
-							'S1 NVB11SEP/NVA11SEP',
-							')><',
-						]),
-					},
-				],
-			},
-		});
-
-		// RE/ alias example - we could add it to tests at last!
-		// back to square one, need to implement XML itinerary re-build
-		$list.push({
-			'input': {
-				'cmdRequested': 'RE/2CV4/SS1',
-				'baseDate': '2018-02-28',
-				'ticketDesignators': [],
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{'cmd': '*R'},
-				],
-			},
-			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'hasPnr': false, 'area': 'A',
-				}),
-				'initialCommands': [
-					{
-						'cmd': 'I',
-						'output': php.implode(php.PHP_EOL, ['THIS IS A NEW PNR-ALL DATA WILL BE IGNORED WITH NEXT I OR IR', '><'])
-					},
-					{'cmd': 'I', 'output': php.implode(php.PHP_EOL, ['IGND ', '><'])},
-					{'cmd': 'SB', 'output': php.implode(php.PHP_EOL, ['A-OUT B-IN AG-NOT AUTH - APOLLO', '><'])},
-					{
-						'cmd': 'SEM/2CV4/AG',
-						'output': php.implode(php.PHP_EOL, ['PROCEED/09APR-TRAVEL SHOP              SFO - APOLLO', '><'])
-					},
-					{'cmd': 'N:LIBERMANE/MARINA', 'output': php.implode(php.PHP_EOL, [' *', '><'])},
-					{'cmd': 'SA', 'output': php.implode(php.PHP_EOL, ['B-OUT A-IN AG-OK - APOLLO', '><'])},
-					{
-						'cmd': '0PS 898D 10MAY KIVKBP SS1',
-						'output': php.implode(php.PHP_EOL, [
-							' 1 PS  898D  10MAY KIVKBP SS1   720A  825A *                 E',
-							'FULL PASSPORT DATA IS MANDATORY *',
-							'OFFER CAR/HOTEL    >CAL;     >HOA;',
-							'ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS',
-							'PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION',
-							'WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES',
-							'FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES',
-							'><',
-						]),
-					},
-					{
-						'cmd': '0PS 185D 10MAY KBPRIX SS1',
-						'output': php.implode(php.PHP_EOL, [
-							' 2 PS  185D  10MAY KBPRIX SS1   920A 1055A *      1          E',
-							'FULL PASSPORT DATA IS MANDATORY *',
-							'OFFER CAR/HOTEL    >CAL;     >HOA;',
-							'ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS',
-							'PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION',
-							'WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES',
-							'FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES',
-							'><',
-						]),
-					},
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'NO NAMES',
-							' 1 PS 898D 10MAY KIVKBP SS1   720A  825A *         TH   E  1',
-							' 2 PS 185D 10MAY KBPRIX SS1   920A 1055A *         TH   E  1',
-							'><',
-						]),
-					},
-				],
-				'performedCommands': [
-					{
-						'cmd': 'I',
-						'output': php.implode(php.PHP_EOL, ['THIS IS A NEW PNR-ALL DATA WILL BE IGNORED WITH NEXT I OR IR', '><'])
-					},
-					{'cmd': 'I', 'output': php.implode(php.PHP_EOL, ['IGND ', '><'])},
-					{
-						'cmd': 'SC',
-						'output': php.implode(php.PHP_EOL, [
-							'A-OUT C-IN AG-NOT AUTH - APOLLO',
-							'><',
-						]),
-					},
-					{
-						'cmd': 'SEM/2CV4/AG',
-						'output': php.implode(php.PHP_EOL, [
-							'PROCEED/09APR-TRAVEL SHOP              SFO - APOLLO',
-							'><',
-						]),
-					},
-					{
-						'method': 'processPnr',
-						'params': {
-							'addAirSegments': [
-								{
-									'airline': 'PS',
-									'flightNumber': '898',
-									'bookingClass': 'Y',
-									'departureDt': '2018-05-10',
-									'destinationDt': null,
-									'departureAirport': 'KIV',
-									'destinationAirport': 'KBP',
-									'segmentStatus': 'GK',
-									'seatCount': '1'
-								},
-								{
-									'airline': 'PS',
-									'flightNumber': '185',
-									'bookingClass': 'Y',
-									'departureDt': '2018-05-10',
-									'destinationDt': null,
-									'departureAirport': 'KBP',
-									'destinationAirport': 'RIX',
-									'segmentStatus': 'GK',
-									'seatCount': '1'
-								},
-							]
-						},
-						'output': {
-							'result': {
-								'newAirSegments': [
-									{
-										'success': true,
-										'displaySequenceNumber': '',
-										'airline': 'PS',
-										'flightNumber': '898',
-										'bookingClass': 'Y',
-										'departureDate': {'raw': '20190510', 'parsed': '2019-05-10'},
-										'dayOffset': '0',
-										'departureAirport': 'KIV',
-										'destinationAirport': 'KBP',
-										'departureTime': {'raw': '0720', 'parsed': '07:20:00'},
-										'destinationTime': {'raw': '0825', 'parsed': '08:25:00'},
-										'segmentStatus': 'GK',
-										'seatCount': '1',
-										'marriage': '',
-										'aircraftChanges': false,
-										'eticket': false,
-										'isStopover': false,
-										'operatedByCode': '',
-										'messages': ['CLASS NOT FOUND']
-									},
-									{
-										'success': true,
-										'displaySequenceNumber': '',
-										'airline': 'PS',
-										'flightNumber': '185',
-										'bookingClass': 'Y',
-										'departureDate': {'raw': '20190510', 'parsed': '2019-05-10'},
-										'dayOffset': '0',
-										'departureAirport': 'KBP',
-										'destinationAirport': 'RIX',
-										'departureTime': {'raw': '0920', 'parsed': '09:20:00'},
-										'destinationTime': {'raw': '1055', 'parsed': '10:55:00'},
-										'segmentStatus': 'GK',
-										'seatCount': '1',
-										'marriage': '',
-										'aircraftChanges': false,
-										'eticket': false,
-										'isStopover': false,
-										'operatedByCode': ''
-									},
-								],
-							},
-						},
-					},
-					{
-						'cmd': 'X1+2/01D+2D',
-						'output': php.implode(php.PHP_EOL, [
-							'   PS  898D  10MAY KIVKBP SS1   720A  825A *      1          E',
-							'FULL PASSPORT DATA IS MANDATORY *',
-							'   PS  185D  10MAY KBPRIX SS1   920A 1055A *      1          E',
-							'FULL PASSPORT DATA IS MANDATORY *',
-							'OFFER CAR/HOTEL    >CAL;     >HOA;',
-							'ADD ADVANCE PASSENGER INFORMATION SSRS DOCA/DOCO/DOCS',
-							'PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION',
-							'WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES',
-							'FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES',
-							'CANCEL REQUEST COMPLETED',
-							'><',
-						]),
-					},
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'NO NAMES',
-							' 1 PS 898D 10MAY KIVKBP SS1   720A  825A *         TH   E  1',
-							' 2 PS 185D 10MAY KBPRIX SS1   920A 1055A *         TH   E  1',
-							'><',
-						]),
-					},
-				],
-			},
-		});
-
-		// RE/2CV4 - just PCC, no status or seat count
-		// should not ignore itinerary in original area, since it's GK
-		// commented cuz XML
-		$list.push({
-			'input': {
-				'cmdRequested': 'RE/2CV4',
-				'baseDate': '2018-02-28',
-				'ticketDesignators': [],
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'NO NAMES',
-							' 1 SU1845D 10DEC KIVSVO GK1   140A  540A           MO',
-							'><',
-						]),
-					},
-				],
-			},
-			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
-					'hasPnr': true, 'agent_id': '1588',
-				}),
-				'initialCommands': [],
-				'performedCommands': [
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'NO NAMES',
-							' 1 SU1845D 10DEC KIVSVO SS1   140A  540A *         MO   E',
-							'><',
-						]),
-					},
-					{
-						'cmd': 'SB',
-						'output': php.implode(php.PHP_EOL, [
-							'A-OUT B-IN AG-NOT AUTH - APOLLO',
-							'><',
-						]),
-					},
-					{
-						'cmd': 'SEM/2CV4/AG',
-						'output': php.implode(php.PHP_EOL, [
-							'PROCEED/17MAY-TRAVEL SHOP              SFO - APOLLO',
-							'><',
-						]),
-					},
-					{
-						'method': 'processPnr',
-						'params': {
-							'addAirSegments': [{
-								'airline': 'SU',
-								'flightNumber': '1845',
-								'bookingClass': 'D',
-								'departureDt': '2018-12-10',
-								'destinationDt': null,
-								'departureAirport': 'KIV',
-								'destinationAirport': 'SVO',
-								'segmentStatus': 'GK',
-								'seatCount': 1
-							}]
-						},
-						'output': {
-							'result': {
-								'error': null,
-								'newAirSegments': [{
-									'success': true,
-									'displaySequenceNumber': '',
-									'airline': 'SU',
-									'flightNumber': '1845',
-									'bookingClass': 'D',
-									'departureDate': {'raw': '20181210', 'parsed': '2018-12-10'},
-									'dayOffset': '0',
-									'departureAirport': 'KIV',
-									'destinationAirport': 'SVO',
-									'departureTime': {'raw': '0140', 'parsed': '01:40:00'},
-									'destinationTime': {'raw': '0540', 'parsed': '05:40:00'},
-									'segmentStatus': 'GK',
-									'seatCount': '1',
-									'marriage': '',
-									'aircraftChanges': false,
-									'eticket': false,
-									'isStopover': false,
-									'operatedByCode': '',
-								}],
-							},
-						},
-					},
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'NO NAMES',
-							' 1 SU1845D 10DEC KIVSVO GK1   140A  540A           MO',
-							'><',
-						]),
-					},
-				],
-			},
-		});
-
-		// RE/2CV4 with stored PNR - should not ignore it
-		$list.push({
-			'input': {
-				'cmdRequested': 'RE/2CV4',
-				'baseDate': '2018-02-28',
-				'ticketDesignators': [],
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'NO NAMES',
-							' 1 DL 230V 03DEC RDUCDG GK1   602P  800A|       MO/TU',
-							' 2 DL8566V 04DEC CDGLOS GK1   210P  830P           TU',
-							'         OPERATED BY AIR FRANCE',
-							' 3 DL8499X 16JAN LOSCDG GK1  1155P  620A|       WE/TH',
-							'         OPERATED BY AIR FRANCE',
-							' 4 DL 231X 17JAN CDGRDU GK1  1150A  335P           TH',
-							'><',
-						]),
-					},
-				],
-			},
-			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), []),
-				'initialCommands': [
-					{
-						'cmd': '*JP76QA',
-						'output': php.implode(php.PHP_EOL, [
-							'KOWALSKI',
-							'2G8P - DOWNTOWN TRAVEL          ATL',
-							'JP76QA/MD QSBSB DYBWES  AG 23854526 02OCT',
-							' 1.1ORIBI/EJIRO SYLVIA ',
-							' 1 DL 230V 03DEC RDUCDG HK1   602P  800A|*      MO/TU   E  3',
-							' 2 DL8566V 04DEC CDGLOS HK1   210P  830P *         TU   E  3',
-							'         OPERATED BY AIR FRANCE',
-							' 3 DL8499X 16JAN LOSCDG HK1  1155P  620A|*      WE/TH   E  2',
-							'         OPERATED BY AIR FRANCE',
-							' 4 DL 231X 17JAN CDGRDU HK1  1150A  335P *         TH   E  2',
-							' 5 OTH ZO GK1  XXX 03AUG-PRESERVEPNR',
-							'*** PROFILE ASSOCIATIONS EXIST *** >*PA; ',
-							'*** SEAT DATA EXISTS *** >9D; ',
-							')><',
-						]),
-					},
-				],
-				'performedCommands': [
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'KOWALSKI',
-							'2G8P - DOWNTOWN TRAVEL          ATL',
-							'JP76QA/MD QSBSB DYBWES  AG 23854526 02OCT',
-							' 1.1ORIBI/EJIRO SYLVIA ',
-							' 1 DL 230V 03DEC RDUCDG HK1   602P  800A|*      MO/TU   E  3',
-							' 2 DL8566V 04DEC CDGLOS HK1   210P  830P *         TU   E  3',
-							'         OPERATED BY AIR FRANCE',
-							' 3 DL8499X 16JAN LOSCDG HK1  1155P  620A|*      WE/TH   E  2',
-							'         OPERATED BY AIR FRANCE',
-							' 4 DL 231X 17JAN CDGRDU HK1  1150A  335P *         TH   E  2',
-							' 5 OTH ZO GK1  XXX 03AUG-PRESERVEPNR',
-							'*** PROFILE ASSOCIATIONS EXIST *** >*PA; ',
-							'*** SEAT DATA EXISTS *** >9D; ',
-							')><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, [
-							'FONE-SFOAS/WESS*1800 677-2943 EXT:24235',
-							'   2 ATLAS/212-481-5516-KOWALSKI',
-							'   3 SFOR/800-750-2238-ITN',
-							'ADRS-INTERNATIONAL TRAVEL NETWORK@100 PINE STREET@SUITE 1925@SAN FRANCISCO CA Z/94111',
-							'FOP:-CK',
-							'TKTG-T/QSB 03OCT0103Z OQ AG **ELECTRONIC DATA EXISTS** >*HTE;',
-							'*** TIN REMARKS EXIST *** >*T; ',
-							'*** LINEAR FARE DATA EXISTS *** >*LF; ',
-							'ATFQ-REPR/$B/-*2G8P/:A/Z0/ET/NOCCGR/TA2G8P/CDL',
-							' FQ-USD 507.00/USD 36.60US/USD 667.43XT/USD 1211.03 - 2OCT VL3L76M1.VL3L76M1.XL3L76M1.XL3L76M1',
-							'GFAX-SSRCTCEDLHK1/LEMMYOG//HOTMAIL.COM-1ORIBI/EJIRO SYLVIA',
-							')><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, [
-							'   2 SSRCTCMDLHK1/19194189344-1ORIBI/EJIRO SYLVIA',
-							'   3 SSRDOCSDLHK1/////17NOV85/F//ORIBI/EJIRO/SYLVIA-1ORIBI/EJIRO SYLVIA',
-							'   4 SSRADTK1VTODL BY 15NOV 2359 SFO OTHERWISE MAY BE XLD',
-							'   5 SSRADTK1VTODL BY 15NOV FARE MAY NEED EARLIER TKT DTE',
-							'   6 SSRTKNEDLHK01 RDUCDG 0230V 03DEC-1ORIBI/EJIRO S.0067194163581C1',
-							'   7 SSRTKNEDLHK01 CDGLOS 8566V 04DEC-1ORIBI/EJIRO S.0067194163581C2',
-							'   8 SSRTKNEDLHK01 LOSCDG 8499X 16JAN-1ORIBI/EJIRO S.0067194163581C3',
-							'   9 SSRTKNEDLHK01 CDGRDU 0231X 17JAN-1ORIBI/EJIRO S.0067194163581C4',
-							')><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, [
-							'RMKS---------MADE FOR JAKE------',
-							'TRMK-BR2',
-							'   2 UD1 N',
-							'   3 UD8 0',
-							'   4 MS99S*VCTKTCOM*TF-00.00**TT30',
-							'   5 AN8007502041',
-							'   6 DI-BR2',
-							'   7 DI-UD35',
-							'   8 CA ACCT-8007502041',
-							'ACKN-DL HSEXC6   02OCT 1959',
-							'   2 DL HSEXC6   02OCT 1959',
-							'   3 DL HSEXC6   02OCT 2141',
-							'   4 DL HSEXC6   02OCT 2141',
-							')><',
-						]),
-					},
-					{
-						'cmd': 'MR',
-						'output': php.implode(php.PHP_EOL, ['   5 DL HSEXC6   02OCT 2319', '   6 DL HSEXC6   02OCT 2319', '><']),
-					},
-					{
-						'cmd': 'SB',
-						'output': php.implode(php.PHP_EOL, ['A-OUT B-IN AG-NOT AUTH - APOLLO', '><']),
-					},
-					{
-						'cmd': 'SEM/2CV4/AG',
-						'output': php.implode(php.PHP_EOL, ['PROCEED/05OCT-TRAVEL SHOP              SFO - APOLLO', '><']),
-					},
-					{
-						'method': 'processPnr',
-						'params': {
-							'addAirSegments': [
-								{
-									'airline': 'DL',
-									'flightNumber': '230',
-									'bookingClass': 'V',
-									'departureDt': '2018-12-03',
-									'destinationDt': null,
-									'departureAirport': 'RDU',
-									'destinationAirport': 'CDG',
-									'segmentStatus': 'GK',
-									'seatCount': 1,
-								},
-								{
-									'airline': 'DL',
-									'flightNumber': '8566',
-									'bookingClass': 'V',
-									'departureDt': '2018-12-04',
-									'destinationDt': null,
-									'departureAirport': 'CDG',
-									'destinationAirport': 'LOS',
-									'segmentStatus': 'GK',
-									'seatCount': 1,
-								},
-								{
-									'airline': 'DL',
-									'flightNumber': '8499',
-									'bookingClass': 'X',
-									'departureDt': '2019-01-16',
-									'destinationDt': null,
-									'departureAirport': 'LOS',
-									'destinationAirport': 'CDG',
-									'segmentStatus': 'GK',
-									'seatCount': 1,
-								},
-								{
-									'airline': 'DL',
-									'flightNumber': '231',
-									'bookingClass': 'X',
-									'departureDt': '2019-01-17',
-									'destinationDt': null,
-									'departureAirport': 'CDG',
-									'destinationAirport': 'RDU',
-									'segmentStatus': 'GK',
-									'seatCount': 1,
-								},
-							],
-						},
-						'output': {
-							'result': {
-								'newAirSegments': [
-									{
-										'success': true,
-										'displaySequenceNumber': '',
-										'airline': 'DL',
-										'flightNumber': '230',
-										'bookingClass': 'V',
-										'departureDate': {'raw': '20181203', 'parsed': '2018-12-03'},
-										'dayOffset': '1',
-										'departureAirport': 'RDU',
-										'destinationAirport': 'CDG',
-										'departureTime': {'raw': '1802', 'parsed': '18:02:00'},
-										'destinationTime': {'raw': '0800', 'parsed': '08:00:00'},
-										'segmentStatus': 'GK',
-										'seatCount': '1',
-										'marriage': '',
-										'aircraftChanges': false,
-										'eticket': false,
-										'isStopover': false,
-										'operatedByCode': '',
-										'messages': ['DEPARTS RDU TERMINAL 2  - ARRIVES CDG TERMINAL 2E'],
-									},
-									{
-										'success': true,
-										'displaySequenceNumber': '',
-										'airline': 'DL',
-										'flightNumber': '8566',
-										'bookingClass': 'V',
-										'departureDate': {'raw': '20181204', 'parsed': '2018-12-04'},
-										'dayOffset': '0',
-										'departureAirport': 'CDG',
-										'destinationAirport': 'LOS',
-										'departureTime': {'raw': '1410', 'parsed': '14:10:00'},
-										'destinationTime': {'raw': '2030', 'parsed': '20:30:00'},
-										'segmentStatus': 'GK',
-										'seatCount': '1',
-										'marriage': '',
-										'aircraftChanges': false,
-										'eticket': false,
-										'isStopover': false,
-										'operatedByCode': 'AF',
-									},
-									{
-										'success': true,
-										'displaySequenceNumber': '',
-										'airline': 'DL',
-										'flightNumber': '8499',
-										'bookingClass': 'X',
-										'departureDate': {'raw': '20190116', 'parsed': '2019-01-16'},
-										'dayOffset': '1',
-										'departureAirport': 'LOS',
-										'destinationAirport': 'CDG',
-										'departureTime': {'raw': '2355', 'parsed': '23:55:00'},
-										'destinationTime': {'raw': '0620', 'parsed': '06:20:00'},
-										'segmentStatus': 'GK',
-										'seatCount': '1',
-										'marriage': '',
-										'aircraftChanges': false,
-										'eticket': false,
-										'isStopover': false,
-										'operatedByCode': 'AF',
-									},
-									{
-										'success': true,
-										'displaySequenceNumber': '',
-										'airline': 'DL',
-										'flightNumber': '231',
-										'bookingClass': 'X',
-										'departureDate': {'raw': '20190117', 'parsed': '2019-01-17'},
-										'dayOffset': '0',
-										'departureAirport': 'CDG',
-										'destinationAirport': 'RDU',
-										'departureTime': {'raw': '1150', 'parsed': '11:50:00'},
-										'destinationTime': {'raw': '1535', 'parsed': '15:35:00'},
-										'segmentStatus': 'GK',
-										'seatCount': '1',
-										'marriage': '',
-										'aircraftChanges': false,
-										'eticket': false,
-										'isStopover': false,
-										'operatedByCode': '',
-									},
-								],
-							},
-						},
-					},
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'NO NAMES',
-							' 1 DL 230V 03DEC RDUCDG GK1   602P  800A|       MO/TU',
-							' 2 DL8566V 04DEC CDGLOS GK1   210P  830P           TU',
-							'         OPERATED BY AIR FRANCE',
-							' 3 DL8499X 16JAN LOSCDG GK1  1155P  620A|       WE/TH',
-							'         OPERATED BY AIR FRANCE',
-							' 4 DL 231X 17JAN CDGRDU GK1  1150A  335P           TH',
-							'><',
-						]),
-					},
-				],
-			},
-		});
-
-		// should keep original itinerary when there is "+" modifier in RE/
-		$list.push({
-			'input': {
-				'cmdRequested': 'RE/2CV4+',
-				'baseDate': '2018-06-04',
-				'ticketDesignators': [],
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{'cmd': '*R'},
-				],
-			},
-			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), []),
-				'initialCommands': [],
-				'performedCommands': [
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'NO NAMES',
-							' 1 PS 898D 10DEC KIVKBP SS1   710A  820A *         MO   E  1',
-							' 2 PS 185D 10DEC KBPRIX SS1   920A 1100A *         MO   E  1',
-							'><',
-						]),
-					},
-					{
-						'cmd': 'SB',
-						'output': php.implode(php.PHP_EOL, ['A-OUT B-IN AG-NOT AUTH - APOLLO', '><']),
-					},
-					{
-						'cmd': 'SEM/2CV4/AG',
-						'output': php.implode(php.PHP_EOL, ['PROCEED/05OCT-TRAVEL SHOP              SFO - APOLLO', '><']),
-					},
-					{
-						'method': 'processPnr',
-						'params': {
-							'addAirSegments': [{
-								'airline': 'PS',
-								'flightNumber': '898',
-								'bookingClass': 'D',
-								'departureDt': '2018-12-10',
-								'destinationDt': null,
-								'departureAirport': 'KIV',
-								'destinationAirport': 'KBP',
-								'segmentStatus': 'GK',
-								'seatCount': 1,
-							}, {
-								'airline': 'PS',
-								'flightNumber': '185',
-								'bookingClass': 'D',
-								'departureDt': '2018-12-10',
-								'destinationDt': null,
-								'departureAirport': 'KBP',
-								'destinationAirport': 'RIX',
-								'segmentStatus': 'GK',
-								'seatCount': 1,
-							}],
-						},
-						'output': {
-							'result': {
-								'error': null,
-								'newAirSegments': [
-									{
-										'success': true,
-										'displaySequenceNumber': '',
-										'airline': 'PS',
-										'flightNumber': '898',
-										'bookingClass': 'D',
-										'departureDate': {'raw': '20181210', 'parsed': '2018-12-10'},
-										'dayOffset': '0',
-										'departureAirport': 'KIV',
-										'destinationAirport': 'KBP',
-										'departureTime': {'raw': '0710', 'parsed': '07:10:00'},
-										'destinationTime': {'raw': '0820', 'parsed': '08:20:00'},
-										'segmentStatus': 'GK',
-										'seatCount': '1',
-										'marriage': '',
-										'aircraftChanges': false,
-										'eticket': false,
-										'isStopover': false,
-										'operatedByCode': '',
-									},
-									{
-										'success': true,
-										'displaySequenceNumber': '',
-										'airline': 'PS',
-										'flightNumber': '185',
-										'bookingClass': 'D',
-										'departureDate': {'raw': '20181210', 'parsed': '2018-12-10'},
-										'dayOffset': '0',
-										'departureAirport': 'KBP',
-										'destinationAirport': 'RIX',
-										'departureTime': {'raw': '0920', 'parsed': '09:20:00'},
-										'destinationTime': {'raw': '1100', 'parsed': '11:00:00'},
-										'segmentStatus': 'GK',
-										'seatCount': '1',
-										'marriage': '',
-										'aircraftChanges': false,
-										'eticket': false,
-										'isStopover': false,
-										'operatedByCode': '',
-									},
-								],
-							},
-						},
-					},
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'NO NAMES',
-							' 1 PS 898D 10DEC KIVKBP GK1   710A  820A           MO',
-							' 2 PS 185D 10DEC KBPRIX GK1   920A 1100A           MO',
-							'><',
-						]),
-					},
-				],
-			},
-		});
-
-		// example of >X1-2/0YGK; alias, which rebooks selected
-		// segments with GK-status through direct sell
-		$list.push({
-			'input': {
-				'cmdRequested': 'X1-2/0YGK',
-				'baseDate': '2018-06-04',
-				'ticketDesignators': [],
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{'cmd': '*R'},
-				],
-			},
-			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), []),
-				'initialCommands': [
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'NO NAMES',
-							' 1 PS 898D 10DEC KIVKBP SS1   710A  820A *         MO   E  1',
-							' 2 PS 185D 10DEC KBPRIX SS1   920A 1100A *         MO   E  1',
-							'><',
-						]),
-					},
-				],
-				'performedCommands': [
-					{
-						'cmd': 'X1|2',
-						'output': php.implode(php.PHP_EOL, ['CNLD FROM  1', '><']),
-					},
-					{
-						'method': 'processPnr',
-						'params': {
-							'addAirSegments': [{
-								'airline': 'PS',
-								'flightNumber': '898',
-								'bookingClass': 'Y',
-								'departureDt': '2018-12-10',
-								'destinationDt': null,
-								'departureAirport': 'KIV',
-								'destinationAirport': 'KBP',
-								'segmentStatus': 'GK',
-								'seatCount': 1,
-							}, {
-								'airline': 'PS',
-								'flightNumber': '185',
-								'bookingClass': 'Y',
-								'departureDt': '2018-12-10',
-								'destinationDt': null,
-								'departureAirport': 'KBP',
-								'destinationAirport': 'RIX',
-								'segmentStatus': 'GK',
-								'seatCount': 1,
-							}],
-						},
-						'output': {
-							'result': {
-								'error': null,
-								'newAirSegments': [
-									{
-										'success': true,
-										'displaySequenceNumber': '',
-										'airline': 'PS',
-										'flightNumber': '898',
-										'bookingClass': 'Y',
-										'departureDate': {'raw': '20181210', 'parsed': '2018-12-10'},
-										'dayOffset': '0',
-										'departureAirport': 'KIV',
-										'destinationAirport': 'KBP',
-										'departureTime': {'raw': '0710', 'parsed': '07:10:00'},
-										'destinationTime': {'raw': '0820', 'parsed': '08:20:00'},
-										'segmentStatus': 'GK',
-										'seatCount': '1',
-										'marriage': '',
-										'aircraftChanges': false,
-										'eticket': false,
-										'isStopover': false,
-										'operatedByCode': '',
-										'messages': ['CLASS NOT FOUND'],
-									},
-									{
-										'success': true,
-										'displaySequenceNumber': '',
-										'airline': 'PS',
-										'flightNumber': '185',
-										'bookingClass': 'Y',
-										'departureDate': {'raw': '20181210', 'parsed': '2018-12-10'},
-										'dayOffset': '0',
-										'departureAirport': 'KBP',
-										'destinationAirport': 'RIX',
-										'departureTime': {'raw': '0920', 'parsed': '09:20:00'},
-										'destinationTime': {'raw': '1100', 'parsed': '11:00:00'},
-										'segmentStatus': 'GK',
-										'seatCount': '1',
-										'marriage': '',
-										'aircraftChanges': false,
-										'eticket': false,
-										'isStopover': false,
-										'operatedByCode': '',
-										'messages': [],
-									},
-								],
-							},
-						},
-					},
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'NO NAMES',
-							' 1 PS 898Y 10DEC KIVKBP GK1   710A  820A           MO',
-							' 2 PS 185Y 10DEC KBPRIX GK1   920A 1100A           MO',
-							'><',
-						]),
-					},
-				],
-			},
-		});
-
-		// example of >X2/0VGK; cancelling just some segments, not whole itinerary,
-		// results in "NEXT REPLACES  2" output - should be ready for that
-		$list.push({
-			'input': {
-				'cmdRequested': 'X2/0VGK',
-				'baseDate': '2018-06-04',
-				'ticketDesignators': [],
-			},
-			'output': {
-				'status': 'executed',
-				'calledCommands': [
-					{'cmd': '*R'},
-				],
-			},
-			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), []),
-				'initialCommands': [
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'NO NAMES',
-							' 1 PS 898N 20MAR KIVKBP GK1   710A  820A           WE',
-							' 2 PS 185N 20MAR KBPRIX GK1   920A 1100A           WE',
-							'><',
-						]),
-					},
-				],
-				'performedCommands': [
-					{
-						'cmd': 'X2',
-						'output': php.implode(php.PHP_EOL, ['NEXT REPLACES  2', '><']),
-					},
-					{
-						'method': 'processPnr',
-						'params': {
-							'addAirSegments': [{
-								'airline': 'PS',
-								'flightNumber': '185',
-								'bookingClass': 'V',
-								'departureDt': '2019-03-20',
-								'destinationDt': null,
-								'departureAirport': 'KBP',
-								'destinationAirport': 'RIX',
-								'segmentStatus': 'GK',
-								'seatCount': 1,
-							}],
-						},
-						'output': {
-							'result': {
-								'error': null,
-								'newAirSegments': [{
-									'success': true,
-									'displaySequenceNumber': '',
-									'airline': 'PS',
-									'flightNumber': '185',
-									'bookingClass': 'V',
-									'departureDate': {'raw': '20190320', 'parsed': '2019-03-20'},
-									'dayOffset': '0',
-									'departureAirport': 'KBP',
-									'destinationAirport': 'RIX',
-									'departureTime': {'raw': '0920', 'parsed': '09:20:00'},
-									'destinationTime': {'raw': '1100', 'parsed': '11:00:00'},
-									'segmentStatus': 'GK',
-									'seatCount': '1',
-									'marriage': '',
-									'aircraftChanges': false,
-									'eticket': false,
-									'isStopover': false,
-									'operatedByCode': '',
-								}],
-							},
-						},
-					},
-					{
-						'cmd': '*R',
-						'output': php.implode(php.PHP_EOL, [
-							'NO NAMES',
-							' 1 PS 898N 20MAR KIVKBP GK1   710A  820A           WE',
-							' 2 PS 185V 20MAR KBPRIX GK1   920A 1100A           WE',
-							'><',
-						]),
-					},
-				],
-			},
-		});
-		*/
-
-		$argumentTuples = [];
-		for ($testCase of Object.values($list)) {
-			$argumentTuples.push([$testCase['input'], $testCase['output'], $testCase['sessionInfo']]);
+		const argumentTuples = [];
+		for (const testCase of list) {
+			argumentTuples.push([testCase.input, testCase.output, testCase.sessionInfo]);
 		}
 
-		return $argumentTuples;
+		return argumentTuples;
 	}
 
 	provideTestCasesForTariffModification() {
