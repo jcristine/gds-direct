@@ -1,4 +1,4 @@
-const CommonParserHelpers = require('../../Transpiled/Gds/Parsers/Apollo/CommonParserHelpers.js');
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 const RepriceInAnotherPccAction = require('../../Transpiled/Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
 
 const AliasParser = require('../../Transpiled/Rbs/GdsDirect/AliasParser.js');
@@ -99,10 +99,10 @@ exports.parse = async (cmdRequested, stateful, PtcUtil = require('../../Transpil
 		type = 'rebookAsGk';
 		const [, segNumStr, date, cls] = matches;
 		data = {
-			'segmentNumbers': CommandParser.parseRange(segNumStr, '|', '-'),
+			'segmentNumbers': ParserUtil.parseRange(segNumStr, '|', '-'),
 			'departureDate': !date ? null : {
 				'raw': date,
-				'parsed': CommonParserHelpers.parsePartialDate(date),
+				'parsed': ParserUtil.parsePartialDate(date),
 			},
 			'bookingClass': cls || null,
 		};
@@ -116,8 +116,11 @@ exports.parse = async (cmdRequested, stateful, PtcUtil = require('../../Transpil
 	} else if (php.preg_match(/^\/SS([EM]?)$/, realCmd, matches = [])) {
 		type = 'rebookAsSs';
 		data = {
-			allowCutting: matches[1] === 'E',
-			guessMarriages: matches[1] === 'M',
+			method: {
+				'E': 'allowCutting',
+				'M': 'guessMarriages',
+				'': 'yGkRebook',
+			},
 		};
 	} else if (result = RepriceInAnotherPccAction.parseAlias(realCmd)) {
 		type = 'priceInAnotherPcc';
