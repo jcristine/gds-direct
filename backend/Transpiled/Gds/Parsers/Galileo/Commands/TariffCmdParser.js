@@ -1,16 +1,15 @@
-const AtfqParser = require("../../Apollo/Pnr/AtfqParser");
-const ApoCmdParser = require("gds-utils/src/text_format_processing/apollo/commands/CmdParser");
-const CommonParserHelpers = require('../../Apollo/CommonParserHelpers.js');
+const Parse_priceItinerary = require('gds-utils/src/text_format_processing/apollo/commands/Parse_priceItinerary.js');
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
+const Parse_fareSearch = require('gds-utils/src/text_format_processing/apollo/commands/Parse_fareSearch.js');
 const Lexeme = require('gds-utils/src/lexer/Lexeme.js');
 const Lexer = require('gds-utils/src/lexer/Lexer.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const Fp = require('../../../../Lib/Utils/Fp.js');
 
 const parseDate = (raw) => {
 	return !raw ? null : {
 		raw: raw,
-		partial: CommonParserHelpers.parsePartialDate(raw),
-		full: CommonParserHelpers.parseCurrentCenturyFullDate(raw).parsed,
+		partial: ParserUtil.parsePartialDate(raw),
+		full: ParserUtil.parse2kDate(raw).parsed,
 	};
 };
 
@@ -21,13 +20,13 @@ const end  = '(?![A-Z0-9])';
 const lexer = new Lexer([
 	(new Lexeme('tripType', '/^-(RT|OW)'+ end +'/')).preprocessData(getFirst),
 	(new Lexeme('bookingClass', '/^-([A-Z])'+ end +'/')).preprocessData(getFirst),
-	(new Lexeme('cabinClass', '/^@([A-Z])'+ end +'/')).preprocessData((matches) => (ApoCmdParser.getCabinClasses() || {})[matches[1]]),
+	(new Lexeme('cabinClass', '/^@([A-Z])'+ end +'/')).preprocessData((matches) => (Parse_fareSearch.getCabinClasses() || {})[matches[1]]),
 	(new Lexeme('fareBasis', '/^@([A-Z][A-Z0-9]*)'+ end +'/')).preprocessData(getFirst),
 	(new Lexeme('airlines', '/^(\\\/[A-Z0-9]{2})+'+ end +'/')).preprocessData((matches) => php.explode('/', php.ltrim(matches[0], '/'))),
 	(new Lexeme('ticketingDate', '/^\\.T(\\d{1,2}[A-Z]{3}\\d*)'+ end +'/')).preprocessData(parseDateToken),
 	(new Lexeme('allianceCode', '/^\\\/\\\/\\*([A-Z])'+ end +'/')).preprocessData(getFirst),
 	(new Lexeme('currency', '/^:([A-Z]{3})'+ end +'/')).preprocessData(getFirst),
-	(new Lexeme('fareType', '/^:([A-Z])'+ end +'/')).preprocessData((matches) => AtfqParser.decodeFareType(matches[1])),
+	(new Lexeme('fareType', '/^:([A-Z])'+ end +'/')).preprocessData((matches) => Parse_priceItinerary.decodeFareType(matches[1])),
 	(new Lexeme('ptc', '/^\\*([A-Z0-9]{3})'+ end +'/')).preprocessData(getFirst),
 	(new Lexeme('accountCodes', '/^-PRI((-[A-Z0-9]+)*)'+ end +'/')).preprocessData((matches) => matches[1] ? php.explode('-', php.ltrim(matches[1], '-')) : []),
 	// base mods follows (may preceed a letter)
@@ -48,9 +47,9 @@ exports.parse = (cmd) => {
 	let matches;
 	if (php.preg_match(/^FD(?<modsPart>.*)$/, cmd, matches = {})) {
 		const lexed = lexer.lex(matches.modsPart);
-		const modifiers = Fp.map((rec) => ({
+		const modifiers = lexed.lexemes.map((rec) => ({
 			type: rec.lexeme, raw: rec.raw, parsed: rec.data,
-		}), lexed.lexemes);
+		}));
 
 		// code expects them to be separate from rest modifiers
 		const baseModNames = new Set(['dates', 'airports']);

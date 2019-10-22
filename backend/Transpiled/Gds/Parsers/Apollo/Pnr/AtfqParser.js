@@ -93,21 +93,27 @@ class AtfqParser {
 		return null;
 	}
 
+	/** @deprecated - use directly from Parse_priceItinerary.js */
 	static parsePricingCommand(cmd) {
 		return Parse_priceItinerary(cmd);
 	}
+
+	/** @deprecated - use directly from Parse_priceItinerary.js */
 	static parsePricingModifiers($modsPart) {
 		return Parse_priceItinerary.parsePricingModifiers($modsPart);
 	}
 
+	/** @deprecated - use directly from Parse_priceItinerary.js */
 	static getCabinClassMapping() {
 		return Parse_priceItinerary.getCabinClassMapping();
 	};
 
+	/** @deprecated - use directly from Parse_priceItinerary.js */
 	static encodeFareType(type) {
 		return Parse_priceItinerary.encodeFareType(type);
 	};
 
+	/** @deprecated - use directly from Parse_priceItinerary.js */
 	static decodeFareType($code) {
 		return Parse_priceItinerary.decodeFareType($code);
 	};
