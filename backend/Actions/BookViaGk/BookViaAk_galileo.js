@@ -88,7 +88,7 @@ const BookViaAk_galileo = (params) => {
 				forRebook.push({...seg,
 					segmentStatus: 'AK',
 					// any different booking class will do, since it's GK
-					bookingClass: seg.bookingClass !== 'Y' ? 'Y' : 'Z',
+					bookingClass: seg.bookingClass !== 'Y' ? 'Y' : 'W',
 					desiredBookingClass: seg.bookingClass,
 				});
 			}
