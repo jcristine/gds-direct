@@ -1,3 +1,4 @@
+const SimpleTypes = require('gds-utils/src/text_format_processing/amadeus/commands/SimpleTypes.js');
 
 
 const Fp = require('../../../Lib/Utils/Fp.js');
@@ -270,84 +271,18 @@ class CommandParser
 	}
 
 	static detectCommandType(cmd)  {
-		let is, startsWith, regex, pattern, type, name;
-
-		is = {
-			RT: 'redisplayPnr',
-			RTI: 'itinerary',
-			RTN: 'names',
-			MT: 'moveTop',
-			MU: 'moveUp',
-			MDR: 'moveRest',
-			M: 'moveDownShort',
-			MD: 'moveDown',
-			MB: 'moveBottom',
-			IG: 'ignore',
-			IR: 'ignoreKeepPnr',
-			ETX: 'deletePnr',
-			ET: 'storePnr',
-			ER: 'storeKeepPnr',
-			JD: 'workAreas',
-			DMI: 'verifyConnectionTimes',
-			RRI: 'cloneItinerary',
-			VFFD: 'frequentFlyerData',
-			EF: 'fileDividedBooking',
-		};
-
-		startsWith = {
-			'AD': 'airAvailability',
-			'AC': 'changeAirAvailability',
-			'SS': 'sell',
-			'NM': 'addName',
-			'APE': 'addEmail',
-			'AP': 'addPhone',
-			'TKTL': 'addTicketingDateLimit',
-			'RF': 'addReceivedFrom',
-			'RM': 'addRemark',
-			'QT': 'queueCount',
-			'QV/': 'queueRecordLocators',
-			'Q': 'queueOperation',
-			'X': 'deletePnrField',
-			'DL': 'deletePnrField',
-			'SX': 'cancelSeatElements',
-			'JM': 'changeArea',
-			'JI': 'signIn',
-			'TRDC': 'voidTicket',
-			'TTP': 'issueTickets',
-			'HE': 'help',
-			'DD': 'showTime',
-			'DF': 'calculator',
-			'FQQ': 'ptcPricingBlock',
-			'FQD': 'fareSearch',
-			'TWD': 'ticketMask',
-			'TQT': 'storedPricing',
-			'TTE': 'deleteStoredPricing',
-			'FRN': 'statelessFareRules',
-			'SP': 'divideBooking',
-		};
-
-		regex = {
-			[/^DO *\S.*/]: 'flightServiceInfo',
-			[/^FQN *\S.*/]: 'fareList',
-			[/^MD *\S.*/]: 'moveDownByAlias',
-			[/^MU *\S.*/]: 'moveUpByAlias',
-			[/^MT *\S.*/]: 'moveTopByAlias',
-			[/^MB *\S.*/]: 'moveBottomByAlias',
-			[/^MP *\S.*/]: 'redisplayByAlias',
-		};
-
 		cmd = php.trim(cmd);
-		for ([pattern, type] of Object.entries(is)) {
+		for (const [pattern, type] of Object.entries(SimpleTypes.exact)) {
 			if (cmd === pattern) {
 				return type;
 			}}
 
-		for ([pattern, type] of Object.entries(startsWith)) {
+		for (const [pattern, type] of Object.entries(SimpleTypes.start)) {
 			if (StringUtil.startsWith(cmd, pattern)) {
 				return type;
 			}}
 
-		for ([pattern, name] of Object.entries(regex)) {
+		for (const [pattern, name] of SimpleTypes.regex) {
 			if (php.preg_match(pattern, cmd)) {
 				return name;
 			}}

@@ -1,3 +1,4 @@
+const SimpleTypes = require('gds-utils/src/text_format_processing/galileo/commands/SimpleTypes.js');
 
 
 const ArrayUtil = require('../../../Lib/Utils/ArrayUtil.js');
@@ -13,172 +14,28 @@ const TariffCmdParser = require("./Commands/TariffCmdParser");
 class CommandParser
 {
 	static detectCommandType(cmd)  {
-		let is, regex, startsWith, pattern, type, name, starts;
-
 		cmd = php.strtoupper(cmd);
-
-		is = {
-			'OP/W*': 'workAreas',
-			'MT': 'moveTop',
-			'MB': 'moveBottom',
-			'MR': 'moveRest',
-			'P-*ALL': 'printPnr',
-			'Y': 'sell', // an ARNK segment
-			'I': 'ignore',
-			'IR': 'ignoreKeepPnr',
-			'E': 'storePnr',
-			'ER': 'storeKeepPnr',
-			'*R': 'redisplayPnr',
-			'*I': 'itinerary',
-			'*IA': 'airItinerary',
-			'*MM': 'frequentFlyerData',
-			'FQ*': 'redisplayPriceItinerary',
-			'FQA*': 'redisplayPriceItinerary',
-			'FQBB*': 'redisplayPriceItinerary',
-			'FQBA*': 'redisplayPriceItinerary',
-			'FQBBK*': 'redisplayPriceItinerary',
-			'*HTE': 'ticketList',
-		};
-
-		regex = {
-			[/^\*\d+$/]: 'displayPnrFromList',
-			[/^FN\d+$/]: 'fareRulesMenu',
-			[/^FN\d+[\*\/].*/]: 'fareRules',
-			[/^FQP[^0-9]/]: 'fareQuotePlanner',
-			[/^FSK\d+$/]: 'sellFromLowFareSearch',
-			['/^('+php.implode('|', [
-				'MORE\\*\\d+',// (VIEW MORE ITINERARIES WITHIN AN OPTION)
-				'FS\\*\\d+',// (VIEW FARE DETAIL DISPLAY)
-				'FSOF\\d+', // (VIEW ADDITIONAL FEE DISPLAY)
-				'FSMORE',// (VIEW ADDITIONAL PRICING OPTIONS)
-				'FS-', // (RETURN TO PREVIOUS SCREEN)
-			])+')$/']: 'lowFareSearchNavigation',
-			[/^FS.*/]: 'lowFareSearch',
-			[/^E[A-Z]*M.*/]: 'storePnrSendEmail',
-
-			[/^P\.[^@]*$/]: 'addAgencyPhone',
-			[/^R\.[^@]*$/]: 'addReceivedFrom',
-			[/^N\.[^@]*$/]: 'addName',
-			[/^T\.[^@]*$/]: 'addTicketingDateLimit',
-			[/^W\.[^@]*$/]: 'addAddress',
-			[/^NP\.[^@]*$/]: 'addRemark',
-			[/^SI\.[^@]*$/]: 'addSsr',
-			[/^F\.[^@]*$/]: 'addFormOfPayment',
-
-			[/^P\..*@.*$/]: 'changeAgencyPhone',
-			[/^R\..*@.*$/]: 'changeReceivedFrom',
-			[/^N\..*@.*$/]: 'changeName',
-			[/^T\..*@.*$/]: 'changeTicketingDateLimit',
-			[/^W\..*@.*$/]: 'changeAddress',
-			[/^SI\..*@.*$/]: 'cancelSsr',
-			[/^F\..*@.*$/]: 'changeFormOfPayment',
-		};
-
-		startsWith = {
-			'CAL': 'carAvailability',
-			'CAU': 'updateCarAvailabilityParams',
-			'CAI': 'carVendors',
-			'CAD': 'carDescription',
-			'CAM': 'modifyCarSegment',
-			'CAV': 'carRules',
-			'HOI': 'hotels',
-			'HOC': 'hotelCompleteAvailability',
-			'HOU': 'updateHotelAvailabilityParams',
-			'HOV': 'hotelRules',
-			'HOD': 'hotelDescription',
-			'HOM': 'modifyHotelSegment',
-			'FD*': 'fareRulesMenuFromTariff',
-			'FN*': 'fareRulesFromMenu',
-			'FDC*': 'showBookingClassOfFare',
-			'FR*': 'routingFromTariff',
-			'FQL': 'fareQuoteLadder',
-			'FQN': 'fareList',
-			'F*Q': 'pricingLinearFare',
-			'FZ': 'convertCurrency',
-
-			'C*': 'agencyProfile',
-			'CM': 'moveAgencyProfile',
-			'SON': 'signIn',
-			'SAI': 'signIn',
-			'SOF': 'signOut',
-			'SAO': 'signOut',
-			'SDA': 'agentList',
-			'STD': 'createAgent',
-			'H/': 'help',
-			'HELP': 'help',
-			'GG*': 'helpIndex',
-			'.CE': 'encodeCity',
-			'.CD': 'decodeCity',
-			'.LE': 'encodeCountry',
-			'.LD': 'decodeCountry',
-			'.AE': 'encodeAirline',
-			'.AD': 'decodeAirline',
-			'.EE': 'encodeAircraft',
-			'.ED': 'decodeAircraft',
-			'GC*': 'encodeOrDecodeHotelOrCar',
-			'MU': 'moveUp',
-			'MD': 'moveDown',
-			'XX': 'calculator',
-			'X': 'deletePnrField',
-			'TT': 'timeTable',
-			'L@': 'operationalInfo',
-			'TI-': 'visaAndHealthInfo',
-			'FTAX': 'taxInfo',
-			'DCT': 'minConnectionTimeTable',
-			'HOR': 'referencePoints',
-			'SM*': 'seatMap',
-
-			'QC': 'queueCount',
-			'QX': 'leaveQueue',
-			'QR': 'removeFromQueue',
-			'QEB': 'movePnrToQueue',
-			'QPRINT': 'printAllPnrsOnQueue',
-			'QEM/': 'sendToMessageQueue',
-			'Q/': 'openQueue',
-			'*-': 'searchPnr',
-			'**': 'searchPnr',
-			'*H': 'history',
-			'*SVC': 'flightServiceInfo',
-			'*SD': 'requestedSeats',
-			'SA*S': 'seatMap',
-			'*FF': 'storedPricing',
-			'*TE': 'ticketMask',
-			'RE': 'storeAndCopyPnr',
-
-			'TKP': 'issueTickets',
-			'TMU': 'changeTickets',
-			'TRV': 'voidTicket',
-			'TKV': 'voidTicket',
-			'TRU': 'unvoidPaperTicket',
-			'TRN': 'refundTicket',
-			'TRA': 'refundTicket',
-			'TKR': 'revalidateTicket',
-
-			'FF': 'storePricing',
-			'/': 'setNextFollowsSegment',
-			'0': 'sell',
-			'N': 'sell',
-			'@': 'rebook', // change segment status, seat count, booking class
-		};
-
 		cmd = php.trim(cmd);
-		for ([pattern, type] of Object.entries(is)) {
+
+		for (const [pattern, type] of Object.entries(SimpleTypes.exact)) {
 			if (cmd === pattern) {
 				return type;
 			}}
 
-		for ([pattern, name] of Object.entries(regex)) {
+		for (const [pattern, name] of SimpleTypes.regex) {
 			if (php.preg_match(pattern, cmd)) {
 				return name;
-			}}
+			}
+		}
 
-		starts = php.array_keys(startsWith);
+		let starts = php.array_keys(SimpleTypes.start);
 		starts = Fp.sortBy(a => php.mb_strlen(a), starts, true); // longest matched first
-		for (pattern of Object.values(starts)) {
-			type = startsWith[pattern];
+		for (const pattern of Object.values(starts)) {
+			const type = SimpleTypes.start[pattern];
 			if (StringUtil.startsWith(cmd, pattern)) {
 				return type;
-			}}
+			}
+		}
 
 		return null;
 	}
