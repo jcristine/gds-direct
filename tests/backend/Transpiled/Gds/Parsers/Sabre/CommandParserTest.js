@@ -1,5 +1,5 @@
 
-const CommandParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Sabre/CommandParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/sabre/commands/CmdParser.js');
 
 const php = require('../../../php.js');
 

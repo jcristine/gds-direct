@@ -6,7 +6,7 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 const ApoCmdParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 const GalCmdParser = require('../../Gds/Parsers/Galileo/CommandParser.js');
-const SabCmdParser = require('../../Gds/Parsers/Sabre/CommandParser.js');
+const SabCmdParser = require('gds-utils/src/text_format_processing/sabre/commands/CmdParser.js');
 const AmaCmdParser = require('../../Gds/Parsers/Amadeus/CommandParser.js');
 const DateTime = require('../../Lib/Utils/DateTime.js');
 const BadRequest = require("klesun-node-tools/src/Rej").BadRequest;

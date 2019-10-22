@@ -1,5 +1,5 @@
 
-const SabCmdParser = require("../../../Gds/Parsers/Sabre/CommandParser.js");
+const SabCmdParser = require("gds-utils/src/text_format_processing/sabre/commands/CmdParser.js");
 
 const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');

@@ -2,7 +2,7 @@
 
 const TSabreSavePnr = require('../../../Rbs/GdsAction/Traits/TSabreSavePnr.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
-const CommandParser = require('../../../Gds/Parsers/Sabre/CommandParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/sabre/commands/CmdParser.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 var require = require('../../../translib.js').stubRequire;
