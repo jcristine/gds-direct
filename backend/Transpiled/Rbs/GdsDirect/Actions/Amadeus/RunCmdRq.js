@@ -864,7 +864,7 @@ const execute = ({
 			} else if ((await agent.getFsCallsUsed()) >= totalAllowed) {
 				errors.push(Errors.getMessage(Errors.FS_LIMIT_EXHAUSTED, {totalAllowed: totalAllowed}));
 			}
-		} else if (isQueueCmd && !php.in_array(type, .movePnrToQueue)) {
+		} else if (isQueueCmd && !php.in_array(type, ['movePnrToQueue'])) {
 			if (!agent.canProcessQueues()) {
 				errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: cmd, type: type || 'queueOperation'}));
 			}
