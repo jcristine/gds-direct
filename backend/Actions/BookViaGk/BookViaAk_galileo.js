@@ -1,3 +1,4 @@
+const GkUtil = require('./GkUtil.js');
 const UpdateGalileoState = require('../../Transpiled/Rbs/GdsDirect/SessionStateProcessor/UpdateGalileoState.js');
 const TravelportUtils = require('../../GdsHelpers/TravelportUtils.js');
 const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
@@ -88,7 +89,7 @@ const BookViaAk_galileo = (params) => {
 				forRebook.push({...seg,
 					segmentStatus: 'AK',
 					// any different booking class will do, since it's GK
-					bookingClass: seg.bookingClass !== 'Y' ? 'Y' : 'W',
+					bookingClass: GkUtil.chooseTmpCls(seg),
 					desiredBookingClass: seg.bookingClass,
 				});
 			}

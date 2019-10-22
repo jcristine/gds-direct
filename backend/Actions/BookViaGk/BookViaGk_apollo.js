@@ -1,3 +1,4 @@
+const GkUtil = require('./GkUtil.js');
 const ApolloPnr = require('../../Transpiled/Rbs/TravelDs/ApolloPnr.js');
 const Errors = require('../../Transpiled/Rbs/GdsDirect/Errors.js');
 const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
@@ -96,7 +97,7 @@ const BookViaGk_apollo = async (params) => {
 				forRebook.push({...seg,
 					segmentStatus: 'GK',
 					// any different booking class will do, since it's GK
-					bookingClass: seg.bookingClass !== 'Y' ? 'Y' : 'W',
+					bookingClass: GkUtil.chooseTmpCls(seg),
 					desiredBookingClass: seg.bookingClass,
 				});
 			}
