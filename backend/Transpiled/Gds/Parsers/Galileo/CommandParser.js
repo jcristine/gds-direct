@@ -247,21 +247,21 @@ class CommandParser
 			(new Lexeme('allianceCode', /^\/\/\*([A-Z])/)).preprocessData($getFirst),
 		]);
 		if (php.preg_match($regex, $cmd, $matches = [])) {
-			$flags = php.array_filter(php.str_split($matches['preFlags']+($matches['postFlags'] || '')));
-			$lexed = $lexer.lex($matches['modsPart']);
+			$flags = php.array_filter(php.str_split($matches.preFlags+($matches.postFlags || '')));
+			$lexed = $lexer.lex($matches.modsPart);
 			return {
 				isReturn: php.in_array('R', $flags),
 				orderBy: ArrayUtil.getLast(Fp.filter(($flag) => $flag !== 'R', $flags)),
-				departureDate: php.empty($matches['departureDate']) ? null : {
-					raw: $matches['departureDate'],
-					parsed: CommonParserHelpers.parsePartialDate($matches['departureDate']),
+				departureDate: php.empty($matches.departureDate) ? null : {
+					raw: $matches.departureDate,
+					parsed: CommonParserHelpers.parsePartialDate($matches.departureDate),
 				},
-				departureAirport: $matches['departureAirport'] || '',
-				destinationAirport: $matches['destinationAirport'] || '',
+				departureAirport: $matches.departureAirport || '',
+				destinationAirport: $matches.destinationAirport || '',
 				modifiers: Fp.map(($rec) => ({
-					type: $rec['lexeme'], raw: $rec['data']['raw'], parsed: $rec['data']['parsed'],
-				}), $lexed['lexemes']),
-				unparsed: $lexed['text'],
+					type: $rec.lexeme, raw: $rec.data.raw, parsed: $rec.data.parsed,
+				}), $lexed.lexemes),
+				unparsed: $lexed.text,
 			};
 		} else {
 			return null;
@@ -341,14 +341,14 @@ class CommandParser
             '(?<airPart>.*)'+
             '$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
-			$airParts = php.explode('-', $matches['airPart']);
+			$airParts = php.explode('-', $matches.airPart);
 			$mmAirs = php.array_map((...args) => this.parseMmAir(...args), $airParts);
 			if (Fp.any('is_null', $mmAirs)) {
 				return null;
 			} else {
 				return {
-					majorPaxNum: $matches['majorPaxNum'] || '',
-					isCrossAccrual: ($matches['crossAccrual'] || '') === '*',
+					majorPaxNum: $matches.majorPaxNum || '',
+					isCrossAccrual: ($matches.crossAccrual || '') === '*',
 					mileagePrograms: $mmAirs,
 				};
 			}
@@ -370,13 +370,13 @@ class CommandParser
             ')?'+
             '$/';
 		if (php.preg_match($regex, $paxPart, $matches = [])) {
-			$partnersPart = $matches['partners'] || '';
+			$partnersPart = $matches.partners || '';
 			return {
-				majorPaxNum: $matches['majorPaxNum'] || '',
-				airline: $matches['airline'] || '',
+				majorPaxNum: $matches.majorPaxNum || '',
+				airline: $matches.airline || '',
 				withAllPartners: $partnersPart === '/ALL',
 				partners: php.in_array($partnersPart, ['', '/ALL']) ? [] :
-					php.explode('/', php.ltrim($matches['partners'], '/')),
+					php.explode('/', php.ltrim($matches.partners, '/')),
 			};
 		} else {
 			return null;
@@ -414,7 +414,7 @@ class CommandParser
             '(?<changeMark>@|)'+
             '$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
-			$seatCodesStr = php.ltrim($matches['seatCodes'] || '', '/');
+			$seatCodesStr = php.ltrim($matches.seatCodes || '', '/');
 			$seatCodeGroups = $seatCodesStr ? php.explode('/', $seatCodesStr) : [];
 			$seatCodes = [];
 			for ($group of Object.values($seatCodeGroups)) {
@@ -422,10 +422,10 @@ class CommandParser
 				for ([$_, $rowNumber, $letters] of Object.values($seatMatches)) {
 					for ($letter of Object.values(php.explode('.', $letters))) {
 						$seatCodes.push($rowNumber+$letter);}}}
-			$paxNums = this.flattenRange($matches['paxNums'] || '');
-			$segNums = this.flattenRange($matches['segNums'] || '');
+			$paxNums = this.flattenRange($matches.paxNums || '');
+			$segNums = this.flattenRange($matches.segNums || '');
 			return {
-				type: $matches['changeMark'] === '@'
+				type: $matches.changeMark === '@'
 					? 'cancelSeats' : 'requestSeats',
 				data: {
 					paxRanges: Fp.map(($num) => ({
@@ -433,9 +433,9 @@ class CommandParser
 						to: $num, toMinor: null,
 					}), $paxNums),
 					segNums: $segNums,
-					location: php.empty($matches['location']) ? null : {
-						raw: $matches['location'],
-						parsed: ({A: 'aisle', W: 'window', B: 'bulkhead'} || {})[$matches['location']],
+					location: php.empty($matches.location) ? null : {
+						raw: $matches.location,
+						parsed: ({A: 'aisle', W: 'window', B: 'bulkhead'} || {})[$matches.location],
 					},
 					zone: null,
 					seatCodes: $seatCodes,
@@ -466,8 +466,8 @@ class CommandParser
 		} else if ($data = this.parseChangeFrequentFlyerNumber($cmd)) {
 			$type = 'changeFrequentFlyerNumber';
 		} else if ($parsed = this.parseSeatChange($cmd)) {
-			$type = $parsed['type'];
-			$data = $parsed['data'];
+			$type = $parsed.type;
+			$data = $parsed.data;
 		} else if ($type = this.detectCommandType($cmd)) {
 			$data = null;
 		} else if ($data = this.parsePriceItinerary($cmd)) {
@@ -493,7 +493,7 @@ class CommandParser
 		const subCmds = $cmd.split(/(?<!\|)\|(?!\|)/g);
 		$flatCmds = subCmds.map(subCmd => this.parseSingleCommand(subCmd));
 		$parsed = $flatCmds.shift();
-		$parsed['followingCommands'] = $flatCmds;
+		$parsed.followingCommands = $flatCmds;
 		return $parsed;
 	}
 }

@@ -94,11 +94,11 @@ class CommandParser
             '$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
 			return {
-				airline: $matches['airline'],
-				code: $matches['code'],
-				partners: php.empty($matches['partners']) ? [] :
-					php.explode(',', php.ltrim($matches['partners'], ',')),
-				majorPaxNum: $matches['majorPaxNum'] || '',
+				airline: $matches.airline,
+				code: $matches.code,
+				partners: php.empty($matches.partners) ? [] :
+					php.explode(',', php.ltrim($matches.partners, ',')),
+				majorPaxNum: $matches.majorPaxNum || '',
 			};
 		} else {
 			return null;
@@ -153,7 +153,7 @@ class CommandParser
             '(\\\/S(?<segNums>\\d+[-,\\d]*))?'+
             '$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
-			$seatCodesStr = php.ltrim($matches['seatCodes'] || '', '/');
+			$seatCodesStr = php.ltrim($matches.seatCodes || '', '/');
 			$seatCodeGroups = $seatCodesStr ? php.explode('/', $seatCodesStr) : [];
 			$seatCodes = [];
 			for ($group of Object.values($seatCodeGroups)) {
@@ -162,19 +162,19 @@ class CommandParser
 					for ($letter of Object.values(php.str_split($letters, 1))) {
 						$seatCodes.push($rowNumber+$letter);}}}
 
-			$paxNums = php.empty($matches['paxNums']) ? [] :
-				this.parseRange($matches['paxNums']);
+			$paxNums = php.empty($matches.paxNums) ? [] :
+				this.parseRange($matches.paxNums);
 			return {
 				paxRanges: Fp.map(($num) => {
 					return {
 						from: $num, fromMinor: null,
 						to: $num, toMinor: null,
 					};}, $paxNums),
-				segNums: php.empty($matches['segNums']) ? [] :
-					this.parseRange($matches['segNums']),
-				location: php.empty($matches['location']) ? null : {
-					raw: $matches['location'],
-					parsed: ({A: 'aisle', W: 'window', B: 'bulkhead'} || {})[$matches['location']],
+				segNums: php.empty($matches.segNums) ? [] :
+					this.parseRange($matches.segNums),
+				location: php.empty($matches.location) ? null : {
+					raw: $matches.location,
+					parsed: ({A: 'aisle', W: 'window', B: 'bulkhead'} || {})[$matches.location],
 				},
 				zone: null,
 				seatCodes: $seatCodes,
@@ -193,15 +193,15 @@ class CommandParser
             '(\\\/S(?<segNums>\\d+[-,\\d]*))?'+
             '$/';
 		if (php.preg_match($regex, $cmd, $matches = [])) {
-			$paxNums = php.empty($matches['paxNums']) ? [] :
-				this.parseRange($matches['paxNums']);
+			$paxNums = php.empty($matches.paxNums) ? [] :
+				this.parseRange($matches.paxNums);
 			return {
 				paxRanges: Fp.map(($num) => ({
 					from: $num, fromMinor: null,
 					to: $num, toMinor: null,
 				}), $paxNums),
-				segNums: php.empty($matches['segNums']) ? [] :
-					this.parseRange($matches['segNums']),
+				segNums: php.empty($matches.segNums) ? [] :
+					this.parseRange($matches.segNums),
 				location: null,
 				zone: null,
 				seatCodes: [],
@@ -416,7 +416,7 @@ class CommandParser
 		const $flatCmds = $cmd.split(';')
 			.map(c => this.parseSingleCommand(c));
 		const $result = $flatCmds.shift();
-		$result['followingCommands'] = $flatCmds;
+		$result.followingCommands = $flatCmds;
 		return $result;
 	}
 }

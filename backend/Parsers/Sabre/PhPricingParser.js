@@ -1,6 +1,6 @@
 
 const BagAllowanceParser = require("../../Transpiled/Gds/Parsers/Sabre/BagAllowanceParser");
-const {parseSequence, splitByPosition} = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
+const {parseSequence, splitByPosition, parseBagAmountCode} = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 const CommonParserHelpers = require('../../Transpiled/Gds/Parsers/Apollo/CommonParserHelpers.js');
 const {matchAll} = require('../../Utils/Str.js');
 const PricingCommonHelper = require('../../Transpiled/Gds/Parsers/Sabre/Pricing/PricingCommonHelper.js');
@@ -28,7 +28,7 @@ const parseFlightSegmentLine = (line) => {
 		ticketDesignator: ticketDesignator, // not sure it can happen
 		notValidBefore: nvbDate ? {raw: split['O'], parsed: nvbDate} : null,
 		notValidAfter: nvaDate ? {raw: split['E'], parsed: nvaDate} : null,
-		bagAllowanceCode: BagAllowanceParser.parseAmountCode(split['B']),
+		bagAllowanceCode: parseBagAmountCode(split['B']),
 	};
 	if (date && split[' '].trim() === '' &&
 		result['bookingClass'] &&

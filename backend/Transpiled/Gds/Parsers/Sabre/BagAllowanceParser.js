@@ -12,20 +12,18 @@ class BagAllowanceParser
 	/**
      * @param string $dump - the part of *PQ starting with "BAG ALLOWANCE"
      */
-	static parse($lines)  {
-		let $sections;
-
-		$sections = this.splitToSections($lines);
+	static parse(lines)  {
+		const sections = this.splitToSections(lines);
 
 		return {
-			baggageAllowanceBlock: this.parseBagAllowance($sections['baggageAllowanceBlock']),
+			baggageAllowanceBlock: this.parseBagAllowance(sections.baggageAllowanceBlock),
 			carryOnAllowanceBlock: php.array_map(b => this.parseCarryOnAllowanceBundle(b),
-				this.splitBundleSections($sections['carryOnAllowanceBlock'])),
-			carryOnChargesBlock: $sections['carryOnChargesBlock'] ? php.array_map(b => this.parseCarryOnChargesBundle(b),
-				this.splitBundleSections($sections['carryOnChargesBlock'])) : null,
-			disclaimer: $sections['disclaimer'],
-			additionalInfo: !php.empty($sections['additionalInfo'])
-				? this.parseAdditionalInfo($sections['additionalInfo'])
+				this.splitBundleSections(sections.carryOnAllowanceBlock)),
+			carryOnChargesBlock: sections.carryOnChargesBlock ? php.array_map(b => this.parseCarryOnChargesBundle(b),
+				this.splitBundleSections(sections.carryOnChargesBlock)) : null,
+			disclaimer: sections.disclaimer,
+			additionalInfo: !php.empty(sections.additionalInfo)
+				? this.parseAdditionalInfo(sections.additionalInfo)
 				: null,
 		};
 	}
@@ -157,10 +155,10 @@ class BagAllowanceParser
      */
 	static addRemarks($bagData, $remarks)  {
 		$remarks = Fp.map('rtrim', $remarks);
-		if (($bagData['noPriceDueTo']) === '*' && php.count($remarks) === 1) {
-			$bagData['noPriceDueTo'] = $remarks[0];
+		if (($bagData.noPriceDueTo) === '*' && php.count($remarks) === 1) {
+			$bagData.noPriceDueTo = $remarks[0];
 		} else {
-			$bagData['remarks'] = $remarks;
+			$bagData.remarks = $remarks;
 		}
 		return $bagData;
 	}
@@ -190,21 +188,21 @@ class BagAllowanceParser
             '(\\\/(?<sizeInfo>.+))? *'+
             '$/';
 		if (php.preg_match($regex, $line, $matches = [])) {
-			if (php.isset($matches['sizeInfo']) && $matches['sizeInfo']) {
-				$sizeInfo = this.parseSizeInfoText($matches['sizeInfo']) || {error: 'failed to parse', raw: php.trim($matches['sizeInfo'])};
+			if (php.isset($matches.sizeInfo) && $matches.sizeInfo) {
+				$sizeInfo = this.parseSizeInfoText($matches.sizeInfo) || {error: 'failed to parse', raw: php.trim($matches.sizeInfo)};
 			}
-			if ($code = $matches['allowanceCode']) {
+			if ($code = $matches.allowanceCode) {
 				$amount = this.parseAmountCode($code);
 			} else {
 				$amount = null;
 			}
 			return {
-				departureStopover: $matches['departureStopover'],
-				destinationStopover: $matches['destinationStopover'],
+				departureStopover: $matches.departureStopover,
+				destinationStopover: $matches.destinationStopover,
 				amount: $amount,
-				noPriceDueTo: $matches['noPriceDueTo'],
-				airline: $matches['airline'],
-				sizeInfoRaw: $matches['sizeInfo'],
+				noPriceDueTo: $matches.noPriceDueTo,
+				airline: $matches.airline,
+				sizeInfoRaw: $matches.sizeInfo,
 				sizeInfo: $sizeInfo,
 			};
 		} else {
@@ -237,21 +235,21 @@ class BagAllowanceParser
             '$/';
 
 		if (php.preg_match($regex, $line, $matches = [])) {
-			if (php.isset($matches['sizeInfo'])) {
-				$sizeInfo = this.parseSizeInfoText($matches['sizeInfo']) || {error: 'failed to parse', raw: php.trim($matches['sizeInfo'])};
+			if (php.isset($matches.sizeInfo)) {
+				$sizeInfo = this.parseSizeInfoText($matches.sizeInfo) || {error: 'failed to parse', raw: php.trim($matches.sizeInfo)};
 			}
 
 			return {
-				feeNumber: $matches['feeNumber'],
-				departureStopover: $matches['departureStopover'],
-				destinationStopover: $matches['destinationStopover'],
-				currency: $matches['currency'] || null,
-				amount: $matches['amount'] || null,
-				airline: $matches['airline'],
-				sizeInfoRaw: $matches['sizeInfo'],
+				feeNumber: $matches.feeNumber,
+				departureStopover: $matches.departureStopover,
+				destinationStopover: $matches.destinationStopover,
+				currency: $matches.currency || null,
+				amount: $matches.amount || null,
+				airline: $matches.airline,
+				sizeInfoRaw: $matches.sizeInfo,
 				sizeInfo: $sizeInfo || [],
-				noPriceDueTo: ($matches['noPriceDueTo'] || '') || null,
-				isGeneralRemarkReferenced: php.isset($matches['generalRemarkIndicator']) ? true : false,
+				noPriceDueTo: ($matches.noPriceDueTo || '') || null,
+				isGeneralRemarkReferenced: php.isset($matches.generalRemarkIndicator) ? true : false,
 			};
 		} else {
 			return {error: 'failed to parse', raw: $line};
@@ -338,27 +336,27 @@ class BagAllowanceParser
 				$slashed = $matches[1];
 				for ($limit of Object.values(php.explode('/', $slashed))) {
 					if (php.preg_match(/^\s*(\d+) POUNDS\s*$/, $limit, $matches = [])) {
-						$result['weightInLb'] = $matches[1];
+						$result.weightInLb = $matches[1];
 					} else if (php.preg_match(/^\s*(\d+) KILOGRAMS\s*/, $limit, $matches = [])) {
-						$result['weightInKg'] = $matches[1];
+						$result.weightInKg = $matches[1];
 					} else if (php.preg_match(/^\s*(\d+) (LINEAR )?INCHES\s*/, $limit, $matches = [])) {
-						$result['sizeInInches'] = $matches[1];
+						$result.sizeInInches = $matches[1];
 					} else if (php.preg_match(/^\s*(\d+) (LINEAR )?CENTIMETERS\s*/, $limit, $matches = [])) {
-						$result['sizeInCm'] = $matches[1];
+						$result.sizeInCm = $matches[1];
 					} else {
-						$result['unparsed'].push($limit);
+						$result.unparsed.push($limit);
 					}}
 			} else {
-				$result['unparsed'] = $result['unparsed'] || [];
-				$result['unparsed'].push($and);
+				$result.unparsed = $result.unparsed || [];
+				$result.unparsed.push($and);
 			}}
 
-		if ($result && php.empty($result['unparsed'])) {
+		if ($result && php.empty($result.unparsed)) {
 			return {
-				weightInLb: $result['weightInLb'],
-				weightInKg: $result['weightInKg'],
-				sizeInInches: $result['sizeInInches'],
-				sizeInCm: $result['sizeInCm'],
+				weightInLb: $result.weightInLb,
+				weightInKg: $result.weightInKg,
+				sizeInInches: $result.sizeInInches,
+				sizeInCm: $result.sizeInCm,
 			};
 		} else {
 			return null;
@@ -408,22 +406,22 @@ class BagAllowanceParser
 					departureAirport: $dprt,
 					destinationAirport: $dst,
 				};
-			}, php.explode(' ', $matches['cityPairs']));
+			}, php.explode(' ', $matches.cityPairs));
 
 			return {
 				cityPairs: $cityPairs,
-				amount: $matches['bagAllowanceCode']
-					? this.parseAmountCode($matches['bagAllowanceCode'])
-					: ($matches['weightInKg']
+				amount: $matches.bagAllowanceCode
+					? this.parseAmountCode($matches.bagAllowanceCode)
+					: ($matches.weightInKg
 						? {
 							units: 'kilograms',
-							amount: $matches['weightInKg'],
+							amount: $matches.weightInKg,
 							unitsCode: 'KG',
 						}
 						: null),
-				airline: $matches['airline'],
-				error: php.isset($matches['error']) ? php.rtrim($matches['error']) : null,
-				isAvailable: !php.isset($matches['error']),
+				airline: $matches.airline,
+				error: php.isset($matches.error) ? php.rtrim($matches.error) : null,
+				isAvailable: !php.isset($matches.error),
 			};
 		} else {
 			return null;

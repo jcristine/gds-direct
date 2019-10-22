@@ -24,13 +24,13 @@ class PricingCommonHelper {
 		if (php.is_null($totalsLine)) {
 			return [null, []];
 		} else if ($totals = this.parseTotalsLine($totalsLine)) {
-			$totalsTax = $totals['tax'];
-			if ($totalsTax['taxCode'] === 'XT') {
+			$totalsTax = $totals.tax;
+			if ($totalsTax.taxCode === 'XT') {
 				[$taxList, $lines] = this.parseTaxBreakDown($lines);
 			} else {
 				$taxList = $totalsTax ? [{
-					taxCode: $totalsTax['taxCode'],
-					amount: $totalsTax['amount'],
+					taxCode: $totalsTax.taxCode,
+					amount: $totalsTax.amount,
 				}] : [];
 			}
 
@@ -70,23 +70,23 @@ class PricingCommonHelper {
 		if (php.preg_match($regex, $valuesLine, $matches = [])) {
 			$matches = php.array_filter($matches);
 			return {
-				quantity: $matches['quantity'],
+				quantity: $matches.quantity,
 				baseFare: {
-					currency: $matches['baseFareCurrency'],
-					amount: $matches['baseFareAmount'],
+					currency: $matches.baseFareCurrency,
+					amount: $matches.baseFareAmount,
 				},
-				inDefaultCurrency: php.isset($matches['equivAmount']) ? {
-					currency: $matches['equivCurrency'],
-					amount: $matches['equivAmount'],
+				inDefaultCurrency: php.isset($matches.equivAmount) ? {
+					currency: $matches.equivCurrency,
+					amount: $matches.equivAmount,
 				} : null,
 				tax: {
-					amount: $matches['taxAmount'],
-					taxCode: $matches['taxCode'],
+					amount: $matches.taxAmount,
+					taxCode: $matches.taxCode,
 				},
 				total: {
-					currency: $matches['totalCurrency'],
-					amount: $matches['totalAmount'],
-					ptc: $matches['ptc'],
+					currency: $matches.totalCurrency,
+					amount: $matches.totalAmount,
+					ptc: $matches.ptc,
 				},
 				line: $valuesLine,
 			};
@@ -168,9 +168,9 @@ class PricingCommonHelper {
 			$error = 'fare construction has unexpected format - failed to separate it from additionalInfoLines';
 		} else {
 			$parseResult = FareConstructionParser.parse($completeLine);
-			if (!($error = $parseResult['error'])) {
-				$data = $parseResult['parsed'];
-				$textLeft = $parseResult['textLeft'];
+			if (!($error = $parseResult.error)) {
+				$data = $parseResult.parsed;
+				$textLeft = $parseResult.textLeft;
 			}
 		}
 
@@ -191,29 +191,29 @@ class PricingCommonHelper {
 
 		for ($line of Object.values($lines)) {
 			if (php.preg_match(/^VALIDATING CARRIER( SPECIFIED|) - ([A-Z0-9]{2})/, $line, $matches = [])) {
-				$result['validatingCarrier'] = $matches[2];
+				$result.validatingCarrier = $matches[2];
 				$validatingCarrierFound = true;
 			} else if (php.preg_match(/^ALTERNATE VALIDATING CARRIER\/S - ([^\s].+)$/, $line, $matches = [])) {
 				// i saw no cases with multiple alternate carriers, so i don't know how
 				// they are delimited so if there ever be more than one, they will be joined
-				$result['alternateValidatingCarriers'] = $result['alternateValidatingCarriers'] || [];
-				$result['alternateValidatingCarriers'].push(php.rtrim($matches[1]));
+				$result.alternateValidatingCarriers = $result.alternateValidatingCarriers || [];
+				$result.alternateValidatingCarriers.push(php.rtrim($matches[1]));
 			} else if (php.preg_match(/^PRIVATE FARE APPLIED/, $line, $matches = [])) {
-				$result['privateFareApplied'] = true;
+				$result.privateFareApplied = true;
 			} else if ($line.startsWith('RATE USED')) {
 				$result.unparsedLines.push($line);
 			} else {
 				if ($endorsementBeforeCarrier != $validatingCarrierFound) {
-					$result['endorsementBoxLines'] = $result['endorsementBoxLines'] || [];
-					$result['endorsementBoxLines'].push(php.trim($line));
+					$result.endorsementBoxLines = $result.endorsementBoxLines || [];
+					$result.endorsementBoxLines.push(php.trim($line));
 				} else {
-					$result['unparsedLines'].push($line);
+					$result.unparsedLines.push($line);
 				}
 			}
 		}
 
 		if (!$validatingCarrierFound) {
-			$result['endorsementBoxLines'] = php.array_map('trim', php.array_splice($result['unparsedLines'], 0));
+			$result.endorsementBoxLines = php.array_map('trim', php.array_splice($result.unparsedLines, 0));
 		}
 
 		return $result;
