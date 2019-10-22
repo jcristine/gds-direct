@@ -728,47 +728,45 @@ const RunCmdRq = ({
 	};
 
 	const rebookAsSs = async () => {
-		let $akSegments, $xCmd, $newSegs, $result, $error, $output;
-
 		stateful.flushCalledCommands();
-		$akSegments = Fp.filter(($seg) => {
-			return $seg['segmentStatus'] === 'AK';
-		}, (await getCurrentPnr()).getItinerary());
-		if (php.empty($akSegments)) {
+		const akSegments = (await getCurrentPnr()).getItinerary()
+			.filter((seg) => seg.segmentStatus === 'AK');
+		if (php.empty(akSegments)) {
 			return {errors: ['No AK segments']};
 		}
-		$xCmd = 'X' + php.implode('.', php.array_column($akSegments, 'segmentNumber'));
-		await runCommand($xCmd, false);
-		$newSegs = Fp.map(($seg) => {
-			$seg['segmentStatus'] = 'NN';
-			return $seg;
-		}, $akSegments);
+		const xCmd = 'X' + php.array_column(akSegments, 'segmentNumber').join('.');
+		await runCommand(xCmd, false);
+		const newSegs = akSegments.map((seg) => {
+			seg.segmentStatus = 'NN';
+			return seg;
+		});
 
-		$result = await GalileoBuildItineraryAction({
+		const result = await GalileoBuildItineraryAction({
 			session: stateful,
 			baseDate: stateful.getStartDt(),
 			useXml,
 			travelport,
-			itinerary: $newSegs,
+			itinerary: newSegs,
 			isParserFormat: true,
 		});
 
-		if (useXml && $result.segments.length > 0) {
+		if (useXml && result.segments.length > 0) {
 			stateful.updateAreaState({
 				type: '!xml:PNRBFManagement',
 				state: {hasPnr: true, canCreatePq: false},
 			});
 		}
 
-		if ($error = RebuildInPccAction.transformBuildError($result)) {
+		const error = RebuildInPccAction.transformBuildError(result);
+		if (error) {
 			return {
 				calledCommands: stateful.flushCalledCommands(),
-				errors: [$error],
+				errors: [error],
 			};
 		} else {
-			$output = await runCommand('*R', true);
+			const output = await runCommand('*R', true);
 			return {
-				calledCommands: [{cmd: '*R', output: $output}],
+				calledCommands: [{cmd: '*R', output: output}],
 			};
 		}
 	};

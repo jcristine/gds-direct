@@ -90,7 +90,7 @@ const GalileoBuildItineraryAction = ({
 	};
 
 	const execute = async (itinerary, isParserFormat) => {
-		if(useXml) {
+		if (useXml) {
 			return TravelportBuildItineraryViaXml({
 				itinerary,
 				session,
