@@ -1,3 +1,4 @@
+const Rej = require('klesun-node-tools/src/Rej.js');
 const SqlUtil = require('klesun-node-tools/src/Utils/SqlUtil.js');
 const Pccs = require('../../../../../../../backend/Repositories/Pccs.js');
 const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Common/PtcUtil.js');
@@ -6,7 +7,7 @@ const PtcFareFamilies = require('../../../../../../../backend/Repositories/PtcFa
 const GdsSessions = require('../../../../../../../backend/Repositories/GdsSessions.js');
 const GdsActionTestUtil = require('../../../../../../../backend/Utils/Testing/GdsActionTestUtil.js');
 const stubPccs = require('../../../../../../data/stubPccs.js');
-const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
+const {nonEmpty, coverExc} = require('klesun-node-tools/src/Lang.js');
 
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/RunCmdRq.js');
 
@@ -327,8 +328,7 @@ const provide_call = () => {
 			].join("\n"),
 		},
 		output: {
-			status: 'forbidden',
-			userMessages: ['Direct sell failed - Transaction error #8222 (UNKNOWN SECURITY ERROR)'],
+			error: 'Error: Direct sell failed - Transaction error #8222 (UNKNOWN SECURITY ERROR)',
 		},
 		httpRequests: [
 			{
@@ -706,7 +706,9 @@ class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
 							.getByAdultPtcFrom(adultPtc, stubPtcFareFamilies),
 					},
 				}),
-			});
+			}).catch(coverExc(Rej.list, exc => ({
+				error: exc + '', stack: exc.stack,
+			})));
 			return actual;
 		};
 

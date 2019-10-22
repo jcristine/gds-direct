@@ -307,9 +307,12 @@ const RunCmdRq = ({
 		const sortResult = await processSortItinerary()
 			.catch(coverExc(Rej.list, exc => ({errors: ['Did not SORT - ' + exc]})));
 
-		const cmdRec = {cmd: '*R', output: (await getCurrentPnr()).getDump()};
+		const calledCommands = php.empty(sortResult.errors)
+			// output of /0/1|2|3|9|7|6|8|4|5 holds the resulting PNR
+			? stateful.flushCalledCommands().slice(-1)
+			: [{cmd: '*R', output: (await getCurrentPnr()).getDump()}];
 		return {
-			calledCommands: [cmdRec],
+			calledCommands,
 			userMessages: built.messages
 				.filter(r => r.type === 'info')
 				.map(r => r.text),
