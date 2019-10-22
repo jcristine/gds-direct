@@ -35,13 +35,17 @@ export class SettingsButtons extends Component
 			icon	: '<i class="fa fa-history t-f-size-14"></i>'
 		}).getTrigger();
 
-		const keySettings	= new KeySettings({
-			icon	: '<i class="fa fa-gear t-f-size-14"></i>',
-			keyBindings,
-			gdsAreaSettings,
-		}).getTrigger();
+		let buttons = [themeBtn, textSize, history];
 
-		let buttons = [themeBtn, textSize, history, keySettings];
+		if (!window.GdsDirectPlusParams.hideSpecialButtons) {
+			const keySettings = new KeySettings({
+				icon	: '<i class="fa fa-gear t-f-size-14"></i>',
+				keyBindings,
+				gdsAreaSettings,
+			}).getTrigger();
+
+			buttons.push(keySettings);
+		}
 
 		let admin = new Admin({
 			icon: '<i class="fa t-f-size-14">admin</i>',

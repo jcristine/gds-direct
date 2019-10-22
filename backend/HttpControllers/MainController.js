@@ -1,3 +1,5 @@
+const GlobalAuthUsers = require('../Repositories/GlobalAuthUsers.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
 const GdsSessionManager = require('../GdsHelpers/GdsSessionManager.js');
 const Debug = require('klesun-node-tools/src/Debug.js');
 const LocalDiag = require('../Repositories/LocalDiag.js');
@@ -12,7 +14,6 @@ const Agent = require('../DataFormats/Wrappers/Agent.js');
 const MaskUtil = require("../Transpiled/Lib/Utils/MaskUtil");
 const {HttpUtil} = require('klesun-node-tools');
 const {jsExport} = require('klesun-node-tools/src/Utils/Misc.js');
-const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 const isSystemError = (exc) =>
 	!exc.isOk &&
@@ -89,30 +90,48 @@ const normalizeForeignProjectEmcData = async (emcData) => {
 	return emcData;
 };
 
+const getGlobalAuthData = (login, password) => {
+	return GlobalAuthUsers.getByLogin(login, password)
+		.then(user => ({
+			data: {
+				user: {
+					id: user.id,
+					displayName: user.login,
+					roles: user.roles || [],
+					allowedPccRecs: user.allowedPccRecs || [],
+				},
+			},
+		}));
+};
+
 const withAuth = (userAction) => (req, res) => {
-	return toHandleHttp((rqBody, routeParams) => {
+	return toHandleHttp(async (rqBody, routeParams) => {
 		if (typeof userAction !== 'function') {
 			return InternalServerError('Action is not a function - ' + userAction);
 		}
-		return Emc.getCachedSessionInfo(rqBody.emcSessionId)
-			.then(async emcData => {
-				rqBody = {...rqBody};
-				emcData = {...emcData};
-				delete(rqBody.emcSessionId);
-				if (rqBody.isForeignProjectEmcId) {
-					emcData = await normalizeForeignProjectEmcData(emcData).catch(exc => emcData);
-				}
-				for (const role of rqBody.disabledRoles || []) {
-					// for debug
-					const i = emcData.data.user.roles.indexOf(role);
-					if (i > -1) {
-						emcData.data.user.roles.splice(i, 1);
-					}
-				}
-				rqBody = normalizeRqBody(rqBody, emcData);
-				return Promise.resolve()
-					.then(() => userAction(rqBody, emcData.data, routeParams));
-			});
+		const whenEmcData = rqBody.globalAuthLogin && rqBody.globalAuthPassword
+			? getGlobalAuthData(rqBody.globalAuthLogin, rqBody.globalAuthPassword)
+			: Emc.getCachedSessionInfo(rqBody.emcSessionId);
+
+		let emcData = await whenEmcData;
+		rqBody = {...rqBody};
+		emcData = {...emcData};
+		delete rqBody.emcSessionId;
+		delete rqBody.globalAuthPassword;
+
+		if (rqBody.isForeignProjectEmcId) {
+			emcData = await normalizeForeignProjectEmcData(emcData).catch(exc => emcData);
+		}
+		for (const role of rqBody.disabledRoles || []) {
+			// for debug
+			const i = emcData.data.user.roles.indexOf(role);
+			if (i > -1) {
+				emcData.data.user.roles.splice(i, 1);
+			}
+		}
+		rqBody = normalizeRqBody(rqBody, emcData);
+		return Promise.resolve()
+			.then(() => userAction(rqBody, emcData.data, routeParams));
 	})(req, res);
 };
 

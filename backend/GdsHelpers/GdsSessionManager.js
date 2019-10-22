@@ -13,6 +13,12 @@ const Rej = require('klesun-node-tools/src/Rej.js');
  */
 
 const startNewSession = async (rqBody, emcUser) => {
+	const allowedPccRecs = emcUser.allowedPccRecs || [];
+	if (allowedPccRecs.length > 0) {
+		if (!allowedPccRecs.some(pccRec => pccRec.gds === rqBody.gds)) {
+			return Rej.Forbidden('GDS ' + rqBody.gds + ' is forbidden for your account');
+		}
+	}
 	const starting = GdsSession.startByGds(rqBody.gds);
 	return starting.then(({gdsData, logId}) =>
 		GdsSessions.storeNew({context: rqBody, gdsData, emcUser, logId}));

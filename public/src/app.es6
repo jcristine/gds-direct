@@ -44,6 +44,7 @@ const whenVisible = (htmlRootDom, action) =>
 		checkVisible();
 	});
 
+/** @param {string|null} emcSessionId */
 const onEmcSessionId = (emcSessionId, params) => {
 	// probably better would be to pass it through all these abstractions
 	// to the session.es6 instead of making a global variable...
@@ -53,6 +54,9 @@ const onEmcSessionId = (emcSessionId, params) => {
 	window.GdsDirectPlusParams.travelRequestId = leadId;
 	window.GdsDirectPlusParams.cmsUrl = params.cmsUrl;
 	window.GdsDirectPlusParams.socketHost = params.socketHost || window.GdsDirectPlusParams.socketHost;
+	window.GdsDirectPlusParams.globalAuthLogin = params.globalAuthLogin || undefined;
+	window.GdsDirectPlusParams.globalAuthPassword = params.globalAuthPassword || undefined;
+	window.GdsDirectPlusParams.hideSpecialButtons = params.hideSpecialButtons || false;
 	params.htmlRootDom.innerHTML = '<h2 class="pls-wait-placeholder" style="background-color: black; color: white">Please wait, loading user data...</h2>';
 
 	let loadView = requests.get('/gdsDirect/view');
