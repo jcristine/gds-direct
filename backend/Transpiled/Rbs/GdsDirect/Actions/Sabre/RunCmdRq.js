@@ -56,7 +56,7 @@ const doesOpenPnr = ($cmd) => {
 	let $parsedCmd;
 
 	$parsedCmd = CommandParser.parse($cmd);
-	return php.in_array($parsedCmd['type'], ['openPnr', 'searchPnr', 'displayPnrFromList']);
+	return php.in_array($parsedCmd.type, ['openPnr', 'searchPnr', 'displayPnrFromList']);
 };
 
 /** @param $ranges = [['from' => 3, 'to' => 7], ['from' => 15]] */
@@ -65,11 +65,11 @@ const isInRanges = ($num, $ranges) => {
 
 	for ($range of Object.values($ranges)) {
 		if (php.array_key_exists('to', $range)) {
-			if ($num >= $range['from'] && $num <= $range['to']) {
+			if ($num >= $range.from && $num <= $range.to) {
 				return true;
 			}
 		} else {
-			if ($num >= $range['from']) {
+			if ($num >= $range.from) {
 				return true;
 			}
 		}
@@ -87,8 +87,8 @@ const getPerformedCommands = async ($cmdLog) => {
 	const result = [];
 	$commands = await $cmdLog.getCurrentPnrCommands();
 	for ($cmdRecord of Object.values($commands)) {
-		$parsed = CommandParser.parse($cmdRecord['cmd']);
-		$flatCmds = php.array_merge([$parsed], $parsed['followingCommands']);
+		$parsed = CommandParser.parse($cmdRecord.cmd);
+		$flatCmds = php.array_merge([$parsed], $parsed.followingCommands);
 		for (const flatCmd of Object.values($flatCmds)) {
 			result.push(flatCmd);
 		}
@@ -115,7 +115,7 @@ const isSuccessfulFsCommand = ($cmd, $dump) => {
 		'* ENTER JR0 WITH OPTION NUMBER *.',
 	];
 
-	$type = (CommandParser.parse($cmd) || {})['type'] || '';
+	$type = (CommandParser.parse($cmd) || {}).type || '';
 	$isFsCmd = php.in_array($type, CommonDataHelper.getCountedFsCommands());
 	$isFsSuccessful = $keywords.some(($keyword) => StringUtil.contains($dump, $keyword));
 
@@ -126,7 +126,7 @@ const extendPricingCmd = ($mainCmd, $newPart) => {
 	let $mainParsed, $isFullCmd, $newParsed, $mainMods, $newMods, $rawMods;
 
 	$mainParsed = CommandParser.parse($mainCmd);
-	if ($mainParsed['type'] !== 'priceItinerary' || !$mainParsed['data']) {
+	if ($mainParsed.type !== 'priceItinerary' || !$mainParsed.data) {
 		return null;
 	}
 	if (php.preg_match(/^\d/, $newPart)) {
@@ -134,23 +134,23 @@ const extendPricingCmd = ($mainCmd, $newPart) => {
 	}
 	if (!StringUtil.startsWith($newPart, 'WP')) {
 		$isFullCmd = false;
-		$newPart = $mainParsed['data']['baseCmd'] + $newPart;
+		$newPart = $mainParsed.data.baseCmd + $newPart;
 	} else {
 		$isFullCmd = true;
 	}
 	$newParsed = CommandParser.parse($newPart);
-	if ($newParsed['type'] !== 'priceItinerary' || !$newParsed['data']) {
+	if ($newParsed.type !== 'priceItinerary' || !$newParsed.data) {
 		return null;
 	}
-	$mainMods = php.array_combine(php.array_column($mainParsed['data']['pricingModifiers'], 'type'),
-		$mainParsed['data']['pricingModifiers']);
-	$newMods = php.array_combine(php.array_column($newParsed['data']['pricingModifiers'], 'type'),
-		$newParsed['data']['pricingModifiers']);
+	$mainMods = php.array_combine(php.array_column($mainParsed.data.pricingModifiers, 'type'),
+		$mainParsed.data.pricingModifiers);
+	$newMods = php.array_combine(php.array_column($newParsed.data.pricingModifiers, 'type'),
+		$newParsed.data.pricingModifiers);
 	if (!$isFullCmd) {
 		$newMods = php.array_merge($mainMods, $newMods);
 	}
 	$rawMods = php.array_column($newMods, 'raw');
-	return $newParsed['data']['baseCmd'] + php.implode('¥', $rawMods);
+	return $newParsed.data.baseCmd + php.implode('¥', $rawMods);
 };
 
 const parseMultiPriceItineraryAlias = ($cmd) => {
@@ -177,9 +177,9 @@ const parseMultiPriceItineraryAlias = ($cmd) => {
  */
 const forgePccChangeOutput = ($calledCommands, $area) => {
 	return Fp.map(($calledCommand) => {
-		if (CommandParser.parse($calledCommand['cmd'])['type'] == 'changePcc' && !php.empty($area)) {
-			$calledCommand['output'] = php.preg_replace('#(?<=^[A-Z\\d]{4}\\.L3II\\*AWS\\.)[A-Z]#', $area, $calledCommand['output']);
-			$calledCommand['output'] = php.preg_replace('#(?<=^[A-Z\\d]{3}\\.L3II\\*AWS\\.)[A-Z]#', $area, $calledCommand['output']);
+		if (CommandParser.parse($calledCommand.cmd).type == 'changePcc' && !php.empty($area)) {
+			$calledCommand.output = php.preg_replace('#(?<=^[A-Z\\d]{4}\\.L3II\\*AWS\\.)[A-Z]#', $area, $calledCommand.output);
+			$calledCommand.output = php.preg_replace('#(?<=^[A-Z\\d]{3}\\.L3II\\*AWS\\.)[A-Z]#', $area, $calledCommand.output);
 		}
 		return $calledCommand;
 	}, $calledCommands);
@@ -202,14 +202,14 @@ const execute = ({
 		let $sessionData, $number, $flatCmd;
 
 		$sessionData = $cmdLog.getSessionData();
-		if ($sessionData['isPnrStored']) {
+		if ($sessionData.isPnrStored) {
 			return null;
 		}
-		if (!($number = await getDkNumber($sessionData['pcc']))) {
+		if (!($number = await getDkNumber($sessionData.pcc))) {
 			return null;
 		}
 		for ($flatCmd of Object.values(getPerformedCommands($cmdLog))) {
-			if ($flatCmd['type'] === 'addDkNumber' && $flatCmd['data'] == $number) {
+			if ($flatCmd.type === 'addDkNumber' && $flatCmd.data == $number) {
 				// already added DK number
 				return null;
 			}
@@ -288,7 +288,7 @@ const execute = ({
 		let $userMessages, $type, $agent, $left, $wpniLeftMsg;
 
 		$userMessages = [];
-		$type = CommandParser.parse($cmd)['type'];
+		$type = CommandParser.parse($cmd).type;
 		if (php.in_array($type, CommonDataHelper.getCountedFsCommands())) {
 			$agent = getAgent();
 			$left = $agent.getFsLimit() - await $agent.getFsCallsUsed();
@@ -301,14 +301,14 @@ const execute = ({
 	const modifyOutput =  ($calledCommand) => {
 		let $cmdParsed, $type, $lines, $split, $blocks, $isNotAlex, $pad, $pcc;
 
-		$cmdParsed = CommandParser.parse($calledCommand['cmd']);
-		$type = $cmdParsed['type'];
+		$cmdParsed = CommandParser.parse($calledCommand.cmd);
+		$type = $cmdParsed.type;
 		if (php.in_array($type, ['searchPnr', 'displayPnrFromList']) &&
-		!SabrePnr.makeFromDump($calledCommand['output']).getRecordLocator() &&
+		!SabrePnr.makeFromDump($calledCommand.output).getRecordLocator() &&
 		!stateful.getAgent().canOpenPrivatePnr()
 		) {
 		// '  3   WEINSTEIN/EL X     -17JUL   4   WEINSTEIN/AL  05MAY-20NOV'
-			$lines = StringUtil.lines($calledCommand['output']);
+			$lines = StringUtil.lines($calledCommand.output);
 			$split = ($line) => php.str_split($line, 32);
 			$blocks = Fp.flatten(Fp.map($split, $lines));
 
@@ -319,12 +319,12 @@ const execute = ({
 			$blocks = Fp.map($pad, $blocks);
 
 			$lines = Fp.map('implode', php.array_chunk($blocks, 2));
-			$calledCommand['output'] = php.implode(php.PHP_EOL, $lines);
+			$calledCommand.output = php.implode(php.PHP_EOL, $lines);
 		}
-		if ($cmdParsed['type'] === 'changePcc' && $cmdParsed['data']) {
-			$pcc = $cmdParsed['data'];
-			if (CmsSabreTerminal.isSuccessChangePccOutput($calledCommand['output'], $pcc)) {
-				$calledCommand['output'] = 'YOU HAVE SUCCESSFULLY EMULATED TO ' + $pcc;
+		if ($cmdParsed.type === 'changePcc' && $cmdParsed.data) {
+			$pcc = $cmdParsed.data;
+			if (CmsSabreTerminal.isSuccessChangePccOutput($calledCommand.output, $pcc)) {
+				$calledCommand.output = 'YOU HAVE SUCCESSFULLY EMULATED TO ' + $pcc;
 			}
 		}
 		return $calledCommand;
@@ -339,16 +339,16 @@ const execute = ({
 
 		$tOutput = await runCommand('*T');
 		$tParsed = SabreTicketListParser.parse($tOutput);
-		if (!php.empty($tParsed['error'])) {
+		if (!php.empty($tParsed.error)) {
 			return false;
 		}
-		for ($ticketRecord of Object.values($tParsed['tickets'])) {
-			if ($ticketRecord['transactionIndicator'] !== 'TV') {
-				$wetrOutput = await runCommand('WETR*' + $ticketRecord['lineNumber']);
+		for ($ticketRecord of Object.values($tParsed.tickets)) {
+			if ($ticketRecord.transactionIndicator !== 'TV') {
+				$wetrOutput = await runCommand('WETR*' + $ticketRecord.lineNumber);
 				$wetrParsed = SabreTicketParser.parse($wetrOutput);
-				$isVoid = ($seg) => $seg['couponStatus'] === 'VOID';
-				if (!php.empty($wetrParsed['error']) ||
-				!Fp.all($isVoid, $wetrParsed['segments'])
+				$isVoid = ($seg) => $seg.couponStatus === 'VOID';
+				if (!php.empty($wetrParsed.error) ||
+				!Fp.all($isVoid, $wetrParsed.segments)
 				) {
 					return false;
 				}
@@ -357,15 +357,15 @@ const execute = ({
 		return true;
 	};
 
-	/** @param $data = CommandParser::parseChangePnrRemarks()['data'] */
+	/** @param $data = CommandParser::parseChangePnrRemarks().data */
 	const checkChangeRemarks = async  ($data) => {
 		let $errors, $remark, $lineNum;
 
 		$errors = [];
 		for ($remark of Object.values((await getCurrentPnr()).getRemarks())) {
-			if ($remark['remarkType'] !== GenericRemarkParser.CMS_LEAD_REMARK) continue;
-			$lineNum = $remark['lineNumber'];
-			if (isInRanges($lineNum, $data['ranges'])) {
+			if ($remark.remarkType !== GenericRemarkParser.CMS_LEAD_REMARK) continue;
+			$lineNum = $remark.lineNumber;
+			if (isInRanges($lineNum, $data.ranges)) {
 				$errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {lineNum: $lineNum}));
 			}
 		}
@@ -407,7 +407,7 @@ const execute = ({
 			errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: cmd, type: type}));
 		}
 		if (php.in_array('deletePnrField', php.array_column(flatCmds, 'type'))) {
-			if (getSessionData()['isPnrStored'] &&
+			if (getSessionData().isPnrStored &&
 			!agent.canEditTicketedPnr()
 			) {
 				const pnr = await getCurrentPnr();
@@ -420,7 +420,7 @@ const execute = ({
 			}
 		}
 		if (type === 'changePcc') {
-			errors = php.array_merge(errors, checkEmulatedPcc(parsedCmd['data']));
+			errors = php.array_merge(errors, checkEmulatedPcc(parsedCmd.data));
 		}
 		if (doesStorePnr(cmd)) {
 			const state = stateful.getSessionData();
@@ -432,8 +432,8 @@ const execute = ({
 			await CommonDataHelper.checkStorePricingPcc({stateful, Pccs});
 		}
 		for (const flatCmd of Object.values(flatCmds)) {
-			if (flatCmd['type'] === 'changePnrRemarks') {
-				errors = php.array_merge(errors, await checkChangeRemarks(flatCmd['data']));
+			if (flatCmd.type === 'changePnrRemarks') {
+				errors = php.array_merge(errors, await checkChangeRemarks(flatCmd.data));
 			}
 		}
 		return errors;
@@ -446,10 +446,10 @@ const execute = ({
 	const getEmptyAreasFromDbState =  () => {
 		let $isOccupied, $occupiedRows, $occupiedAreas;
 
-		$isOccupied = ($row) => $row['hasPnr'];
+		$isOccupied = ($row) => $row.hasPnr;
 		$occupiedRows = Fp.filter($isOccupied, stateful.getAreaRows());
 		$occupiedAreas = php.array_column($occupiedRows, 'area');
-		$occupiedAreas.push(getSessionData()['area']);
+		$occupiedAreas.push(getSessionData().area);
 		return php.array_values(php.array_diff(['A', 'B', 'C', 'D', 'E', 'F'], $occupiedAreas));
 	};
 
@@ -509,22 +509,22 @@ const execute = ({
 		if (php.empty($emptyAreas = getEmptyAreas())) {
 			return {errors: [Errors.getMessage(Errors.NO_FREE_AREAS)]};
 		}
-		if (!getSessionData()['isPnrStored'] && !$keepOriginal) {
+		if (!getSessionData().isPnrStored && !$keepOriginal) {
 			await runCommand('I'); // ignore the itinerary it initial area
 		}
 		$area = $emptyAreas[0];
 		$areaChange = await changeArea($area);
-		if (!php.empty($errors = $areaChange['errors'] || [])) {
+		if (!php.empty($errors = $areaChange.errors || [])) {
 			return {errors: $errors};
-		} else if (getSessionData()['area'] !== $area) {
+		} else if (getSessionData().area !== $area) {
 			$error = Errors.getMessage(Errors.FAILED_TO_CHANGE_AREA, {
 				area: $area,
-				response: php.trim((php.array_pop($areaChange['calledCommands']) || {})['output'] || 'no commands called'),
+				response: php.trim((php.array_pop($areaChange.calledCommands) || {}).output || 'no commands called'),
 			});
 			return {errors: [$error]};
 		}
 		$output = php.trim(await runCommand('AAA' + $pcc));
-		if (getSessionData()['pcc'] !== $pcc) {
+		if (getSessionData().pcc !== $pcc) {
 			$error = $output === '¥NOT ALLOWED THIS CITY¥'
 				? Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_GDS, {pcc: $pcc, gds: 'sabre'})
 				: Errors.getMessage(Errors.PCC_GDS_ERROR, {pcc: $pcc, response: php.trim($output)});
@@ -663,11 +663,11 @@ const execute = ({
 
 		stateful.flushCalledCommands();
 		$gkSegments = (await getCurrentPnr()).getItinerary()
-			.filter(($seg) => $seg['segmentStatus'] === 'GK');
+			.filter(($seg) => $seg.segmentStatus === 'GK');
 		if (!$gkSegments) {
 			return {errors: ['No GK segments']};
 		}
-		$cmd = 'WC' + $gkSegments.map(($seg) => $seg['segmentNumber'] + $seg['bookingClass']).join('/');
+		$cmd = 'WC' + $gkSegments.map(($seg) => $seg.segmentNumber + $seg.bookingClass).join('/');
 		$output = await runCommand($cmd);
 		return {calledCommands: [{cmd: $cmd, output: $output}]};
 	};
@@ -682,8 +682,8 @@ const execute = ({
 
 		$allFlatCmds = [];
 		for ($cmdRecord of Object.values($cmdRecs)) {
-			$parsedCmd = CommandParser.parse($cmdRecord['cmd']);
-			$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands']);
+			$parsedCmd = CommandParser.parse($cmdRecord.cmd);
+			$flatCmds = php.array_merge([$parsedCmd], $parsedCmd.followingCommands);
 			$allFlatCmds = php.array_merge($allFlatCmds, $flatCmds);
 		}
 		return $allFlatCmds;
@@ -718,7 +718,7 @@ const execute = ({
 		const flatCmds = flattenCmds(usedCmds);
 		const usedCmdTypes = php.array_column(flatCmds, 'type');
 		const performedCmds = php.array_column(flatCmds, 'cmd');
-		const pcc = getSessionData()['pcc'];
+		const pcc = getSessionData().pcc;
 		if (pcc == '9WE0' && !php.in_array('5.ITN', performedCmds)) {
 			php.array_unshift(writeCommands, '5.ITN');
 		}
@@ -742,7 +742,7 @@ const execute = ({
 			output = await runCommand(cmd);
 		}
 		const parsedStoredPnr = PnrParser.parse(output);
-		const rloc = ((parsedStoredPnr['parsedData'] || {})['pnrInfo'] || {})['recordLocator'];
+		const rloc = ((parsedStoredPnr.parsedData || {}).pnrInfo || {}).recordLocator;
 		if (rloc) {
 			handlePnrSave(rloc);
 		}
@@ -794,7 +794,7 @@ const execute = ({
 	};
 
 	const makeStorePricingCmd = async  (pnr, aliasData, needsPl) => {
-		let adultPtc = aliasData['ptc'] || 'ADT';
+		let adultPtc = aliasData.ptc || 'ADT';
 		if (needsPl && adultPtc === 'ITX') {
 			adultPtc = 'ADT';
 		}
@@ -803,7 +803,7 @@ const execute = ({
 		if (!php.empty(errors)) {
 			return Rej.BadRequest('Invalid PNR - ' + errors.join('; '));
 		}
-		const tripEndDate = ((ArrayUtil.getLast(pnr.getItinerary()) || {})['departureDate'] || {})['parsed'];
+		const tripEndDate = ((ArrayUtil.getLast(pnr.getItinerary()) || {}).departureDate || {}).parsed;
 		const tripEndDt = tripEndDate ? DateTime.addYear(tripEndDate, stateful.getStartDt()) : null;
 
 		const paxCmdParts = [];
@@ -897,24 +897,24 @@ const execute = ({
 		let $cmd, $output, $recordLocator, $parsed, $isAlex;
 
 		$calledCommands.push(modifyOutput($cmdRecord));
-		if (doesStorePnr($cmdRecord['cmd'])) {
-			if (php.trim($cmdRecord['output']) === 'NEED ADDRESS - USE W-') {
+		if (doesStorePnr($cmdRecord.cmd)) {
+			if (php.trim($cmdRecord.output) === 'NEED ADDRESS - USE W-') {
 			// add address and call E/ER again
-				$cmd = php.implode('\u00A7', ['W- 100 PINE STREET', '5\/ITN', $cmdRecord['cmd']]);
+				$cmd = php.implode('\u00A7', ['W- 100 PINE STREET', '5\/ITN', $cmdRecord.cmd]);
 				$output = await runCommand($cmd);
 				$calledCommands.push({cmd: $cmd, output: $output});
 			}
-			$recordLocator = (TSabreSavePnr.parseSavePnrOutput($cmdRecord['output']) || {})['recordLocator'] || (((PnrParser.parse($cmdRecord['output']) || {})['parsedData'] || {})['pnrInfo'] || {})['recordLocator'];
+			$recordLocator = (TSabreSavePnr.parseSavePnrOutput($cmdRecord.output) || {}).recordLocator || (((PnrParser.parse($cmdRecord.output) || {}).parsedData || {}).pnrInfo || {}).recordLocator;
 			if ($recordLocator) {
 				handlePnrSave($recordLocator);
 			}
-		} else if (doesOpenPnr($cmdRecord['cmd'])) {
-			$parsed = PnrParser.parse($cmdRecord['output']);
+		} else if (doesOpenPnr($cmdRecord.cmd)) {
+			$parsed = PnrParser.parse($cmdRecord.output);
 			$isAlex = ($pax) => {
-				return $pax['lastName'] === 'WEINSTEIN'
-				&& $pax['firstName'] === 'ALEX';
+				return $pax.lastName === 'WEINSTEIN'
+				&& $pax.firstName === 'ALEX';
 			};
-			if (Fp.any($isAlex, ((($parsed['parsedData'] || {})['passengers'] || {})['parsedData'] || {})['passengerList'] || []) &&
+			if (Fp.any($isAlex, ((($parsed.parsedData || {}).passengers || {}).parsedData || {}).passengerList || []) &&
 			!stateful.getAgent().canOpenPrivatePnr()
 			) {
 				await runCommand('I');
@@ -941,7 +941,7 @@ const execute = ({
 		let $calledCommands, $cmd, $output;
 
 		$calledCommands = [];
-		for ($cmd of Object.values($aliasData['pricingCommands'])) {
+		for ($cmd of Object.values($aliasData.pricingCommands)) {
 			$output = await runCommand($cmd);
 			$calledCommands.push({cmd: $cmd, output: $output});
 		}
@@ -972,7 +972,7 @@ const execute = ({
 			return processSavePnr();
 		} else if (php.preg_match(/^SORT$/, cmd, matches = [])) {
 			return processSortItinerary();
-		} else if (parsed['type'] === 'changePcc') {
+		} else if (parsed.type === 'changePcc') {
 			const result = await processRealCommand(cmd);
 			if (php.array_key_exists('errors', result)) {
 				return result;
@@ -980,8 +980,8 @@ const execute = ({
 				result.calledCommands = forgePccChangeOutput(result.calledCommands, getSessionData().area);
 				return result;
 			}
-		} else if (parsed['type'] === 'changeArea') {
-			return changeArea(parsed['data']);
+		} else if (parsed.type === 'changeArea') {
+			return changeArea(parsed.data);
 		} else if (reData = AliasParser.parseRe(cmd)) {
 			return processCloneItinerary(reData);
 		} else if (aliasData = await AliasParser.parseStore(cmd, PtcUtil)) {
@@ -997,7 +997,7 @@ const execute = ({
 		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr(cmd, stateful))) {
 			return bookPnr(reservation, true);
 		} else if (result = RepriceInAnotherPccAction.parseAlias(cmd)) {
-			return priceInAnotherPcc(result['cmd'], result['target'], result['dialect']);
+			return priceInAnotherPcc(result.cmd, result.target, result.dialect);
 		} else if (matches = cmd.match(/^(WP.*)\/MIX$/)) {
 			return repriceInPccMix(matches[1]);
 		} else {

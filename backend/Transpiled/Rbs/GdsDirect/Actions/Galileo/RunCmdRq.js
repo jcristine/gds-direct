@@ -38,7 +38,7 @@ const doesStorePnr = ($cmd) => {
 	let $parsedCmd, $flatCmds, $cmdTypes;
 
 	$parsedCmd = CommandParser.parse($cmd);
-	$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
+	$flatCmds = php.array_merge([$parsedCmd], $parsedCmd.followingCommands || []);
 	$cmdTypes = php.array_column($flatCmds, 'type');
 	return !php.empty(php.array_intersect($cmdTypes, ['storePnr', 'storeKeepPnr']));
 };
@@ -47,7 +47,7 @@ const doesOpenPnr = ($cmd) => {
 	let $parsedCmd;
 
 	$parsedCmd = CommandParser.parse($cmd);
-	return php.in_array($parsedCmd['type'], ['openPnr', 'searchPnr', 'displayPnrFromList']);
+	return php.in_array($parsedCmd.type, ['openPnr', 'searchPnr', 'displayPnrFromList']);
 };
 
 const isSuccessfulFsCommand = ($cmd, $dump) => {
@@ -58,7 +58,7 @@ const isSuccessfulFsCommand = ($cmd, $dump) => {
 		'PRICING OPTION',
 	];
 
-	$type = (CommandParser.parse($cmd) || {})['type'] || '';
+	$type = (CommandParser.parse($cmd) || {}).type || '';
 	$isFsCmd = php.in_array($type, CommonDataHelper.getCountedFsCommands());
 	$isFsSuccessful = Fp.any(($keyword) => {
 		return StringUtil.contains($dump, $keyword);
@@ -73,11 +73,11 @@ const isInRanges = ($num, $ranges) => {
 
 	for ($range of Object.values($ranges)) {
 		if (php.array_key_exists('to', $range)) {
-			if ($num >= $range['from'] && $num <= $range['to']) {
+			if ($num >= $range.from && $num <= $range.to) {
 				return true;
 			}
 		} else {
-			if ($num >= $range['from']) {
+			if ($num >= $range.from) {
 				return true;
 			}
 		}
@@ -89,7 +89,7 @@ const extendPricingCmd = ($mainCmd, $newPart) => {
 	let $mainParsed, $isFullCmd, $newParsed, $mainMods, $newMods, $rawMods;
 
 	$mainParsed = CommandParser.parse($mainCmd);
-	if ($mainParsed['type'] !== 'priceItinerary' || !$mainParsed['data']) {
+	if ($mainParsed.type !== 'priceItinerary' || !$mainParsed.data) {
 		return null;
 	}
 	if (php.preg_match(/^\d/, $newPart)) {
@@ -97,29 +97,29 @@ const extendPricingCmd = ($mainCmd, $newPart) => {
 	}
 	if (!StringUtil.startsWith($newPart, 'FQ')) {
 		$isFullCmd = false;
-		$newPart = $mainParsed['data']['baseCmd'] + '/' + $newPart;
+		$newPart = $mainParsed.data.baseCmd + '/' + $newPart;
 	} else {
 		$isFullCmd = true;
 	}
 	$newParsed = CommandParser.parse($newPart);
-	if ($newParsed['type'] !== 'priceItinerary' || !$newParsed['data']) {
+	if ($newParsed.type !== 'priceItinerary' || !$newParsed.data) {
 		return null;
 	}
-	$mainMods = php.array_combine(php.array_column($mainParsed['data']['pricingModifiers'], 'type'),
-		$mainParsed['data']['pricingModifiers']);
-	$newMods = php.array_combine(php.array_column($newParsed['data']['pricingModifiers'], 'type'),
-		$newParsed['data']['pricingModifiers']);
+	$mainMods = php.array_combine(php.array_column($mainParsed.data.pricingModifiers, 'type'),
+		$mainParsed.data.pricingModifiers);
+	$newMods = php.array_combine(php.array_column($newParsed.data.pricingModifiers, 'type'),
+		$newParsed.data.pricingModifiers);
 	if (!$isFullCmd) {
 		$newMods = php.array_merge($mainMods, $newMods);
 	}
 	$rawMods = php.array_column($newMods, 'raw');
-	return [$newParsed['data']['baseCmd']].concat($rawMods).join('/');
+	return [$newParsed.data.baseCmd].concat($rawMods).join('/');
 };
 
 const translateApolloPricingModifier = ($mod) => {
 
-	if ($mod['type'] === 'validatingCarrier') {
-		return 'C' + $mod['parsed'];
+	if ($mod.type === 'validatingCarrier') {
+		return 'C' + $mod.parsed;
 	} else {
 		return null;
 	}
@@ -149,15 +149,15 @@ const RunCmdRq = ({
 }) => {
 	const travelport = gdsClients.travelport;
 
-	/** @param $data = Galileo\CommandParser::parseChangePnrRemarks()['data'] */
+	/** @param $data = Galileo\CommandParser::parseChangePnrRemarks().data */
 	const checkChangeRemarks = async ($data) => {
 		let $errors, $remark, $lineNum;
 
 		$errors = [];
 		for ($remark of Object.values((await getCurrentPnr()).getRemarks())) {
-			if ($remark['remarkType'] !== GenericRemarkParser.CMS_LEAD_REMARK) continue;
-			$lineNum = $remark['lineNumber'];
-			if (isInRanges($lineNum, $data['ranges'])) {
+			if ($remark.remarkType !== GenericRemarkParser.CMS_LEAD_REMARK) continue;
+			$lineNum = $remark.lineNumber;
+			if (isInRanges($lineNum, $data.ranges)) {
 				$errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {lineNum: $lineNum}));
 			}
 		}
@@ -199,27 +199,27 @@ const RunCmdRq = ({
 			}
 		}
 		const {type, data} = parsed;
-		if (type === 'airAvailability' && data && data['isReturn']) {
+		if (type === 'airAvailability' && data && data.isReturn) {
 			// add mods from original availability request
 			let typeToMod = php.array_combine(
-				php.array_column(data['modifiers'] || [], 'type'),
-				php.array_column(data['modifiers'] || [], 'raw')
+				php.array_column(data.modifiers || [], 'type'),
+				php.array_column(data.modifiers || [], 'raw')
 			);
 			const cmdRows = await getRows();
 			for (const cmdRow of cmdRows) {
-				const oldParsed = CommandParser.parse(cmdRow['cmd']);
+				const oldParsed = CommandParser.parse(cmdRow.cmd);
 				const oldTypeToMod = php.array_combine(
-					php.array_column((oldParsed['data'] || {})['modifiers'] || [], 'type'),
-					php.array_column((oldParsed['data'] || {})['modifiers'] || [], 'raw')
+					php.array_column((oldParsed.data || {}).modifiers || [], 'type'),
+					php.array_column((oldParsed.data || {}).modifiers || [], 'raw')
 				);
 				typeToMod = php.array_merge(oldTypeToMod, typeToMod);
-				if ((oldParsed['data'] || {})['destinationAirport']) {
+				if ((oldParsed.data || {}).destinationAirport) {
 					// the start of current availability
 					break;
 				}
 			}
-			return 'AR' + (data['orderBy'] || '') + ((data['departureDate'] || {})['raw'] || '')
-				+ data['departureAirport'] + data['destinationAirport']
+			return 'AR' + (data.orderBy || '') + ((data.departureDate || {}).raw || '')
+				+ data.departureAirport + data.destinationAirport
 				+ php.implode('', typeToMod);
 		} else {
 			return null;
@@ -230,24 +230,24 @@ const RunCmdRq = ({
 	const preprocessPricingCmd =  ($data) => {
 		let $mods, $typeToData, $needsAccompanying, $typeToMods, $rawMods, $ptcs;
 
-		$mods = $data['pricingModifiers'] || [];
+		$mods = $data.pricingModifiers || [];
 		$typeToData = php.array_combine(php.array_column($mods, 'type'),
 			php.array_column($mods, 'parsed'));
-		$needsAccompanying = ($ptc) => php.in_array(PtcUtil.parsePtc($ptc)['ageGroup'], ['infant', 'child']);
-		$typeToMods = Fp.groupBy(($mod) => $mod['type'], $mods);
-		if (!php.empty($typeToMods['accountCode']) && $typeToMods['accountCode'][0]['raw'] === '-T') {
+		$needsAccompanying = ($ptc) => php.in_array(PtcUtil.parsePtc($ptc).ageGroup, ['infant', 'child']);
+		$typeToMods = Fp.groupBy(($mod) => $mod.type, $mods);
+		if (!php.empty($typeToMods.accountCode) && $typeToMods.accountCode[0].raw === '-T') {
 		// not real account code, just an alias
-			delete ($typeToMods['accountCode']);
+			delete ($typeToMods.accountCode);
 			$mods = Fp.flatten($typeToMods);
 			$rawMods = php.array_column($mods, 'raw');
-			$ptcs = php.array_column(($typeToData['passengers'] || {})['ptcGroups'] || [], 'ptc');
+			$ptcs = php.array_column(($typeToData.passengers || {}).ptcGroups || [], 'ptc');
 			if (!php.empty($ptcs) && Fp.all($needsAccompanying, php.array_filter($ptcs))) {
 				$rawMods.push('ACCITX'); // accompanied by ITX adult
 			}
 			$rawMods.push('-TPACK'); // tour code
 			$rawMods.push('TA0GF'); // ticketing agency PCC 0GF
 			$rawMods.push(':P'); // private fare
-			return $data['baseCmd'] + '/' + php.implode('/', $rawMods);
+			return $data.baseCmd + '/' + php.implode('/', $rawMods);
 		} else {
 			return null;
 		}
@@ -261,8 +261,8 @@ const RunCmdRq = ({
 			$cmd = 'MR';
 		} else if ($cmd.startsWith('A')) {
 			$cmd = await preprocessAvailCmd($parsed) || $cmd;
-		} else if ($parsed['type'] === 'priceItinerary') {
-			$cmd = await preprocessPricingCmd($parsed['data']) || $cmd;
+		} else if ($parsed.type === 'priceItinerary') {
+			$cmd = await preprocessPricingCmd($parsed.data) || $cmd;
 		}
 		return $cmd;
 	};
@@ -271,7 +271,7 @@ const RunCmdRq = ({
 		let $userMessages, $type, $agent, $left, $fsLeftMsg;
 
 		$userMessages = [];
-		$type = CommandParser.parse($cmd)['type'];
+		$type = CommandParser.parse($cmd).type;
 		if (php.in_array($type, CommonDataHelper.getCountedFsCommands())) {
 			$agent = stateful.getAgent();
 			$left = $agent.getFsLimit() - await $agent.getFsCallsUsed();
@@ -285,18 +285,18 @@ const RunCmdRq = ({
 		let $scrolledCmd, $cmdParsed, $type, $output, $lines, $modsLine, $split, $blocks, $isNotAlex, $pad, $filtered,
 			$pcc, $isOk;
 
-		$scrolledCmd = (await getScrolledCmd()) || $calledCommand['cmd'];
+		$scrolledCmd = (await getScrolledCmd()) || $calledCommand.cmd;
 		$cmdParsed = CommandParser.parse($scrolledCmd);
-		$type = $cmdParsed['type'];
+		$type = $cmdParsed.type;
 		if (php.in_array($type, ['searchPnr', 'displayPnrFromList']) &&
-		!GalileoPnr.makeFromDump($calledCommand['output']).getRecordLocator() &&
+		!GalileoPnr.makeFromDump($calledCommand.output).getRecordLocator() &&
 		!stateful.getAgent().canOpenPrivatePnr()
 		) {
 		// '   711M-S*                        ',
 		// '001 01SMITH/JOHN         20SEP  002 01SMITH/MARGARETH    20SEP',
 		// '003 01SMITH/MICHALE      20SEP  004 01SMITH/CALEB        23SEP',
 
-			$output = StringUtil.wrapLinesAt($calledCommand['output'], 64);
+			$output = StringUtil.wrapLinesAt($calledCommand.output, 64);
 			$lines = StringUtil.lines($output);
 			$modsLine = php.array_shift($lines);
 
@@ -311,13 +311,13 @@ const RunCmdRq = ({
 
 			$filtered = Fp.map('rtrim', Fp.map('implode', php.array_chunk($blocks, 2)));
 			php.array_unshift($filtered, $modsLine);
-			$calledCommand['output'] = php.implode(php.PHP_EOL, $filtered);
+			$calledCommand.output = php.implode(php.PHP_EOL, $filtered);
 		}
-		if ($type === 'changePcc' && $cmdParsed['data']) {
-			$pcc = $cmdParsed['data']['pcc'];
-			$isOk = UpdateGalileoSessionStateAction.wasPccChangedOk($calledCommand['output']);
+		if ($type === 'changePcc' && $cmdParsed.data) {
+			$pcc = $cmdParsed.data.pcc;
+			$isOk = UpdateGalileoSessionStateAction.wasPccChangedOk($calledCommand.output);
 			if ($isOk) {
-				$calledCommand['output'] = 'YOU HAVE SUCCESSFULLY EMULATED TO ' + $pcc;
+				$calledCommand.output = 'YOU HAVE SUCCESSFULLY EMULATED TO ' + $pcc;
 			}
 		}
 		return $calledCommand;
@@ -328,7 +328,7 @@ const RunCmdRq = ({
 
 		$cmdLog = stateful.getLog();
 		$sessionData = $cmdLog.getSessionData();
-		if (!$sessionData['isPnrStored']) {
+		if (!$sessionData.isPnrStored) {
 			$agent = stateful.getAgent();
 			const msg = await CommonDataHelper.createCredentialMessage(stateful);
 			$remarkCmd = 'NP.' + msg;
@@ -346,8 +346,8 @@ const RunCmdRq = ({
 
 		$allFlatCmds = [];
 		for ($cmdRecord of Object.values($cmdRecs)) {
-			$parsedCmd = CommandParser.parse($cmdRecord['cmd']);
-			$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands']);
+			$parsedCmd = CommandParser.parse($cmdRecord.cmd);
+			$flatCmds = php.array_merge([$parsedCmd], $parsedCmd.followingCommands);
 			$allFlatCmds = php.array_merge($allFlatCmds, $flatCmds);
 		}
 		return $allFlatCmds;
@@ -385,13 +385,13 @@ const RunCmdRq = ({
 			stateful.getStartDt());
 		$ticketInfo = await (new GalileoRetrieveTicketsAction())
 			.setSession(stateful).execute($reservation);
-		if (!php.empty($ticketInfo['error'])) {
+		if (!php.empty($ticketInfo.error)) {
 			return false;
 		}
-		for ($ticket of Object.values($ticketInfo['tickets'])) {
-			$isVoid = ($seg) => $seg['couponStatus'] === 'VOID';
-			if (!php.empty($ticket['error']) ||
-			!Fp.all($isVoid, $ticket['segments'])
+		for ($ticket of Object.values($ticketInfo.tickets)) {
+			$isVoid = ($seg) => $seg.couponStatus === 'VOID';
+			if (!php.empty($ticket.error) ||
+			!Fp.all($isVoid, $ticket.segments)
 			) {
 				return false;
 			}
@@ -400,7 +400,7 @@ const RunCmdRq = ({
 	};
 
 	const getStoredPnr = async () => {
-		if (getSessionData()['isPnrStored']) {
+		if (getSessionData().isPnrStored) {
 			return getCurrentPnr();
 		} else {
 			return null;
@@ -413,8 +413,8 @@ const RunCmdRq = ({
 
 		$errors = [];
 		$parsedCmd = CommandParser.parse($cmd);
-		$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
-		$type = $parsedCmd['type'];
+		$flatCmds = php.array_merge([$parsedCmd], $parsedCmd.followingCommands || []);
+		$type = $parsedCmd.type;
 		$agent = stateful.getAgent();
 		$isQueueCmd =
 		php.in_array($type, CommonDataHelper.getQueueCommands()) ||
@@ -454,15 +454,15 @@ const RunCmdRq = ({
 				}
 			}
 		}
-		$remarkOrderChanged = $flatCmds.some(($parsed) => StringUtil.startsWith($parsed['cmd'], 'NP./'));
+		$remarkOrderChanged = $flatCmds.some(($parsed) => StringUtil.startsWith($parsed.cmd, 'NP./'));
 		for ($flatCmd of Object.values($flatCmds)) {
-			if ($flatCmd['type'] === 'changePnrRemarks') {
+			if ($flatCmd.type === 'changePnrRemarks') {
 				if ($remarkOrderChanged) {
 				// it's hard to predict which exactly remark will be removed,
 				// so better forbid to make sure it is not GD- remark
-					$errors.push('Forbidden command, do not use >NP./...; and >' + $flatCmd['cmd'] + '; at the same time');
+					$errors.push('Forbidden command, do not use >NP./...; and >' + $flatCmd.cmd + '; at the same time');
 				} else {
-					$errors = php.array_merge($errors, await checkChangeRemarks($flatCmd['data']));
+					$errors = php.array_merge($errors, await checkChangeRemarks($flatCmd.data));
 				}
 			}
 		}
@@ -486,18 +486,18 @@ const RunCmdRq = ({
 		let $savedPnr, $rloc, $parsed, $isAlex;
 
 		$calledCommands.push(await modifyOutput($cmdRecord));
-		if (doesStorePnr($cmdRecord['cmd'])) {
-			$savedPnr = GalileoPnr.makeFromDump($cmdRecord['output']);
+		if (doesStorePnr($cmdRecord.cmd)) {
+			$savedPnr = GalileoPnr.makeFromDump($cmdRecord.output);
 			if ($rloc = $savedPnr.getRecordLocator()) {
 				stateful.handlePnrSave($rloc);
 			}
-		} else if (doesOpenPnr($cmdRecord['cmd'])) {
-			$parsed = PnrParser.parse($cmdRecord['output']);
+		} else if (doesOpenPnr($cmdRecord.cmd)) {
+			$parsed = PnrParser.parse($cmdRecord.output);
 			$isAlex = ($pax) => {
-				return $pax['lastName'] === 'WEINSTEIN'
-				&& $pax['firstName'] === 'ALEX';
+				return $pax.lastName === 'WEINSTEIN'
+				&& $pax.firstName === 'ALEX';
 			};
-			if (Fp.any($isAlex, ($parsed['passengers'] || {})['passengerList'] || []) &&
+			if (Fp.any($isAlex, ($parsed.passengers || {}).passengerList || []) &&
 			!stateful.getAgent().canOpenPrivatePnr()
 			) {
 				await runCommand('I', false);
@@ -553,14 +553,14 @@ const RunCmdRq = ({
 		let $result, $moved;
 
 		$result = await processRealCommand($cmdReal);
-		if (php.empty($result['errors'])) {
+		if (php.empty($result.errors)) {
 			$moved = await moveDownAll($limit);
-			if (php.empty($moved['errors'])) {
-				$result['calledCommands'] = $moved['calledCommands'];
+			if (php.empty($moved.errors)) {
+				$result.calledCommands = $moved.calledCommands;
 			}
-			$result['userMessages'] = php.array_merge($result['userMessages'] || [],
-				$moved['userMessages'] || []);
-			$result['errors'] = $moved['errors'] || [];
+			$result.userMessages = php.array_merge($result.userMessages || [],
+				$moved.userMessages || []);
+			$result.errors = $moved.errors || [];
 		}
 		return $result;
 	};
@@ -569,7 +569,7 @@ const RunCmdRq = ({
 		let $pcc, $pnr, $pnrDump, $errors, $flatCmds, $usedCmdTypes, $performedCmds, $login, $writeCommands, $remarkCmd,
 			$cmd, $output, $savedPnr, $rloc, $cmdRecord;
 
-		$pcc = getSessionData()['pcc'];
+		$pcc = getSessionData().pcc;
 		$pnr = await getCurrentPnr();
 		$pnrDump = $pnr.getDump();
 		if (!CommonDataHelper.isValidPnr($pnr)) {
@@ -676,10 +676,10 @@ const RunCmdRq = ({
 	const getEmptyAreas =  () => {
 		let $isOccupied, $occupiedRows, $occupiedAreas;
 
-		$isOccupied = ($row) => $row['hasPnr'];
+		$isOccupied = ($row) => $row.hasPnr;
 		$occupiedRows = Fp.filter($isOccupied, stateful.getAreaRows());
 		$occupiedAreas = php.array_column($occupiedRows, 'area');
-		$occupiedAreas.push(getSessionData()['area']);
+		$occupiedAreas.push(getSessionData().area);
 		return php.array_values(php.array_diff(['A', 'B', 'C', 'D', 'E'], $occupiedAreas));
 	};
 
@@ -687,9 +687,9 @@ const RunCmdRq = ({
 		let $pcc, $segmentStatus, $seatNumber, $itinerary, $emptyAreas, $area, $isSellStatus, $key, $segment, $result,
 			$calledCommands;
 
-		$pcc = $aliasData['pcc'];
-		$segmentStatus = $aliasData['segmentStatus'] || 'AK';
-		$seatNumber = $aliasData['seatCount'] || 0;
+		$pcc = $aliasData.pcc;
+		$segmentStatus = $aliasData.segmentStatus || 'AK';
+		$seatNumber = $aliasData.seatCount || 0;
 
 		if (php.empty($itinerary = (await getCurrentPnr()).getItinerary())) {
 			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
@@ -697,16 +697,16 @@ const RunCmdRq = ({
 		if (php.empty($emptyAreas = getEmptyAreas())) {
 			return {errors: [Errors.getMessage(Errors.NO_FREE_AREAS)]};
 		}
-		if (!getSessionData()['isPnrStored'] && !$aliasData['keepOriginal'] && $segmentStatus !== 'AK') {
+		if (!getSessionData().isPnrStored && !$aliasData.keepOriginal && $segmentStatus !== 'AK') {
 			await runCommand('I', false); // ignore the itinerary it initial area
 		}
 		$area = $emptyAreas[0];
 		$isSellStatus = php.in_array($segmentStatus, ['HS', 'SS']);
 		for ([$key, $segment] of Object.entries($itinerary)) {
 			if ($seatNumber >= 1 && $seatNumber <= 9) {
-				$itinerary[$key]['seatCount'] = $seatNumber;
+				$itinerary[$key].seatCount = $seatNumber;
 			}
-			$itinerary[$key]['segmentStatus'] = ({
+			$itinerary[$key].segmentStatus = ({
 			// you have to sell in NN to get HS status in Galileo
 				SS: 'NN',
 				HS: 'NN',
@@ -719,11 +719,11 @@ const RunCmdRq = ({
 		})).setSession(stateful)
 			.fallbackToAk($isSellStatus).execute($area, $pcc, $itinerary);
 		$calledCommands = stateful.flushCalledCommands();
-		if (php.empty($result['errors'])) {
+		if (php.empty($result.errors)) {
 		// if no error - show only the result
 			$calledCommands = php.array_slice($calledCommands, -1);
 		}
-		$result['calledCommands'] = $calledCommands;
+		$result.calledCommands = $calledCommands;
 		return $result;
 	};
 
@@ -791,11 +791,11 @@ const RunCmdRq = ({
 
 	const priceItinerary = async ($cmd, $cmdData) => {
 		const addedRealName = ($cmdRec) => {
-			return $cmdRec['type'] === 'addName'
-				&& !StringUtil.startsWith($cmdRec['cmd'], 'N.FAKE/');
+			return $cmdRec.type === 'addName'
+				&& !StringUtil.startsWith($cmdRec.cmd, 'N.FAKE/');
 		};
 		const flatUsedCmds = await getFlatUsedCmds();
-		const hasNamesInPnr = getSessionData()['isPnrStored']
+		const hasNamesInPnr = getSessionData().isPnrStored
 			|| Fp.any(addedRealName, flatUsedCmds);
 
 		const price = () => _fetchPricing($cmd);
@@ -951,7 +951,7 @@ const RunCmdRq = ({
 		let $calledCommands, $cmd, $output;
 
 		$calledCommands = [];
-		for ($cmd of Object.values($aliasData['pricingCommands'])) {
+		for ($cmd of Object.values($aliasData.pricingCommands)) {
 			$output = await runCommand($cmd, true);
 			$calledCommands.push({cmd: $cmd, output: $output});
 		}

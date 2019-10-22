@@ -100,7 +100,7 @@ const parseStringNumbersList = (numberString) => {
 const findLastCommandIn = (cmdTypes, calledCommands) => {
 	let mrs = [];
 	for (const cmdRecord of php.array_reverse(calledCommands)) {
-		php.array_unshift(mrs, cmdRecord['output']);
+		php.array_unshift(mrs, cmdRecord.output);
 		const logCmdType = CommandParser.parse(cmdRecord.cmd).type;
 		if (php.in_array(logCmdType, cmdTypes)) {
 			cmdRecord.output = TravelportUtils.joinFullOutput(mrs);
@@ -147,7 +147,7 @@ const RunCmdRq = ({
 		if (!$cmdRecord) {
 			return Promise.reject('No recent $D');
 		} else {
-			return TariffDisplayParser.parse($cmdRecord['output']);
+			return TariffDisplayParser.parse($cmdRecord.output);
 		}
 	};
 
@@ -179,7 +179,7 @@ const RunCmdRq = ({
 			}
 			const fares = parsed.result || [];
 			for (const fare of fares) {
-				if (fare['lineNumber'] == lineNumber) {
+				if (fare.lineNumber == lineNumber) {
 					requestedFare = fare;
 					return true;
 				}
@@ -199,7 +199,7 @@ const RunCmdRq = ({
 		const rawMods = [];
 		for (const mod of pricingModifiers) {
 			let matches;
-			if (php.preg_match(/^@(\d+)$/, mod['raw'], matches = [])) {
+			if (php.preg_match(/^@(\d+)$/, mod.raw, matches = [])) {
 				const fare = await findOnLastTariffDisplay(matches[1]);
 				if (fare) {
 					rawMods.push('@' + fare.fareBasis);
@@ -248,8 +248,8 @@ const RunCmdRq = ({
 			if (scrolledCmd && scrolledCmd.startsWith('A')) {
 				$cmd = 'A-';
 			}
-		} else if ($parsed['type'] === 'priceItinerary') {
-			$cmd = await preprocessPricingCommand($cmd, $parsed['data']) || $cmd;
+		} else if ($parsed.type === 'priceItinerary') {
+			$cmd = await preprocessPricingCommand($cmd, $parsed.data) || $cmd;
 		} else if (aliasData = AliasParser.parseSameMonthReturnAvail($cmd)) {
 			$cmd = await _preprocessSameMonthReturnAvailability(aliasData.days);
 		}
@@ -288,7 +288,7 @@ const RunCmdRq = ({
 
 	/** replace GK segments with $segments */
 	const rebookGkSegments = async (segments, reservation = null) => {
-		const marriageToSegs = Fp.groupMap(($seg) => $seg['marriage'], segments);
+		const marriageToSegs = Fp.groupMap(($seg) => $seg.marriage, segments);
 		const failedSegNums = [];
 		const errors = [];
 		for (const [, segs] of marriageToSegs) {
@@ -343,7 +343,7 @@ const RunCmdRq = ({
 		stateful.flushCalledCommands();
 		const isGkRebookPossible = (seg) => {
 			return fallbackToGk
-				&& seg['segmentStatus'] !== 'GK';
+				&& seg.segmentStatus !== 'GK';
 		};
 		const newItinerary = Fp.map((seg) => {
 			seg = {...seg};
@@ -378,7 +378,7 @@ const RunCmdRq = ({
 			stateful.flushCalledCommands();
 			const sortResult = await processSortItinerary()
 				.catch(coverExc(Rej.list, exc => ({errors: ['Did not SORT - ' + exc]})));
-			if (php.empty(sortResult['errors'])) {
+			if (php.empty(sortResult.errors)) {
 				const calledCommands = stateful.flushCalledCommands().slice(-1);
 				return {calledCommands, errors};
 			} else {
@@ -438,7 +438,7 @@ const RunCmdRq = ({
 		}
 		await runCommand('XI', false);
 		for ($i = 0; $i < php.count($itinerary); ++$i) {
-			$itinerary[$i]['seatCount'] = $seatNumber;
+			$itinerary[$i].seatCount = $seatNumber;
 		}
 		return bookItinerary($itinerary, true);
 	};
@@ -453,10 +453,10 @@ const RunCmdRq = ({
 		php.preg_match(/[\d\-\|]+/, $numberString, $matches = []);
 		$segmentNumbers = parseStringNumbersList($matches[0] || '');
 		for ($i = 0; $i < php.count($itinerary); ++$i) {
-			if (php.in_array($itinerary[$i]['segmentNumber'], $segmentNumbers)) {
-				$itinerary[$i]['seatCount'] = $seatNumber;
+			if (php.in_array($itinerary[$i].segmentNumber, $segmentNumbers)) {
+				$itinerary[$i].seatCount = $seatNumber;
 				if (!php.empty($segmentStatus)) {
-					$itinerary[$i]['segmentStatus'] = $segmentStatus;
+					$itinerary[$i].segmentStatus = $segmentStatus;
 				}
 				$selectedItinerary.push($itinerary[$i]);
 			}
@@ -498,7 +498,7 @@ const RunCmdRq = ({
 
 	const emulatePcc = async ($pcc, $recoveryPcc) => {
 		let $cmd, $result, $answer, $recoveryResult;
-		$recoveryPcc = $recoveryPcc || getSessionData()['pcc'];
+		$recoveryPcc = $recoveryPcc || getSessionData().pcc;
 		$cmd = 'SEM/' + $pcc + '/AG';
 		$result = await processRealCommand($cmd, false);
 		if (!php.empty($recoveryPcc)) {
@@ -515,10 +515,10 @@ const RunCmdRq = ({
 
 	const rebookAsSs = async ($data) => {
 		let $allowCutting, $gkSegments, $xCmd, $newSegs;
-		$allowCutting = $data['allowCutting'] || false;
+		$allowCutting = $data.allowCutting || false;
 		stateful.flushCalledCommands();
 		const pnr = await getCurrentPnr();
-		$gkSegments = pnr.getItinerary().filter(($seg) => $seg['segmentStatus'] === 'GK');
+		$gkSegments = pnr.getItinerary().filter(($seg) => $seg.segmentStatus === 'GK');
 		if (php.empty($gkSegments)) {
 			return {errors: ['No GK segments']};
 		}
@@ -545,19 +545,19 @@ const RunCmdRq = ({
 
 	const getEmptyAreasFromDbState = () => {
 		let $isOccupied, $occupiedRows, $occupiedAreas;
-		$isOccupied = ($row) => $row['hasPnr'];
+		$isOccupied = ($row) => $row.hasPnr;
 		$occupiedRows = Fp.filter($isOccupied, stateful.getAreaRows());
 		$occupiedAreas = php.array_column($occupiedRows, 'area');
-		$occupiedAreas.push(getSessionData()['area']);
+		$occupiedAreas.push(getSessionData().area);
 		return php.array_values(php.array_diff(['A', 'B', 'C', 'D', 'E'], $occupiedAreas));
 	};
 
 	const processCloneItinerary = async ($aliasData) => {
 		let $pcc, $segmentStatus, $seatNumber, $errors, $itinerary, $emptyAreas, $recoveryPcc, $area, $output, $error,
 			$key, $segment, $fallbackToGk;
-		$pcc = $aliasData['pcc'];
-		$segmentStatus = $aliasData['segmentStatus'] || 'GK';
-		$seatNumber = $aliasData['seatCount'] || 0;
+		$pcc = $aliasData.pcc;
+		$segmentStatus = $aliasData.segmentStatus || 'GK';
+		$seatNumber = $aliasData.seatCount || 0;
 		if (!php.empty($errors = checkEmulatedPcc($pcc))) {
 			return {errors: $errors};
 		}
@@ -567,20 +567,20 @@ const RunCmdRq = ({
 		if (php.empty($emptyAreas = getEmptyAreas())) {
 			return {errors: [Errors.getMessage(Errors.NO_FREE_AREAS)]};
 		}
-		if (!getSessionData()['isPnrStored'] && !$aliasData['keepOriginal'] && $segmentStatus !== 'GK') {
+		if (!getSessionData().isPnrStored && !$aliasData.keepOriginal && $segmentStatus !== 'GK') {
 			await ignoreWithoutWarning(); // ignore the itinerary in initial area
 		}
-		$recoveryPcc = getSessionData()['pcc'];
+		$recoveryPcc = getSessionData().pcc;
 		$area = $emptyAreas[0];
 		$output = (await runCmd('S' + $area)).output;
-		if (getSessionData()['area'] !== $area) {
+		if (getSessionData().area !== $area) {
 			$error = Errors.getMessage(Errors.FAILED_TO_CHANGE_AREA, {
 				area: $area, response: php.trim($output),
 			});
 			return {errors: [$error]};
 		}
 		const {cmdRec} = await emulatePcc($pcc, $recoveryPcc);
-		if (getSessionData()['pcc'] !== $pcc) {
+		if (getSessionData().pcc !== $pcc) {
 			$error = cmdRec.output.startsWith('ERR: INVALID - NOT ' + $pcc + ' - APOLLO')
 				? Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_GDS, {pcc: $pcc, gds: 'apollo'})
 				: Errors.getMessage(Errors.PCC_GDS_ERROR, {pcc: $pcc, response: cmdRec.output});
@@ -588,9 +588,9 @@ const RunCmdRq = ({
 		}
 		for ([$key, $segment] of Object.entries($itinerary)) {
 			if ($seatNumber >= 1 && $seatNumber <= 9) {
-				$itinerary[$key]['seatCount'] = $seatNumber;
+				$itinerary[$key].seatCount = $seatNumber;
 			}
-			$itinerary[$key]['segmentStatus'] = $segmentStatus;
+			$itinerary[$key].segmentStatus = $segmentStatus;
 		}
 		$fallbackToGk = $segmentStatus === 'SS';
 		return bookItinerary($itinerary, $fallbackToGk);
@@ -628,7 +628,7 @@ const RunCmdRq = ({
 			php.array_unshift(writeCommands, 'P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT');
 		}
 		// Add accounting line ("customer account" in apollo docs): smth like DK number in Sabre
-		if (php.in_array(getSessionData()['pcc'], ['2E8R', '1RZ2', '2G8P'])
+		if (php.in_array(getSessionData().pcc, ['2E8R', '1RZ2', '2G8P'])
 			&& !php.in_array('addAccountingLine', usedCmdTypes)
 		) {
 			php.array_unshift(writeCommands, 'T-CA-SFO@$0221686');
@@ -657,7 +657,7 @@ const RunCmdRq = ({
 	const multiPriceItinerary = async ($aliasData) => {
 		let $calledCommands, $cmd, $output;
 		$calledCommands = [];
-		for ($cmd of Object.values($aliasData['pricingCommands'])) {
+		for ($cmd of Object.values($aliasData.pricingCommands)) {
 			$output = await runCommand($cmd, true);
 			$calledCommands.push({cmd: $cmd, output: $output});
 		}
@@ -719,10 +719,10 @@ const RunCmdRq = ({
 			$output = '';
 			for ($iteration = 0; $iteration < $pageLimit; $iteration++) {
 				if ($lastCommandArray[$iteration]) {
-					$nextPage = $lastCommandArray[$iteration]['output'];
+					$nextPage = $lastCommandArray[$iteration].output;
 				} else {
 					const {cmdRec} = await processRealCommand('MR');
-					$nextPage = cmdRec['output'];
+					$nextPage = cmdRec.output;
 				}
 
 				$output = ($output ? extractPager($output)[0] : '') + $nextPage;
@@ -730,7 +730,7 @@ const RunCmdRq = ({
 					break;
 				}
 			}
-			$cmd = $lastCommandArray.length > 0 ? $lastCommandArray[0]['cmd'] : 'MDA';
+			$cmd = $lastCommandArray.length > 0 ? $lastCommandArray[0].cmd : 'MDA';
 			$calledCommands.push({
 				cmd: $cmd,
 				output: $output,
@@ -790,7 +790,7 @@ const RunCmdRq = ({
 
 	const prepareMcoMask = async () => {
 		const getPaxName = $pax => $pax.lastName + '/' + $pax.firstName;
-		const pcc = getSessionData()['pcc'];
+		const pcc = getSessionData().pcc;
 		const pccPointOfSaleCountry = await stateful.getPccDataProvider()('apollo', pcc)
 			.then(r => r.point_of_sale_country).catch(exc => null);
 		if (pccPointOfSaleCountry !== 'US') {
@@ -807,8 +807,8 @@ const RunCmdRq = ({
 		const passengerNames = Fp.map(getPaxName, php.array_filter(pnr.getPassengers()));
 		const mcoMask = (await runCmd('HHMCO', true)).output;
 		const pnrParams = await MakeMcoApolloAction.getMcoParams(pnr, mcoMask);
-		if (!php.empty(pnrParams['errors'])) {
-			return {errors: pnrParams['errors']};
+		if (!php.empty(pnrParams.errors)) {
+			return {errors: pnrParams.errors};
 		}
 		const hasPredefinedPax = (php.count(passengerNames) === 1);
 		const predefinedPax = hasPredefinedPax ? ArrayUtil.getFirst(passengerNames) : '';
@@ -818,12 +818,12 @@ const RunCmdRq = ({
 
 			['amountCurrency', 'USD', false],
 
-			['validatingCarrier', pnrParams['validatingCarrier'], false],
-			['to', pnrParams['validatingCarrier'], false],
-			['at', pnrParams['hub'], false],
-			['formOfPayment', pnrParams['fop'], false],
-			['expirationDate', pnrParams['expirationDate'], false],
-			['approvalCode', pnrParams['approvalCode'], false],
+			['validatingCarrier', pnrParams.validatingCarrier, false],
+			['to', pnrParams.validatingCarrier, false],
+			['at', pnrParams.hub, false],
+			['formOfPayment', pnrParams.fop, false],
+			['expirationDate', pnrParams.expirationDate, false],
+			['approvalCode', pnrParams.approvalCode, false],
 
 			['issueNow', '', true],
 		];
@@ -961,9 +961,9 @@ const RunCmdRq = ({
 		let reservation, result;
 		const alias = await ApoAliasParser.parse(cmd, stateful, PtcUtil);
 		const parsed = CommandParser.parse(cmd);
-		if ($mdaData = alias['moveDownAll'] || null) {
-			$limit = $mdaData['limit'] || null;
-			if ($cmdReal = alias['realCmd']) {
+		if ($mdaData = alias.moveDownAll || null) {
+			$limit = $mdaData.limit || null;
+			if ($cmdReal = alias.realCmd) {
 				const {cmdRec} = await processRealCommand($cmdReal, false);
 				return {calledCommands: await moveDownAll($limit, [cmdRec])};
 			} else {
@@ -988,14 +988,14 @@ const RunCmdRq = ({
 			return EndManualPricing({cmd, stateful: stateful});
 		} else if (php.preg_match(/^SORT$/, cmd, $matches = [])) {
 			return processSortItinerary();
-		} else if (alias['type'] === 'rebookInPcc') {
-			return processCloneItinerary(alias['data']);
-		} else if (alias['type'] === 'multiPriceItinerary') {
-			return multiPriceItinerary(alias['data']);
-		} else if (alias['type'] === 'storePricing') {
-			return storePricing(alias['data']);
-		} else if (alias['type'] === 'priceAll') {
-			return priceAll(alias['data']);
+		} else if (alias.type === 'rebookInPcc') {
+			return processCloneItinerary(alias.data);
+		} else if (alias.type === 'multiPriceItinerary') {
+			return multiPriceItinerary(alias.data);
+		} else if (alias.type === 'storePricing') {
+			return storePricing(alias.data);
+		} else if (alias.type === 'priceAll') {
+			return priceAll(alias.data);
 		} else if (cmd === '*HA') {
 			return displayHistory();
 		} else if (cmd === '!aliasDoubleIgnore') {
@@ -1006,16 +1006,16 @@ const RunCmdRq = ({
 		} else if (php.preg_match(/^(\||\+)(\d{1})(S[\d\-\|]+)([A-Z]{2}|)$/, cmd, $matches = [])) {
 			[$_, $plus, $seatAmount, $segmentNumbers, $segmentStatus] = $matches;
 			return rebookWithNewSeatAmountSpecificSegments($seatAmount, $segmentNumbers, $segmentStatus);
-		} else if (alias['type'] === 'rebookAsGk') {
-			return rebookAsGk(alias['data']);
-		} else if (alias['type'] === 'rebookAsSs') {
-			return rebookAsSs(alias['data']);
-		} else if (alias['type'] === 'fareSearchMultiPcc') {
-			return getMultiPccTariffDisplay(alias['realCmd']);
-		} else if (alias['type'] === 'priceInAnotherPcc') {
-			return priceInAnotherPcc(alias['realCmd'], alias['data']['target'], alias['data']['dialect']);
-		} else if (alias['type'] === 'multiDstAvail') {
-			return makeMultipleCityAvailabilitySearch(alias['data']);
+		} else if (alias.type === 'rebookAsGk') {
+			return rebookAsGk(alias.data);
+		} else if (alias.type === 'rebookAsSs') {
+			return rebookAsSs(alias.data);
+		} else if (alias.type === 'fareSearchMultiPcc') {
+			return getMultiPccTariffDisplay(alias.realCmd);
+		} else if (alias.type === 'priceInAnotherPcc') {
+			return priceInAnotherPcc(alias.realCmd, alias.data.target, alias.data.dialect);
+		} else if (alias.type === 'multiDstAvail') {
+			return makeMultipleCityAvailabilitySearch(alias.data);
 		} else if (php.preg_match(/^SEM\/([\w\d]{3,4})\/AG$/, cmd, $matches = [])) {
 			const {cmdRec} = await emulatePcc($matches[1]);
 			return {calledCommands: [cmdRec]};
@@ -1026,7 +1026,7 @@ const RunCmdRq = ({
 		} else if (alias.type === 'fareSearchValidatedChangeCity') {
 			return fareSearchValidatedChangeCity(alias.realCmd);
 		} else {
-			cmd = alias['realCmd'];
+			cmd = alias.realCmd;
 			const fetchAll = shouldFetchAll(cmd);
 			cmd = await preprocessCommand(cmd);
 			const {cmdRec, userMessages, performanceDebug} = await processRealCommand(cmd, fetchAll);
@@ -1048,20 +1048,20 @@ const RunCmdRq = ({
 			const msg = 'Code mistake, call result was a promise inside another promise';
 			return Rej.InternalServerError(msg, unwrapped);
 		}
-		const errors = callResult['errors'] || [];
+		const errors = callResult.errors || [];
 		const messages = callResult.messages || [];
 
 		let status, calledCommands, userMessages, actions;
 		if (!php.empty(errors)) {
 			status = GdsDirect.STATUS_FORBIDDEN;
-			calledCommands = callResult['calledCommands'] || [];
+			calledCommands = callResult.calledCommands || [];
 			userMessages = errors;
-			actions = callResult['actions'] || [];
+			actions = callResult.actions || [];
 		} else {
 			status = GdsDirect.STATUS_EXECUTED;
-			calledCommands = callResult['calledCommands'] || [];
-			userMessages = callResult['userMessages'] || [];
-			actions = callResult['actions'] || [];
+			calledCommands = callResult.calledCommands || [];
+			userMessages = callResult.userMessages || [];
+			actions = callResult.actions || [];
 		}
 		return {status, calledCommands, userMessages, messages, actions};
 	};
