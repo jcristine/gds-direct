@@ -49,17 +49,34 @@ const BookViaGk_apollo = async (params) => {
 				'0' + php.implode('+', records.map(r => r.segmentNumber + r.bookingClass));
 			const chgClsOutput = (await TravelportUtils.fetchAll(chgClsCmd, session)).output;
 			if (!isSuccessRebookOutput(chgClsOutput)) {
-				const numStr = segs.map(s => s.segmentNumber).join(',');
-				const error = 'Failed to rebook #' + numStr + ' - ' + chgClsOutput.trim();
-				errors.push(error);
 				failedSegments.push(...segs);
+				const isAvail = chgClsOutput.length > 150 ||
+					chgClsOutput.startsWith('0 AVAIL/WL'); // may be followed by either "OPEN" or "CLOSED"
+				if (!isAvail) {
+					const numStr = segs.map(s => s.segmentNumber).join(',');
+					const error = 'Failed to rebook #' + numStr + ' - ' + chgClsOutput
+						.replace(/^\s*([\s\S]*?)\s*(><)?$/, '$1');
+					errors.push(error);
+				}
 			}
 		}
-		return {failedSegments, messages: errors.map(text => ({type: 'error', text}))};
+		let messages = [];
+		if (errors.length === 0 && failedSegments.length > 0) {
+			const errorData = {segNums: failedSegments.map(s => s.segmentNumber).join(',')};
+			const text = Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, errorData);
+			messages = [{type: 'error', text}];
+		} else {
+			messages = errors.map(text => ({type: 'error', text}));
+		}
+
+		return {failedSegments, messages};
 	};
 
 	const bookPassive = async (itinerary) => {
-		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
+		itinerary = itinerary.map(seg => ({...seg,
+			bookingClass: seg.desiredBookingClass || seg.bookingClass,
+			segmentStatus: 'GK',
+		}));
 		const built = await bookTp({...bookParams, itinerary, session});
 		return {reservation: built.reservation, errors: []};
 	};
