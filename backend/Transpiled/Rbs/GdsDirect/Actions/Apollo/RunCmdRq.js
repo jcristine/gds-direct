@@ -288,100 +288,35 @@ const RunCmdRq = ({
 		return GetCurrentPnr.inApollo(stateful);
 	};
 
-	/** replace GK segments with segments */
-	const rebookGkSegments = async (segments, reservation = null) => {
-		const marriageToSegs = Fp.groupMap((seg) => seg.marriage, segments);
-		const failedSegNums = [];
-		const errors = [];
-		for (const [, segs] of marriageToSegs) {
-			const records = segs.map(gkSeg => {
-				const cls = gkSeg.bookingClass;
-				return {segNum: findSegmentNumberInPnr(gkSeg, reservation && reservation.itinerary), cls};
-			});
-			const chgClsCmd =
-				'X' + php.implode('+', records.map(r => r.segNum)) + '/' +
-				'0' + php.implode('+', records.map(r => r.segNum + r.cls));
-			const chgClsOutput = (await runCmd(chgClsCmd, true)).output;
-			if (!isSuccessRebookOutput(chgClsOutput)) {
-				failedSegNums.push(...segs.map(s => s.segmentNumber));
-				const isAvail = chgClsOutput.length > 150 ||
-					chgClsOutput.startsWith('0 AVAIL/WL'); // may be followed by either "OPEN" or "CLOSED"
-				if (!isAvail) {
-					errors.push(chgClsOutput.replace(/^\s*([\s\S]*?)\s*(><)?$/, '$1'));
-				}
-			}
-		}
-		return {failedSegmentNumbers: failedSegNums, errors};
-	};
-
-	const buildItinerary = async ({itinerary}) => {
-		const params = {
-			travelport, itinerary,
-			baseDate: stateful.getStartDt(),
-			session: stateful,
-		};
-		const built = await TravelportBuildItineraryActionViaXml(params);
-		const segmentsSold = built.segments.filter(seg => seg.success).length;
-		if (segmentsSold > 0) {
-			stateful.updateAreaState({
-				type: '!xml:PNRBFManagement',
-				state: {hasPnr: true, canCreatePq: false},
-			});
-		}
-		return built;
-	};
-
 	/** @param {Boolean} fallbackToGk - defines whether all segments should be booked together or with a separate command
 	 *                       each. When you book them all at once, marriages are added, if separately - not */
 	const bookItinerary = async ({itinerary, fallbackToGk}) => {
-		// TODO: reuse BookViaGk.js instead
 		stateful.flushCalledCommands();
-		const isGkRebookPossible = (seg) => {
-			return fallbackToGk
-				&& seg.segmentStatus !== 'GK';
+		const built = await BookViaGk_apollo({
+			bookRealSegments: true,
+			withoutRebook: !fallbackToGk,
+			session: stateful,
+			baseDate: stateful.getStartDt(),
+			itinerary, travelport,
+		});
+		stateful.updateAreaState({
+			type: '!xml:PNRBFManagement',
+			state: {hasPnr: true, canCreatePq: false},
+		});
+		stateful.flushCalledCommands();
+		const sortResult = await processSortItinerary()
+			.catch(coverExc(Rej.list, exc => ({errors: ['Did not SORT - ' + exc]})));
+
+		const cmdRec = {cmd: '*R', output: (await getCurrentPnr()).getDump()};
+		return {
+			calledCommands: [cmdRec],
+			userMessages: built.messages
+				.filter(r => r.type === 'info')
+				.map(r => r.text),
+			errors: built.messages
+				.filter(r => r.type === 'error')
+				.map(r => r.text),
 		};
-		const newItinerary = Fp.map((seg) => {
-			seg = {...seg};
-			if (isGkRebookPossible(seg)) {
-				// any different booking class will do, since it's GK
-				seg.bookingClass = seg.bookingClass !== 'Y' ? 'Y' : 'Z';
-				seg.segmentStatus = 'GK';
-			}
-			return seg;
-		}, itinerary);
-		const gkSegments = Fp.filter(isGkRebookPossible, itinerary);
-		const result = await buildItinerary({itinerary: newItinerary});
-		const error = transformBuildError(result);
-		if (error) {
-			return {
-				calledCommands: stateful.flushCalledCommands(),
-				errors: [error],
-			};
-		} else {
-			const gkRebook = await rebookGkSegments(gkSegments, result.reservation);
-			const errors = [];
-			const failedSegNums = gkRebook.failedSegmentNumbers;
-			if (!php.empty(failedSegNums)) {
-				if (gkRebook.errors.length === 0) {
-					const errorData = {segNums: php.implode(',', failedSegNums)};
-					const msg = Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, errorData);
-					errors.push(msg);
-				} else {
-					errors.push(...gkRebook.errors);
-				}
-			}
-			stateful.flushCalledCommands();
-			const sortResult = await processSortItinerary()
-				.catch(coverExc(Rej.list, exc => ({errors: ['Did not SORT - ' + exc]})));
-			if (php.empty(sortResult.errors)) {
-				const calledCommands = stateful.flushCalledCommands().slice(-1);
-				return {calledCommands, errors};
-			} else {
-				const pnrDump = (await getCurrentPnr()).getDump();
-				const cmdRec = {cmd: '*R', output: pnrDump};
-				return {calledCommands: [cmdRec], errors: errors};
-			}
-		}
 	};
 
 	const bookPassengers = async (passengers) => {
