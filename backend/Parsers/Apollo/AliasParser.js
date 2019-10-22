@@ -120,7 +120,7 @@ exports.parse = async (cmdRequested, stateful, PtcUtil = require('../../Transpil
 				'E': 'allowCutting',
 				'M': 'guessMarriages',
 				'': 'yGkRebook',
-			},
+			}[matches[1]],
 		};
 	} else if (result = RepriceInAnotherPccAction.parseAlias(realCmd)) {
 		type = 'priceInAnotherPcc';

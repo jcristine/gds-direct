@@ -200,10 +200,10 @@ app.get('/terminal/clearBuffer', withAuth(GdsSessionController.clearBuffer));
 //=====================
 
 const withOwnerAuth = (ownerAction) => withAuth((rqBody, emcResult) => {
-	if (emcResult.user.id == 6206) {
+	if ([6206, 101395, 2838].includes(emcResult.user.id)) {
 		return ownerAction(rqBody, emcResult);
 	} else {
-		return Forbidden('Sorry, you must be me in order to use that');
+		return Forbidden('Sorry, you must be a trusted GDS developer (aklesuns, aprokopcuks, stanislaw) in order to use that');
 	}
 });
 
