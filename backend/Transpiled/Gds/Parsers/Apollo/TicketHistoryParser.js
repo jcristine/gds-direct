@@ -75,7 +75,7 @@ class TicketHistoryParser
 		$deletedTickets = [];
 		for ($line of StringUtil.lines($dump)) {
 			if ($ticket = this.parseTicketLine($line)) {
-				if ($ticket['historyActionCode']) {
+				if ($ticket.historyActionCode) {
 					$deletedTickets.push($ticket);
 				} else {
 					$currentTickets.push($ticket);

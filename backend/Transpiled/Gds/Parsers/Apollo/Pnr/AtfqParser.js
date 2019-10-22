@@ -58,11 +58,11 @@ class AtfqParser {
 		}
 		if (line = php.trim($lines[1] || '')) {
 			if (php.preg_match(/^FQ-/, line)) {
-				$atfqInfo['FQ'] = parseFqLine(line);
+				$atfqInfo.FQ = parseFqLine(line);
 			} else if (php.preg_match(/^FM-/, line)) {
-				$atfqInfo['FQ'] = parseFqLine(line);
+				$atfqInfo.FQ = parseFqLine(line);
 			} else {
-				$atfqInfo['FQ'] = null;
+				$atfqInfo.FQ = null;
 			}
 		}
 		return $atfqInfo;

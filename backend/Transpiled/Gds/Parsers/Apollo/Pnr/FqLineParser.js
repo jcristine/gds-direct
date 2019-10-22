@@ -23,12 +23,12 @@ class FqLineParser
 				const price = this.parsePriceConstructionToken(token);
 				if (!price) {
 					throw new Error('First price construction token expected to be fare, something else found: ['+token+']');
-				} else if (price['taxType']) {
+				} else if (price.taxType) {
 					throw new Error('First price construction token expected to be fare, tax found: ['+token+']');
 				} else {
-					result['fare'] = {
-						currency: price['currency'],
-						amount: price['amount'],
+					result.fare = {
+						currency: price.currency,
+						amount: price.amount,
 					};
 
 					state = this.FQ_LINE_PARSER_STATE_WAITING_FOR_TAX_OR_NET_PRICE;

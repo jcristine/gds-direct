@@ -26,7 +26,7 @@ const handleApolloCopyPnr = (sessionData, output) => {
 	output = output.replace(/\)?><$/, '');
 	const parsed = PnrParser.parse(output);
 	const sections = PnrParser.splitToSections(output);
-	delete (sections['HEAD']);
+	delete (sections.HEAD);
 	const isEmpty = (val) => php.empty(val);
 	const isValidPnrOutput = !php.empty(parsed.itineraryData)
 		|| !php.empty(parsed.passengers.passengerList)
@@ -112,7 +112,7 @@ const UpdateState_apollo = ({
 		} else if (php.preg_match(/^\*[A-Z0-9]+\//, cmd) && output.startsWith('INVLD')) {
 			dropPnr = true;
 		} else if (type == 'changePcc' && CmsApolloTerminal.isSuccessChangePccOutput(output, data)) {
-			sessionState['pcc'] = data;
+			sessionState.pcc = data;
 		} else if (type == 'openPnr') {
 			const openPnrStatus = ImportPnrAction.detectOpenPnrStatus('apollo', output);
 			if (php.in_array(openPnrStatus, ['notExisting', 'isRestricted'])) {
@@ -122,7 +122,7 @@ const UpdateState_apollo = ({
 				openPnr = true;
 			}
 		} else if (type == 'storeKeepPnr') {
-			if (recordLocator = TApolloSavePnr.parseSavePnrOutput(output)['recordLocator'] || null) {
+			if (recordLocator = TApolloSavePnr.parseSavePnrOutput(output).recordLocator || null) {
 				openPnr = true;
 			}
 		} else if (type == 'searchPnr') {

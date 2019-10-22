@@ -21,13 +21,13 @@ class HeaderParser
 		while ($lines.length > 0) {
 			$line = php.array_shift($lines);
 			if (this.isPnrIsCurrentlyInUseLine($line)) {
-				$parsedData['pnrIsCurrentlyInUse'] = true;
+				$parsedData.pnrIsCurrentlyInUse = true;
 			} else if ($result = this.parsePnrHeaderLine($line)) {
-				$parsedData['reservationInfo'] = $result;
+				$parsedData.reservationInfo = $result;
 			} else if ($result = this.parseAgentLine($line)) {
-				$parsedData['agentName'] = $result['agentName'];
+				$parsedData.agentName = $result.agentName;
 			} else if ($result = this.parsePccLine($line)) {
-				$parsedData['shopInfo'] = $result;
+				$parsedData.shopInfo = $result;
 			} else if (this.looksLikePassengerLine($line) || this.looksLikeSegmentLine($line)) {
 				php.array_unshift($lines, $line);
 				break;
@@ -83,7 +83,7 @@ class HeaderParser
                     '(?<reservationDate>[0-9]{2}[A-Z]{3})'+
                     '\\s*$/';
 		if (php.preg_match($pattern1, php.trim($line), $tokens = [])) {
-			$creatorToken = php.trim($tokens['pnrCreatorToken']);
+			$creatorToken = php.trim($tokens.pnrCreatorToken);
 			if (php.preg_match(/^([A-Z0-9]{3,4})\/([A-Z0-9]{2,3})$/, $creatorToken, $matches = [])) {
 				// "2E8R/GWS"
 				[$_, $agencyToken, $agentToken] = $matches;
@@ -93,40 +93,40 @@ class HeaderParser
 				$agentToken = php.substr($creatorToken, 3);
 			}
 			return {
-				recordLocator: $tokens['recordLocator'],
-				focalPointInitials: $tokens['focalPointInitials'],
-				agencyId: $tokens['agencyId'],
+				recordLocator: $tokens.recordLocator,
+				focalPointInitials: $tokens.focalPointInitials,
+				agencyId: $tokens.agencyId,
 				pnrCreatorToken: $creatorToken,
 				agencyToken: $agencyToken,
 				agentToken: $agentToken,
-				arcNumber: $tokens['arcNumber'],
+				arcNumber: $tokens.arcNumber,
 				reservationDate: {
-					raw: $tokens['reservationDate'],
-					parsed: CommonParserHelpers.parsePartialDate($tokens['reservationDate']),
+					raw: $tokens.reservationDate,
+					parsed: CommonParserHelpers.parsePartialDate($tokens.reservationDate),
 				},
 			};
 		} else if (php.preg_match($pattern2, php.trim($line), $tokens = [])) {
 			return {
-				recordLocator: $tokens['recordLocator'],
-				focalPointInitials: $tokens['focalPointInitials'],
-				agencyId: $tokens['agencyId'],
+				recordLocator: $tokens.recordLocator,
+				focalPointInitials: $tokens.focalPointInitials,
+				agencyId: $tokens.agencyId,
 				pnrCreatorToken: '',
 				arcNumber: null,
 				reservationDate: {
-					raw: $tokens['reservationDate'],
-					parsed: CommonParserHelpers.parsePartialDate($tokens['reservationDate']),
+					raw: $tokens.reservationDate,
+					parsed: CommonParserHelpers.parsePartialDate($tokens.reservationDate),
 				},
 			};
 		} else if (php.preg_match($pattern3, php.trim($line), $tokens = [])) {
 			return {
-				recordLocator: $tokens['recordLocator'],
-				focalPointInitials: $tokens['focalPointInitials'],
-				agencyId: $tokens['agencyId'],
-				pnrCreatorToken: $tokens['pnrCreatorToken'],
+				recordLocator: $tokens.recordLocator,
+				focalPointInitials: $tokens.focalPointInitials,
+				agencyId: $tokens.agencyId,
+				pnrCreatorToken: $tokens.pnrCreatorToken,
 				arcNumber: null,
 				reservationDate: {
-					raw: $tokens['reservationDate'],
-					parsed: CommonParserHelpers.parsePartialDate($tokens['reservationDate']),
+					raw: $tokens.reservationDate,
+					parsed: CommonParserHelpers.parsePartialDate($tokens.reservationDate),
 				},
 			};
 		} else {
@@ -137,7 +137,7 @@ class HeaderParser
 	static parseAgentLine($line)  {
 		let $tokens;
 		if (php.preg_match(/^(?<agentName>[A-Z]+)$/, php.trim($line), $tokens = [])) {
-			return {agentName: $tokens['agentName']};
+			return {agentName: $tokens.agentName};
 		} else {
 			return false;
 		}
@@ -147,8 +147,8 @@ class HeaderParser
 		let $tokens;
 		if (php.preg_match(/^(?<pcc>[A-Z0-9]{4}) - (?<restText>.*)$/, php.trim($line), $tokens = [])) {
 			return {
-				pcc: $tokens['pcc'],
-				restText: $tokens['restText'],
+				pcc: $tokens.pcc,
+				restText: $tokens.restText,
 			};
 		} else {
 			return false;
@@ -163,7 +163,7 @@ class HeaderParser
 	static looksLikeSegmentLine($line)  {
 		let $parsedSegment;
 		$parsedSegment = ItineraryParser.parse($line);
-		return $parsedSegment['segments'].length > 0;
+		return $parsedSegment.segments.length > 0;
 	}
 }
 module.exports = HeaderParser;

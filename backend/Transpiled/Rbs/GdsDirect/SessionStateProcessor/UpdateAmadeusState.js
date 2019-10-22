@@ -29,7 +29,7 @@ class UpdateAmadeusState
 
 	static isPnrListOutput($output)  {
 
-		return PnrSearchParser.parse($output)['success']
+		return PnrSearchParser.parse($output).success
             || php.preg_match(/^[^\n]*\s*NO NAME\s*$/, $output);
 	}
 
@@ -60,7 +60,7 @@ class UpdateAmadeusState
 			return 'finishOrIgnore';
 		} else {
 			$parsedPnr = PnrParser.parse($output);
-			if ($parsedPnr['success']) {
+			if ($parsedPnr.success) {
 				return 'available';
 			} else {
 				return 'customError';
@@ -99,8 +99,8 @@ class UpdateAmadeusState
 
 		$helper = (new CmsAmadeusTerminal());
 		$cmdParsed = CommandParser.parse($cmd);
-		$type = $cmdParsed['type'];
-		$data = $cmdParsed['data'];
+		$type = $cmdParsed.type;
+		$data = $cmdParsed.data;
 
 		if ($type === 'priceItinerary' && this.constructor.isPricingValidForPq($data, $output)) {
 			this.$state.pricingCmd = $cmd;
@@ -108,7 +108,7 @@ class UpdateAmadeusState
 			this.$state.pricingCmd = null;
 		}
 		$parsedPnr = PnrParser.parse($output);
-		if ($parsedPnr['success']) {
+		if ($parsedPnr.success) {
 			// Amadeus redisplays resulting PNR after each writing command, and even if it is
 			// not a writing command, if it outputs PNR, that means there is a PNR right?
 			this.$state.hasPnr = true;
@@ -119,7 +119,7 @@ class UpdateAmadeusState
 				this.dropPnr();
 			}
 		} else if ($type === 'storePnr') {
-			if ($rloc = ($helper.parseSavePnr($output, false) || {})['recordLocator']) {
+			if ($rloc = ($helper.parseSavePnr($output, false) || {}).recordLocator) {
 				this.dropPnr();
 			}
 		} else if ($type == 'changePcc') {
@@ -134,18 +134,18 @@ class UpdateAmadeusState
 				this.openPnr($data);
 			}
 		} else if ($type == 'storeKeepPnr') {
-			if ($rloc = ($helper.parseSavePnr($output, true) || {})['recordLocator']) {
+			if ($rloc = ($helper.parseSavePnr($output, true) || {}).recordLocator) {
 				this.openPnr($rloc);
 			}
 		} else if ($type == 'searchPnr') {
 			if (this.constructor.wasSinglePnrOpenedFromSearch($output)) {
-				this.openPnr((($parsedPnr['parsed'] || {})['pnrInfo'] || {})['recordLocator'] || '');
+				this.openPnr((($parsedPnr.parsed || {}).pnrInfo || {}).recordLocator || '');
 			} else if (this.constructor.isPnrListOutput($output)) {
 				this.dropPnr();
 			}
 		} else if ($type == 'displayPnrFromList') {
 			if (this.constructor.wasPnrOpenedFromList($output)) {
-				this.openPnr((($parsedPnr['parsed'] || {})['pnrInfo'] || {})['recordLocator'] || '');
+				this.openPnr((($parsedPnr.parsed || {}).pnrInfo || {}).recordLocator || '');
 			}
 		} else if ($type == 'changeArea') {
 			if ($helper.isSuccessChangeAreaOutput($output)) {
@@ -162,9 +162,9 @@ class UpdateAmadeusState
 		$self = new this($initialState, $getAreaData);
 
 		$cmdParsed = CommandParser.parse($cmd);
-		$flatCmds = php.array_merge([$cmdParsed], $cmdParsed['followingCommands'] || []);
+		$flatCmds = php.array_merge([$cmdParsed], $cmdParsed.followingCommands || []);
 		for ($cmdRec of Object.values($flatCmds)) {
-			$self.updateState($cmdRec['cmd'], $output);
+			$self.updateState($cmdRec.cmd, $output);
 		}
 		$self.$state.cmdType = $cmdParsed ? $cmdParsed.type : null;
 		return $self.$state;

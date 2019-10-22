@@ -81,30 +81,30 @@ class AirAvailabilityParser
 			return {
 				success: true,
 				data: {
-					lineNumber: php.intval($matches['lineNumber']),
-					//'insideAvailabilityMarker' => $matches['insideAvailabilityMarker'],
-					airline: $matches['airline'],
-					flightNumber: php.trim($matches['flightNumber']),
-					flightStatus: this.parseFlightStatus($matches['availability']),
-					availability: this.parseFlightAvailability($matches['availability']),
-					moreClassesExist: $matches['moreClassesExist'] === '+',
-					departureAirport: php.trim($matches['departureAirport']),
-					destinationAirport: php.trim($matches['destinationAirport']),
+					lineNumber: php.intval($matches.lineNumber),
+					//'insideAvailabilityMarker' => $matches.insideAvailabilityMarker,
+					airline: $matches.airline,
+					flightNumber: php.trim($matches.flightNumber),
+					flightStatus: this.parseFlightStatus($matches.availability),
+					availability: this.parseFlightAvailability($matches.availability),
+					moreClassesExist: $matches.moreClassesExist === '+',
+					departureAirport: php.trim($matches.departureAirport),
+					destinationAirport: php.trim($matches.destinationAirport),
 					departureTime: {
-						raw: $matches['departureTime'],
-						parsed: CommonParserHelpers.decodeApolloTime($matches['departureTime']),
+						raw: $matches.departureTime,
+						parsed: CommonParserHelpers.decodeApolloTime($matches.departureTime),
 					},
-					departureDayOffset: ApolloReservationItineraryParser.decodeDayOffset(php.trim($matches['nextDayMarker1'])),
+					departureDayOffset: ApolloReservationItineraryParser.decodeDayOffset(php.trim($matches.nextDayMarker1)),
 					destinationTime: {
-						raw: $matches['destinationTime'],
-						parsed: CommonParserHelpers.decodeApolloTime($matches['destinationTime']),
+						raw: $matches.destinationTime,
+						parsed: CommonParserHelpers.decodeApolloTime($matches.destinationTime),
 					},
-					destinationDayOffset: ApolloReservationItineraryParser.decodeDayOffset(php.trim($matches['nextDayMarker2'])),
-					aircraft: $matches['aircraft'],
-					//'marriageMarker' => $matches['marriageMarker'],
-					//'flightDuration' => $matches['flightDuration'],
-					//'ontimeMarker' => $matches['ontimeMarker'],
-					hiddenStops: php.intval($matches['hiddenStops']),
+					destinationDayOffset: ApolloReservationItineraryParser.decodeDayOffset(php.trim($matches.nextDayMarker2)),
+					aircraft: $matches.aircraft,
+					//'marriageMarker' => $matches.marriageMarker,
+					//'flightDuration' => $matches.flightDuration,
+					//'ontimeMarker' => $matches.ontimeMarker,
+					hiddenStops: php.intval($matches.hiddenStops),
 				},
 			};
 		} else {
@@ -125,7 +125,7 @@ class AirAvailabilityParser
 			return {
 				success: true,
 				data: {
-					availability: this.parseFlightAvailability($matches['availability']),
+					availability: this.parseFlightAvailability($matches.availability),
 				},
 			};
 		} else {
@@ -165,12 +165,12 @@ class AirAvailabilityParser
 			return {
 				success: true,
 				data: {
-					lineNumber: php.intval($matches['lineNumber']),
-					airline: $matches['airline'],
-					flightNumber: php.trim($matches['flightNumber']),
-					operatingAirline: php.trim($matches['operatingAirline'] || ''),
-					departureAirport: php.trim($matches['departureAirport']),
-					destinationAirport: php.trim($matches['destinationAirport']),
+					lineNumber: php.intval($matches.lineNumber),
+					airline: $matches.airline,
+					flightNumber: php.trim($matches.flightNumber),
+					operatingAirline: php.trim($matches.operatingAirline || ''),
+					departureAirport: php.trim($matches.departureAirport),
+					destinationAirport: php.trim($matches.destinationAirport),
 				},
 			};
 		} else {
@@ -179,7 +179,7 @@ class AirAvailabilityParser
 	}
 
 	static mergeBookingClasses($flight, $moreClasses)  {
-		Object.assign($flight['availability'], $moreClasses['availability']);
+		Object.assign($flight.availability, $moreClasses.availability);
 		return $flight;
 	}
 
@@ -199,14 +199,14 @@ class AirAvailabilityParser
 		$parsed = StringUtil.splitByPosition($line, $pattern, $names, true);
 		return {
 			date: {
-				raw: $parsed['date'],
-				parsed: CommonParserHelpers.parsePartialDate($parsed['date']),
+				raw: $parsed.date,
+				parsed: CommonParserHelpers.parsePartialDate($parsed.date),
 			},
-			departureCity: $parsed['departureCity'],
-			destinationCity: $parsed['destinationCity'],
+			departureCity: $parsed.departureCity,
+			destinationCity: $parsed.destinationCity,
 			time: {
-				raw: $parsed['time'],
-				parsed: php.str_pad($parsed['time'], 5, '0', php.STR_PAD_LEFT),
+				raw: $parsed.time,
+				parsed: php.str_pad($parsed.time, 5, '0', php.STR_PAD_LEFT),
 			},
 		};
 	}
@@ -226,10 +226,10 @@ class AirAvailabilityParser
             '\\s*$/';
 		if (php.preg_match($regex, $line, $matches = [])) {
 			return {
-				message: $matches['message'],
-				amount: $matches['amount'] || '',
-				currency: $matches['currency'] || '',
-				command: $matches['command'],
+				message: $matches.message,
+				amount: $matches.amount || '',
+				currency: $matches.currency || '',
+				command: $matches.command,
 			};
 		} else {
 			return null;
@@ -272,17 +272,17 @@ class AirAvailabilityParser
 				}
 				$isFirstLine = false;
 			} else if ($res = this.parseBasicFlightLine($line)) {
-				$flights.push($res['data']);
+				$flights.push($res.data);
 			} else if ($res = this.parseMoreClassesLine($line)) {
 				$lastFlight = php.array_pop($flights);
 				if ($lastFlight) {
-					$flight = this.mergeBookingClasses($lastFlight, $res['data']);
+					$flight = this.mergeBookingClasses($lastFlight, $res.data);
 					$flights.push($flight);
 				}
 			} else if ($res = this.parseHotelOfferLine($line)) {
 				$hotelOffers.push($res);
 			} else if ($res = this.parseFooterLine($line)) {
-				$navigationCommands = $res['commands'];
+				$navigationCommands = $res.commands;
 			} else {
 				// Consider this unknown line and discard
 			}}

@@ -24,7 +24,7 @@ class PnrParser {
 		if (php.preg_match('/^(?<sectionName>' + php.implode('|', $sectionHeaders) + ')-/', $line, $matches = []) ||
 			php.preg_match(/^\d\/(?<sectionName>ATFQ)-/, $line, $matches = [])
 		) {
-			return $matches['sectionName'];
+			return $matches.sectionName;
 		} else {
 			return null;
 		}
@@ -57,7 +57,7 @@ class PnrParser {
 				StringUtil.startsWith($line, '*** ')
 				|| php.trim($line) == 'PRICING RECORDS EXISTS - SUBSCRIBER - $NME'
 			) {
-				$sections['dataExistsLines'].push($line);
+				$sections.dataExistsLines.push($line);
 			} else {
 				$sections[$currentSectionName].push($line);
 			}
@@ -117,13 +117,13 @@ class PnrParser {
 			if (php.count($adressTokens) == 4) {
 				[$name, $addressLine1, $addressLine2, $addressLine3] = $adressTokens;
 				if (php.preg_match(/Z\/(?<zipCode>.+)/, $addressLine3, $matches = [])) {
-					$zipCode = $matches['zipCode'];
+					$zipCode = $matches.zipCode;
 				}
 			} else if (php.count($adressTokens) == 3) {
 				[$name, $addressLine1, $addressLine2] = $adressTokens;
 				$addressLine3 = '';
 				if (php.preg_match(/Z\/(?<zipCode>.+)/, $addressLine2, $matches = [])) {
-					$zipCode = $matches['zipCode'];
+					$zipCode = $matches.zipCode;
 				}
 			} else {
 				return null;
@@ -155,20 +155,20 @@ class PnrParser {
 		for ($line of $lines) {
 			$parsedLine = StringUtil.splitByPosition($line, $splitStr, $names, true);
 			const matchesExpectations = true
-				&& ('' + $parsedLine['number']).match(/^\s*(ACKN-|\d+)\s*$/)
-				&& ('' + $parsedLine['airline']).match(/^[A-Z0-9]{2}$/)
-				&& ('' + $parsedLine['confirmationNumber']).match(/^[A-Z0-9]+$/)
-				&& ('' + $parsedLine['date']).match(/^[0-9]{2}[A-Z]{3}$/)
+				&& ('' + $parsedLine.number).match(/^\s*(ACKN-|\d+)\s*$/)
+				&& ('' + $parsedLine.airline).match(/^[A-Z0-9]{2}$/)
+				&& ('' + $parsedLine.confirmationNumber).match(/^[A-Z0-9]+$/)
+				&& ('' + $parsedLine.date).match(/^[0-9]{2}[A-Z]{3}$/)
 			;
 			if (matchesExpectations) {
-				$number = $parsedLine['number'] == 'ACKN-' ? 1 : php.intval($parsedLine['number']);
+				$number = $parsedLine.number == 'ACKN-' ? 1 : php.intval($parsedLine.number);
 				$result.push({
 					number: $number,
-					airline: $parsedLine['airline'],
-					confirmationNumber: $parsedLine['confirmationNumber'],
+					airline: $parsedLine.airline,
+					confirmationNumber: $parsedLine.confirmationNumber,
 					date: {
-						raw: $parsedLine['date'],
-						parsed: CommonParserHelpers.parsePartialDate($parsedLine['date']),
+						raw: $parsedLine.date,
+						parsed: CommonParserHelpers.parsePartialDate($parsedLine.date),
 					},
 				});
 			}
@@ -189,15 +189,15 @@ class PnrParser {
 					lineNumber: $remarkNumber,
 					remarkType: 'MADE_FOR_REMARK',
 					data: {
-						name: $tokens['name'],
+						name: $tokens.name,
 					},
 				});
 			} else {
 				$record = GenericRemarkParser.parse($line);
 				$result.push({
 					lineNumber: $remarkNumber,
-					remarkType: $record['remarkType'],
-					data: $record['data'],
+					remarkType: $record.remarkType,
+					data: $record.data,
 				});
 			}
 		}
@@ -206,25 +206,25 @@ class PnrParser {
 
 	static parse(dump) {
 		const sections = this.splitToSections(dump);
-		const headResult = HeaderParser.parse(sections['HEAD']);
+		const headResult = HeaderParser.parse(sections.HEAD);
 		const paxResult = GdsPassengerBlockParser.parse(headResult.textLeft);
-		const ticketLines = !php.empty(sections['TI']) ? StringUtil.lines(sections['TI']) : [];
+		const ticketLines = !php.empty(sections.TI) ? StringUtil.lines(sections.TI) : [];
 		return {
 			headerData: headResult.parsedData,
 			passengers: paxResult.parsedData,
 			itineraryData: ItineraryParser.parse(paxResult.textLeft).segments,
 			/* not needed - not parsed ATM */
 			foneData: null,
-			adrsData: sections['ADRS'] ? this.parseAddress(sections['ADRS']) : null,
-			dlvrData: sections['DLVR'] ? this.parseAddress(sections['DLVR']) : null,
+			adrsData: sections.ADRS ? this.parseAddress(sections.ADRS) : null,
+			dlvrData: sections.DLVR ? this.parseAddress(sections.DLVR) : null,
 			formOfPaymentData: FopParser.parse(sections['FOP:']),
-			tktgData: TktgParser.parse(sections['TKTG']),
-			atfqData: sections['ATFQ'] ? AtfqParser.parse(sections['ATFQ']) : null,
+			tktgData: TktgParser.parse(sections.TKTG),
+			atfqData: sections.ATFQ ? AtfqParser.parse(sections.ATFQ) : null,
 			ticketListData: ticketLines.map(a => TicketHistoryParser.parseTicketLine(a)),
-			ssrData: sections['GFAX'] ? SsrBlockParser.parse(sections['GFAX']) : null,
-			remarks: sections['RMKS'] ? this.parseRemarks(sections['RMKS']) : null,
-			acknData: sections['ACKN'] ? this.parseAcknSection(sections['ACKN']) : null,
-			dataExistsInfo: this.parseDataExistsLines(sections['dataExistsLines'], sections['TKTG']),
+			ssrData: sections.GFAX ? SsrBlockParser.parse(sections.GFAX) : null,
+			remarks: sections.RMKS ? this.parseRemarks(sections.RMKS) : null,
+			acknData: sections.ACKN ? this.parseAcknSection(sections.ACKN) : null,
+			dataExistsInfo: this.parseDataExistsLines(sections.dataExistsLines, sections.TKTG),
 		};
 	}
 }

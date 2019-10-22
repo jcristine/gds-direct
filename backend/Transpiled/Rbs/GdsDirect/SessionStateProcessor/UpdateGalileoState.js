@@ -3,7 +3,6 @@
 const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const GalileoBuildItineraryAction = require('../../../Rbs/GdsAction/GalileoBuildItineraryAction.js');
-const CmsGalileoTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsGalileoTerminal.js');
 const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const CommandParser = require('../../../Gds/Parsers/Galileo/CommandParser.js');
 const PnrParser = require('../../../Gds/Parsers/Galileo/Pnr/PnrParser.js');
@@ -101,10 +100,10 @@ class UpdateGalileoSessionStateAction
 			$chunks = php.array_filter(Fp.map('rtrim', php.str_split($line, 32)));
 			for ($chunk of Object.values($chunks)) {
 				$split = StringUtil.splitByPosition($line, $pattern, $charNames, true);
-				$dateParsed = CommonParserHelpers.parsePartialDate($split['D']);
+				$dateParsed = CommonParserHelpers.parsePartialDate($split.D);
 				if (php.trim($split[' ']) === '' && $dateParsed &&
-                    php.preg_match(/^\s*\d+\s*$/, $split['P']) &&
-                    php.preg_match(/^\s*\d+\s*$/, $split['L'])
+                    php.preg_match(/^\s*\d+\s*$/, $split.P) &&
+                    php.preg_match(/^\s*\d+\s*$/, $split.L)
 				) {
 					++$pnrsMatched;
 				} else {
@@ -140,11 +139,11 @@ class UpdateGalileoSessionStateAction
 
 		$parsed = PnrParser.parse($clean);
 		$sections = PnrParser.splitToSections($clean);
-		delete($sections['HEAD']);
+		delete($sections.HEAD);
 
 		$isEmpty = ($var) => php.empty($var);
-		$isValidPnrOutput = !php.empty($parsed['itineraryData'])
-            || !php.empty($parsed['passengers']['passengerList'])
+		$isValidPnrOutput = !php.empty($parsed.itineraryData)
+            || !php.empty($parsed.passengers.passengerList)
             || !Fp.all($isEmpty, $sections);
 
 		if ($isValidPnrOutput) {
@@ -179,9 +178,9 @@ class UpdateGalileoSessionStateAction
 			return 'finishOrIgnore';
 		} else {
 			$parsedPnr = PnrParser.parse($output);
-			if (($parsedPnr['headerData']['reservationInfo'] || {})['recordLocator'] ||
-                !php.empty($parsedPnr['itineraryData']) ||
-				!php.empty($parsedPnr['passengers']['passengerList'])
+			if (($parsedPnr.headerData.reservationInfo || {}).recordLocator ||
+                !php.empty($parsedPnr.itineraryData) ||
+				!php.empty($parsedPnr.passengers.passengerList)
 			) {
 				return 'available';
 			} else {
@@ -195,8 +194,8 @@ class UpdateGalileoSessionStateAction
 
 		$clean = php.preg_replace(/\)?><$/, '', $output);
 		$cmdParsed = CommandParser.parse($cmd);
-		$type = $cmdParsed['type'];
-		$data = $cmdParsed['data'];
+		$type = $cmdParsed.type;
+		$data = $cmdParsed.data;
 
 		if ($type === 'priceItinerary' && !this.constructor.isErrorPricingRs($output)) {
 			this.$state.pricingCmd = $cmd;
@@ -223,7 +222,7 @@ class UpdateGalileoSessionStateAction
 			}
 		} else if ($type === 'storeKeepPnr') {
 			$parsed = PnrParser.parse($clean);
-			if ($rloc = (($parsed['headerData'] || {})['reservationInfo'] || {})['recordLocator']) {
+			if ($rloc = (($parsed.headerData || {}).reservationInfo || {}).recordLocator) {
 				this.openPnr($rloc);
 			}
 		} else if ($type === 'storeAndCopyPnr') {
@@ -233,14 +232,14 @@ class UpdateGalileoSessionStateAction
 			if (php.in_array($openPnrStatus, ['notExisting', 'isRestricted'])) {
 				this.dropPnr();
 			} else if ($openPnrStatus === 'available') {
-				this.openPnr($data['recordLocator']);
+				this.openPnr($data.recordLocator);
 			}
 		} else if ($type == 'searchPnr') {
 			if (this.constructor.isPnrListOutput($clean)) {
 				this.dropPnr();
 			} else if (this.constructor.wasSinglePnrOpenedFromSearch($clean)) {
 				$parsed = PnrParser.parse($clean);
-				this.openPnr((($parsed['headerData'] || {})['reservationInfo'] || {})['recordLocator'] || '');
+				this.openPnr((($parsed.headerData || {}).reservationInfo || {}).recordLocator || '');
 			}
 		} else if ($type == 'displayPnrFromList') {
 			if (php.trim($clean) === 'LIST NUMBER DOES NOT EXIST') {
@@ -250,16 +249,16 @@ class UpdateGalileoSessionStateAction
 				//$this->dropPnr();
 			} else if (this.constructor.wasPnrOpenedFromList($clean)) {
 				$parsed = PnrParser.parse($clean);
-				this.openPnr((($parsed['headerData'] || {})['reservationInfo'] || {})['recordLocator'] || '');
+				this.openPnr((($parsed.headerData || {}).reservationInfo || {}).recordLocator || '');
 			}
 		} else if ($type === 'changePcc') {
 			if (this.constructor.wasPccChangedOk($output)) {
-				this.$state.pcc = $data['pcc'];
+				this.$state.pcc = $data.pcc;
 			}
 		} else if ($type === 'changeArea') {
 			if (this.constructor.isSuccessChangeAreaOutput($clean)) {
-				this.$state.updateFrom(this.getAreaState($data['area']));
-				this.$state.area = $data['area'];
+				this.$state.updateFrom(this.getAreaState($data.area));
+				this.$state.area = $data.area;
 			}
 		} else if ($type === 'sell') {
 			if (this.constructor.isSuccessSellOutput($clean)) {
@@ -283,9 +282,9 @@ class UpdateGalileoSessionStateAction
 		$self = new this($initialState, $getAreaData);
 
 		$cmdParsed = CommandParser.parse($cmd);
-		$flatCmds = php.array_merge([$cmdParsed], $cmdParsed['followingCommands'] || []);
+		$flatCmds = php.array_merge([$cmdParsed], $cmdParsed.followingCommands || []);
 		for ($cmdRec of Object.values($flatCmds)) {
-			$self.updateState($cmdRec['cmd'], $output);
+			$self.updateState($cmdRec.cmd, $output);
 		}
 		$self.$state.cmdType = $cmdParsed ? $cmdParsed.type : null;
 		return $self.$state;

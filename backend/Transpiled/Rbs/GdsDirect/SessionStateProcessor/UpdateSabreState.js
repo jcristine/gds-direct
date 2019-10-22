@@ -29,9 +29,9 @@ class UpdateSabreState
 	}
 
 	static handleSabreStoreAndCopyPnr($sessionData, $output)  {
-		if (TSabreSavePnr.parseSavePnrOutput($output)['success']) {
-			$sessionData['recordLocator'] = '';
-			$sessionData['isPnrStored'] = false;
+		if (TSabreSavePnr.parseSavePnrOutput($output).success) {
+			$sessionData.recordLocator = '';
+			$sessionData.isPnrStored = false;
 		} else {
 			// errors presumably
 		}
@@ -40,8 +40,8 @@ class UpdateSabreState
 
 	static handleSabreIgnoreAndCopyPnr($sessionData, $output)  {
 		if (php.trim($output) === 'IGD') {
-			$sessionData['recordLocator'] = '';
-			$sessionData['isPnrStored'] = false;
+			$sessionData.recordLocator = '';
+			$sessionData.isPnrStored = false;
 		} else {
 			// errors presumably
 		}
@@ -84,24 +84,24 @@ class UpdateSabreState
 		$getAreaData = this.$getAreaData;
 		$gdsInterface = new CmsSabreTerminal();
 		$commandTypeData = CommandParser.parse($cmd);
-		$type = $commandTypeData['type'];
-		$data = $commandTypeData['data'];
+		$type = $commandTypeData.type;
+		$data = $commandTypeData.data;
 		if (this.constructor.isValidPricing($cmd, $output, $data)) {
-			$sessionState['pricingCmd'] = $cmd;
+			$sessionState.pricingCmd = $cmd;
 		} else if (!php.in_array($type, SessionStateHelper.getCanCreatePqSafeTypes())) {
-			$sessionState['pricingCmd'] = null;
+			$sessionState.pricingCmd = null;
 		}
 		if (php.preg_match(/^\s*\*\s*$/, $output)) {
 			// "*" output is returned by most Sabre writing commands
 			// on success - this triggers PNR creation if context was empty
-			$sessionState['hasPnr'] = true;
+			$sessionState.hasPnr = true;
 		}
 		$recordLocator = '';
 		$openPnr = false;
 		$dropPnr = false;
 		$isIgnoreCmd = $type === 'ignore' || $type === null && StringUtil.startsWith($cmd, 'I');
 		if ($type === 'storePnr') {
-			$dropPnr = TSabreSavePnr.parseSavePnrOutput($output)['success'];
+			$dropPnr = TSabreSavePnr.parseSavePnrOutput($output).success;
 		} else if ($isIgnoreCmd) {
 			$dropPnr = this.constructor.wasIgnoredOk($output);
 		} else if ($type === 'ignoreKeepPnr') {
@@ -113,7 +113,7 @@ class UpdateSabreState
 		} else if (php.in_array($type, SessionStateHelper.$dropPnrContextCommands)) {
 			$dropPnr = true;
 		} else if ($type == 'changePcc' && CmsSabreTerminal.isSuccessChangePccOutput($output, $data)) {
-			$sessionState['pcc'] = $data;
+			$sessionState.pcc = $data;
 		} else if ($type == 'openPnr') {
 			$openPnrStatus = ImportPnrAction.detectOpenPnrStatus('sabre', $output);
 			if (php.in_array($openPnrStatus, ['notExisting', 'isRestricted'])) {
@@ -129,7 +129,7 @@ class UpdateSabreState
 		} else if ($type == 'searchPnr') {
 			if (this.constructor.wasSinglePnrOpenedFromSearch($output)) {
 				$parsed = PnrParser.parse($output);
-				$recordLocator = ($parsed['parsedData']['pnrInfo'] || {})['recordLocator'] || '';
+				$recordLocator = ($parsed.parsedData.pnrInfo || {}).recordLocator || '';
 				$openPnr = true;
 			} else if (this.constructor.isPnrListOutput($output)) {
 				$dropPnr = true;
@@ -137,36 +137,36 @@ class UpdateSabreState
 		} else if ($type == 'displayPnrFromList') {
 			if (this.constructor.wasPnrOpenedFromList($output)) {
 				$parsed = PnrParser.parse($output);
-				$recordLocator = ($parsed['parsedData']['pnrInfo'] || {})['recordLocator'] || '';
+				$recordLocator = ($parsed.parsedData.pnrInfo || {}).recordLocator || '';
 				$openPnr = true;
 			}
 		} else if ($type == 'changeArea' && $gdsInterface.isSuccessChangeAreaOutput($output)) {
 			$areaData = $getAreaData($data);
-			$areaData['area'] = $data;
+			$areaData.area = $data;
 			$sessionState = {...$areaData};
 		} else if ($type === 'sell') {
 			if (this.constructor.isSuccessSellOutput($output)) {
-				$sessionState['hasPnr'] = true;
+				$sessionState.hasPnr = true;
 			}
 		} else if ($type === 'sellFromLowFareSearch') {
 			// it would probably make sense to also set "canCreatePq",
 			// but this command triggers pricing only in Sabre
 			$parsed = SabrePricingParser.parse($output);
-			if (!php.isset($parsed['error'])) {
-				$sessionState['hasPnr'] = true;
+			if (!php.isset($parsed.error)) {
+				$sessionState.hasPnr = true;
 				if (this.constructor.isValidPricing($cmd, $output, $data)) {
-					$sessionState['canCreatePq'] = true;
+					$sessionState.canCreatePq = true;
 				}
 			}
 		}
 		if ($openPnr) {
-			$sessionState['recordLocator'] = $recordLocator;
-			$sessionState['hasPnr'] = true;
-			$sessionState['isPnrStored'] = true;
+			$sessionState.recordLocator = $recordLocator;
+			$sessionState.hasPnr = true;
+			$sessionState.isPnrStored = true;
 		} else if ($dropPnr) {
-			$sessionState['recordLocator'] = '';
-			$sessionState['hasPnr'] = false;
-			$sessionState['isPnrStored'] = false;
+			$sessionState.recordLocator = '';
+			$sessionState.hasPnr = false;
+			$sessionState.isPnrStored = false;
 		}
 		return $sessionState;
 	}
@@ -177,9 +177,9 @@ class UpdateSabreState
 		const $getAreaDataNorm = (letter) => ({...$getAreaData(letter)});
 		$self = new this($getAreaDataNorm);
 		$cmdParsed = CommandParser.parse($cmd);
-		$flatCmds = php.array_merge([$cmdParsed], $cmdParsed['followingCommands'] || []);
+		$flatCmds = php.array_merge([$cmdParsed], $cmdParsed.followingCommands || []);
 		for ($cmdRec of Object.values($flatCmds)) {
-			$sessionData = $self.updateState($cmdRec['cmd'], $output, $sessionData);
+			$sessionData = $self.updateState($cmdRec.cmd, $output, $sessionData);
 		}
 		$sessionData.cmdType = $cmdParsed ? $cmdParsed.type : null;
 		return $sessionData;

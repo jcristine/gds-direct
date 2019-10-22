@@ -24,21 +24,21 @@ class PnrHistoryParser {
 	static postProcessRcvdStandardPartMatches($matches) {
 		let $result, $originTypes;
 		$result = this.postProcessGroupMatches($matches);
-		$result['receivedDt'] = {
-			raw: $matches['receivedDtRaw'],
-			date: CommonParserHelpers.parsePartialDate($matches['receivedDate']),
-			time: CommonParserHelpers.decodeApolloTime($matches['receivedTime']),
-			timeZone: $matches['receivedTimezone'] === 'Z' ? 'UTC' : null,
+		$result.receivedDt = {
+			raw: $matches.receivedDtRaw,
+			date: CommonParserHelpers.parsePartialDate($matches.receivedDate),
+			time: CommonParserHelpers.decodeApolloTime($matches.receivedTime),
+			timeZone: $matches.receivedTimezone === 'Z' ? 'UTC' : null,
 		};
 		$originTypes = {
 			AG: 'agency',
 			RM: 'airline',
 		};
-		$result['originType'] = $originTypes[$matches['originType']] || null;
-		delete ($result['receivedDate']);
-		delete ($result['receivedTime']);
-		delete ($result['receivedTimezone']);
-		delete ($result['receivedDtRaw']);
+		$result.originType = $originTypes[$matches.originType] || null;
+		delete ($result.receivedDate);
+		delete ($result.receivedTime);
+		delete ($result.receivedTimezone);
+		delete ($result.receivedDtRaw);
 		return $result;
 	}
 
@@ -72,17 +72,17 @@ class PnrHistoryParser {
 			'$/';
 		if (php.preg_match($regex, $content, $matches = {})) {
 			$result = this.postProcessGroupMatches($matches);
-			$result['departureDate'] = {
-				raw: $result['departureDate'],
-				parsed: CommonParserHelpers.parsePartialDate($result['departureDate']),
+			$result.departureDate = {
+				raw: $result.departureDate,
+				parsed: CommonParserHelpers.parsePartialDate($result.departureDate),
 			};
-			$result['departureTime'] = php.empty($result['departureTime']) ? null : {
-				raw: $result['departureTime'],
-				parsed: CommonParserHelpers.decodeApolloTime($result['departureTime']),
+			$result.departureTime = php.empty($result.departureTime) ? null : {
+				raw: $result.departureTime,
+				parsed: CommonParserHelpers.decodeApolloTime($result.departureTime),
 			};
-			$result['destinationTime'] = php.empty($result['destinationTime']) ? null : {
-				raw: $result['destinationTime'],
-				parsed: CommonParserHelpers.decodeApolloTime($result['destinationTime']),
+			$result.destinationTime = php.empty($result.destinationTime) ? null : {
+				raw: $result.destinationTime,
+				parsed: CommonParserHelpers.decodeApolloTime($result.destinationTime),
 			};
 			return $result;
 		} else {
@@ -175,10 +175,10 @@ class PnrHistoryParser {
 
 			if (php.preg_match($regex, $text, $matches = {})) {
 				return {
-					receivedFrom: $matches['receivedFrom'],
+					receivedFrom: $matches.receivedFrom,
 					agentSign: {
-						raw: $matches['agencySignAndInitials'],
-						parsed: this.parseAgentSign($matches['agencySignAndInitials']),
+						raw: $matches.agencySignAndInitials,
+						parsed: this.parseAgentSign($matches.agencySignAndInitials),
 					},
 				};
 			}
@@ -284,8 +284,8 @@ class PnrHistoryParser {
 				[$_, $originSpecificText, $standardFormatText] = $matches;
 
 				if ($standardPart = this.parseRcvdStandardPart($standardFormatText)) {
-					$standardPart['originData'] = this.parseRcvdOriginSpecificPart($originSpecificText, $standardPart['originType']);
-					$standardPart['lineType'] = this.LINE_RCVD;
+					$standardPart.originData = this.parseRcvdOriginSpecificPart($originSpecificText, $standardPart.originType);
+					$standardPart.lineType = this.LINE_RCVD;
 					return $standardPart;
 				}
 			}
@@ -351,12 +351,12 @@ class PnrHistoryParser {
 		if (php.preg_match($regex, $content, $tokens = [])) {
 			return {
 				atfqLineType: 'paxBundle',
-				status: php.trim($tokens['status'], ' -'),
+				status: php.trim($tokens.status, ' -'),
 				passengerNumbers: {
-					raw: $tokens['passengerNumbers'],
+					raw: $tokens.passengerNumbers,
 				},
-				fareTypeCode: $tokens['fareTypeCode'],
-				date: {raw: $tokens['date']},
+				fareTypeCode: $tokens.fareTypeCode,
+				date: {raw: $tokens.date},
 			};
 		} else {
 			return {
@@ -388,7 +388,7 @@ class PnrHistoryParser {
 				if ($line = php.array_shift($lines)) {
 					if (php.preg_match($standardLineRegex, $line, $matches = {})) {
 						$result = this.postProcessRcvdStandardPartMatches($matches);
-						$result['originData'] = {
+						$result.originData = {
 							receivedFrom: $agentName,
 							agentSign: {
 								raw: $agencySignAndInitials,
@@ -417,27 +417,27 @@ class PnrHistoryParser {
 		$rcvd = null;
 		$unexpected = [];
 		for ($parsedLine of Object.values(php.array_reverse(this.parseLines($lines)))) {
-			$lineType = $parsedLine['lineType'];
-			delete ($parsedLine['lineType']);
+			$lineType = $parsedLine.lineType;
+			delete ($parsedLine.lineType);
 			if ($lineType === this.LINE_RCVD) {
 				$rcvd && $rcvdList.push($rcvd);
 				$rcvd = {rcvd: $parsedLine, actions: []};
 			} else if ($lineType === this.LINE_ACTION) {
 				$rcvd = $rcvd || {};
-				$rcvd['actions'] = $rcvd['actions'] || [];
-				$rcvd['actions'].push({
-					code: $parsedLine['code'],
-					content: $parsedLine['content'],
+				$rcvd.actions = $rcvd.actions || [];
+				$rcvd.actions.push({
+					code: $parsedLine.code,
+					content: $parsedLine.content,
 				});
 			} else {
 				$unexpected.push($parsedLine);
 			}
 		}
-		if ($rcvd && php.isset($rcvd['rcvd'])) {
+		if ($rcvd && php.isset($rcvd.rcvd)) {
 			$rcvdList.push($rcvd);
 		}
 		return {
-			header: $header ? $header['header'] : null,
+			header: $header ? $header.header : null,
 			firstRcvdCopyHeader: $firstRcvdCopy,
 			rcvdList: $rcvdList,
 			unexpected: $unexpected,
