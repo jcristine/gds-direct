@@ -41,10 +41,6 @@ const isConnection = async (prev, curr, geo) => {
  */
 const guessGkMarriages = async (itinerary, geo) => {
 	itinerary = [...itinerary];
-	if (itinerary.some(s => !s.departureDt || !s.destinationDt)) {
-		// CMS REBUILD
-		return Rej.NotFound('Can not guess GK marriages, as segments have not full dates');
-	}
 	let currentMarriage = 1;
 	const isPassive = seg => ['GK', 'AK', 'PE']
 		.includes(seg.segmentStatus);

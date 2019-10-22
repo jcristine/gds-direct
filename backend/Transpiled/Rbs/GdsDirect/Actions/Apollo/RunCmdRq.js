@@ -359,8 +359,6 @@ const RunCmdRq = ({
 			// as it may be not in same order in case of marriages...
 			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
 			const prevState = getSessionData();
-			itinerary = await guessGkMarriages(itinerary)
-				.catch(coverExc([Rej.NotFound], exc => itinerary));
 			const booked = await bookItinerary({itinerary, fallbackToGk: true})
 				.catch(coverExc([Rej.UnprocessableEntity], exc => {
 					if (exc.message.includes('DUPLICATE SEGMENT NOT PERMITTED') &&
@@ -505,12 +503,14 @@ const RunCmdRq = ({
 	const processCloneItinerary = async (aliasData) => {
 		const pcc = aliasData.pcc;
 		const segmentStatus = aliasData.segmentStatus || 'GK';
-		const seatNumber = aliasData.seatCount || 0;
+		const seatCount = aliasData.seatCount || 0;
 		const errors = checkEmulatedPcc(pcc);
 		if (!php.empty(errors)) {
 			return {errors: errors};
 		}
-		const itinerary = (await getCurrentPnr()).getItinerary();
+		let itinerary = (await getCurrentPnr()).getItinerary();
+		itinerary = await guessGkMarriages(itinerary)
+			.catch(coverExc([Rej.NotFound], exc => itinerary));
 		if (php.empty(itinerary)) {
 			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
 		}
@@ -537,12 +537,9 @@ const RunCmdRq = ({
 				: Errors.getMessage(Errors.PCC_GDS_ERROR, {pcc: pcc, response: cmdRec.output});
 			return {errors: [error]};
 		}
-		for (const [key, segment] of Object.entries(itinerary)) {
-			if (seatNumber >= 1 && seatNumber <= 9) {
-				itinerary[key].seatCount = seatNumber;
-			}
-			itinerary[key].segmentStatus = segmentStatus;
-		}
+		itinerary = itinerary.map(seg => ({
+			...seg, seatCount, segmentStatus,
+		}));
 		const fallbackToGk = segmentStatus === 'SS';
 		return bookItinerary({itinerary, fallbackToGk});
 	};
