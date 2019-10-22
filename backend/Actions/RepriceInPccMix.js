@@ -1,4 +1,4 @@
-const Diag = require('../LibWrappers/Diag.js');
+const BookViaGk = require('./BookViaGk/BookViaGk.js');
 const MultiPccTariffRules = require('../Repositories/MultiPccTariffRules.js');
 const MarriageItineraryParser = require('../Transpiled/Gds/Parsers/Amadeus/MarriageItineraryParser.js');
 const AmadeusUtils = require('../GdsHelpers/AmadeusUtils.js');
@@ -160,7 +160,10 @@ const RepriceInPccMix = async ({
 				return seg;
 			});
 		}
-		return reservation.itinerary;
+		return BookViaGk.guessGkMarriages(
+			reservation.itinerary,
+			stateful.getGeoProvider()
+		);
 	};
 
 	const main = async () => {

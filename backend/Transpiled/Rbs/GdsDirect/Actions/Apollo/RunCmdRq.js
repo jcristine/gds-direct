@@ -1,3 +1,4 @@
+const BookViaGk = require('../../../../../Actions/BookViaGk/BookViaGk.js');
 const BookViaGk_apollo = require('../../../../../Actions/BookViaGk/BookViaGk_apollo.js');
 const DateTime = require('../../../../Lib/Utils/DateTime.js');
 const Parse_fareSearch = require('gds-utils/src/text_format_processing/apollo/commands/Parse_fareSearch.js');
@@ -358,6 +359,8 @@ const RunCmdRq = ({
 			// as it may be not in same order in case of marriages...
 			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
 			const prevState = getSessionData();
+			itinerary = await guessGkMarriages(itinerary)
+				.catch(coverExc([Rej.NotFound], exc => itinerary));
 			const booked = await bookItinerary({itinerary, fallbackToGk: true})
 				.catch(coverExc([Rej.UnprocessableEntity], exc => {
 					if (exc.message.includes('DUPLICATE SEGMENT NOT PERMITTED') &&
@@ -455,58 +458,18 @@ const RunCmdRq = ({
 		return result;
 	};
 
-	/**
-	 * @param {IFullSegment} prev
-	 * @param {IFullSegment} curr
-	 */
-	const isConnection = async (prev, curr) => {
-		const prevTz = await geo.getTimezone(prev.destinationAirport);
-		const currTz = await geo.getTimezone(curr.departureAirport);
-		const prevUtc = DateTime.toUtc(prev.destinationDt.full, prevTz);
-		const currUtc = DateTime.toUtc(curr.departureDt.full, currTz);
-		const stayMs = new Date(currUtc).getTime() - new Date(prevUtc).getTime();
-		const stayHours = stayMs / 1000 / 60 / 60;
-
-		const prevCountry = await geo.getCountryCode(prev.destinationAirport);
-		const currCountry = await geo.getCountryCode(curr.departureAirport);
-		const isDomestic = prevCountry === currCountry;
-		const conxHours = isDomestic ? 4 : 24;
-
-		return stayHours <= conxHours;
-	};
-
-	/**
-	 * GK segments pasted by agent from dump do not have marriage numbers vital
-	 * for proper itinerary rebuild without getting an ADM penalty from airline
-	 *
-	 * this function guesses them like Booking Page does - by Conx, meaning
-	 * that if layover is less than a day, two segments will be treated as married
-	 *
-	 * this is not always true, though: it is possible to have first
-	 * and last segment married to each other whereas segments in
-	 * between - not, this guess mechanism won't cover such cases
-	 */
-	const guessMarriages = async (itinerary) => {
-		let currentMarriage = 1;
-		for (let i = 1; i < itinerary.length; ++i) {
-			const prev = itinerary[i - 1];
-			const curr = itinerary[i];
-			if (await isConnection(prev, curr)) {
-				prev.marriage = currentMarriage;
-				curr.marriage = currentMarriage;
-			} else {
-				++currentMarriage;
-			}
-		}
-		return itinerary;
+	const guessGkMarriages = async (itinerary) => {
+		return BookViaGk.guessGkMarriages(itinerary, geo);
 	};
 
 	const rebookAsSs = async (data) => {
 		const fallbackToGk = data.method !== 'allowCutting';
 		stateful.flushCalledCommands();
 		const pnr = await getCurrentPnr();
-		let itinerary = pnr.getReservation(stateful.getStartDt())
-			.itinerary
+		let itinerary = pnr.getReservation(stateful.getStartDt());
+		itinerary = await guessGkMarriages(itinerary)
+			.catch(coverExc([Rej.NotFound], exc => itinerary));
+		itinerary = itinerary
 			.filter((seg) => seg.segmentStatus === 'GK')
 			.map((seg) => ({...seg, segmentStatus: 'NN'}));
 		if (php.empty(itinerary)) {
@@ -514,10 +477,6 @@ const RunCmdRq = ({
 		}
 		const xCmd = 'X' + itinerary.map(s => s.segmentNumber).join('|');
 		await runCommand(xCmd);
-		if (data.method === 'guessMarriages') {
-			itinerary = await guessMarriages(itinerary)
-				.catch(coverExc([Rej.NotFound], exc => itinerary));
-		}
 		return bookItinerary({itinerary, fallbackToGk});
 	};
 
