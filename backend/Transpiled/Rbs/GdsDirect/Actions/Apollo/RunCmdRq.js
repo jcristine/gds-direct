@@ -508,7 +508,9 @@ const RunCmdRq = ({
 		if (!php.empty(errors)) {
 			return {errors: errors};
 		}
-		let itinerary = (await getCurrentPnr()).getItinerary();
+		let itinerary = (await getCurrentPnr())
+			.getReservation(stateful.getStartDt())
+			.itinerary;
 		itinerary = await guessGkMarriages(itinerary)
 			.catch(coverExc([Rej.NotFound], exc => itinerary));
 		if (php.empty(itinerary)) {
