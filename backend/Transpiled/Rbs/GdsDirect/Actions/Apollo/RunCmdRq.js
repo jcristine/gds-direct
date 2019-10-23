@@ -548,7 +548,16 @@ const RunCmdRq = ({
 			seatCount: seatCount || seg.seatCount,
 		}));
 		const fallbackToGk = segmentStatus === 'SS';
-		return bookItinerary({itinerary, fallbackToGk});
+		return bookItinerary({itinerary, fallbackToGk})
+			.catch(coverExc([Rej.UnprocessableEntity], exc => {
+				if (exc.message.includes('CK ACTN CODE') &&
+					!['GK', 'SS', 'NN', 'LL'].includes(segmentStatus)
+				) {
+					exc.message = 'Invalid status ' + segmentStatus + ' - ' + exc.message;
+					exc.httpStatusCode = Rej.BadRequest.httpStatusCode;
+				}
+				return Promise.reject(exc);
+			}));
 	};
 
 	const handlePnrSave = (recordLocator) => {
