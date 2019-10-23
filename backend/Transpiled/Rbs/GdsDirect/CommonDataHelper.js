@@ -252,7 +252,7 @@ class CommonDataHelper {
 	}
 
 	/** @param stateful = require('StatefulSession.js')() */
-	static async checkSavePnrRight({stateful, Pccs = require('../../../Repositories/Pccs.js')}) {
+	static async checkSavePnrRights({stateful, Pccs = require('../../../Repositories/Pccs.js')}) {
 		const state = stateful.getSessionData();
 		const agent = stateful.getAgent();
 		const currentPcc = state.pcc;

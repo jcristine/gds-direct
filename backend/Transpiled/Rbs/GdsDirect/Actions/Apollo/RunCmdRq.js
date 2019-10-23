@@ -585,7 +585,7 @@ const RunCmdRq = ({
 	};
 
 	const processSavePnr = async () => {
-		await CommonDataHelper.checkSavePnrRight({stateful, Pccs});
+		await CommonDataHelper.checkSavePnrRights({stateful, Pccs});
 
 		const pnr = await getCurrentPnr();
 		const pnrDump = pnr.getDump();

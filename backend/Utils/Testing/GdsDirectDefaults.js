@@ -300,7 +300,7 @@ class GdsDirectDefaults {
 			emcUser: {
 				id: agentId,
 				displayName: agent ? agent.getLogin() : null,
-				roles: agent.getRoles(),
+				roles: [...agent.getRoles(), 'can_save_pnr'],
 			},
 			leadIdToData: {
 				[session.context.travelRequestId]: {
