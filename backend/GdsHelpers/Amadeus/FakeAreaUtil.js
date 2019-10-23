@@ -64,15 +64,15 @@ const FakeAreaUtil = ({
 	stateful, amadeus = AmadeusClient.makeCustom(),
 }) => {
 	const startNewAreaSession = async (area, pcc = null) => {
-		const $row = GdsSessions.makeDefaultAreaState('amadeus');
-		pcc = pcc || $row.pcc;
-		$row.area = area;
-		$row.pcc = pcc;
-		$row.gdsData = await amadeus.startSession({
-			profileName: GdsProfiles.chooseAmaProfile($row.pcc),
+		const row = GdsSessions.makeDefaultAreaState('amadeus');
+		pcc = pcc || row.pcc;
+		row.area = area;
+		row.pcc = pcc;
+		row.gdsData = await amadeus.startSession({
+			profileName: GdsProfiles.chooseAmaProfile(row.pcc),
 			pcc: pcc,
 		});
-		return $row;
+		return row;
 	};
 
 	const updateGdsData = async (newAreaState) => {
@@ -89,14 +89,14 @@ const FakeAreaUtil = ({
 	const changePcc = async (pcc) => {
 		const calledCommands = [];
 
-		if (stateful.getSessionData()['pcc'] === pcc) {
-			const msg = Errors.getMessage(Errors.ALREADY_IN_THIS_PCC, {'pcc': pcc});
+		if (stateful.getSessionData().pcc === pcc) {
+			const msg = Errors.getMessage(Errors.ALREADY_IN_THIS_PCC, {pcc});
 			return Rej.BadRequest(msg);
 		}
 
 		// check that there is no PNR in session to match GDS behaviour
 		if (stateful.getSessionData().hasPnr) {
-			const msg = Errors.getMessage(Errors.LEAVE_PNR_CONTEXT, {'pcc': pcc});
+			const msg = Errors.getMessage(Errors.LEAVE_PNR_CONTEXT, {pcc});
 			return Rej.BadRequest(msg);
 		}
 
@@ -110,7 +110,7 @@ const FakeAreaUtil = ({
 		const jdCmdRec = await amadeus.runCmd({command: 'JD'}, areaState.gdsData);
 		const jdDump = jdCmdRec.output;
 		const parsed = WorkAreaScreenParser.parse(jdDump);
-		if (parsed['pcc'] !== pcc) {
+		if (parsed.pcc !== pcc) {
 			amadeus.closeSession(areaState.gdsData);
 			const msg = 'Failed to change PCC - resulting PCC ' + parsed.pcc + ' does not match requested PCC ' + pcc;
 			return Rej.UnprocessableEntity(msg, {jdDump});
