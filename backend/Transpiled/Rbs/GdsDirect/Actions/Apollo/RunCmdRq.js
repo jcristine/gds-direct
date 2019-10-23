@@ -463,7 +463,7 @@ const RunCmdRq = ({
 		return bookItinerary({itinerary: newSegments, fallbackToGk: false})
 			.catch(coverExc([Rej.UnprocessableEntity], exc => {
 				if (bookingClass && exc.message.includes('CLASS NOT FOUND - PASSIVE PROHIBITED BY AIRLINE')) {
-					exc.httpStatusCode = Rej.BadRequest;
+					exc.httpStatusCode = Rej.BadRequest.httpStatusCode;
 					exc.message = 'Invalid RBD ' + bookingClass + ' - ' + exc.message;
 				}
 				return Promise.reject(exc);
