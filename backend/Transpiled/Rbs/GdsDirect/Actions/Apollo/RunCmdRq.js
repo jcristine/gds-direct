@@ -1,7 +1,5 @@
 const GkUtil = require('../../../../../Actions/BookViaGk/GkUtil.js');
-const BookViaGk = require('../../../../../Actions/BookViaGk/BookViaGk.js');
 const BookViaGk_apollo = require('../../../../../Actions/BookViaGk/BookViaGk_apollo.js');
-const DateTime = require('../../../../Lib/Utils/DateTime.js');
 const Parse_fareSearch = require('gds-utils/src/text_format_processing/apollo/commands/Parse_fareSearch.js');
 const SortItinerary = require('../../../../../Actions/SortItinerary.js');
 const CmdLogs = require('../../../../../Repositories/CmdLogs.js');
@@ -9,7 +7,6 @@ const PrepareHbFexMask = require('../../../../../Actions/PrepareHbFexMask.js');
 const StorePricing_apollo = require('../../../../../Actions/StorePricing_apollo.js');
 const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
 const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
-const TravelportBuildItineraryActionViaXml = require('../../../GdsAction/TravelportBuildItineraryActionViaXml.js');
 const RunCmdHelper = require('./RunCmdRq/RunCmdHelper.js');
 const ModifyCmdOutput = require('./RunCmdRq/ModifyCmdOutput.js');
 const RunRealCmd = require('./RunCmdRq/RunRealCmd.js');
@@ -17,12 +14,13 @@ const GetCurrentPnr = require('../../../../../Actions/GetCurrentPnr.js');
 
 // utils
 const php = require('klesun-node-tools/src/Transpiled/php.js');
+const _ = require('lodash');
+
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const TravelportUtils = require("../../../../../GdsHelpers/TravelportUtils.js");
 const {fetchUntil, fetchAll, extractPager} = TravelportUtils;
-const {findSegmentNumberInPnr} = require('../Common/ItinerarySegments');
 
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {ignoreExc} = require('../../../../../Utils/TmpLib.js');
@@ -338,6 +336,20 @@ const RunCmdRq = ({
 		return {calledCommands: [cmdRec]};
 	};
 
+	const findDupeSegments = (itinerary) => {
+		itinerary = itinerary.map((s, i) => ({...s, position: +i + 1}));
+		const grouped = _.groupBy(itinerary, s => JSON.stringify([
+			s.airline, +s.flightNumber, s.departureDt,
+			s.departureAirport, s.destinationAirport,
+		]));
+		for (const [hash, dupes] of Object.entries(grouped)) {
+			if (dupes.length > 1) {
+				return dupes;
+			}
+		}
+		return null;
+	};
+
 	const bookPnr = async (reservation) => {
 		const passengers = reservation.passengers || [];
 		let itinerary = reservation.itinerary || [];
@@ -368,6 +380,14 @@ const RunCmdRq = ({
 						) {
 							exc.message = 'Itinerary present - ' + exc.message;
 							exc.httpStatusCode = Rej.BadRequest.httpStatusCode;
+						}
+					} else {
+						if (exc.message.includes('DUPLICATE SEGMENT NOT PERMITTED')) {
+							const dupes = findDupeSegments(itinerary);
+							if (dupes) {
+								exc.message = 'Duplicate segments at positions: ' +
+									dupes.map(d => d.position).join(',') + ' - ' + exc.message;
+							}
 						}
 					}
 					return Promise.reject(exc);
