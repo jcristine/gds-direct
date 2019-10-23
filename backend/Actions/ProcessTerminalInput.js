@@ -274,13 +274,22 @@ const ProcessTerminalInput = async ({
 
 	const getDefaultPcc = async (area, stateful) => {
 		const gds = stateful.gds;
-		const agentId = stateful.getAgent().getId();
+		const agent = stateful.getAgent();
+		const agentId = agent.getId();
+		const allowedPccs = agent.getAllowedPccRecs()
+			.filter(r => r.gds === gds)
+			.map(r => r.pcc);
 		const areaSettings = await AreaSettings.getByAgent(agentId);
 		let configPcc = areaSettings
 			.filter(r => r.area === area && r.gds === stateful.gds)
 			.map(r => r.defaultPcc)[0];
 
 		configPcc = configPcc || TerminalSettings.getForcedStartPcc(gds, area);
+		if (allowedPccs.length > 0 &&
+			!allowedPccs.includes(configPcc)
+		) {
+			configPcc = allowedPccs[0];
+		}
 		return configPcc;
 	};
 
