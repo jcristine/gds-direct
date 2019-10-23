@@ -103,6 +103,12 @@ export class PqParser
 						return {rbsData: rbsData};
 					});
 				return this.modal(pqBtnData, CLOSE_PQ_WINDOW, importPq);
+			})
+			.catch(exc => {
+				if (exc) {
+					exc.message = 'Failed to add PQ - ' + exc.message;
+				}
+				return Promise.reject(exc);
 			});
 	}
 }

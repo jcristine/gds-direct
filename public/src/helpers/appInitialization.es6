@@ -104,6 +104,10 @@ export const initGlobEvents = (htmlRootDom) => {
 			// if you reject() without an argument, no info, no point logging it
 			return false;
 		}
+		if (e.httpStatusCode) {
+			// server error responses, already reported to diag if relevant
+			return false;
+		}
 		let {message, filename, lineno, colno, error} = e;
 		let stack = error.stack;
 		let keyIndex = lineno + ':' + colno;
