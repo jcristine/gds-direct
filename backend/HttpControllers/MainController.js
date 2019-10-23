@@ -109,7 +109,8 @@ const withAuth = (userAction) => (req, res) => {
 		if (typeof userAction !== 'function') {
 			return InternalServerError('Action is not a function - ' + userAction);
 		}
-		const whenEmcData = rqBody.globalAuthLogin && rqBody.globalAuthPassword
+		const isGlobalAuth = rqBody.globalAuthLogin && rqBody.globalAuthPassword;
+		const whenEmcData = isGlobalAuth
 			? getGlobalAuthData(rqBody.globalAuthLogin, rqBody.globalAuthPassword)
 			: Emc.getCachedSessionInfo(rqBody.emcSessionId);
 
@@ -121,6 +122,11 @@ const withAuth = (userAction) => (req, res) => {
 
 		if (rqBody.isForeignProjectEmcId) {
 			emcData = await normalizeForeignProjectEmcData(emcData).catch(exc => emcData);
+		}
+		if (!isGlobalAuth) {
+			// all EMC users are supposed have these rights, but it probably
+			// would make sense to make them configurable in EMC as well in future
+			emcData.data.user.roles.push('can_save_pnr');
 		}
 		for (const role of rqBody.disabledRoles || []) {
 			// for debug

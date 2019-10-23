@@ -248,7 +248,7 @@ const execute = ({
 	};
 
 	const processSavePnr = async () => {
-		await CommonDataHelper.checkCreatePcc({stateful, Pccs});
+		await CommonDataHelper.checkSavePnrRight({stateful, Pccs});
 
 		let $calledCommands, $pnr, $errors, $login, $cmd, $writeCommands, $output, $parsedStoredPnr, $rloc;
 
@@ -876,7 +876,7 @@ const execute = ({
 			errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: cmd, type: type}));
 		}
 		if (doesStorePnr(cmd)) {
-			await CommonDataHelper.checkCreatePcc({stateful, Pccs});
+			await CommonDataHelper.checkSavePnrRight({stateful, Pccs});
 		}
 		if (type == 'deletePnrField' || type == 'deletePnr') {
 			if (stateful.getSessionData().isPnrStored &&

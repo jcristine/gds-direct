@@ -163,7 +163,7 @@ const checkIsForbidden = ({
 		}
 		if (doesStorePnr(cmd)) {
 			const pnr = await getStoredPnr();
-			await CommonDataHelper.checkCreatePcc({stateful, Pccs});
+			await CommonDataHelper.checkSavePnrRight({stateful, Pccs});
 			if (pnr) {
 				for (const remark of Object.values(pnr.getRemarks())) {
 					if (GenericRemarkParser.CMS_LEAD_REMARK !== remark.remarkType) continue;

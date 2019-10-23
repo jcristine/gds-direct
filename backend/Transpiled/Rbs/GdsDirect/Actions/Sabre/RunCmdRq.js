@@ -888,7 +888,7 @@ const execute = ({
 		if (['DK8H', '5E9H'].includes(pcc)) {
 			return false;
 		}
-		return CommonDataHelper.checkCreatePcc({stateful, Pccs})
+		return CommonDataHelper.checkSavePnrRight({stateful, Pccs})
 			.then(() => true)
 			.catch(coverExc([Rej.Forbidden], exc => false));
 	};
