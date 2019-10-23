@@ -52,8 +52,19 @@ const guessGkMarriages = async (itinerary, geo) => {
 };
 
 const chooseTmpCls = (seg) => {
-	// British Airways allows only following classes for GK: B,C,D,H,I,J,K,L,M,N,O,Q,R,S,V,Y
-	return seg.bookingClass !== 'Y' ? 'Y' : 'S';
+	// BA allows: B,C,D,H,I,J,K,L,M,N,O,Q,R,S,V,Y
+	// SK allows: C,D,E,H,K,L,M,Q,T,U,W,Z
+	// AT allows: Q,W,R,T,Y,U,O,P,D,G,H,J,K,L,X,C,V,B,M
+	const defaultCls = {
+		SK: 'W',
+	}[seg.airline] || 'Y';
+
+	const fallbackCls = {
+		SK: 'Z',
+		AT: 'Q',
+	}[seg.airline] || 'S';
+
+	return seg.bookingClass !== defaultCls ? defaultCls : fallbackCls;
 };
 
 exports.chooseTmpCls = chooseTmpCls;
