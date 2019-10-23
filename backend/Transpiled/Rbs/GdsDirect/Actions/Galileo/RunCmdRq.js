@@ -684,25 +684,24 @@ const RunCmdRq = ({
 	};
 
 	const processCloneItinerary = async (aliasData) => {
-		let pcc, segmentStatus, seatNumber, itinerary, emptyAreas, area, isSellStatus, key, segment, result,
-			calledCommands;
+		const pcc = aliasData.pcc;
+		const segmentStatus = aliasData.segmentStatus || 'AK';
+		const seatNumber = aliasData.seatCount || 0;
 
-		pcc = aliasData.pcc;
-		segmentStatus = aliasData.segmentStatus || 'AK';
-		seatNumber = aliasData.seatCount || 0;
-
-		if (php.empty(itinerary = (await getCurrentPnr()).getItinerary())) {
+		const itinerary = (await getCurrentPnr()).getItinerary();
+		if (php.empty(itinerary)) {
 			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
 		}
-		if (php.empty(emptyAreas = getEmptyAreas())) {
+		const emptyAreas = getEmptyAreas();
+		if (php.empty(emptyAreas)) {
 			return {errors: [Errors.getMessage(Errors.NO_FREE_AREAS)]};
 		}
 		if (!getSessionData().isPnrStored && !aliasData.keepOriginal && segmentStatus !== 'AK') {
 			await runCommand('I', false); // ignore the itinerary it initial area
 		}
-		area = emptyAreas[0];
-		isSellStatus = php.in_array(segmentStatus, ['HS', 'SS']);
-		for ([key, segment] of Object.entries(itinerary)) {
+		const area = emptyAreas[0];
+		const isSellStatus = php.in_array(segmentStatus, ['HS', 'SS']);
+		for (const [key, segment] of Object.entries(itinerary)) {
 			if (seatNumber >= 1 && seatNumber <= 9) {
 				itinerary[key].seatCount = seatNumber;
 			}
@@ -714,11 +713,11 @@ const RunCmdRq = ({
 			} || {})[segmentStatus] || segmentStatus;
 		}
 		stateful.flushCalledCommands();
-		result = await (new RebuildInPccAction({
+		const result = await (new RebuildInPccAction({
 			useXml, travelport, baseDate: stateful.getStartDt(),
 		})).setSession(stateful)
 			.fallbackToAk(isSellStatus).execute(area, pcc, itinerary);
-		calledCommands = stateful.flushCalledCommands();
+		let calledCommands = stateful.flushCalledCommands();
 		if (php.empty(result.errors)) {
 		// if no error - show only the result
 			calledCommands = php.array_slice(calledCommands, -1);
