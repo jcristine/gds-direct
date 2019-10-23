@@ -184,21 +184,6 @@ const RunCmdHelper = ({
 			: prepareToSaveExistingPnr(usedCmds);
 	};
 
-	const checkEmulatedPcc = ($pcc) => {
-		let $errors;
-		$errors = [];
-		if (stateful.getAgent().canSwitchToAnyPcc()) {
-			return [];
-		}
-		if ($pcc === '2CX8') {
-			$errors.push('This PCC is restricted. Please use 2G2H instead.');
-		}
-		if (php.in_array($pcc, ['2F9H', '2E8U'])) {
-			$errors.push(Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_US, {pcc: $pcc}));
-		}
-		return $errors;
-	};
-
 	const isSuccessfulFsCommand = ($cmd, $dump) => {
 		let $keywords, $type, $isFsCmd, $isFsSuccessful;
 		$keywords = [
@@ -232,7 +217,6 @@ const RunCmdHelper = ({
 		flattenCmds,
 		doesStorePnr,
 		prepareToSavePnr,
-		checkEmulatedPcc,
 		runCmd,
 		runCommand,
 		areAllCouponsVoided,

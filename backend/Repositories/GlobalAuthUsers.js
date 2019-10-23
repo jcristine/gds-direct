@@ -25,7 +25,7 @@ const users = [
 		roles: [],
 		// TODO: implement!
 		allowedPccRecs: [
-			{gds: 'apollo', pcc: '2F3K'},
+			{gds: 'amadeus', pcc: 'LAXGO3106'},
 		],
 	},
 	{

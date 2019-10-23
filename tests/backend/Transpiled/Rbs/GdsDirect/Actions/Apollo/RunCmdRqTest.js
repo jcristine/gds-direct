@@ -150,7 +150,7 @@ class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
 				'status': 'forbidden',
 				'sessionData': {'pcc': '2G55'},
 				'userMessages': [
-					'This PCC is restricted. Please use 2G2H instead.',
+					'This PCC is restricted. Please use 2G2H instead',
 				],
 			},
 			'sessionInfo': {

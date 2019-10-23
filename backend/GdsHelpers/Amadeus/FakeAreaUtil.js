@@ -1,3 +1,4 @@
+const CommonDataHelper = require('../../Transpiled/Rbs/GdsDirect/CommonDataHelper.js');
 const WorkAreaScreenParser = require('../../Transpiled/Gds/Parsers/Amadeus/WorkAreaScreenParser.js');
 const GdsProfiles = require('../../Repositories/GdsProfiles.js');
 const AmadeusClient = require('../../GdsClients/AmadeusClient.js');
@@ -93,12 +94,12 @@ const FakeAreaUtil = ({
 			const msg = Errors.getMessage(Errors.ALREADY_IN_THIS_PCC, {pcc});
 			return Rej.BadRequest(msg);
 		}
-
 		// check that there is no PNR in session to match GDS behaviour
 		if (stateful.getSessionData().hasPnr) {
 			const msg = Errors.getMessage(Errors.LEAVE_PNR_CONTEXT, {pcc});
 			return Rej.BadRequest(msg);
 		}
+		await CommonDataHelper.checkEmulatePccRights({stateful, pcc});
 
 		const areaState = await startNewAreaSession(stateful.getSessionData().area, pcc)
 			.catch(exc => formatGtlPccError(exc, pcc));

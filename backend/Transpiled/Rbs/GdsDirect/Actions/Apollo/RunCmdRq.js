@@ -129,7 +129,6 @@ const RunCmdRq = ({
 	const {
 		flattenCmds,
 		prepareToSavePnr,
-		checkEmulatedPcc,
 		runCmd,
 		runCommand,
 	} = RunCmdHelper({stateful, gdsClients});
@@ -528,10 +527,7 @@ const RunCmdRq = ({
 		const pcc = aliasData.pcc;
 		const segmentStatus = aliasData.segmentStatus || 'GK';
 		const seatCount = aliasData.seatCount || 0;
-		const errors = checkEmulatedPcc(pcc);
-		if (!php.empty(errors)) {
-			return {errors: errors};
-		}
+		await CommonDataHelper.checkEmulatePccRights({stateful, pcc});
 		let itinerary = (await getCurrentPnr())
 			.getReservation(stateful.getStartDt())
 			.itinerary;

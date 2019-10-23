@@ -59,7 +59,7 @@ const checkIsForbidden = ({
 	Pccs = require('../../../../../../Repositories/Pccs.js'),
 	gdsClients = GdsSession.makeGdsClients(),
 }) => {
-	const {checkEmulatedPcc, areAllCouponsVoided, doesStorePnr} = RunCmdHelper({stateful, gdsClients});
+	const {areAllCouponsVoided, doesStorePnr} = RunCmdHelper({stateful, gdsClients});
 
 	/** @param $data = CommandParser::parseChangePnrRemarks()['data'] */
 	const checkChangeRemarks = async ($data) => {
@@ -176,7 +176,7 @@ const checkIsForbidden = ({
 			}
 		}
 		if (type === 'changePcc') {
-			errors.push(...checkEmulatedPcc(parsedCmd.data));
+			await CommonDataHelper.checkEmulatePccRights({stateful, pcc: parsedCmd.data});
 		}
 		for (const flatCmd of Object.values(flatCmds)) {
 			if (flatCmd.type === 'changePnrRemarks') {

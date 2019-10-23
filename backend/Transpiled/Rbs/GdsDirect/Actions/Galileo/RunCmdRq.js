@@ -439,6 +439,9 @@ const RunCmdRq = ({
 		} else if (php.in_array(type, CommonDataHelper.getTotallyForbiddenCommands())) {
 			errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: cmd, type: type}));
 		}
+		if (type === 'changePcc') {
+			await CommonDataHelper.checkEmulatePccRights({stateful, pcc: parsedCmd.data});
+		}
 		if (php.in_array('deletePnrField', php.array_column(flatCmds, 'type'))) {
 			if (!agent.canEditTicketedPnr()) {
 				const pnr = await getStoredPnr();

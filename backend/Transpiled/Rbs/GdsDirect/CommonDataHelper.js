@@ -283,6 +283,38 @@ class CommonDataHelper {
 			return Promise.resolve();
 		}
 	}
+
+	/** @param stateful = require('StatefulSession.js')() */
+	static async checkEmulatePccRights({stateful, pcc}) {
+		const gds = stateful.gds;
+		const agent = stateful.getAgent();
+		if (agent.canSwitchToAnyPcc()) {
+			return Promise.resolve();
+		}
+		const allowedPccRecs = agent.getAllowedPccRecs();
+		if (allowedPccRecs.length > 0 &&
+			!allowedPccRecs.some(rec => rec.gds === gds && rec.pcc === pcc)
+		) {
+			const msg = 'PCC ' + pcc + ' emulation is not allowed as it is ' +
+				'not in your list (' + allowedPccRecs.map(r => r.pcc) + ')';
+			return Rej.Forbidden(msg);
+		}
+		if (gds === 'sabre') {
+			if (['52ZG', '3LEJ'].includes(pcc) &&
+				!agent.canEmulateToRestrictedSabrePccs()
+			) {
+				return Rej.Forbidden('This PCC is restricted');
+			}
+		} else if (gds === 'apollo') {
+			if (pcc === '2CX8') {
+				return Rej.Forbidden('This PCC is restricted. Please use 2G2H instead');
+			} else if (['2F9H', '2E8U'].includes(pcc)) {
+				const msg = Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_US, {pcc});
+				return Rej.Forbidden(msg);
+			}
+		}
+		return Promise.resolve();
+	}
 }
 
 module.exports = CommonDataHelper;

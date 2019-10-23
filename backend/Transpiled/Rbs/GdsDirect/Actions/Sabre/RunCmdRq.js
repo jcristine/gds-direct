@@ -217,27 +217,6 @@ const execute = ({
 		return 'DK' + $number;
 	};
 
-	const getRestrictedPccs =  () => {
-		return ['52ZG', '3LEJ'];
-	};
-
-	const isPccAllowed =  ($pcc) => {
-		return php.count(checkEmulatedPcc($pcc)) === 0;
-	};
-
-	const checkEmulatedPcc =  ($pcc) => {
-		if (getAgent().canSwitchToAnyPcc()) {
-			return [];
-		} else if (
-			!getAgent().canEmulateToRestrictedSabrePccs() &&
-			php.in_array($pcc, getRestrictedPccs())
-		) {
-			return ['This PCC is restricted.'];
-		} else {
-			return [];
-		}
-	};
-
 	const getSessionData =  () => {
 		return stateful.getSessionData();
 	};
@@ -420,7 +399,7 @@ const execute = ({
 			}
 		}
 		if (type === 'changePcc') {
-			errors = php.array_merge(errors, checkEmulatedPcc(parsedCmd.data));
+			await CommonDataHelper.checkEmulatePccRights({stateful, pcc: parsedCmd.data});
 		}
 		if (doesStorePnr(cmd)) {
 			const state = stateful.getSessionData();
@@ -500,16 +479,14 @@ const execute = ({
 		return changeAreaInGds($area);
 	};
 
-	const emulateInFreeArea = async  ($pcc, $keepOriginal) => {
+	const emulateInFreeArea = async  (pcc, keepOriginal) => {
 		let $emptyAreas, $area, $areaChange, $errors, $error, $output;
 
-		if (!isPccAllowed($pcc)) {
-			return {errors: ['This PCC is restricted.']};
-		}
+		await CommonDataHelper.checkEmulatePccRights({stateful, pcc});
 		if (php.empty($emptyAreas = getEmptyAreas())) {
 			return {errors: [Errors.getMessage(Errors.NO_FREE_AREAS)]};
 		}
-		if (!getSessionData().isPnrStored && !$keepOriginal) {
+		if (!getSessionData().isPnrStored && !keepOriginal) {
 			await runCommand('I'); // ignore the itinerary it initial area
 		}
 		$area = $emptyAreas[0];
@@ -523,11 +500,11 @@ const execute = ({
 			});
 			return {errors: [$error]};
 		}
-		$output = php.trim(await runCommand('AAA' + $pcc));
-		if (getSessionData().pcc !== $pcc) {
+		$output = php.trim(await runCommand('AAA' + pcc));
+		if (getSessionData().pcc !== pcc) {
 			$error = $output === '¥NOT ALLOWED THIS CITY¥'
-				? Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_GDS, {pcc: $pcc, gds: 'sabre'})
-				: Errors.getMessage(Errors.PCC_GDS_ERROR, {pcc: $pcc, response: php.trim($output)});
+				? Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_GDS, {pcc: pcc, gds: 'sabre'})
+				: Errors.getMessage(Errors.PCC_GDS_ERROR, {pcc: pcc, response: php.trim($output)});
 			return {errors: [$error]};
 		} else {
 			return {calledCommands: stateful.flushCalledCommands()};

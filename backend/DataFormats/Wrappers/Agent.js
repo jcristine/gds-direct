@@ -16,6 +16,7 @@ const Agent = (emcUser) => {
 		getFsCallsUsedRec: () => Agents.getFsCallsUsed(emcUser.id),
 		getFsLimit: () => (emcUser.settings || {}).gds_direct_fs_limit || null,
 		getUsageLimit: () => (emcUser.settings || {}).gds_direct_usage_limit || null,
+		getAllowedPccRecs: () => emcUser.allowedPccRecs || [],
 
 		canIssueTickets                : () => hasRole('NEW_GDS_DIRECT_TICKETING'),
 		canProcessQueues               : () => hasRole('NEW_GDS_DIRECT_QUEUE_PROCESSING'),
