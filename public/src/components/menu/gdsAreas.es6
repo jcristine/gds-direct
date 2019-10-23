@@ -59,7 +59,10 @@ class GdsButtons extends ButtonPopOver
 
 	build()
 	{
-		GDS_LIST.map( name => {
+		const allowedPccRecs = (window.GdsDirectPlusParams.auth || {}).allowedPccRecs || [];
+		const allowedGdses = !allowedPccRecs.length ? GDS_LIST :
+			[...new Set(allowedPccRecs.map(r => r.gds))];
+		allowedGdses.map( name => {
 			this.popContent.appendChild(
 				this.gdsButton(name)
 			);

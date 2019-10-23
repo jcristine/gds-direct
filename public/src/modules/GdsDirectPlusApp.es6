@@ -110,13 +110,13 @@ export default class GdsDirectPlusApp
 		const {settings, buffer, auth} = viewData;
 
 		htmlRootDom.classList.add('gds-direct-plus-root');
+		window.GdsDirectPlusParams.auth = auth;
 
 		this.params 		= {travelRequestId};
 		this.chatContainer	= document.getElementById(chatContainerId || 'chat-plugin-container');
 		this.offset			= OFFSET_DEFAULT; //menu
 		this.container 		= new ContainerMain({htmlRootDom, terminalThemes});
 
-		window.GdsDirectPlusParams.auth = auth;
 
 		const { keyBindings, gdsAreaSettings }	= this._getGdsDefaultSettings(settings);
 
