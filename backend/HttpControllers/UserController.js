@@ -42,6 +42,13 @@ exports.getView = (reqBody, emcResult) => {
 			if (!Agent(emcResult.user).canSeeCcNumbers()) {
 				buffer = MaskUtil.maskCcNumbers(buffer);
 			}
+			const matchesGds = r => r.gds === settings.common.currentGds;
+			const allowedPccRecs = emcResult.user.allowedPccRecs || [];
+			if (allowedPccRecs.length > 0 &&
+				!allowedPccRecs.some(matchesGds)
+			) {
+				settings.common.currentGds = allowedPccRecs[0].gds;
+			}
 
 			return {
 				enabled: true,
