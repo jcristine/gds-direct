@@ -11,9 +11,8 @@ import {Quotes}                 from "./menu/quotes";
 import {MenuHideButton}         from "./menu/hideMenu";
 import {PQ_MODAL_PROVIDED}         from "./../actions/priceQuoutes.es6";
 import {getStore} from "../store";
-import ReprotectionButton from "./menu/ReprotectionButton";
-let Help = require('./popovers/help.es6').default;
-let PnrTools = require('./popovers/PnrTools.es6').default;
+const Help = require('./popovers/help.es6').default;
+const PnrTools = require('./popovers/PnrTools.es6').default;
 
 export default class MenuPanel extends Component
 {

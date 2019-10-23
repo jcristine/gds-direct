@@ -22,7 +22,7 @@ export class GdsAreas extends Component
 			sessionIndex	: current.get('sessionIndex'),
 			areaList 		: current.get('list'),
 			idxToInfo		: current.get('idxToInfo') || {},
-		})
+		});
 	}
 
 	_renderer()
@@ -54,7 +54,7 @@ class GdsButtons extends ButtonPopOver
 
 	makeTrigger()
 	{
-		return super.makeTrigger({className : 'btn btn-primary font-bold pos-rlt has-drop-down'})
+		return super.makeTrigger({className : 'btn btn-primary font-bold pos-rlt has-drop-down', title: 'Execution GDS'});
 	}
 
 	build()
@@ -63,7 +63,7 @@ class GdsButtons extends ButtonPopOver
 			this.popContent.appendChild(
 				this.gdsButton(name)
 			);
-		})
+		});
 	}
 
 	gdsButton(gdsName)
@@ -73,7 +73,7 @@ class GdsButtons extends ButtonPopOver
 			onclick 	: () => {
 				CHANGE_GDS(gdsName);
 				this.popover.close();
-			}
+			},
 		});
 	}
 
@@ -82,7 +82,7 @@ class GdsButtons extends ButtonPopOver
 		this.areaList.map( (area, index) => {
 			context.appendChild(
 				this.makeArea(area, index)
-			)
+			);
 		});
 	}
 
@@ -110,8 +110,8 @@ class GdsButtons extends ButtonPopOver
 			disabled	:  isActive,
 			onclick		: e => {
 				e.target.disabled = true;
-				CHANGE_SESSION_BY_MENU(AREA_LIST[index])
-			}
+				CHANGE_SESSION_BY_MENU(AREA_LIST[index]);
+			},
 		});
 	}
 }

@@ -14,8 +14,8 @@ export class LanguageButtons extends Component
 	setState({language})
 	{
 		return super.setState({
-			language
-		})
+			language,
+		});
 	}
 
 	_renderer()
@@ -40,7 +40,11 @@ class LanguageButton extends ButtonPopOver
 
 	makeTrigger()
 	{
-		return super.makeTrigger({className : 'btn btn-primary font-bold pos-rlt has-drop-down', style : 'text-transform : uppercase'})
+		return super.makeTrigger({
+			className : 'btn btn-primary font-bold pos-rlt has-drop-down',
+			style : 'text-transform : uppercase',
+			title: 'Input Dialect',
+		});
 	}
 
 	build()
@@ -57,6 +61,6 @@ class LanguageButton extends ButtonPopOver
 			this.popContent.appendChild(
 				button
 			);
-		})
+		});
 	}
 }
