@@ -172,23 +172,25 @@ export default class GdsDirectPlusApp
 
 		initTetherDrop(htmlRootDom);
 
-		// ping EMC session every 10 minutes to avoid state where
-		// CMS session is still alive, but GDSD session expired
-		let keepAliveEmcInterval = setInterval(() => {
-			post('/keepAliveEmc', {skipErrorPopup: true})
-				.then(result => console.log('/keepAliveEmc result', result))
-				.catch(exc => {
-					console.error('/keepAliveEmc error', exc);
-					if (exc.httpStatusCode == 440) { // LoginTimeOut
-						clearInterval(keepAliveEmcInterval);
-						onTokenExpired();
-						return Promise.resolve('Session expired - normal flow');
-					} else {
-						// should not happen perfectly
-						return Promise.reject(exc);
-					}
-				});
-		}, 3 * 60 * 1000);
+		if (window.GdsDirectPlusParams.emcSessionId) {
+			// ping EMC session every few minutes to avoid state where
+			// CMS session is still alive, but GDSD session expired
+			let keepAliveEmcInterval = setInterval(() => {
+				post('/keepAliveEmc', {skipErrorPopup: true})
+					.then(result => console.log('/keepAliveEmc result', result))
+					.catch(exc => {
+						console.error('/keepAliveEmc error', exc);
+						if (exc.httpStatusCode == 440) { // LoginTimeOut
+							clearInterval(keepAliveEmcInterval);
+							onTokenExpired();
+							return Promise.resolve('Session expired - normal flow');
+						} else {
+							// should not happen perfectly
+							return Promise.reject(exc);
+						}
+					});
+			}, 3 * 60 * 1000);
+		}
 	}
 
 	set(key, val)
