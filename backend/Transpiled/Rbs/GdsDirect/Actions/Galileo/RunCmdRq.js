@@ -408,24 +408,21 @@ const RunCmdRq = ({
 	};
 
 	const checkIsForbidden = async (cmd) => {
-		let errors, parsedCmd, flatCmds, type, agent, isQueueCmd, totalAllowed, pnr, canChange,
-			remarkOrderChanged, flatCmd;
-
-		errors = [];
-		parsedCmd = CommandParser.parse(cmd);
-		flatCmds = php.array_merge([parsedCmd], parsedCmd.followingCommands || []);
-		type = parsedCmd.type;
-		agent = stateful.getAgent();
-		isQueueCmd =
-		php.in_array(type, CommonDataHelper.getQueueCommands()) ||
-		StringUtil.startsWith(cmd, 'Q'); // to be extra sure
+		const errors = [];
+		const parsedCmd = CommandParser.parse(cmd);
+		const flatCmds = php.array_merge([parsedCmd], parsedCmd.followingCommands || []);
+		const type = parsedCmd.type;
+		const agent = stateful.getAgent();
+		const isQueueCmd =
+			php.in_array(type, CommonDataHelper.getQueueCommands()) ||
+			cmd.startsWith('Q'); // to be extra sure
 
 		if (php.in_array(type, CommonDataHelper.getTicketingCommands())) {
 			if (!agent.canIssueTickets()) {
 				errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: cmd, type: type}));
 			}
 		} else if (php.in_array(type, CommonDataHelper.getCountedFsCommands())) {
-			totalAllowed = agent.getFsLimit();
+			const totalAllowed = agent.getFsLimit();
 			if (!totalAllowed) {
 				errors.push(Errors.getMessage(Errors.CMD_FORBIDDEN, {cmd: cmd, type: type}));
 			} else if (await agent.getFsCallsUsed() >= totalAllowed) {
@@ -444,25 +441,26 @@ const RunCmdRq = ({
 		}
 		if (php.in_array('deletePnrField', php.array_column(flatCmds, 'type'))) {
 			if (!agent.canEditTicketedPnr()) {
-				if (pnr = await getStoredPnr()) {
-					canChange = !pnr.hasEtickets()
-					|| agent.canEditVoidTicketedPnr()
-					&& await areAllCouponsVoided();
+				const pnr = await getStoredPnr();
+				if (pnr) {
+					const canChange = !pnr.hasEtickets()
+						|| agent.canEditVoidTicketedPnr()
+						&& await areAllCouponsVoided();
 					if (!canChange) {
 						errors.push(Errors.getMessage(Errors.CANT_CHANGE_TICKETED_PNR));
 					}
 				}
 			}
 		}
-		remarkOrderChanged = flatCmds.some((parsed) => StringUtil.startsWith(parsed.cmd, 'NP./'));
-		for (flatCmd of Object.values(flatCmds)) {
+		const remarkOrderChanged = flatCmds.some((parsed) => StringUtil.startsWith(parsed.cmd, 'NP./'));
+		for (const flatCmd of Object.values(flatCmds)) {
 			if (flatCmd.type === 'changePnrRemarks') {
 				if (remarkOrderChanged) {
 				// it's hard to predict which exactly remark will be removed,
 				// so better forbid to make sure it is not GD- remark
 					errors.push('Forbidden command, do not use >NP./...; and >' + flatCmd.cmd + '; at the same time');
 				} else {
-					errors = php.array_merge(errors, await checkChangeRemarks(flatCmd.data));
+					errors.push(...await checkChangeRemarks(flatCmd.data));
 				}
 			}
 		}
@@ -688,6 +686,7 @@ const RunCmdRq = ({
 		const segmentStatus = aliasData.segmentStatus || 'AK';
 		const seatNumber = aliasData.seatCount || 0;
 
+		await CommonDataHelper.checkEmulatePccRights({stateful, pcc});
 		const itinerary = (await getCurrentPnr()).getItinerary();
 		if (php.empty(itinerary)) {
 			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
