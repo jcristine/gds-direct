@@ -409,7 +409,7 @@ const RunCmdRq = ({
 		return bookItinerary({itinerary, fallbackToGk: true});
 	};
 
-	const rebookWithNewSeatAmountSpecificSegments = async (seatNumber, numberString, segmentStatus) => {
+	const rebookWithNewSeatAmountSpecificSegments = async (seatCount, numberString, segmentStatus) => {
 		const itinerary = (await getCurrentPnr()).getItinerary();
 		if (php.empty(itinerary)) {
 			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
@@ -421,7 +421,7 @@ const RunCmdRq = ({
 		const segmentNumbers = parseStringNumbersList(matches[0] || '');
 		for (let i = 0; i < php.count(itinerary); ++i) {
 			if (php.in_array(itinerary[i].segmentNumber, segmentNumbers)) {
-				itinerary[i].seatCount = seatNumber;
+				itinerary[i].seatCount = seatCount;
 				if (!php.empty(segmentStatus)) {
 					itinerary[i].segmentStatus = segmentStatus;
 				}
@@ -460,7 +460,14 @@ const RunCmdRq = ({
 				calledCommands: stateful.flushCalledCommands(),
 			};
 		}
-		return bookItinerary({itinerary: newSegments, fallbackToGk: false});
+		return bookItinerary({itinerary: newSegments, fallbackToGk: false})
+			.catch(coverExc([Rej.UnprocessableEntity], exc => {
+				if (bookingClass && exc.message.includes('CLASS NOT FOUND - PASSIVE PROHIBITED BY AIRLINE')) {
+					exc.httpStatusCode = Rej.BadRequest;
+					exc.message = 'Invalid RBD ' + bookingClass + ' - ' + exc.message;
+				}
+				return Promise.reject(exc);
+			}));
 	};
 
 	const emulatePcc = async (pcc, recoveryPcc) => {
