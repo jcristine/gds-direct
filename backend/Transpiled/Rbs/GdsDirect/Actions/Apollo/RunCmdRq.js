@@ -362,10 +362,13 @@ const RunCmdRq = ({
 			const prevState = getSessionData();
 			const booked = await bookItinerary({itinerary, fallbackToGk: true})
 				.catch(coverExc([Rej.UnprocessableEntity], exc => {
-					if (exc.message.includes('DUPLICATE SEGMENT NOT PERMITTED') &&
-						prevState.hasPnr
-					) {
-						exc.httpStatusCode = Rej.BadRequest.httpStatusCode;
+					if (prevState.hasPnr) {
+						if (exc.message.includes('DUPLICATE SEGMENT NOT PERMITTED') ||
+							exc.message.includes('ENTRY NOT ALLOWED THIS AIRLINE')
+						) {
+							exc.message = 'Itinerary present - ' + exc.message;
+							exc.httpStatusCode = Rej.BadRequest.httpStatusCode;
+						}
 					}
 					return Promise.reject(exc);
 				}));
