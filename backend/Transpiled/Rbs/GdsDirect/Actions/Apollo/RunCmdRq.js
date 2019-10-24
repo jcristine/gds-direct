@@ -379,7 +379,8 @@ const RunCmdRq = ({
 				.catch(coverExc([Rej.UnprocessableEntity], exc => {
 					if (prevState.hasPnr) {
 						if (exc.message.includes('DUPLICATE SEGMENT NOT PERMITTED') ||
-							exc.message.includes('ENTRY NOT ALLOWED THIS AIRLINE')
+							exc.message.includes('ENTRY NOT ALLOWED THIS AIRLINE') ||
+							exc.message.includes('/*(RECORD LOCATOR)  OR  ')
 						) {
 							exc.message = 'Itinerary present - ' + exc.message;
 							exc.httpStatusCode = Rej.BadRequest.httpStatusCode;
