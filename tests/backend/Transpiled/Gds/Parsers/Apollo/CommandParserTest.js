@@ -1,7 +1,5 @@
-
-// add this to generated require() - '../../backend/Transpiled/'
-
-let CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
+const Parse_fareSearch = require('gds-utils/src/text_format_processing/apollo/commands/Parse_fareSearch.js');
+const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 
 class CommandParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js') {
 	provideTestDumpList() {
@@ -1183,7 +1181,6 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 					raw: '10SEP',
 					partial: '09-10',
 				},
-				returnDate: null,
 				departureAirport: 'WAS',
 				destinationAirport: 'MNL',
 				modifiers: [],
@@ -1199,7 +1196,6 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 					raw: '10SEP',
 					partial: '09-10',
 				},
-				returnDate: null,
 				departureAirport: 'JFK',
 				destinationAirport: 'LHR',
 				modifiers: [],
@@ -1215,7 +1211,6 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 					raw: '10NOV',
 					partial: '11-10',
 				},
-				returnDate: null,
 				departureAirport: 'DFW',
 				destinationAirport: 'AKL',
 				modifiers: [
@@ -1233,7 +1228,6 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 					raw: '12NOV',
 					partial: '11-12',
 				},
-				returnDate: null,
 				departureAirport: 'SLC',
 				destinationAirport: 'ROM',
 				modifiers: [
@@ -1245,53 +1239,77 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 				],
 			},
 		});
-		list.push(['$D20MAYRIXLAX@LN3XPB', {type: 'fareSearch', 'data': {
-			departureAirport: 'RIX',
-			destinationAirport: 'LAX',
-			departureDate: {raw: '20MAY'},
-			modifiers: [
-				{type: 'fareBasis', raw: '@LN3XPB', parsed: 'LN3XPB'},
-			],
-		}}]);
+
+		list.push({
+			title: 'with fare basis',
+			input: '$D20MAYRIXLAX@LN3XPB',
+			output: {
+				departureAirport: 'RIX',
+				destinationAirport: 'LAX',
+				departureDate: {raw: '20MAY'},
+				modifiers: [
+					{type: 'fareBasis', raw: '@LN3XPB', parsed: 'LN3XPB'},
+				],
+			},
+		});
 
 		// TODO: parse!
-		// list.push({
-		// 	title: 'First dates, then airport codes',
-		// 	input: '$DV20DEC04JANNYCPTY',
-		// 	output: {
-		// 		departureDate: {
-		// 			raw: '20DEC',
-		// 			partial: '12-20',
-		// 		},
-		// 		returnDate: {
-		// 			raw: '04JAN',
-		// 			partial: '01-04',
-		// 		},
-		// 		departureAirport: 'NYC',
-		// 		destinationAirport: 'PTY',
-		// 		modifiers: [],
-		// 		unparsed: '',
-		// 	},
-		// });
+		list.push({
+			title: 'First dates, then airport codes',
+			input: '$DV20DEC04JANNYCPTY',
+			output: {
+				departureDate: {
+					raw: '20DEC',
+					partial: '12-20',
+				},
+				returnDate: {
+					raw: '04JAN',
+					partial: '01-04',
+				},
+				departureAirport: 'NYC',
+				destinationAirport: 'PTY',
+				modifiers: [],
+				unparsed: '',
+			},
+		});
+
+		// one more:
+		// $DV23DEC6JANPHXMIL+DL
 		//
-		// list.push({
-		// 	title: 'First dates, then airport codes',
-		// 	input: '$DV20DEC4JANNYCPTY',
-		// 	output: {
-		// 		departureDate: {
-		// 			raw: '20DEC',
-		// 			partial: '12-20',
-		// 		},
-		// 		returnDate: {
-		// 			raw: '4JAN',
-		// 			partial: '01-04',
-		// 		},
-		// 		departureAirport: 'NYC',
-		// 		destinationAirport: 'PTY',
-		// 		modifiers: [],
-		// 		unparsed: '',
-		// 	},
-		// });
+		list.push({
+			title: 'First dates, then airport codes',
+			input: '$DV20DEC4JANNYCPTY',
+			output: {
+				departureDate: {
+					raw: '20DEC',
+					partial: '12-20',
+				},
+				returnDate: {
+					raw: '4JAN',
+					partial: '01-04',
+				},
+				departureAirport: 'NYC',
+				destinationAirport: 'PTY',
+				modifiers: [],
+				unparsed: '',
+			},
+		});
+
+		list.push({
+			title: 'And another one',
+			input: '$DV23DEC6JANPHXMIL|DL',
+			output: {
+				validated: true,
+				departureDate: {raw: '23DEC'},
+				returnDate: {raw: '6JAN'},
+				departureAirport: 'PHX',
+				destinationAirport: 'MIL',
+				modifiers: [
+					{raw: '|DL', type: 'airlines'},
+				],
+				unparsed: '',
+			},
+		});
 
 		return list.map(a => [a]);
 	}
@@ -1300,14 +1318,13 @@ class CommandParserTest extends require('../../../../../../backend/Transpiled/Li
 	 * @test
 	 * @dataProvider provideTestDumpList
 	 */
-	testParserOutputAgainstTree($dump, $expected) {
-		let $actual;
-		$actual = CommandParser.parse($dump);
-		this.assertArrayElementsSubset($expected, $actual, '>' + $dump + ';\n');
+	testParserOutputAgainstTree(dump, expected) {
+		const actual = CommandParser.parse(dump);
+		this.assertArrayElementsSubset(expected, actual, '>' + dump + ';\n');
 	}
 
 	testParseParseFareSearch({input, output}) {
-		const result = CommandParser.parseFareSearch(input);
+		const result = Parse_fareSearch(input);
 		this.assertArrayElementsSubset(output, result);
 	}
 
