@@ -11,6 +11,7 @@ const hasBrokenTokens = (text) => {
 	return percents.length % 2 === 1;
 };
 
+/** @return {Function} - the function to be passed as the second argument to String.replace() */
 const makeRule		= (rule, key, isPattern = '') => {
 	let searchIndex		= '';
 	const isInteract 	= rule['onClickCommand'] || rule['onClickMessage'] || rule['onMouseOver'];
