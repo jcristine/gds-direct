@@ -171,6 +171,9 @@ const RunCmdRq = ({
 		let requestedFare = null;
 		const pages = [];
 		await fetchUntil('*D', stateful, ({output}) => {
+			if (output.match(/^\s*INVLD\s*><\s*$/)) {
+				return BadRequest('No recent $D display in session');
+			}
 			pages.push(output);
 			const parsed = TariffDisplayParser.parse(pages.join('\n'));
 			if (parsed.errorType === 'needTariffDisplay') {
