@@ -119,11 +119,12 @@ export const initGlobEvents = (htmlRootDom) => {
 	};
 	/** @param {PromiseRejectionEvent} e */
 	let onrejection = (e) => {
-		if (e.httpStatusCode) {
+		const exc = e.reason || {message: 'Rejection with empty reason', error: e};
+		if (exc.httpStatusCode) {
 			// server error responses, already reported to diag if relevant
 			return;
 		}
-		handleGenericError(e.reason || {message: 'Rejection with empty reason', error: e});
+		handleGenericError(exc);
 	};
 	window.addEventListener('error', onerror);
 	// Most errors will be it. Not supported by firefox ATM sadly...
