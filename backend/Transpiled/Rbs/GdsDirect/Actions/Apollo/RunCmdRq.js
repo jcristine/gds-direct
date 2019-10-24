@@ -171,7 +171,7 @@ const RunCmdRq = ({
 		let requestedFare = null;
 		const pages = [];
 		await fetchUntil('*D', stateful, ({output}) => {
-			if (output.match(/^\s*INVLD\s*><\s*$/)) {
+			if (output.match(/^\s*INVLD\s*$/)) {
 				return BadRequest('No recent $D display in session');
 			}
 			pages.push(output);
