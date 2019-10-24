@@ -998,10 +998,10 @@ const RunCmdRq = ({
 			return displayHistory();
 		} else if (cmd === '!aliasDoubleIgnore') {
 			return ignoreWithoutWarning();
-		} else if (php.preg_match(/^(\||\+)(\d{1})$/, cmd, matches = [])) {
+		} else if (php.preg_match(/^(\||\+)([1-9])$/, cmd, matches = [])) {
 			[$_, plus, seatAmount] = matches;
 			return rebookWithNewSeatAmount(seatAmount);
-		} else if (php.preg_match(/^(\||\+)(\d{1})(S[\d\-\|]+)([A-Z]{2}|)$/, cmd, matches = [])) {
+		} else if (php.preg_match(/^(\||\+)([1-9])(S[\d\-\|]+)([A-Z]{2}|)$/, cmd, matches = [])) {
 			[$_, plus, seatAmount, segmentNumbers, segmentStatus] = matches;
 			return rebookWithNewSeatAmountSpecificSegments(seatAmount, segmentNumbers, segmentStatus);
 		} else if (alias.type === 'rebookAsGk') {
