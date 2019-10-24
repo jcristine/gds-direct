@@ -338,11 +338,12 @@ const RunCmdRq = ({
 		return {calledCommands: [cmdRec]};
 	};
 
-	const findDupeSegments = (itinerary) => {
+	const findDupeSegments = (itinerary, getMoreValues = null) => {
+		getMoreValues = getMoreValues || ((seg) => []);
 		itinerary = itinerary.map((s, i) => ({...s, position: +i + 1}));
 		const grouped = _.groupBy(itinerary, s => JSON.stringify([
 			s.airline, +s.flightNumber, s.departureDt,
-			s.departureAirport, s.destinationAirport,
+			s.departureAirport, s.destinationAirport, ...getMoreValues(s),
 		]));
 		for (const [hash, dupes] of Object.entries(grouped)) {
 			if (dupes.length > 1) {
@@ -435,6 +436,7 @@ const RunCmdRq = ({
 		return bookItinerary({itinerary: selectedItinerary, fallbackToGk: true});
 	};
 
+	/** 'X1/020JAN/CGK' */
 	const rebookAsGk = async (data) => {
 		let segNums = data.segmentNumbers;
 		const bookingClass = data.bookingClass || null;
@@ -444,6 +446,7 @@ const RunCmdRq = ({
 		segNums = segNums.length > 0 ? segNums :
 			itinerary.map(s => s.segmentNumber);
 		const newSegments = [];
+		const expectedItinerary = [];
 		for (const seg of itinerary) {
 			if (php.in_array(seg.segmentNumber, segNums)) {
 				if (bookingClass) {
@@ -455,6 +458,15 @@ const RunCmdRq = ({
 				seg.segmentStatus = 'GK';
 				newSegments.push(seg);
 			}
+			expectedItinerary.push(seg);
+		}
+		const dupes = findDupeSegments(expectedItinerary, s => [
+			s.departureDate.raw, s.bookingClass,
+		]);
+		if (dupes) {
+			const msg = 'Rebook would result in duplicate ' +
+				'segments: ' + dupes.map(s => s.segmentNumber);
+			return Rej.NotImplemented(msg);
 		}
 		stateful.flushCalledCommands();
 		const xOutput = await runCommand('X' + php.implode('|', segNums));
