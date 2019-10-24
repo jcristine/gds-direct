@@ -89,15 +89,22 @@ export class PqParser
 		let url = `terminal/getPqItinerary?pqTravelRequestId=${rId}&gds=${gds.get('name')}`;
 		let whenPq = this.blockTerminal(() => get(url), 'GET PRICING');
 		return blockAllUi(() => whenPq)
-			.then(rbsData => rbsData.pnrData ? rbsData :
-				Promise.reject('Invalid Response'))
+			.then(rbsData => {
+				if (rbsData.pnrData) {
+					return Promise.resolve(rbsData);
+				} else {
+					const exc = new Error('Invalid getPqItinerary Response format');
+					exc.data = rbsData;
+					return Promise.reject(exc);
+				}
+			})
 			.then(rbsData => {
 				updateSessionState(rbsData, gds.get('name'));
 				return {pqTravelRequestId: rId, gds: gds.get('name'), rbsData: rbsData};
 			})
 			.then(pqBtnData => {
-				let url = `terminal/importPq?pqTravelRequestId=${rId}&gds=${gds.get('name')}`;
-				let importPq = () => this.blockTerminal(() => get(url), 'PQ IMPORT')
+				const url = `terminal/importPq?pqTravelRequestId=${rId}&gds=${gds.get('name')}`;
+				const importPq = () => this.blockTerminal(() => get(url), 'PQ IMPORT')
 					.then(rbsData => {
 						updateSessionState(rbsData, gds.get('name'));
 						return {rbsData: rbsData};
