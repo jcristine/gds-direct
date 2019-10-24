@@ -887,8 +887,6 @@ const RunCmdRq = ({
 	 * like MIN/MAX stay limitation, seasonality, advance purchase days limit, etc...
 	 */
 	const fareSearchValidatedChangeCity = async cmd => {
-		let parsed;
-
 		const previousDb = (await stateful.getLog().getLikeSql({
 			where: [
 				['area', '=', getSessionData().area],
@@ -907,7 +905,8 @@ const RunCmdRq = ({
 		// If shorthand command such as D is used then cmd itself is useless,
 		// but we still can extract required data from command's output and that should
 		// be present in every request response
-		parsed = Parse_fareSearch(extractDCommandFromOutput(previousDb.output));
+		const raw = extractDCommandFromOutput(previousDb.output);
+		let parsed = raw && Parse_fareSearch(raw);
 
 		if (!parsed) {
 			// $D is as fallback in case if last fareSearch entry in DB is invalid
@@ -915,7 +914,8 @@ const RunCmdRq = ({
 			// but fare search request in session is still valid
 			const dCmdOutput = await runCmd('$D');
 
-			parsed = Parse_fareSearch(extractDCommandFromOutput(dCmdOutput.output));
+			const raw = extractDCommandFromOutput(dCmdOutput.output);
+			parsed = raw && Parse_fareSearch(raw);
 
 			if (!parsed) {
 				return {
