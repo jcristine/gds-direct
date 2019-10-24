@@ -386,6 +386,7 @@ const RunCmdRq = ({
 							if (dupes) {
 								exc.message = 'Duplicate segments at positions: ' +
 									dupes.map(d => d.position).join(',') + ' - ' + exc.message;
+								exc.httpStatusCode = Rej.BadRequest.httpStatusCode;
 							}
 						}
 					}
