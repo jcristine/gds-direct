@@ -20,7 +20,7 @@ class NormalizeTariffCmd
 		if (!cmdData) {
 			return null;
 		} else if (cmdData.unparsed) {
-			const msg = 'Failed to parse part of D - ' + cmdData.unparsed;
+			const msg = 'Failed to parse part of $D - ' + cmdData.unparsed;
 			throw Rej.NotImplemented.makeExc(msg);
 		}
 		const typeToData = php.array_combine(
