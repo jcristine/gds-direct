@@ -112,9 +112,9 @@ export class PqParser
 				return this.modal(pqBtnData, CLOSE_PQ_WINDOW, importPq);
 			})
 			.catch(exc => {
-				if (exc) {
-					exc.message = 'Failed to add PQ - ' + exc.message;
-				}
+				exc = exc || '(empty PQ error)';
+				exc = typeof exc === 'string' ? new Error(exc) : exc;
+				exc.message = 'Failed to add PQ - ' + exc.message;
 				return Promise.reject(exc);
 			});
 	}
