@@ -17,13 +17,17 @@ exports.priceItinerary = ({iqParams}) => {
 		return Rej.BadRequest('Failed to parse your PNR dump');
 	}
 	const {type, data} = guessed.result;
-	const {itinerary} = data;
+	let {itinerary} = data;
+	itinerary = itinerary.map(s => ({...s, segmentStatus: 'GK'}));
 	const travelport = TravelportClient();
 	return travelport.withSession({}, async (gdsSession) => {
 		const built = await TravelportBuildItineraryActionViaXml({
 			session: gdsSession, itinerary, travelport,
 			baseDate: creationDate || undefined,
 		});
+		if (built.errorType) {
+			return Rej.UnprocessableEntity('Failed to build itinerary - ' + built.errorType, built);
+		}
 		const pricingCmdRec = await TravelportUtils
 			.fetchAll(pricingCmd, gdsSession);
 		return {pricingDump: pricingCmdRec.output};

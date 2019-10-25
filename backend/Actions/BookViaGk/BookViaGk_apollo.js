@@ -79,10 +79,7 @@ const BookViaGk_apollo = async (params) => {
 	};
 
 	const bookPassive = async (itinerary) => {
-		itinerary = itinerary.map(seg => ({...seg,
-			bookingClass: seg.bookingClass,
-			segmentStatus: 'GK',
-		}));
+		itinerary = itinerary.map(seg => ({...seg, segmentStatus: 'GK'}));
 		const built = await bookTp({...bookParams, itinerary, session});
 		return {reservation: built.reservation, errors: []};
 	};
