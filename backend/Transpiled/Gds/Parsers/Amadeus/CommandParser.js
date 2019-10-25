@@ -1,8 +1,5 @@
 const SimpleTypes = require('gds-utils/src/text_format_processing/amadeus/commands/SimpleTypes.js');
 
-
-const Fp = require('../../../Lib/Utils/Fp.js');
-const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const PricingCmdParser = require('../../../Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
 const TariffCmdParser = require('../../../Gds/Parsers/Amadeus/Commands/TariffCmdParser.js');
 
@@ -44,7 +41,7 @@ class CommandParser
 		let matches, searchTokens;
 
 		if (php.preg_match(/^RT\s*(.*\S+.*)$/, cmd, matches = [])) {
-			searchTokens = Fp.map('trim', php.explode('-', matches[1]));
+			searchTokens = matches[1].split('-').map(t => t.trim());
 			if (php.count(searchTokens) > 1 ||
                 php.in_array(searchTokens[0], ['U', '*E']) ||
                 php.preg_match(/\/\s*\S/, searchTokens[0])
@@ -70,15 +67,11 @@ class CommandParser
 
 	/** @param expr = '1-2,5-7' */
 	static parseRange(expr)  {
-		let parseRange;
-
-		parseRange = (text) => {
-			let pair;
-
-			pair = php.explode('-', text);
+		const parseRange = (text) => {
+			const pair = php.explode('-', text);
 			return php.range(pair[0], pair[1] || pair[0]);
 		};
-		return Fp.flatten(Fp.map(parseRange, php.explode(',', php.trim(expr))));
+		return expr.trim().split(',').flatMap(parseRange);
 	}
 
 	// 'FFNPS-1005775190', 'FFNUA-123456778910,UA,LH/P1',
@@ -166,11 +159,10 @@ class CommandParser
 			paxNums = php.empty(matches.paxNums) ? [] :
 				this.parseRange(matches.paxNums);
 			return {
-				paxRanges: Fp.map((num) => {
-					return {
-						from: num, fromMinor: null,
-						to: num, toMinor: null,
-					};}, paxNums),
+				paxRanges: paxNums.map((num) => ({
+					from: num, fromMinor: null,
+					to: num, toMinor: null,
+				})),
 				segNums: php.empty(matches.segNums) ? [] :
 					this.parseRange(matches.segNums),
 				location: php.empty(matches.location) ? null : {
@@ -197,10 +189,10 @@ class CommandParser
 			paxNums = php.empty(matches.paxNums) ? [] :
 				this.parseRange(matches.paxNums);
 			return {
-				paxRanges: Fp.map((num) => ({
+				paxRanges: paxNums.map((num) => ({
 					from: num, fromMinor: null,
 					to: num, toMinor: null,
-				}), paxNums),
+				})),
 				segNums: php.empty(matches.segNums) ? [] :
 					this.parseRange(matches.segNums),
 				location: null,
@@ -278,7 +270,7 @@ class CommandParser
 			}}
 
 		for (const [pattern, type] of Object.entries(SimpleTypes.start)) {
-			if (StringUtil.startsWith(cmd, pattern)) {
+			if (cmd.startsWith(pattern)) {
 				return type;
 			}}
 

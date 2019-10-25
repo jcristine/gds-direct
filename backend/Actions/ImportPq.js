@@ -201,7 +201,12 @@ const ImportPq = async ({
 		if (!pnrFields.length || pnrFields.includes('currentPricing')) {
 			const stateErrors = await SessionStateHelper.checkCanCreatePq(stateful.getLog(), leadData, agent);
 			if (stateErrors.length > 0) {
-				return {userMessages: ['Invalid PQ state'].concat(stateErrors)};
+				return {
+					httpStatusCode: Rej.BadRequest.httpStatusCode,
+					// I believe I decided to return it this way instead of normal rejection to
+					// better format the error popup - each error on a new line aligned to left
+					userMessages: ['Invalid PQ state'].concat(stateErrors),
+				};
 			}
 		}
 		const cmdRecs = await getCurrentStateCommands();
