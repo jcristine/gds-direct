@@ -55,7 +55,7 @@ const BookViaGk_apollo = async (params) => {
 				'0' + php.implode('+', records.map(r => r.segmentNumber + r.bookingClass));
 			const chgClsOutput = (await TravelportUtils.fetchAll(chgClsCmd, session)).output;
 			if (!isSuccessRebookOutput(chgClsOutput)) {
-				failedSegments.push(...segs);
+				failedSegments.push(...records);
 				const isAvail = chgClsOutput.length > 150 ||
 					chgClsOutput.startsWith('0 AVAIL/WL'); // may be followed by either "OPEN" or "CLOSED"
 				if (!isAvail) {
@@ -80,7 +80,7 @@ const BookViaGk_apollo = async (params) => {
 
 	const bookPassive = async (itinerary) => {
 		itinerary = itinerary.map(seg => ({...seg,
-			bookingClass: seg.desiredBookingClass || seg.bookingClass,
+			bookingClass: seg.bookingClass,
 			segmentStatus: 'GK',
 		}));
 		const built = await bookTp({...bookParams, itinerary, session});
@@ -89,7 +89,7 @@ const BookViaGk_apollo = async (params) => {
 
 	const bookReal = async (itinerary) => {
 		const noRebook = [];
-		const forRebook = [];
+		let forRebook = [];
 		for (const seg of itinerary) {
 			if (seg.segmentStatus === 'GK' || withoutRebook) {
 				noRebook.push(seg);
