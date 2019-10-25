@@ -10,7 +10,7 @@ const NotFound = require("klesun-node-tools/src/Rej").NotFound;
 const {makeRow} = require("../Repositories/CmdLogs");
 const hrtimeToDecimal = require("klesun-node-tools/src/Utils/Misc.js").hrtimeToDecimal;
 const {ignoreExc} = require('../Utils/TmpLib.js');
-const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
+const {nonEmpty, coverExc} = require('klesun-node-tools/src/Lang.js');
 
 /** @param {Object|null} agent = require('Agent.js')() */
 const CmdLog = ({
@@ -228,8 +228,11 @@ const CmdLog = ({
 		 */
 		getScrolledCmdMrs: async () => {
 			const mrStarter = await selectLastCmdOf({
-				where: [['is_mr', '=', false]],
-			}).catch(ignoreExc(null, [Rej.NoContent]));
+				where: [
+					['is_mr', '=', false],
+					['type', 'NOT LIKE', '!xml:%'],
+				],
+			}).catch(coverExc([Rej.NoContent]));
 
 			return getCommandsStartingFrom(mrStarter);
 		},
