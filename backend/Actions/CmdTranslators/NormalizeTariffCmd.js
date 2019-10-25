@@ -113,7 +113,7 @@ class NormalizeTariffCmd
 			cmdData = require('gds-utils/src/text_format_processing/sabre/commands/Parse_priceItinerary.js')(cmd);
 			cmdData = this.constructor.normalizeSabreCmd(cmdData);
 		} else if (gds === 'amadeus') {
-			cmdData = require('../../Transpiled/Gds/Parsers/Amadeus/Commands/TariffCmdParser.js').parse(cmd);
+			cmdData = require('gds-utils/src/text_format_processing/amadeus/commands/Parse_fareSearch.js')(cmd);
 			cmdData = this.constructor.normalizeAmadeusCmd(cmdData);
 		} else if (gds === 'galileo') {
 			cmdData = require('gds-utils/src/text_format_processing/galileo/commands/Parse_fareSearch')(cmd);

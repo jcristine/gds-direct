@@ -1,3 +1,4 @@
+const Parse_priceItinerary = require('gds-utils/src/text_format_processing/amadeus/commands/Parse_priceItinerary.js');
 const SortItinerary = require('../../../../../Actions/SortItinerary.js');
 const TranslatePricingCmd = require('../../../../../Actions/CmdTranslators/TranslatePricingCmd.js');
 const NormalizePricingCmd = require('gds-utils/src/cmd_translators/NormalizePricingCmd.js');
@@ -18,7 +19,7 @@ const GdsDirect = require('../../../../Rbs/GdsDirect/GdsDirect.js');
 const PnrParser = require('../../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const GenericRemarkParser = require('../../../../Gds/Parsers/Common/GenericRemarkParser.js');
 const CommonDataHelper = require('../../../../Rbs/GdsDirect/CommonDataHelper.js');
-const CommandParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/amadeus/commands/CmdParser.js');
 const CmsAmadeusTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
 const AmadeusUtils = require("../../../../../GdsHelpers/AmadeusUtils");
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
@@ -30,7 +31,6 @@ const FxParser = require('gds-utils/src/text_format_processing/amadeus/FxParser.
 const TicketMaskParser = require('../../../../Gds/Parsers/Amadeus/TicketMaskParser.js');
 const {withCapture} = require("../../../../../GdsHelpers/CommonUtils");
 const AmadeusGetPricingPtcBlocks = require('./AmadeusGetPricingPtcBlocksAction.js');
-const PricingCmdParser = require('../../../../../Transpiled/Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
 const {findSegmentNumberInPnr} = require('../Common/ItinerarySegments');
 const FakeAreaUtil = require('../../../../../GdsHelpers/Amadeus/FakeAreaUtil.js');
 
@@ -652,7 +652,7 @@ const execute = ({
 
 	const priceAll = async (aliasData) => {
 		const cmd = await makePriceAllCmd(aliasData);
-		const cmdData = PricingCmdParser.parse(cmd);
+		const cmdData = Parse_priceItinerary(cmd);
 		return _fetchPricing(cmd, cmdData);
 	};
 

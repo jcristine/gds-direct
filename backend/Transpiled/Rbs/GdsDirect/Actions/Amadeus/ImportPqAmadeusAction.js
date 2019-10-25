@@ -1,3 +1,4 @@
+const Parse_priceItinerary = require('gds-utils/src/text_format_processing/amadeus/commands/Parse_priceItinerary.js');
 const AmadeusClient = require('../../../../../GdsClients/AmadeusClient.js');
 
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
@@ -5,8 +6,7 @@ const Fp = require('../../../../Lib/Utils/Fp.js');
 const LocationGeographyProvider = require('../../../../Rbs/DataProviders/LocationGeographyProvider.js');
 const AmadeusPnrCommonFormatAdapter = require('../../../../Rbs/FormatAdapters/AmadeusPnrCommonFormatAdapter.js');
 const CanCreatePqRules = require('../../SessionStateProcessor/CanCreatePqRules.js');
-const CommandParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js');
-const PricingCmdParser = require('../../../../Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/amadeus/commands/CmdParser.js');
 const FlightInfoParser = require('../../../../Gds/Parsers/Amadeus/FlightInfoParser.js');
 const PnrParser = require('../../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const CmsAmadeusTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
@@ -187,7 +187,7 @@ class ImportPqAmadeusAction extends AbstractGdsAction {
 	}
 
 	static makePricingInfoForPqt(pricingDump, pricingCmd, pricingList, dumpStorage) {
-		const parsedCmd = PricingCmdParser.parse(pricingCmd);
+		const parsedCmd = Parse_priceItinerary(pricingCmd);
 		const result = {};
 
 		for (const pricing of Object.values(pricingList)) {

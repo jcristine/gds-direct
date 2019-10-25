@@ -1,12 +1,12 @@
+const Parse_priceItinerary = require('gds-utils/src/text_format_processing/amadeus/commands/Parse_priceItinerary.js');
 const BookViaGk = require('../BookViaGk/BookViaGk.js');
 const CommonUtils = require('../../GdsHelpers/CommonUtils.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const PricingCmdParser = require('../../Transpiled/Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
 const AmadeusUtils = require('../../GdsHelpers/AmadeusUtils.js');
 const AmadeusGetPricingPtcBlocksAction = require('../../Transpiled/Rbs/GdsDirect/Actions/Amadeus/AmadeusGetPricingPtcBlocksAction.js');
 
 const extendAmadeusCmd = (cmd) => {
-	const data = PricingCmdParser.parse(cmd);
+	const data = Parse_priceItinerary(cmd);
 	if (!data) {
 		return cmd; // don't modify if could not parse
 	} else {

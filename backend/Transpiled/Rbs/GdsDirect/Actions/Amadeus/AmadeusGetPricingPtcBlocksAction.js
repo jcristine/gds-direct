@@ -1,7 +1,7 @@
 
 
 const AmadeusPricingCommonFormatAdapter = require('../../../../Rbs/FormatAdapters/AmadeusPricingCommonFormatAdapter.js');
-const CommandParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/amadeus/commands/CmdParser.js');
 const FxParser = require('gds-utils/src/text_format_processing/amadeus/FxParser.js');
 const PagingHelper = require('../../../../../GdsHelpers/AmadeusUtils.js');
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');

@@ -2,7 +2,7 @@
 
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
-const CommandParser = require('../../../../Gds/Parsers/Amadeus/CommandParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/amadeus/commands/CmdParser.js');
 const PagingHelper = require('../../../../../GdsHelpers/AmadeusUtils.js');
 
 /**

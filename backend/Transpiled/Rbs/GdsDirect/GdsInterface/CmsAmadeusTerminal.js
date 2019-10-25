@@ -1,6 +1,6 @@
 
 const Fp = require('../../../Lib/Utils/Fp.js');
-const CommandParser = require('../../../Gds/Parsers/Amadeus/CommandParser.js');
+const CommandParser = require('gds-utils/src/text_format_processing/amadeus/commands/CmdParser.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const Errors = require('../../../Rbs/GdsDirect/Errors.js');
 const PnrParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
