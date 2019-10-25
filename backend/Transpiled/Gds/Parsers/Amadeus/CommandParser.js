@@ -1,10 +1,11 @@
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 const SimpleTypes = require('gds-utils/src/text_format_processing/amadeus/commands/SimpleTypes.js');
 
 const PricingCmdParser = require('../../../Gds/Parsers/Amadeus/Commands/PricingCmdParser.js');
 const TariffCmdParser = require('../../../Gds/Parsers/Amadeus/Commands/TariffCmdParser.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const CommonParsersHelper = require("../Apollo/CommonParserHelpers");
+
 class CommandParser
 {
 	static parseChangePcc(cmd)  {
@@ -222,7 +223,7 @@ class CommandParser
 						parsed = {
 							departureDate: {
 								raw: date,
-								parsed: CommonParsersHelper.parsePartialDate(date),
+								parsed: ParserUtil.parsePartialDate(date),
 							},
 							departureAirport: from,
 							destinationAirport: to,
