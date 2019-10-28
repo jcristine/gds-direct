@@ -1,5 +1,4 @@
 const CanCreatePqRules = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/CanCreatePqRules.js');
-const CmsApolloTerminal = require('../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
 
 const UpdateState = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/UpdateState.js');
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
@@ -258,7 +257,7 @@ const CmdLog = ({
 		getLastCalledCommand: () => {
 			return getLikeSql({limit: 1})
 				.then(rows => rows[0])
-				.then(Rej.nonEmpty('No commands entered'));
+				.then(nonEmpty('No commands entered'));
 		},
 		/**
 		 * get rows in descending order by params in Db.fetchAll() format

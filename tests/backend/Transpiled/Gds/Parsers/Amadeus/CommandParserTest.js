@@ -100,7 +100,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 							'parsed': {
 								'ptcs': ['MIL', 'DOD', 'MRE'],
 							},
-						}
+						},
 					],
 				],
 			},
@@ -116,14 +116,14 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 						{
 							'type': 'generic',
 							'parsed': {'ptcs': ['YTH']},
-						}
+						},
 					],
 					[
 						{'raw': 'P2'},
 						{
 							'type': 'generic',
 							'parsed': {'ptcs': ['MIL']},
-						}
+						},
 					],
 				],
 			},
@@ -183,7 +183,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'cmd': 'RFKLESUN', 'type': 'addReceivedFrom'},
 					{'cmd': 'ET', 'type': 'storePnr'},
 				],
-			}
+			},
 		]);
 
 		// multi-store pricing command
@@ -282,7 +282,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 			'type': 'addFrequentFlyerNumber', 'data': {
 				'airline': 'UA', 'code': '123456778910',
 				'partners': ['UA', 'LH'], 'majorPaxNum': '1',
-			}
+			},
 		}]);
 		$list.push(['DOLH123/29APR', {'type': 'flightServiceInfo'}]);
 
@@ -294,14 +294,14 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'major': '21'},
 					{'major': '22'},
 				],
-			}
+			},
 		}]);
 		$list.push(['XE3', {
 			'type': 'deletePnrField', 'data': {
 				'lineNumbers': [
 					{'major': '3'},
 				],
-			}
+			},
 		}]);
 		$list.push(['XE1,2,5', {
 			'type': 'deletePnrField', 'data': {
@@ -310,7 +310,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'major': '2'},
 					{'major': '5'},
 				],
-			}
+			},
 		}]);
 		// CANCEL SUB-ELEMENT OF A MISCELLANEOUS DOCUMENT ELEMENT MS211
 		$list.push(['XE4.1', {
@@ -318,7 +318,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 				'lineNumbers': [
 					{'major': '4', 'minor': '1'},
 				],
-			}
+			},
 		}]);
 		// delete group name
 		$list.push(['XE0.1', {
@@ -326,7 +326,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 				'lineNumbers': [
 					{'major': '0', 'minor': '1'},
 				],
-			}
+			},
 		}]);
 		// TO CANCEL MULTIPLE ELEMENTS, ENTER, FOR EXAMPLE
 		$list.push(['XE3,4,6-8', {
@@ -338,7 +338,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'major': '7'},
 					{'major': '8'},
 				],
-			}
+			},
 		}]);
 		// multiple sub-elements
 		$list.push(['XE7.1,7.3', {
@@ -347,7 +347,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'major': '7', 'minor': '1'},
 					{'major': '7', 'minor': '3'},
 				],
-			}
+			},
 		}]);
 
 		// changes remark contents
@@ -355,7 +355,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 			'type': 'changePnrField', 'data': {
 				'majorNum': '8',
 				'content': 'ASDDASD',
-			}
+			},
 		}]);
 		// changes MCO commission line
 		$list.push(['7.3/0', {
@@ -363,204 +363,204 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 				'majorNum': '7',
 				'minorNum': '3',
 				'content': '0',
-			}
+			},
 		}]);
 
 		$list.push(['FQDMNLSFO/R,25APR18,P/29JUN18/AKE/CQ', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'MNL',
 				'destinationAirport': 'SFO',
-				'modifiers': [{'raw': 'R,25APR18,P'}, {'type': 'travelDates', 'raw': '29JUN18'}]
-			}
+				'modifiers': [{'raw': 'R,25APR18,P'}, {'type': 'travelDates', 'raw': '29JUN18'}],
+			},
 		}]);
 		$list.push(['FQDMNLSFO/R,25APR18,P/29JUN18/AKE/CU', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'MNL',
 				'destinationAirport': 'SFO',
-				'modifiers': [{'raw': 'R,25APR18,P'}, {'type': 'travelDates', 'raw': '29JUN18'}]
-			}
+				'modifiers': [{'raw': 'R,25APR18,P'}, {'type': 'travelDates', 'raw': '29JUN18'}],
+			},
 		}]);
 		$list.push(['FQDMIABAQ/05SEP*04OCT', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'MIA',
 				'destinationAirport': 'BAQ',
-				'modifiers': [{'type': 'travelDates', 'raw': '05SEP*04OCT'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '05SEP*04OCT'}],
+			},
 		}]);
 		$list.push(['FQDNYCPTY/20DEC*5JAN/AUA', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'NYC',
 				'destinationAirport': 'PTY',
-				'modifiers': [{'type': 'travelDates', 'raw': '20DEC*5JAN'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '20DEC*5JAN'}],
+			},
 		}]);
 		$list.push(['FQDNYCGYE/20DEC*5JAN/AUA', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'NYC',
 				'destinationAirport': 'GYE',
-				'modifiers': [{'type': 'travelDates', 'raw': '20DEC*5JAN'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '20DEC*5JAN'}],
+			},
 		}]);
 		$list.push(['FQDLAXGYE/18OCT*18FEB', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'LAX',
 				'destinationAirport': 'GYE',
-				'modifiers': [{'type': 'travelDates', 'raw': '18OCT*18FEB'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '18OCT*18FEB'}],
+			},
 		}]);
 		$list.push(['FQDSFOSYD/28MAR*11APR/R,U/KC', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'SFO',
 				'destinationAirport': 'SYD',
-				'modifiers': [{'type': 'travelDates', 'raw': '28MAR*11APR'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '28MAR*11APR'}],
+			},
 		}]);
 		$list.push(['FQDSFOSYD/28MAR*11APR/R,U/KC/AVA', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'SFO',
 				'destinationAirport': 'SYD',
-				'modifiers': [{'type': 'travelDates', 'raw': '28MAR*11APR'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '28MAR*11APR'}],
+			},
 		}]);
 		$list.push(['FQDSFOSYD/26DEC*9JAN/KC/AVA', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'SFO',
 				'destinationAirport': 'SYD',
-				'modifiers': [{'type': 'travelDates', 'raw': '26DEC*9JAN'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '26DEC*9JAN'}],
+			},
 		}]);
 		$list.push(['FQDSFOSYD/26DEC*9JAN/R,U/KC/AVA', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'SFO',
 				'destinationAirport': 'SYD',
-				'modifiers': [{'type': 'travelDates', 'raw': '26DEC*9JAN'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '26DEC*9JAN'}],
+			},
 		}]);
 		$list.push(['FQDNYCEDI/3OCT*8OCT/AEI', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'NYC',
 				'destinationAirport': 'EDI',
-				'modifiers': [{'type': 'travelDates', 'raw': '3OCT*8OCT'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '3OCT*8OCT'}],
+			},
 		}]);
 		$list.push(['FQDGYENYC/8AUG*28AUG', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'GYE',
 				'destinationAirport': 'NYC',
-				'modifiers': [{'type': 'travelDates', 'raw': '8AUG*28AUG'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '8AUG*28AUG'}],
+			},
 		}]);
 		$list.push(['FQDLIMCMH/22AUG*26SEP', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'LIM',
 				'destinationAirport': 'CMH',
-				'modifiers': [{'type': 'travelDates', 'raw': '22AUG*26SEP'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '22AUG*26SEP'}],
+			},
 		}]);
 		$list.push(['FQDSFOMNL/17JUN18/R,17OCT17/APR/IR/CE', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'SFO',
 				'destinationAirport': 'MNL',
-				'modifiers': [{'type': 'travelDates', 'raw': '17JUN18'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '17JUN18'}],
+			},
 		}]);
 		$list.push(['FQDLAXSGN/03DEC/R,01JUN18,P/AHX/IR/CW', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'LAX',
 				'destinationAirport': 'SGN',
-				'modifiers': [{'type': 'travelDates', 'raw': '03DEC'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '03DEC'}],
+			},
 		}]);
 		$list.push(['FQDIADMAN/18OCT/AEI', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'IAD',
 				'destinationAirport': 'MAN',
-				'modifiers': [{'type': 'travelDates', 'raw': '18OCT'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '18OCT'}],
+			},
 		}]);
 		$list.push(['FQDBDLLON/20SEP/AEI/IO/CW', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'BDL',
 				'destinationAirport': 'LON',
-				'modifiers': [{'type': 'travelDates', 'raw': '20SEP'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '20SEP'}],
+			},
 		}]);
 		$list.push(['FQDBDLLON/20SEP/AEI/IO', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'BDL',
 				'destinationAirport': 'LON',
-				'modifiers': [{'type': 'travelDates', 'raw': '20SEP'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '20SEP'}],
+			},
 		}]);
 		$list.push(['FQDLAXACC/10SEP/R,-JCB/AET/IO', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'LAX',
 				'destinationAirport': 'ACC',
-				'modifiers': [{'type': 'travelDates', 'raw': '10SEP'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '10SEP'}],
+			},
 		}]);
 		$list.push(['FQDLAXACC/10SEP/AET/IO', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'LAX',
 				'destinationAirport': 'ACC',
 				'modifiers': [{'type': 'travelDates', 'raw': '10SEP'}]
-			}
+			},
 		}]);
 		$list.push(['FQDLAXACC/10SEP/R,U/AET/IO', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'LAX',
 				'destinationAirport': 'ACC',
-				'modifiers': [{'type': 'travelDates', 'raw': '10SEP'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '10SEP'}],
+			},
 		}]);
 		$list.push(['FQDLAXACC/10SEP/R,U/AET', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'LAX',
 				'destinationAirport': 'ACC',
-				'modifiers': [{'type': 'travelDates', 'raw': '10SEP'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '10SEP'}],
+			},
 		}]);
 		$list.push(['FQDLAXACC/10SEP/AET', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'LAX',
 				'destinationAirport': 'ACC',
-				'modifiers': [{'type': 'travelDates', 'raw': '10SEP'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '10SEP'}],
+			},
 		}]);
 		$list.push(['FQDLOSLAX/1OCT/IO/R,UP', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'LOS',
 				'destinationAirport': 'LAX',
-				'modifiers': [{'type': 'travelDates', 'raw': '1OCT'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '1OCT'}],
+			},
 		}]);
 		$list.push(['FQDLOSLAX/20SEP/R,-JCB/AET', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'LOS',
 				'destinationAirport': 'LAX',
-				'modifiers': [{'type': 'travelDates', 'raw': '20SEP'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '20SEP'}],
+			},
 		}]);
 		$list.push(['FQDLOSLAX/20SEP/AET', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'LOS',
 				'destinationAirport': 'LAX',
-				'modifiers': [{'type': 'travelDates', 'raw': '20SEP'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '20SEP'}],
+			},
 		}]);
 		$list.push(['FQDLOSLAX/1OCT/IO/R+UO', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'LOS',
 				'destinationAirport': 'LAX',
-				'modifiers': [{'type': 'travelDates', 'raw': '1OCT'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '1OCT'}],
+			},
 		}]);
 		$list.push(['FQDLOSLAX/1OCT/IO', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'LOS',
 				'destinationAirport': 'LAX',
-				'modifiers': [{'type': 'travelDates', 'raw': '1OCT'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '1OCT'}],
+			},
 		}]);
 		$list.push(['FQDMCOSCL/15JUL18/R,06JUL18,P/ALA/IR/CL', {
 			'type': 'fareSearch', 'data': {
@@ -586,77 +586,77 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'raw': 'IR', 'type': 'tripType', 'parsed': 'RT'},
 					{'raw': 'CL', 'type': 'bookingClass', 'parsed': 'L'},
 				],
-			}
+			},
 		}]);
 		$list.push(['FQDSFOMEL/19FEB/AVA/R,U', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'SFO',
 				'destinationAirport': 'MEL',
-				'modifiers': [{'type': 'travelDates', 'raw': '19FEB'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '19FEB'}],
+			},
 		}]);
 		$list.push(['FQDSFOMEL/19FEB/ANZ/R,U', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'SFO',
 				'destinationAirport': 'MEL',
-				'modifiers': [{'type': 'travelDates', 'raw': '19FEB'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '19FEB'}],
+			},
 		}]);
 		$list.push(['FQDWASMNL/10SEP/R,U', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'WAS',
 				'destinationAirport': 'MNL',
-				'modifiers': [{'type': 'travelDates', 'raw': '10SEP'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '10SEP'}],
+			},
 		}]);
 		$list.push(['FQDWASCMN/10SEP/R,U', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'WAS',
 				'destinationAirport': 'CMN',
-				'modifiers': [{'type': 'travelDates', 'raw': '10SEP'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '10SEP'}],
+			},
 		}]);
 		$list.push(['FQDLONWAS/10SEP/R,U', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'LON',
 				'destinationAirport': 'WAS',
-				'modifiers': [{'type': 'travelDates', 'raw': '10SEP'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '10SEP'}],
+			},
 		}]);
 		$list.push(['FQDSYDSJC/19AUG18/R,25JUL18,U/AVA/IR', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'SYD',
 				'destinationAirport': 'SJC',
-				'modifiers': [{'type': 'travelDates', 'raw': '19AUG18'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '19AUG18'}],
+			},
 		}]);
 		$list.push(['FQDSYDSJC/19AUG/AVA/R,U+-ITX', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'SYD',
 				'destinationAirport': 'SJC',
-				'modifiers': [{'type': 'travelDates', 'raw': '19AUG'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '19AUG'}],
+			},
 		}]);
 		$list.push(['FQDLAXAKL/17SEP/AVA/R,P', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'LAX',
 				'destinationAirport': 'AKL',
-				'modifiers': [{'type': 'travelDates', 'raw': '17SEP'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '17SEP'}],
+			},
 		}]);
 		$list.push(['FQDLAXAKL/17SEP/AVA/R,U', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'LAX',
 				'destinationAirport': 'AKL',
-				'modifiers': [{'type': 'travelDates', 'raw': '17SEP'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '17SEP'}],
+			},
 		}]);
 		$list.push(['FQDSYDSJC/19AUG/AVA/R,IT', {'type': 'fareSearch',
 			'data': {
 				'departureAirport': 'SYD',
 				'destinationAirport': 'SJC',
-				'modifiers': [{'type': 'travelDates', 'raw': '19AUG'}]
-			}
+				'modifiers': [{'type': 'travelDates', 'raw': '19AUG'}],
+			},
 		}]);
 		$list.push(['FQDKIVRIX/20SEP/APS,TK,LO/IR', {
 			'type': 'fareSearch', 'data': {
@@ -667,7 +667,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'type': 'airlines', 'parsed': ['PS', 'TK', 'LO']},
 					{'type': 'tripType', 'parsed': 'RT'},
 				],
-			}
+			},
 		}]);
 		$list.push(['FQDKIVRIX/20SEP/A9U,PS/KF', {
 			'type': 'fareSearch', 'data': {
@@ -678,7 +678,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 					{'type': 'airlines', 'parsed': ['9U', 'PS']},
 					{'type': 'cabinClass', 'raw': 'KF', 'parsed': 'first'},
 				],
-			}
+			},
 		}]);
 		$list.push(['AD/2JULLASADD/AB6,QR/CN', {
 			type: 'airAvailability', data: {
@@ -719,6 +719,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 				],
 			},
 		}]);
+		$list.push(['DF1093*2', {type: 'calculator'}]);
 
 		return $list;
 	}
@@ -728,9 +729,7 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 	 * @dataProvider provideCommands
 	 */
 	testParser($dump, $expected) {
-		let $actual;
-
-		$actual = CommandParser.parse($dump);
+		let $actual = CommandParser.parse($dump);
 		this.assertArrayElementsSubset($expected, $actual);
 	}
 
