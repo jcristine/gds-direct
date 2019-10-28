@@ -59,12 +59,14 @@ const chooseTmpCls = (seg) => {
 	// ... maybe should automate this at some point...
 	const defaultCls = {
 		SK: 'W',
+		KQ: 'K',
 	}[seg.airline] || 'Y';
 
 	const fallbackCls = {
 		SK: 'Z',
 		AT: 'Q',
 		KL: 'Q',
+		KQ: 'Q',
 	}[seg.airline] || 'S';
 
 	return seg.bookingClass !== defaultCls ? defaultCls : fallbackCls;
