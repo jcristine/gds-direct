@@ -1,7 +1,7 @@
 
 // add this to generated require() - '../../backend/Transpiled/'
 
-const ItineraryParser = require('gds-parsers/src/Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
+const ItineraryParser = require('gds-utils/src/text_format_processing/apollo/pnr/ItineraryParser.js');
 const php                              = require('klesun-node-tools/src/Transpiled/php.js');
 
 class ItineraryParserTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js')
@@ -341,7 +341,6 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
 			{
 				'segments': [
 					{
-						'success': true,
 						'segmentNumber': '1',
 						'vendorCode': 'ZE',
 						'segmentStatus': 'KK',
@@ -373,7 +372,6 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
 						'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
 					},
 					{
-						'success': true,
 						'segmentNumber': '3',
 						'vendorCode': 'ZE',
 						'segmentStatus': 'HK',
@@ -573,7 +571,6 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
 			{
 				'segments': [
 					{
-						'success': true,
 						'segmentNumber': '1',
 						'vendorCode': 'ZD',
 						'segmentStatus': 'HK',
@@ -599,7 +596,6 @@ class ItineraryParserTest extends require('../../../../../../../backend/Transpil
 			{
 				'segments': [
 					{
-						'success': true,
 						'segmentNumber': '1',
 						'vendorCode': 'ZD',
 						'segmentStatus': 'SS',
