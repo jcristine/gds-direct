@@ -187,36 +187,6 @@ class ApolloPnr {
 		return php.in_array($homePcc, ['DYB', 'DPB']);
 	}
 
-	static checkDumpIsRestricted(dump) {
-		dump = php.preg_replace(/\s*(><)?\s*$/, '', dump);
-		return php.preg_match(/^RESTRICTED PNR-CALL HELP DESK$/, php.trim(dump))
-			|| php.preg_match(/^RESTRICTED PNR$/, php.trim(dump))
-			|| php.preg_match(/^AG - DUTY CODE NOT AUTH FOR CRT - APOLLO$/, php.trim(dump))
-			|| php.preg_match(/^NO AGREEMENT EXISTS FOR PSEUDO CITY.*$/, php.trim(dump))
-			|| php.preg_match(/^PROVIDER PSEUDO CITY DOES NOT HAVE AGREEMENT WITH.*$/, php.trim(dump));
-	}
-
-	static checkDumpIsNotExisting(dump) {
-		dump = php.preg_replace(/\s*(><)?\s*$/, '', dump);
-		return php.preg_match(/^INVLD ADRS/, php.trim(dump))
-			|| php.preg_match(/^INVALID RECORD LOCATOR$/, php.trim(dump))
-			|| php.preg_match(/^UTR PNR \/ INVALID RECORD LOCATOR$/, php.trim(dump));
-	}
-
-	isRestricted() {
-		return this.constructor.checkDumpIsRestricted(this.getDump());
-	}
-
-	isNotExisting() {
-		return this.constructor.checkDumpIsNotExisting(this.getDump());
-	}
-
-	isAccessible() {
-		return !this.isRestricted()
-			&& !this.isNotExisting()
-			&& !php.preg_match(/^SYS ERR OCCURRED$/, php.trim(this.getDump()));
-	}
-
 	/** @return string|null - PCC this PNR was created in or null if it is current PCC */
 	getControlPcc() {
 		return this.parsed['headerData']['shopInfo']['pcc'] || null;

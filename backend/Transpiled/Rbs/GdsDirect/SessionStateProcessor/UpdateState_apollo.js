@@ -1,14 +1,13 @@
 const ItineraryParser = require('gds-parsers/src/Gds/Parsers/Apollo/Pnr/ItineraryParser.js');
-const ApolloAddCustomSegmentAction = require('../../../Rbs/GdsAction/ApolloAddCustomSegmentAction.js');
+const PnrParser = require('../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
+const ApolloPnr = require('../../../Rbs/TravelDs/ApolloPnr.js');
+
 const TApolloSavePnr = require('../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
 const CmsApolloTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
-const PnrParser = require('../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
-const CmdParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
-const ApolloRepeatItineraryAction = require('../../../Rbs/GdsAction/ApolloRepeatItineraryAction.js');
-const ImportPnrAction = require('../../../Rbs/Process/Common/ImportPnr/ImportPnrAction.js');
-const ApolloPnr = require('../../../Rbs/TravelDs/ApolloPnr.js');
-const php = require('klesun-node-tools/src/Transpiled/php.js');
 const SessionStateHelper = require("./SessionStateHelper");
+
+const php = require('klesun-node-tools/src/Transpiled/php.js');
+const CmdParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 
 const isValidSellOutput = (output) => {
 	for (const line of output.split('\n')) {
@@ -30,6 +29,36 @@ const isValidPricing = (cmd, output) => {
 		&& isValidPricingOutput(output);
 };
 
+const parseAddSegmentOutput = (dump) => {
+	const regex =
+		'/^\\s*'+
+		'(?<segmentNumber>\\d+)\\s*'+
+		'(?<segmentType>OTH|TUR)\\s*'+
+		'(?<vendor>[A-Z0-9]{2})\\s*'+
+		'(?<status>[A-Z]{2})\\s*'+
+		'(?<amount>\\d+)\\s*'+
+		'(?<location>[A-Z]{3})\\s*'+
+		'(?<date>\\d+[A-Z]{3})\\s*'+
+		'(-\\s*(?<remark>.*?))?'+
+		'\\s*$/';
+	let matches;
+	if (php.preg_match(regex, dump, matches = [])) {
+		return matches;
+	} else {
+		return null;
+	}
+};
+
+const detectPartialResallSuccessError = (dump) => {
+	let matches;
+	if (php.preg_match(/^\s*RE SUCCESSFUL THRU SEGMENT\s+(\d+)\s*$/, dump, matches = [])) {
+		const [, $repeatedSegmentCount] = matches;
+		return {repeatedSegmentCount: $repeatedSegmentCount};
+	} else {
+		return null;
+	}
+};
+
 const handleApolloCopyPnr = (sessionData, output) => {
 	output = output.replace(/\)?><$/, '');
 	const parsed = PnrParser.parse(output);
@@ -39,7 +68,7 @@ const handleApolloCopyPnr = (sessionData, output) => {
 	const isValidPnrOutput = !php.empty(parsed.itineraryData)
 		|| !php.empty(parsed.passengers.passengerList)
 		|| !Object.values(sections).every(isEmpty, sections);
-	if (isValidPnrOutput || ApolloRepeatItineraryAction.detectPartialSuccessError(output)) {
+	if (isValidPnrOutput || detectPartialResallSuccessError(output)) {
 		// PNR data data was copied
 		sessionData.recordLocator = '';
 		sessionData.isPnrStored = false;
@@ -75,6 +104,39 @@ const wasPnrOpenedFromList = (output) => {
 };
 
 const wasIgnoredOk = (output) => output.match(/^\s*IGND\s*(><)?\s*$/);
+
+const checkPnrDumpIsRestricted = (dump) => {
+	dump = php.preg_replace(/\s*(><)?\s*$/, '', dump);
+	return php.preg_match(/^RESTRICTED PNR-CALL HELP DESK$/, php.trim(dump))
+		|| php.preg_match(/^RESTRICTED PNR$/, php.trim(dump))
+		|| php.preg_match(/^AG - DUTY CODE NOT AUTH FOR CRT - APOLLO$/, php.trim(dump))
+		|| php.preg_match(/^NO AGREEMENT EXISTS FOR PSEUDO CITY.*$/, php.trim(dump))
+		|| php.preg_match(/^PROVIDER PSEUDO CITY DOES NOT HAVE AGREEMENT WITH.*$/, php.trim(dump));
+};
+
+const checkPnrDumpIsNotExisting = (dump) => {
+	dump = php.preg_replace(/\s*(><)?\s*$/, '', dump);
+	return php.preg_match(/^INVLD ADRS/, php.trim(dump))
+		|| php.preg_match(/^INVALID RECORD LOCATOR$/, php.trim(dump))
+		|| php.preg_match(/^UTR PNR \/ INVALID RECORD LOCATOR$/, php.trim(dump));
+};
+
+const detectOpenPnrStatus = (dump) => {
+	if (checkPnrDumpIsNotExisting(dump)) {
+		return 'notExisting';
+	} else if (checkPnrDumpIsRestricted(dump)) {
+		return 'isRestricted';
+	} else if (php.preg_match(/^\s*FIN OR IGN\s*(><)?\s*$/, dump)) {
+		return 'finishOrIgnore';
+	} else if (php.preg_match(/^\s*\S[^\n]*\s*(><)?\s*$/, dump)) {
+		// any single line is treated as error
+		return 'customError';
+	} else {
+		// there are many ways for agent to open a PNR and tweak
+		// output, so matching anything that is not an error is safer
+		return 'available';
+	}
+};
 
 /** @param {Object|null} agent = require('Agent.js')() */
 const UpdateState_apollo = ({
@@ -122,7 +184,7 @@ const UpdateState_apollo = ({
 		} else if (type == 'changePcc' && CmsApolloTerminal.isSuccessChangePccOutput(output, data)) {
 			sessionState.pcc = data;
 		} else if (type == 'openPnr') {
-			const openPnrStatus = ImportPnrAction.detectOpenPnrStatus('apollo', output);
+			const openPnrStatus = detectOpenPnrStatus(output);
 			if (php.in_array(openPnrStatus, ['notExisting', 'isRestricted'])) {
 				dropPnr = true;
 			} else if (openPnrStatus === 'available') {
@@ -151,7 +213,7 @@ const UpdateState_apollo = ({
 			sessionState = {...areaData};
 		} else if (type === 'sell') {
 			if (isValidSellOutput(output) ||
-				ApolloAddCustomSegmentAction.parseAddSegmentOutput(clean)
+				parseAddSegmentOutput(clean)
 			) {
 				sessionState.hasPnr = true;
 			}
