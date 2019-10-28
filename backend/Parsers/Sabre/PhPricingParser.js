@@ -1,5 +1,5 @@
 
-const BagAllowanceParser = require("../../Transpiled/Gds/Parsers/Sabre/BagAllowanceParser");
+const BagAllowanceParser = require("gds-utils/src/text_format_processing/sabre/pricing/BagAllowanceParser");
 const {parseSequence, splitByPosition, parseBagAmountCode} = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 const CommonParserHelpers = require('../../Transpiled/Gds/Parsers/Apollo/CommonParserHelpers.js');
 const {matchAll} = require('../../Utils/Str.js');

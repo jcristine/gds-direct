@@ -2,7 +2,7 @@ const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
-const BagAllowanceParser = require('../../../../Gds/Parsers/Sabre/BagAllowanceParser.js');
+const BagAllowanceParser = require('gds-utils/src/text_format_processing/sabre/pricing/BagAllowanceParser.js');
 const PhToNormalPricing = require('../../../../../GdsClients/Transformers/PhToNormalPricing.js');
 
 /**
