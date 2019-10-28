@@ -1,6 +1,6 @@
 
 
-const AbstractMaskParser = require('../../Gds/Parsers/Apollo/AbstractMaskParser.js');
+const AbstractMaskParser = require('gds-utils/src/text_format_processing/apollo/ticketing_masks/MaskUtil.js');
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
 const Fp = require('../../Lib/Utils/Fp.js');
 const AbstractGdsAction = require('./AbstractGdsAction.js');

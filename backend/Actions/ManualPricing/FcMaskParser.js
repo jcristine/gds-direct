@@ -1,5 +1,5 @@
 
-const AbstractMaskParser = require("../../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
+const AbstractMaskParser = require("gds-utils/src/text_format_processing/apollo/ticketing_masks/MaskUtil");
 const Rej = require('klesun-node-tools/src/Rej.js');
 const FcScreenParser = require("gds-utils/src/text_format_processing/apollo/ticketing_masks/FcScreenParser");
 

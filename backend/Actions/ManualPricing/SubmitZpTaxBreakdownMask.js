@@ -1,5 +1,5 @@
 
-const AbstractMaskParser = require("../../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
+const AbstractMaskParser = require("gds-utils/src/text_format_processing/apollo/ticketing_masks/MaskUtil");
 const {fetchAll} = require('../../GdsHelpers/TravelportUtils.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {makeMaskRs} = require('./TpMaskUtils.js');

@@ -1,4 +1,4 @@
-const AbstractMaskParser = require("../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
+const AbstractMaskParser = require("gds-utils/src/text_format_processing/apollo/ticketing_masks/MaskUtil");
 const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
 const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
 const McoListParser = require("../Transpiled/Gds/Parsers/Apollo/Mco/McoListParser");
