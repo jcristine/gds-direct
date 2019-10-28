@@ -808,6 +808,19 @@ class CommandParserTest extends require('../../../Lib/TestCase.js') {
 				],
 			},
 		}]);
+		// with return date
+		$list.push(['FQORDDEL15DEC¥R05JANBB', {
+			'type': 'fareSearch',
+			'data': {
+				'departureAirport': 'ORD',
+				'destinationAirport': 'DEL',
+				'departureDate': {'raw': '15DEC'},
+				'modifiers': [
+					{raw: '¥R05JAN', type: 'returnDate'},
+					{raw: 'BB', type: 'cabinClass'},
+				],
+			},
+		}]);
 		// invalid tariff cmd - departure date can't be before airports in Sabre
 		$list.push(['FQ10MAYJFKMNL', {
 			'type': 'fareSearch',
