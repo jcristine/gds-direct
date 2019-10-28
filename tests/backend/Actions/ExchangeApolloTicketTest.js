@@ -1,6 +1,6 @@
 const GdsActionTestUtil = require("../../../backend/Utils/Testing/GdsActionTestUtil");
 const ExchangeApolloTicket = require('../../../backend/Actions/ExchangeApolloTicket.js');
-const ParseHbFex = require('../../../backend/Parsers/Apollo/ParseHbFex.js');
+const ParseHbFex = require('gds-utils/src/text_format_processing/apollo/ticketing_masks/ParseHbFex.js');
 const GdsDirectDefaults = require("../../../backend/Utils/Testing/GdsDirectDefaults");
 
 class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
