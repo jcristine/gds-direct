@@ -7,8 +7,6 @@
  * this structure represents the state of GDS
  * session after application of certain commands
  */
-const php = require('klesun-node-tools/src/Transpiled/php.js');
-
 class SessionStateDs {
 	constructor() {
 		this.canCreatePq = null;

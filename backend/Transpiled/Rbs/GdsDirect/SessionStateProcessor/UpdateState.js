@@ -1,6 +1,6 @@
 const Rej = require('klesun-node-tools/src/Rej.js');
-const SessionStateHelper = require('./SessionStateHelper.js');
-const UpdateState_apollo = require('./UpdateState_apollo.js');
+const SessionStateHelper = require('./StateOperator.js');
+const UpdateState_apollo = require('gds-utils/src/state_tracking/UpdateState_apollo.js');
 
 const updateAreaState = ({cmd, output, gds, sessionState, getAreaData}) => {
 	const getAreaDataNorm = (letter) => ({...getAreaData(letter)});

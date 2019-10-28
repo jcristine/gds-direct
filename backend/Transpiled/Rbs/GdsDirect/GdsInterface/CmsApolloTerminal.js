@@ -43,31 +43,6 @@ class CmsApolloTerminal
 		return $dump;
 	}
 
-	static isSuccessChangePccOutput($dump, $pcc)  {
-		return StringUtil.contains($dump, 'PROCEED');
-	}
-
-	isSuccessChangeAreaOutput($output)  {
-		return (php.preg_match(/[A-E]-IN-AG/, $output)
-            || php.preg_match(/[A-E]-OUT\s[A-E]-IN\sAG/, $output)
-            || php.preg_match(/CURRENTLY\sUSING\s[A-E]{3}/, $output)
-		);
-	}
-
-	isInvalidCommandOutput($cmd, $output)  {
-		let $staticResponses;
-		$output = php.preg_replace(/><\s*$/, '', $output);
-		$staticResponses = [
-			'INVLD', 'INVALID ACTION', 'INVALID ACTION CODE',
-			'CK ACTN CODE', 'CHECK FORMAT', 'CK FRMT', 'RESTRICTED',
-			'ERR: FORMAT - APOLLO',
-		];
-		return php.in_array(php.trim($output), $staticResponses)
-            || php.trim($output) === 'INVALID ENTRY - '+$cmd
-            || php.trim($output) === 'CHECK FORMAT - '+$cmd
-		;
-	}
-
 	parseCommand($cmd)  {
 		return CommandParser.parse($cmd);
 	}

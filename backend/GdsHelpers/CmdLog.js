@@ -4,7 +4,7 @@ const CmsApolloTerminal = require('../Transpiled/Rbs/GdsDirect/GdsInterface/CmsA
 const UpdateState = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/UpdateState.js');
 const CommonDataHelper = require("../Transpiled/Rbs/GdsDirect/CommonDataHelper");
 const Rej = require("klesun-node-tools/src/Rej");
-const SessionStateHelper = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateHelper");
+const SessionStateHelper = require("../Transpiled/Rbs/GdsDirect/SessionStateProcessor/StateOperator");
 const selectFromArray = require("klesun-node-tools/src/Utils/SqlUtil").selectFromArray;
 const NotFound = require("klesun-node-tools/src/Rej").NotFound;
 const {makeRow} = require("../Repositories/CmdLogs");
@@ -246,7 +246,7 @@ const CmdLog = ({
 			const stateStarter = await selectLastCmdOf({
 				where: [
 					['area', '=', fullState.area],
-					['type', 'NOT IN', SessionStateHelper.$nonAffectingTypes],
+					['type', 'NOT IN', SessionStateHelper.nonAffectingTypes],
 					['is_mr', '=', false],
 				],
 			}).catch(ignoreExc(null, [Rej.NoContent]));

@@ -10,7 +10,7 @@ const GalileoPnr = require('../../../Rbs/TravelDs/GalileoPnr.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const SessionStateDs = require("./SessionStateDs");
-const SessionStateHelper = require("./SessionStateHelper");
+const SessionStateHelper = require("./StateOperator");
 class UpdateGalileoSessionStateAction
 {
 	constructor($initialState, $getAreaData)  {

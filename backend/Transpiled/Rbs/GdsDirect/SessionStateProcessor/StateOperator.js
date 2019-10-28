@@ -1,3 +1,4 @@
+const StateHelper = require('gds-utils/src/state_tracking/StateHelper.js');
 
 
 const CanCreatePqRules = require('./CanCreatePqRules.js');
@@ -9,12 +10,11 @@ const CommonDataHelper = require("../CommonDataHelper");
  * provides functions that work with
  * result of session state processor
  */
-class SessionStateHelper
+class StateOperator
 {
+	/** @deprecated - use directly from lib */
 	static getCanCreatePqSafeTypes()  {
-		return php.array_merge(this.$nonAffectingTypes, [
-			'addName', 'changeName', // needed in Galileo to price multiple PTC-s without real names
-		]);
+		return StateHelper.createPqSafeTypes;
 	}
 
 	static async makeSessionInfo(cmdLog, leadData)  {
@@ -77,23 +77,11 @@ class SessionStateHelper
 	}
 }
 
+/** @deprecated - use directly from lib */
+StateOperator.mrCmdTypes = StateHelper.mrCmdTypes;
+/** @deprecated - use directly from lib */
+StateOperator.nonAffectingTypes = StateHelper.nonAffectingTypes;
+/** @deprecated - use directly from lib */
+StateOperator.dropPnrContextCommands = StateHelper.dropPnrContextCommands;
 
-SessionStateHelper.mrCmdTypes = [
-	'moveRest', 'moveDown', 'moveUp', 'moveTop', 'moveBottom', 'moveDownShort',
-];
-// "not affecting" means they do not change current PNR or pricing
-SessionStateHelper.$nonAffectingTypes = [
-	...SessionStateHelper.mrCmdTypes,
-	'redisplayPnr', 'itinerary', 'storedPricing', 'storedPricingNameData',
-	'ticketList', 'ticketMask', 'passengerData', 'names', 'ticketing',
-	'flightServiceInfo', 'frequentFlyerData', 'verifyConnectionTimes',
-	'airItinerary', 'history', 'showTime', 'workAreas', 'fareList', 'fareRules', 'flightRoutingAndTimes',
-	'moveDownByAlias', 'moveUpByAlias', 'moveTopByAlias', 'moveBottomByAlias', 'redisplayByAlias',
-	'ptcPricingBlock', 'moveDownShort', 'pricingLinearFare', 'redisplayPriceItinerary',
-];
-SessionStateHelper.$dropPnrContextCommands = [
-	'ignore', 'ignoreAndCopyPnr','storePnr', 'storeAndCopyPnr',
-	'priceItineraryManually', 'ignoreMoveToQueue','movePnrToQueue', 'movePnrToPccQueue',
-];
-
-module.exports = SessionStateHelper;
+module.exports = StateOperator;

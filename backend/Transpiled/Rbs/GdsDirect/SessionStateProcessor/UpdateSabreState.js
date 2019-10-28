@@ -13,7 +13,7 @@ const ImportPnrAction = require('../../../Rbs/Process/Common/ImportPnr/ImportPnr
 const SabrePnr = require('../../../Rbs/TravelDs/SabrePnr.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const SessionStateHelper = require("./SessionStateHelper");
+const SessionStateHelper = require("./StateOperator");
 class UpdateSabreState
 {
 	constructor($getAreaData)  {
@@ -110,7 +110,7 @@ class UpdateSabreState
 			$sessionState = this.constructor.handleSabreStoreAndCopyPnr($sessionState, $output);
 		} else if ($type === 'ignoreAndCopyPnr') {
 			$sessionState = this.constructor.handleSabreIgnoreAndCopyPnr($sessionState, $output);
-		} else if (php.in_array($type, SessionStateHelper.$dropPnrContextCommands)) {
+		} else if (php.in_array($type, SessionStateHelper.dropPnrContextCommands)) {
 			$dropPnr = true;
 		} else if ($type == 'changePcc' && CmsSabreTerminal.isSuccessChangePccOutput($output, $data)) {
 			$sessionState.pcc = $data;

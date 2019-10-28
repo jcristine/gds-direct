@@ -1,6 +1,6 @@
+const UpdateState_apollo = require('gds-utils/src/state_tracking/UpdateState_apollo.js');
 const CmsSabreTerminal = require('../Transpiled/Rbs/GdsDirect/GdsInterface/CmsSabreTerminal.js');
 const UpdateGalileoState = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/UpdateGalileoState.js');
-const CmsApolloTerminal = require('../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
 const crypto = require('crypto');
 const GdsSessions = require('../Repositories/GdsSessions.js');
 const GdsProfiles = require('../Repositories/GdsProfiles.js');
@@ -145,7 +145,7 @@ const withSession = ({
 		return gdsClients.travelport.withSession({profileName}, async gdsSession => {
 			if (pcc) {
 				const semRs = await gdsSession.runCmd('SEM/' + pcc + '/AG');
-				if (!CmsApolloTerminal.isSuccessChangePccOutput(semRs.output)) {
+				if (!UpdateState_apollo.wasPccChangedOk(semRs.output)) {
 					const msg = 'Could not emulate ' + pcc + ' - ' + semRs.output.trim();
 					return Rej.Forbidden(msg);
 				}

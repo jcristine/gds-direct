@@ -1,6 +1,5 @@
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
-const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const ApolloPricingAdapter = require('../../../../Rbs/FormatAdapters/ApolloPricingAdapter.js');
 const CanCreatePqRules = require('../../../../Rbs/GdsDirect/SessionStateProcessor/CanCreatePqRules.js');
 const CmsApolloTerminal = require('../../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');

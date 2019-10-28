@@ -1,4 +1,4 @@
-const CmsApolloTerminal = require('../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
+const UpdateState_apollo = require('gds-utils/src/state_tracking/UpdateState_apollo.js');
 const AmadeusPnr = require('../Transpiled/Rbs/TravelDs/AmadeusPnr.js');
 const SabrePnr = require('../Transpiled/Rbs/TravelDs/SabrePnr.js');
 const GalileoPnr = require('../Transpiled/Rbs/TravelDs/GalileoPnr.js');
@@ -17,7 +17,7 @@ const OpenPnr = ({gdsSession, gds, recordLocator, allowPccChange = false}) => {
 			pcc = changePccMatch[1];
 			const semCmd = 'SEM/' + pcc + '/AG';
 			const semCmdRec = await TravelportUtils.fetchAll(semCmd, gdsSession);
-			if (!CmsApolloTerminal.isSuccessChangePccOutput(semCmdRec.output, pcc)) {
+			if (!UpdateState_apollo.wasPccChangedOk(semCmdRec.output, pcc)) {
 				const msg = 'Failed to emulate ' + pcc + ' - ' + semCmdRec.output.trim();
 				return Rej.NotAuthorized(msg);
 			}

@@ -8,7 +8,7 @@ const SessionStateDs = require('../../../Rbs/GdsDirect/SessionStateProcessor/Ses
 const CmsAmadeusTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const SessionStateHelper = require("./SessionStateHelper");
+const SessionStateHelper = require("./StateOperator");
 class UpdateAmadeusState
 {
 	constructor($initialState, $getAreaData)  {
