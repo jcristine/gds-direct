@@ -1,11 +1,11 @@
+const Parse_priceItinerary = require('gds-utils/src/text_format_processing/sabre/commands/Parse_priceItinerary.js');
 const BookViaGk = require('../BookViaGk/BookViaGk.js');
 const ImportPqApolloAction = require('../../Transpiled/Rbs/GdsDirect/Actions/Apollo/ImportPqApolloAction.js');
 const TravelportUtils = require('../../GdsHelpers/TravelportUtils.js');
-const AtfqParser = require('../../Transpiled/Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const _ = require('lodash');
 
 const extendApolloCmd = (cmd) => {
-	const data = AtfqParser.parsePricingCommand(cmd);
+	const data = Parse_priceItinerary(cmd);
 	if (!data) {
 		return cmd; // don't modify if could not parse
 	} else {

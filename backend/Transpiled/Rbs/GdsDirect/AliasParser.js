@@ -1,7 +1,7 @@
 const Rej = require('klesun-node-tools/src/Rej.js');
 const PtcUtil = require('../Process/Common/PtcUtil.js');
-const AtfqParser = require('../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const ParsersController = require('../../Rbs/IqControllers/ParsersController.js');
+const Parse_apollo_priceItinerary = require('gds-utils/src/text_format_processing/apollo/commands/Parse_priceItinerary.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CmsClient = require("../../../IqClients/CmsClient");
@@ -91,7 +91,7 @@ class AliasParser {
 				modsPart = modsPart ? 'FXD/' + modsPart : 'FXD';
 				ptc = '';
 			}
-			const inputMods = AtfqParser.parsePricingModifiers(modsPart);
+			const inputMods = Parse_apollo_priceItinerary.parsePricingModifiers(modsPart);
 			const pricingModifiers = [];
 			for (const mod of inputMods) {
 				if (!ptc && mod.type === 'passengers' &&
@@ -144,7 +144,7 @@ class AliasParser {
 			isAll = true;
 			inputPtc = '';
 		}
-		const inputMods = AtfqParser.parsePricingModifiers(modsPart);
+		const inputMods = Parse_apollo_priceItinerary.parsePricingModifiers(modsPart);
 		const pricingModifiers = [];
 		for (const mod of inputMods) {
 			if (!inputPtc && mod.type === 'passengers' &&

@@ -1,6 +1,5 @@
 const Parse_priceItinerary = require('gds-utils/src/text_format_processing/apollo/commands/Parse_priceItinerary.js');
 
-const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const php = require("klesun-node-tools/src/Transpiled/php.js");
 const FqLineParser = require("./FqLineParser.js");
 
@@ -13,59 +12,61 @@ const parseFqLine = (line) => {
 };
 
 class AtfqParser {
-	static parse($dump) {
-		let $result, $atfqBlocks, $block, $lines;
-		$result = [];
-		$atfqBlocks = php.trim($dump) !== 'ATFQ-UNABLE'
-			? this.splitToAtfqBlocks($dump)
+	/** @param {String} dump */
+	static parse(dump) {
+		const result = [];
+		const atfqBlocks = dump.trim() !== 'ATFQ-UNABLE'
+			? this.splitToAtfqBlocks(dump)
 			: [];
-		for ($block of $atfqBlocks) {
-			$lines = StringUtil.lines($block);
-			$result.push(this.parseAtfqBlock($lines));
+		for (const block of atfqBlocks) {
+			const lines = block.split('\n');
+			result.push(this.parseAtfqBlock(lines));
 		}
-		return $result;
+		return result;
 	}
 
-	static splitToAtfqBlocks($dump) {
-		let $result, $currentAtfqBlockLines, $line;
-		$result = [];
-		$currentAtfqBlockLines = null;
-		for ($line of StringUtil.lines($dump)) {
-			if (this.isAtfqBlockStart($line)) {
-				if ($currentAtfqBlockLines) {
-					$result.push(php.implode(php.PHP_EOL, $currentAtfqBlockLines));
+	static splitToAtfqBlocks(dump) {
+		const result = [];
+		let currentAtfqBlockLines = [];
+		for (const line of dump.split('\n')) {
+			if (this.isAtfqBlockStart(line)) {
+				if (currentAtfqBlockLines.length > 0) {
+					result.push(currentAtfqBlockLines.join('\n'));
+					currentAtfqBlockLines = [];
 				}
-				$currentAtfqBlockLines = [$line];
-			} else {
-				$currentAtfqBlockLines.push($line);
 			}
+			currentAtfqBlockLines.push(line);
 		}
-		if ($currentAtfqBlockLines) {
-			$result.push(php.implode(php.PHP_EOL, $currentAtfqBlockLines));
+		if (currentAtfqBlockLines.length > 0) {
+			result.push(currentAtfqBlockLines.join('\n'));
 		}
-		return $result;
+		return result;
 	}
 
-	static isAtfqBlockStart($line) {
-		return php.preg_match(/^ATFQ-/, $line) || php.preg_match(/\d+\/ATFQ-/, $line);
+	static isAtfqBlockStart(line) {
+		return php.preg_match(/^ATFQ-/, line)
+			|| php.preg_match(/\d+\/ATFQ-/, line);
 	}
 
-	static parseAtfqBlock($lines) {
-		let line, $atfqInfo;
-		line = php.trim($lines[0]);
-		if (!($atfqInfo = this.parseAtfqLine(line))) {
-			throw new Error('First line expected to be ATFQ line, something else found: [' + line + ']');
+	static parseAtfqBlock(lines) {
+		let line = php.trim(lines[0]);
+		const atfqInfo = this.parseAtfqLine(line);
+		if (!atfqInfo) {
+			const msg = 'First line expected to be ATFQ line, ' +
+				'something else found - ' + line;
+			throw new Error(msg);
 		}
-		if (line = php.trim($lines[1] || '')) {
+
+		if (line = php.trim(lines[1] || '')) {
 			if (php.preg_match(/^FQ-/, line)) {
-				$atfqInfo.FQ = parseFqLine(line);
+				atfqInfo.FQ = parseFqLine(line);
 			} else if (php.preg_match(/^FM-/, line)) {
-				$atfqInfo.FQ = parseFqLine(line);
+				atfqInfo.FQ = parseFqLine(line);
 			} else {
-				$atfqInfo.FQ = null;
+				atfqInfo.FQ = null;
 			}
 		}
-		return $atfqInfo;
+		return atfqInfo;
 	}
 
 	// "ATFQ-REPR/$B*IF53/-*115Q/:A/Z$53.00/GB/ET/TA115Q/CUA"
@@ -79,7 +80,7 @@ class AtfqParser {
 			'\\s*$/';
 		let matches;
 		if (php.preg_match(regex, line, matches = [])) {
-			const parsedCommand = this.parsePricingCommand(matches.pricingCommand);
+			const parsedCommand = Parse_priceItinerary(matches.pricingCommand);
 			if (parsedCommand) {
 				return {
 					lineNumber: matches.lineNumber || 1,
@@ -92,31 +93,6 @@ class AtfqParser {
 		}
 		return null;
 	}
-
-	/** @deprecated - use directly from Parse_priceItinerary.js */
-	static parsePricingCommand(cmd) {
-		return Parse_priceItinerary(cmd);
-	}
-
-	/** @deprecated - use directly from Parse_priceItinerary.js */
-	static parsePricingModifiers($modsPart) {
-		return Parse_priceItinerary.parsePricingModifiers($modsPart);
-	}
-
-	/** @deprecated - use directly from Parse_priceItinerary.js */
-	static getCabinClassMapping() {
-		return Parse_priceItinerary.getCabinClassMapping();
-	};
-
-	/** @deprecated - use directly from Parse_priceItinerary.js */
-	static encodeFareType(type) {
-		return Parse_priceItinerary.encodeFareType(type);
-	};
-
-	/** @deprecated - use directly from Parse_priceItinerary.js */
-	static decodeFareType($code) {
-		return Parse_priceItinerary.decodeFareType($code);
-	};
 }
 
 module.exports = AtfqParser;

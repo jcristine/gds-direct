@@ -1,6 +1,6 @@
+const Parse_priceItinerary = require('gds-utils/src/text_format_processing/sabre/commands/Parse_priceItinerary.js');
 
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
-const AtfqParser = require('../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
 const ApolloPricingModifierHelper = require("./ApolloPricingModifierHelper");
 const ApolloBaggageAdapter = require("./ApolloBaggageAdapter");
 
@@ -22,7 +22,7 @@ const ApolloPricingAdapter = ({
 			if (StringUtil.startsWith(pricingCommand, 'BB0')) {
 				// when you price with BB0, command copy _does not_ include modifiers, but
 				// when you rebook with BBQ01 modifiers are available _only_ from command copy
-				mods = AtfqParser.parsePricingCommand(pricingCommand)['pricingModifiers'];
+				mods = Parse_priceItinerary(pricingCommand).pricingModifiers;
 			}
 		}
 		return new ApolloPricingModifierHelper(mods, nameRecords || []);
