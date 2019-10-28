@@ -1,6 +1,6 @@
 
 
-const AirAvailabilityParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Apollo/AirAvailabilityParser.js');
+const AirAvailabilityParser = require('gds-utils/src/text_format_processing/apollo/AirAvailabilityParser.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class AirAvailabilityParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js')

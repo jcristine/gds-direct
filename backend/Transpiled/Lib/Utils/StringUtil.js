@@ -2,6 +2,7 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 
 class StringUtil {
+	/** @deprecated - use directly fro the lib */
 	static splitByPosition($str, $pattern, $names = null, $trim = false) {
 		return ParserUtil.splitByPosition($str, $pattern, $names, $trim);
 	}
@@ -37,6 +38,7 @@ class StringUtil {
 		return php.strpos($str, $substr) !== false;
 	}
 
+	/** @deprecated - use directly fro the lib */
 	static wrapLinesAt($str, $wrapAt) {
 		return ParserUtil.wrapLinesAt($str, $wrapAt);
 	}
