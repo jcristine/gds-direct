@@ -48,6 +48,7 @@ const shouldKeepFullLine = (line) => {
 		// *H follows
 		|| line.match(/^AG\s+SSR/)
 		|| line.match(/^XG\s+SSR/)
+		|| line.match(/^\s*\d+\s+(CCR|HHL|HTL)\s+[A-Z0-9]{2}\s+/) // car/hotel segments
 		// pricing lines may be glued in history
 		|| line.match(/^A\$\s+/) && !Object.keys(PnrHistoryParser.HISTORY_EVENT_CODES)
 			.some(code => line.slice(64).startsWith(code + ' '));
