@@ -141,19 +141,18 @@ class StringUtil {
 		return $res;
 	}
 
-	static padLines($dump, $length, $padding, $direction) {
-		let $lines, $padLine;
-		$lines = this.lines($dump);
-		$padLine = ($str) => {
-			if (php.mb_strlen($str) > $length) {
-				return php.mb_substr($str, 0, $length);
-			} else if (php.mb_strlen($str) < $length) {
-				return php.str_pad($str, $length, $padding, $direction);
+	static padLines(dump, length, padding, direction) {
+		const lines = dump.split('\n');
+		const padLine = (str) => {
+			if (php.mb_strlen(str) > length) {
+				return php.mb_substr(str, 0, length);
+			} else if (php.mb_strlen(str) < length) {
+				return php.str_pad(str, length, padding, direction);
 			} else {
-				return $str;
+				return str;
 			}
 		};
-		return php.implode(php.PHP_EOL, php.array_map($padLine, $lines));
+		return lines.map(padLine).join('\n');
 	}
 }
 

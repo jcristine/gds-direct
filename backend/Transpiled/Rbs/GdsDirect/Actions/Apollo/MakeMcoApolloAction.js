@@ -6,8 +6,8 @@ const ApolloPnr = require('../../../../Rbs/TravelDs/ApolloPnr.js');
 const Airlines = require("../../../../../Repositories/Airlines");
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
 const fetchAll = require("../../../../../GdsHelpers/TravelportUtils").fetchAll;
-const McoListParser = require('../../../../Gds/Parsers/Apollo/Mco/McoListParser.js');
-const McoMaskParser = require('../../../../Gds/Parsers/Apollo/Mco/McoMaskParser.js');
+const McoListParser = require('gds-utils/src/text_format_processing/apollo/McoListParser.js');
+const McoMaskParser = require('gds-utils/src/text_format_processing/apollo/ticketing_masks/McoMaskParser.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');

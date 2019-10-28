@@ -1,8 +1,8 @@
 const AbstractMaskParser = require("gds-utils/src/text_format_processing/apollo/ticketing_masks/MaskUtil");
 const {fetchAll} = require('../GdsHelpers/TravelportUtils.js');
 const StringUtil = require('../Transpiled/Lib/Utils/StringUtil.js');
-const McoListParser = require("../Transpiled/Gds/Parsers/Apollo/Mco/McoListParser");
-const McoMaskParser = require("../Transpiled/Gds/Parsers/Apollo/Mco/McoMaskParser");
+const McoListParser = require("gds-utils/src/text_format_processing/apollo/McoListParser");
+const McoMaskParser = require("gds-utils/src/text_format_processing/apollo/ticketing_masks/McoMaskParser");
 const {UnprocessableEntity, BadRequest} = require('klesun-node-tools/src/Rej.js');
 const ParseHbFex = require('gds-utils/src/text_format_processing/apollo/ticketing_masks/ParseHbFex.js');
 const SessionStateHelper = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/SessionStateHelper.js');
