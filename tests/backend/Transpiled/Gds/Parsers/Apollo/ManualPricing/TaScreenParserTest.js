@@ -1,6 +1,6 @@
 
 const php = require('../../../../php.js');
-const TaScreenParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/ManualPricing/TaScreenParser");
+const TaScreenParser = require("gds-utils/src/text_format_processing/apollo/ticketing_masks/TaScreenParser");
 
 class TaScreenParserTest extends require('../../../../Lib/TestCase.js') {
 	provideDumps() {
