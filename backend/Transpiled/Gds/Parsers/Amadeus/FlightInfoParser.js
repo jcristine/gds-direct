@@ -3,7 +3,7 @@ const ArrayUtil = require('../../../Lib/Utils/ArrayUtil.js');
 const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
-const GdsConstants = require('../../../Gds/Parsers/Common/GdsConstants.js');
+const GdsConstants = require('gds-utils/src/text_format_processing/agnostic/GdsConstants.js');
 
 /**
  * parses output of DO{fromSegNum}-{toSegNum}

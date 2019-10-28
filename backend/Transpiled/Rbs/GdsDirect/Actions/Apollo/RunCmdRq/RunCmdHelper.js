@@ -1,11 +1,8 @@
-const TApolloSavePnr = require('../../../../GdsAction/Traits/TApolloSavePnr.js');
+const PnrStatusParser = require('gds-utils/src/text_format_processing/apollo/actions/PnrStatusParser.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
-const Debug = require('klesun-node-tools/src/Debug.js');
-const Diag = require('../../../../../../LibWrappers/Diag.js');
 const GdsSession = require('../../../../../../GdsHelpers/GdsSession.js');
 const RetrieveApolloTicketsAction = require('../../../../Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 const GetCurrentPnr = require('../../../../../../Actions/GetCurrentPnr.js');
-const Errors = require('../../../Errors.js');
 const StringUtil = require('../../../../../Lib/Utils/StringUtil.js');
 const CommonDataHelper = require('../../../CommonDataHelper.js');
 const php = require('../../../../../../../tests/backend/Transpiled/php.js');
@@ -46,17 +43,16 @@ const flattenCmds = ($cmdRecs) => {
 	return $allFlatCmds;
 };
 
-const doesStorePnr = ($cmd) => {
-	let $parsedCmd, $flatCmds, $cmdTypes;
-	$parsedCmd = CommandParser.parse($cmd);
-	$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands'] || []);
-	$cmdTypes = php.array_column($flatCmds, 'type');
-	return php.array_intersect($cmdTypes, ['storePnr', 'storeKeepPnr', 'storePnrSendEmail', 'storeAndCopyPnr']).length;
+const doesStorePnr = (cmd) => {
+	const parsedCmd = CommandParser.parse(cmd);
+	const flatCmds = php.array_merge([parsedCmd], parsedCmd.followingCommands || []);
+	const cmdTypes = php.array_column(flatCmds, 'type');
+	return php.array_intersect(cmdTypes, ['storePnr', 'storeKeepPnr', 'storePnrSendEmail', 'storeAndCopyPnr']).length;
 };
 
 const didStorePnr = (cmdRec) => {
 	return doesStorePnr(cmdRec.cmd)
-		&& TApolloSavePnr.parseSavePnrOutput(cmdRec.output).success;
+		&& PnrStatusParser.parseSavePnr(cmdRec.output).success;
 };
 
 /**

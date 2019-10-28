@@ -1,7 +1,7 @@
 
 
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
-const GdsConstants = require('../../../Gds/Parsers/Common/GdsConstants.js');
+const GdsConstants = require('gds-utils/src/text_format_processing/agnostic/GdsConstants.js');
 const SabreVerifyParsedStructureWriter = require('./SabreVerifyParsedStructureWriter.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');

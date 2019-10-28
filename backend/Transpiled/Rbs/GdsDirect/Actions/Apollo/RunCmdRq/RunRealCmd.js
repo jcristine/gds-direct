@@ -1,7 +1,7 @@
+const PnrStatusParser = require('gds-utils/src/text_format_processing/apollo/actions/PnrStatusParser.js');
 const GdsSession = require('../../../../../../GdsHelpers/GdsSession.js');
 const RunCmdHelper = require('./RunCmdHelper.js');
 const ModifyCmdOutput = require('./ModifyCmdOutput.js');
-const TApolloSavePnr = require('../../../../GdsAction/Traits/TApolloSavePnr.js');
 const ApolloPnr = require('../../../../TravelDs/ApolloPnr.js');
 const CommonDataHelper = require('../../../CommonDataHelper.js');
 const StringUtil = require('../../../../../Lib/Utils/StringUtil.js');
@@ -23,28 +23,28 @@ const PnrParser = require('gds-utils/src/text_format_processing/apollo/pnr/PnrPa
  * modifies the output if needed, calls some implicit commands, etc...
  */
 
-const doesOpenPnr = ($cmd) => {
-	let $parsedCmd;
-	$parsedCmd = CommandParser.parse($cmd);
-	return php.in_array($parsedCmd['type'], ['openPnr', 'searchPnr', 'displayPnrFromList']);
+const doesOpenPnr = (cmd) => {
+	let parsedCmd;
+	parsedCmd = CommandParser.parse(cmd);
+	return php.in_array(parsedCmd.type, ['openPnr', 'searchPnr', 'displayPnrFromList']);
 };
 
 /**
- * @param $ranges = [
+ * @param ranges = [
  *     ['from' => 3, 'to' => 7],
  *     ['from' => 15],
  *     ['from' => 17, 'to' => 17],
  * ]
  */
-const isInRanges = ($num, $ranges) => {
-	let $range;
-	for ($range of Object.values($ranges)) {
-		if (php.array_key_exists('to', $range)) {
-			if ($num >= $range['from'] && $num <= $range['to']) {
+const isInRanges = (num, ranges) => {
+	let range;
+	for (range of Object.values(ranges)) {
+		if (php.array_key_exists('to', range)) {
+			if (num >= range.from && num <= range.to) {
 				return true;
 			}
 		} else {
-			if ($num >= $range['from']) {
+			if (num >= range.from) {
 				return true;
 			}
 		}
@@ -59,18 +59,18 @@ const checkIsForbidden = ({
 }) => {
 	const {areAllCouponsVoided, doesStorePnr} = RunCmdHelper({stateful, gdsClients});
 
-	/** @param $data = CommandParser::parseChangePnrRemarks()['data'] */
-	const checkChangeRemarks = async ($data) => {
-		let $errors, $remark, $lineNum;
-		$errors = [];
-		for ($remark of Object.values((await GetCurrentPnr.inApollo(stateful)).getRemarks())) {
-			if ($remark['remarkType'] !== GenericRemarkParser.CMS_LEAD_REMARK) continue;
-			$lineNum = $remark['lineNumber'];
-			if (isInRanges($lineNum, $data['ranges'])) {
-				$errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {lineNum: $lineNum}));
+	/** @param data = CommandParser::parseChangePnrRemarks().data */
+	const checkChangeRemarks = async (data) => {
+		let errors, remark, lineNum;
+		errors = [];
+		for (remark of Object.values((await GetCurrentPnr.inApollo(stateful)).getRemarks())) {
+			if (remark.remarkType !== GenericRemarkParser.CMS_LEAD_REMARK) continue;
+			lineNum = remark.lineNumber;
+			if (isInRanges(lineNum, data.ranges)) {
+				errors.push(Errors.getMessage(Errors.CANT_CHANGE_GDSD_REMARK, {lineNum: lineNum}));
 			}
 		}
-		return $errors;
+		return errors;
 	};
 
 	const checkSavePcc = async (pnrCreationPcc, currentPcc) => {
@@ -96,10 +96,10 @@ const checkIsForbidden = ({
 		}
 	};
 
-	const isForbiddenBaAvailability = ($cmd) => {
-		let $isBritishAirways;
-		$isBritishAirways = StringUtil.endsWith($cmd, '|BA');
-		return $isBritishAirways
+	const isForbiddenBaAvailability = (cmd) => {
+		let isBritishAirways;
+		isBritishAirways = StringUtil.endsWith(cmd, '|BA');
+		return isBritishAirways
 			&& php.in_array(stateful.getSessionData().pcc, ['1O3K', '2G55'])
 			&& !stateful.getAgent().canPerformAnyPccAvailability();
 	};
@@ -201,35 +201,35 @@ const RunRealCmd = ({
 		runCommand,
 	} = RunCmdHelper({stateful});
 
-	const doesDivideFpBooking = async ($cmd) => {
-		let $pnrCmds, $typeToOutput, $dnOutput, $pnrDump, $pnr;
-		if ($cmd === 'F') {
-			$pnrCmds = await stateful.getLog().getCurrentPnrCommands();
-			$typeToOutput = php.array_combine(
-				php.array_column($pnrCmds, 'type'),
-				php.array_column($pnrCmds, 'output')
+	const doesDivideFpBooking = async (cmd) => {
+		let pnrCmds, typeToOutput, dnOutput, pnrDump, pnr;
+		if (cmd === 'F') {
+			pnrCmds = await stateful.getLog().getCurrentPnrCommands();
+			typeToOutput = php.array_combine(
+				php.array_column(pnrCmds, 'type'),
+				php.array_column(pnrCmds, 'output')
 			);
-			if ($dnOutput = $typeToOutput['divideBooking'] || null) {
-				$pnrDump = extractPager($dnOutput)[0];
-				$pnr = ApolloPnr.makeFromDump($pnrDump);
-				return !$pnr.wasCreatedInGdsDirect();
+			if (dnOutput = typeToOutput.divideBooking || null) {
+				pnrDump = extractPager(dnOutput)[0];
+				pnr = ApolloPnr.makeFromDump(pnrDump);
+				return !pnr.wasCreatedInGdsDirect();
 			}
 		}
 		return false;
 	};
 
-	const callImplicitCommandsBefore = async ($cmd) => {
-		let $batchCmds, $msg;
-		if (doesStorePnr($cmd)) {
-			$batchCmds = await prepareToSavePnr();
-			if (!php.empty($batchCmds)) {
-				await runCommand(php.implode('|', $batchCmds));
+	const callImplicitCommandsBefore = async (cmd) => {
+		let batchCmds, msg;
+		if (doesStorePnr(cmd)) {
+			batchCmds = await prepareToSavePnr();
+			if (!php.empty(batchCmds)) {
+				await runCommand(php.implode('|', batchCmds));
 			}
-		} else if (await doesDivideFpBooking($cmd)) {
+		} else if (await doesDivideFpBooking(cmd)) {
 			// all commands between >DN...; and >F; affect only the new PNR
-			$msg = await CommonDataHelper.createCredentialMessage(stateful);
-			await runCommand('@:5' + $msg);
-		} else if ($cmd.match(/^\s*XT\s*$/)) {
+			msg = await CommonDataHelper.createCredentialMessage(stateful);
+			await runCommand('@:5' + msg);
+		} else if (cmd.match(/^\s*XT\s*$/)) {
 			// attempt to cancel pricing - should remove all "STORE AS FXD" remarks in PNR if any
 			const pnr = await GetCurrentPnr.inApollo(stateful);
 			const fxdRemarkNums = pnr.getRemarks()
@@ -242,17 +242,17 @@ const RunRealCmd = ({
 		}
 	};
 
-	const makeCmdMessages = async ($cmd, $output) => {
-		let $userMessages, $type, $agent, $left, $fsLeftMsg;
-		$userMessages = [];
-		$type = CommandParser.parse($cmd)['type'];
-		if (php.in_array($type, CommonDataHelper.getCountedFsCommands())) {
-			$agent = stateful.getAgent();
-			$left = $agent.getFsLimit() - await $agent.getFsCallsUsed();
-			$fsLeftMsg = $left + ' FS COMMANDS REMAINED';
-			$userMessages.push($fsLeftMsg);
+	const makeCmdMessages = async (cmd, output) => {
+		let userMessages, type, agent, left, fsLeftMsg;
+		userMessages = [];
+		type = CommandParser.parse(cmd).type;
+		if (php.in_array(type, CommonDataHelper.getCountedFsCommands())) {
+			agent = stateful.getAgent();
+			left = agent.getFsLimit() - await agent.getFsCallsUsed();
+			fsLeftMsg = left + ' FS COMMANDS REMAINED';
+			userMessages.push(fsLeftMsg);
 		}
-		return $userMessages;
+		return userMessages;
 	};
 
 	const modifyOutput = async (calledCommand) => {
@@ -261,42 +261,42 @@ const RunRealCmd = ({
 		});
 	};
 
-	const callImplicitCommandsAfter = async ($cmdRecord, $userMessages) => {
-		let $parsedCmd, $flatCmds, $pricesItinerary, $parsedData, $clean, $parsed, $isAlex;
-		$parsedCmd = CommandParser.parse($cmdRecord['cmd']);
-		$flatCmds = php.array_merge([$parsedCmd], $parsedCmd['followingCommands']);
-		$pricesItinerary = $parsedCmd['type'] === 'priceItinerary' ||
-			StringUtil.startsWith($cmdRecord['cmd'], 'FS');
-		if ($pricesItinerary && php.preg_match(/^\s*UNA\s+PROC\s+SEGMENT\s*(><)?$/, $cmdRecord['output'])) {
+	const callImplicitCommandsAfter = async (cmdRecord, userMessages) => {
+		let parsedCmd, flatCmds, pricesItinerary, parsedData, clean, parsed, isAlex;
+		parsedCmd = CommandParser.parse(cmdRecord.cmd);
+		flatCmds = php.array_merge([parsedCmd], parsedCmd.followingCommands);
+		pricesItinerary = parsedCmd.type === 'priceItinerary' ||
+			StringUtil.startsWith(cmdRecord.cmd, 'FS');
+		if (pricesItinerary && php.preg_match(/^\s*UNA\s+PROC\s+SEGMENT\s*(><)?$/, cmdRecord.output)) {
 			// a workaround for a bug in Apollo that would cause a "UNA PROC  SEGMENT"
 			// on the next pricing after $BBQ01 or $BB0 unless you do a *R
 			await runCommand('*R', false);
-			$cmdRecord['output'] = await runCommand($cmdRecord['cmd'], fetchAll);
+			cmdRecord.output = await runCommand(cmdRecord.cmd, fetchAll);
 		}
-		$cmdRecord = await modifyOutput($cmdRecord);
-		if (doesStorePnr($cmdRecord['cmd'])) {
-			$parsedData = TApolloSavePnr.parseSavePnrOutput($cmdRecord['output']);
-			if ($parsedData['success']) {
-				stateful.handlePnrSave($parsedData['recordLocator']);
-				if (php.in_array('storeKeepPnr', php.array_column($flatCmds, 'type'))) {
-					$cmdRecord = await runCmd('*R');
+		cmdRecord = await modifyOutput(cmdRecord);
+		if (doesStorePnr(cmdRecord.cmd)) {
+			parsedData = PnrStatusParser.parseSavePnr(cmdRecord.output);
+			if (parsedData.success) {
+				stateful.handlePnrSave(parsedData.recordLocator);
+				if (php.in_array('storeKeepPnr', php.array_column(flatCmds, 'type'))) {
+					cmdRecord = await runCmd('*R');
 				}
 			}
-		} else if (doesOpenPnr($cmdRecord['cmd'])) {
-			$clean = extractPager($cmdRecord['output'])[0];
-			$parsed = PnrParser.parse($clean);
-			$isAlex = ($pax) => {
-				return $pax['lastName'] === 'WEINSTEIN'
-					&& $pax['firstName'] === 'ALEX';
+		} else if (doesOpenPnr(cmdRecord.cmd)) {
+			clean = extractPager(cmdRecord.output)[0];
+			parsed = PnrParser.parse(clean);
+			isAlex = (pax) => {
+				return pax.lastName === 'WEINSTEIN'
+					&& pax.firstName === 'ALEX';
 			};
-			if (Fp.any($isAlex, $parsed['passengers']['passengerList'] || []) &&
+			if (Fp.any(isAlex, parsed.passengers.passengerList || []) &&
 				!stateful.getAgent().canOpenPrivatePnr()
 			) {
 				await runCommand('I');
 				return Rej.Forbidden('Restricted PNR');
 			}
 		}
-		return {cmdRec: $cmdRecord, userMessages: $userMessages};
+		return {cmdRec: cmdRecord, userMessages: userMessages};
 	};
 
 	const execute = async () => {

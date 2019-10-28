@@ -1,33 +1,25 @@
-
-
-const Fp = require('../../../Lib/Utils/Fp.js');
-const StringUtil = require('../../../Lib/Utils/StringUtil.js');
-const SavePnrAction = require('../../../Rbs/MultiGdsAction/SavePnrAction.js');
+const GdsConstants = require('gds-utils/src/text_format_processing/agnostic/GdsConstants.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 class TSabreSavePnr
 {
-	static isSaveConfirmationRequired($dump)  {
-		let $isWarningLine;
-
+	static isSaveConfirmationRequired(dump)  {
 		// 'VERIFY ORDER OF ITINERARY SEGMENTS - MODIFY OR END TRANSACTION',
 		// 'SEGMENTS NOT IN DATE ORDER - VERIFY AND REENTER',
 		// 'MIN CONNX TIME SEG 05 AT ORD 1.15'
-		$isWarningLine = ($line) => {
-
-			return php.trim($line) === 'SEGMENTS NOT IN DATE ORDER - VERIFY AND REENTER'
-                || php.trim($line) === 'VERIFY ORDER OF ITINERARY SEGMENTS - MODIFY OR END TRANSACTION'
-                || StringUtil.startsWith($line, 'MIN CONNX TIME SEG')
-                || php.preg_match(/^\s*FF MILEAGE AGREEMENT EXISTS, SEE PT\*AC FOR ITINERARY SEGMENT\s*\d*\s*$/, $line);
+		const isWarningLine = (line) => {
+			return line.trim() === 'SEGMENTS NOT IN DATE ORDER - VERIFY AND REENTER'
+                || line.trim() === 'VERIFY ORDER OF ITINERARY SEGMENTS - MODIFY OR END TRANSACTION'
+                || line.startsWith('MIN CONNX TIME SEG')
+                || php.preg_match(/^\s*FF MILEAGE AGREEMENT EXISTS, SEE PT\*AC FOR ITINERARY SEGMENT\s*\d*\s*$/, line);
 		};
-		return Fp.all($isWarningLine, StringUtil.lines(php.trim($dump)));
+		return dump.trim().split('\n').every(isWarningLine);
 	}
 
 	// 'SIMULTANEOUS CHANGES TO PNR - USE IR TO IGNORE AND RETRIEVE PNR'
-	static parseErrorType($dump)  {
-
-		if (php.trim($dump) === 'SIMULTANEOUS CHANGES TO PNR - USE IR TO IGNORE AND RETRIEVE PNR') {
-			return SavePnrAction.STATUS_SIMULTANEOUS_CHANGES;
+	static parseErrorType(dump)  {
+		if (php.trim(dump) === 'SIMULTANEOUS CHANGES TO PNR - USE IR TO IGNORE AND RETRIEVE PNR') {
+			return GdsConstants.SAVE_PNR_SIMULTANEOUS_CHANGES;
 		} else {
 			return null;
 		}
@@ -42,7 +34,7 @@ class TSabreSavePnr
 			[$_, $transactionNumber, $recordLocator, $warningMessage] = $matches;
 			return {
 				success: true,
-				status: SavePnrAction.STATUS_EXECUTED,
+				status: GdsConstants.SAVE_PNR_EXECUTED,
 				transactionNumber: $transactionNumber,
 				recordLocator: $recordLocator,
 				warningMessage: $warningMessage,
@@ -51,7 +43,7 @@ class TSabreSavePnr
 		} else {
 			return {
 				success: false,
-				status: this.parseErrorType($dump) || SavePnrAction.STATUS_GDS_ERROR,
+				status: this.parseErrorType($dump) || GdsConstants.SAVE_PNR_GDS_ERROR,
 				raw: $dump,
 			};
 		}

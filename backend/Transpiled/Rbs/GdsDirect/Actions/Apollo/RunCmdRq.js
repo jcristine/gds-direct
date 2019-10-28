@@ -1,3 +1,4 @@
+const PnrStatusParser = require('gds-utils/src/text_format_processing/apollo/actions/PnrStatusParser.js');
 const GkUtil = require('../../../../../Actions/BookViaGk/GkUtil.js');
 const BookViaGk_apollo = require('../../../../../Actions/BookViaGk/BookViaGk_apollo.js');
 const Parse_fareSearch = require('gds-utils/src/text_format_processing/apollo/commands/Parse_fareSearch.js');
@@ -44,7 +45,6 @@ const DisplayHistoryActionHelper = require('./DisplayHistoryActionHelper.js');
 // parsers
 const ItineraryParser = require('gds-utils/src/text_format_processing/apollo/pnr/ItineraryParser.js');
 const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
-const TApolloSavePnr = require('../../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
 const AliasParser = require('../../../../Rbs/GdsDirect/AliasParser.js');
 const ApoAliasParser = require('../../../../../Parsers/Apollo/AliasParser.js');
 const PnrHistoryParser = require('gds-utils/src/text_format_processing/apollo/PnrHistoryParser.js');
@@ -638,7 +638,7 @@ const RunCmdRq = ({
 		writeCommands = php.array_merge(await prepareToSavePnr(), writeCommands);
 		const cmd = php.implode('|', writeCommands);
 		let output = (await runCmd(cmd)).output;
-		const saveResult = TApolloSavePnr.parseSavePnrOutput(output);
+		const saveResult = PnrStatusParser.parseSavePnr(output);
 		if (saveResult.success) {
 			handlePnrSave(saveResult.recordLocator);
 			output = (await runCmd('*R')).output;

@@ -1,6 +1,6 @@
+const PnrStatusParser = require('gds-utils/src/text_format_processing/apollo/actions/PnrStatusParser.js');
 
 const SabrePnr = require('../Transpiled/Rbs/TravelDs/SabrePnr.js');
-const TApolloSavePnr = require('../Transpiled/Rbs/GdsAction/Traits/TApolloSavePnr.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const GalPnrParser = require('../Transpiled/Gds/Parsers/Galileo/Pnr/PnrParser.js');
 const AmaPnrParser = require('../Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParser.js');
@@ -62,7 +62,7 @@ const isWarningRs = (gds, output) => {
 
 const isSuccessRs = (gds, output) => {
 	const pred = {
-		apollo: rs => TApolloSavePnr.parseSavePnrOutput(rs).recordLocator,
+		apollo: rs => PnrStatusParser.parseSavePnr(rs).recordLocator,
 		sabre: rs => SabrePnr.makeFromDump(rs).getRecordLocator(),
 		galileo: rs => safe(() => GalPnrParser.parse(rs).headerData.reservationInfo.recordLocator),
 		amadeus: rs => safe(() => AmaPnrParser.parse(rs).parsed.pnrInfo.recordLocator),

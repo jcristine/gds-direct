@@ -1,11 +1,10 @@
-const ItineraryParser = require('gds-utils/src/text_format_processing/apollo/pnr/ItineraryParser.js');
-const PnrParser = require('gds-utils/src/text_format_processing/apollo/pnr/PnrParser.js');
-const ApolloPnr = require('../../../Rbs/TravelDs/ApolloPnr.js');
 
-const TApolloSavePnr = require('../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
 const CmsApolloTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
 const SessionStateHelper = require("./SessionStateHelper");
 
+const PnrStatusParser = require('gds-utils/src/text_format_processing/apollo/actions/PnrStatusParser.js');
+const PnrParser = require('gds-utils/src/text_format_processing/apollo/pnr/PnrParser.js');
+const ItineraryParser = require('gds-utils/src/text_format_processing/apollo/pnr/ItineraryParser.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CmdParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 
@@ -29,7 +28,7 @@ const isValidPricing = (cmd, output) => {
 		&& isValidPricingOutput(output);
 };
 
-const parseAddSegmentOutput = (dump) => {
+const parseAddTurSegmentOutput = (dump) => {
 	const regex =
 		'/^\\s*'+
 		'(?<segmentNumber>\\d+)\\s*'+
@@ -105,39 +104,6 @@ const wasPnrOpenedFromList = (output) => {
 
 const wasIgnoredOk = (output) => output.match(/^\s*IGND\s*(><)?\s*$/);
 
-const checkPnrDumpIsRestricted = (dump) => {
-	dump = php.preg_replace(/\s*(><)?\s*$/, '', dump);
-	return php.preg_match(/^RESTRICTED PNR-CALL HELP DESK$/, php.trim(dump))
-		|| php.preg_match(/^RESTRICTED PNR$/, php.trim(dump))
-		|| php.preg_match(/^AG - DUTY CODE NOT AUTH FOR CRT - APOLLO$/, php.trim(dump))
-		|| php.preg_match(/^NO AGREEMENT EXISTS FOR PSEUDO CITY.*$/, php.trim(dump))
-		|| php.preg_match(/^PROVIDER PSEUDO CITY DOES NOT HAVE AGREEMENT WITH.*$/, php.trim(dump));
-};
-
-const checkPnrDumpIsNotExisting = (dump) => {
-	dump = php.preg_replace(/\s*(><)?\s*$/, '', dump);
-	return php.preg_match(/^INVLD ADRS/, php.trim(dump))
-		|| php.preg_match(/^INVALID RECORD LOCATOR$/, php.trim(dump))
-		|| php.preg_match(/^UTR PNR \/ INVALID RECORD LOCATOR$/, php.trim(dump));
-};
-
-const detectOpenPnrStatus = (dump) => {
-	if (checkPnrDumpIsNotExisting(dump)) {
-		return 'notExisting';
-	} else if (checkPnrDumpIsRestricted(dump)) {
-		return 'isRestricted';
-	} else if (php.preg_match(/^\s*FIN OR IGN\s*(><)?\s*$/, dump)) {
-		return 'finishOrIgnore';
-	} else if (php.preg_match(/^\s*\S[^\n]*\s*(><)?\s*$/, dump)) {
-		// any single line is treated as error
-		return 'customError';
-	} else {
-		// there are many ways for agent to open a PNR and tweak
-		// output, so matching anything that is not an error is safer
-		return 'available';
-	}
-};
-
 /** @param {Object|null} agent = require('Agent.js')() */
 const UpdateState_apollo = ({
 	cmd, output, sessionState, getAreaData,
@@ -166,7 +132,7 @@ const UpdateState_apollo = ({
 		let dropPnr = false;
 
 		if (type === 'storePnr') {
-			dropPnr = TApolloSavePnr.parseSavePnrOutput(output).success;
+			dropPnr = PnrStatusParser.parseSavePnr(output).success;
 		} else if (type === 'ignore') {
 			dropPnr = wasIgnoredOk(output);
 		} else if (type === 'ignoreKeepPnr') {
@@ -184,7 +150,7 @@ const UpdateState_apollo = ({
 		} else if (type == 'changePcc' && CmsApolloTerminal.isSuccessChangePccOutput(output, data)) {
 			sessionState.pcc = data;
 		} else if (type == 'openPnr') {
-			const openPnrStatus = detectOpenPnrStatus(output);
+			const openPnrStatus = PnrStatusParser.detectOpenPnrStatus(output);
 			if (php.in_array(openPnrStatus, ['notExisting', 'isRestricted'])) {
 				dropPnr = true;
 			} else if (openPnrStatus === 'available') {
@@ -192,19 +158,19 @@ const UpdateState_apollo = ({
 				openPnr = true;
 			}
 		} else if (type == 'storeKeepPnr') {
-			if (recordLocator = TApolloSavePnr.parseSavePnrOutput(output).recordLocator || null) {
+			if (recordLocator = PnrStatusParser.parseSavePnr(output).recordLocator || null) {
 				openPnr = true;
 			}
 		} else if (type == 'searchPnr') {
 			if (wasSinglePnrOpenedFromSearch(output)) {
-				recordLocator = ApolloPnr.makeFromDump(output).getRecordLocator();
+				recordLocator = (PnrParser.parse(output).headerData.reservationInfo || {}).recordLocator;
 				openPnr = true;
 			} else if (isPnrListOutput(output)) {
 				dropPnr = true;
 			}
 		} else if (type == 'displayPnrFromList') {
 			if (wasPnrOpenedFromList(output)) {
-				recordLocator = ApolloPnr.makeFromDump(output).getRecordLocator();
+				recordLocator = (PnrParser.parse(output).headerData.reservationInfo || {}).recordLocator;
 				openPnr = true;
 			}
 		} else if (type == 'changeArea' && new CmsApolloTerminal().isSuccessChangeAreaOutput(output)) {
@@ -213,7 +179,7 @@ const UpdateState_apollo = ({
 			sessionState = {...areaData};
 		} else if (type === 'sell') {
 			if (isValidSellOutput(output) ||
-				parseAddSegmentOutput(clean)
+				parseAddTurSegmentOutput(clean)
 			) {
 				sessionState.hasPnr = true;
 			}
