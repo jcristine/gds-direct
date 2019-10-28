@@ -1,3 +1,4 @@
+const CommonDataHelper = require('../Transpiled/Rbs/GdsDirect/CommonDataHelper.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
 const FakeAreaUtil = require('../GdsHelpers/Amadeus/FakeAreaUtil.js');
 const StatefulSession = require('../GdsHelpers/StatefulSession.js');
@@ -88,6 +89,7 @@ const GoToPricing = ({
 	} = rqBody;
 
 	const main = async () => {
+		await CommonDataHelper.checkEmulatePccRights({stateful, pcc: pricingPcc});
 		await ignorePnr(stateful);
 		const targetSession = await getTargetSession({
 			pricingGds, pricingPcc, controllerData,
