@@ -22,10 +22,12 @@ class CommonParserHelpers
 		return ParserUtil.gdsDayOfWeekToNumber($str);
 	}
 
+	/** @deprecated - use directly from the lib */
 	decodeApolloTime($timeStr) {
 		return ParserUtil.decodeGdsTime($timeStr);
 	}
 
+	/** @deprecated - use directly from the lib */
 	parsePartialDate($date) {
 		return ParserUtil.parsePartialDate($date);
 	}

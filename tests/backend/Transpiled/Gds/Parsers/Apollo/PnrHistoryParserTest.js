@@ -1,6 +1,6 @@
 
 
-const PnrHistoryParser = require("../../../../../../backend/Transpiled/Gds/Parsers/Apollo/PnrHistoryParser");
+const PnrHistoryParser = require("gds-utils/src/text_format_processing/apollo/PnrHistoryParser");
 
 let php = require('klesun-node-tools/src/Transpiled/php.js');
 

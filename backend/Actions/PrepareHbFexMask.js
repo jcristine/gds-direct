@@ -1,6 +1,6 @@
 const ParseHbFex = require('../Parsers/Apollo/ParseHbFex.js');
 const DateTime = require('../Transpiled/Lib/Utils/DateTime.js');
-const PnrHistoryParser = require('../Transpiled/Gds/Parsers/Apollo/PnrHistoryParser.js');
+const PnrHistoryParser = require('gds-utils/src/text_format_processing/apollo/PnrHistoryParser.js');
 const GetCurrentPnr = require('./GetCurrentPnr.js');
 const TicketHistoryParser = require('gds-utils/src/text_format_processing/apollo/TicketHistoryParser.js');
 const TmpLib = require('../Utils/TmpLib.js');

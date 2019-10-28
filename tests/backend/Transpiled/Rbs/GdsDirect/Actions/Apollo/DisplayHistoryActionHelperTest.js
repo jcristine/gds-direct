@@ -1,4 +1,4 @@
-const PnrHistoryParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/PnrHistoryParser.js');
+const PnrHistoryParser = require('gds-utils/src/text_format_processing/apollo/PnrHistoryParser.js');
 const DisplayHistoryActionHelper = require("../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Apollo/DisplayHistoryActionHelper");
 
 let php = require('klesun-node-tools/src/Transpiled/php.js');

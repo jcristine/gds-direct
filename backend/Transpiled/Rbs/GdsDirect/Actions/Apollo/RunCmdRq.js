@@ -47,7 +47,7 @@ const CommandParser = require('gds-utils/src/text_format_processing/apollo/comma
 const TApolloSavePnr = require('../../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
 const AliasParser = require('../../../../Rbs/GdsDirect/AliasParser.js');
 const ApoAliasParser = require('../../../../../Parsers/Apollo/AliasParser.js');
-const PnrHistoryParser = require('../../../../Gds/Parsers/Apollo/PnrHistoryParser.js');
+const PnrHistoryParser = require('gds-utils/src/text_format_processing/apollo/PnrHistoryParser.js');
 const TariffDisplayParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParser.js');
 const NmeMaskParser = require("../../../../../Actions/ManualPricing/NmeMaskParser");
 

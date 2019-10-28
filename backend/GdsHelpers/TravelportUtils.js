@@ -1,6 +1,6 @@
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CmsApolloTerminal = require('../Transpiled/Rbs/GdsDirect/GdsInterface/CmsApolloTerminal.js');
-const PnrHistoryParser = require("../Transpiled/Gds/Parsers/Apollo/PnrHistoryParser");
+const PnrHistoryParser = require("gds-utils/src/text_format_processing/apollo/PnrHistoryParser");
 const hrtimeToDecimal = require("klesun-node-tools/src/Utils/Misc.js").hrtimeToDecimal;
 const matchAll = require("../Utils/Str").matchAll;
 
