@@ -1,7 +1,7 @@
 const ImportApolloPnrFormatAdapter = require('../Process/Apollo/ImportPnr/ImportApolloPnrFormatAdapter.js');
 
 const Fp = require('../../Lib/Utils/Fp.js');
-const PnrParser = require('../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
+const PnrParser = require('gds-utils/src/text_format_processing/apollo/pnr/PnrParser.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /** @implements {IPnr} */

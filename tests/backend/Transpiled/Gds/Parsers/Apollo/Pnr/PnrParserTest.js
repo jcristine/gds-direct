@@ -1,5 +1,5 @@
 
-const PnrParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
+const PnrParser = require("gds-utils/src/text_format_processing/apollo/pnr/PnrParser");
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class PnrParserTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js') {

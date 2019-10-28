@@ -1,5 +1,5 @@
 
-const ApoPnrParser = require('../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
+const ApoPnrParser = require('gds-utils/src/text_format_processing/apollo/pnr/PnrParser.js');
 const SabPnrParser = require('../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
 const GalPnrParser = require("../../Gds/Parsers/Galileo/Pnr/PnrParser");
 const AmaPnrParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');

@@ -9,11 +9,11 @@ const Fp = require('../../../../../Lib/Utils/Fp.js');
 const Errors = require('../../../Errors.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const GetCurrentPnr = require('../../../../../../Actions/GetCurrentPnr.js');
-const GenericRemarkParser = require('../../../../../Gds/Parsers/Common/GenericRemarkParser.js');
+const GenericRemarkParser = require('gds-utils/src/text_format_processing/agnostic/GenericRemarkParser.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 const {fetchAll, extractPager} = require('../../../../../../GdsHelpers/TravelportUtils.js');
-const PnrParser = require('../../../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
+const PnrParser = require('gds-utils/src/text_format_processing/apollo/pnr/PnrParser.js');
 
 /**
  * @module - unlike RunCmdRq.js, this one executes exactly the command

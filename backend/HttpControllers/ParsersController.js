@@ -3,7 +3,7 @@ const ApoCmdParser = require('gds-utils/src/text_format_processing/apollo/comman
 const GalCmdParser = require('gds-utils/src/text_format_processing/galileo/commands/CmdParser.js');
 const SabCmdParser = require('gds-utils/src/text_format_processing/sabre/commands/CmdParser.js');
 
-const ApoPnrParser = require('../Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser.js');
+const ApoPnrParser = require('gds-utils/src/text_format_processing/apollo/pnr/PnrParser.js');
 
 const SabPricingParser = require('../Transpiled/Gds/Parsers/Sabre/Pricing/SabrePricingParser.js');
 

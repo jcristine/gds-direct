@@ -1,4 +1,4 @@
-let PnrParser = require("../../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/Pnr/PnrParser");
+let PnrParser = require("gds-utils/src/text_format_processing/apollo/pnr/PnrParser");
 
 const GdsActionTestUtil = require("../../../../../../../../backend/Utils/Testing/GdsActionTestUtil");
 const RetrieveFlightServiceInfo = require('../../../../../../../../backend/Transpiled/Rbs/Process/Apollo/ImportPnr/Actions/RetrieveFlightServiceInfoAction.js');

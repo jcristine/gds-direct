@@ -1,5 +1,5 @@
 const ItineraryParser = require('gds-utils/src/text_format_processing/apollo/pnr/ItineraryParser.js');
-const PnrParser = require('../../../Gds/Parsers/Apollo/Pnr/PnrParser.js');
+const PnrParser = require('gds-utils/src/text_format_processing/apollo/pnr/PnrParser.js');
 const ApolloPnr = require('../../../Rbs/TravelDs/ApolloPnr.js');
 
 const TApolloSavePnr = require('../../../Rbs/GdsAction/Traits/TApolloSavePnr.js');
