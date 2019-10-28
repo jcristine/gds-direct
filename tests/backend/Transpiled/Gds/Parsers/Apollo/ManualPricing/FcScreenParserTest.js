@@ -1,6 +1,6 @@
 
 const php = require('../../../../php.js');
-const FcScreenParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/ManualPricing/FcScreenParser");
+const FcScreenParser = require("gds-utils/src/text_format_processing/apollo/ticketing_masks/FcScreenParser");
 
 class FcScreenParserTest extends require('../../../../Lib/TestCase.js') {
 	provideDumps() {

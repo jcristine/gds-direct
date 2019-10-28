@@ -1,7 +1,7 @@
 
 const AbstractMaskParser = require("../../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
 const Rej = require('klesun-node-tools/src/Rej.js');
-const FcScreenParser = require("../../Transpiled/Gds/Parsers/Apollo/ManualPricing/FcScreenParser");
+const FcScreenParser = require("gds-utils/src/text_format_processing/apollo/ticketing_masks/FcScreenParser");
 
 const POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$FC/ATB FARE CONSTRUCTION                                      ",
