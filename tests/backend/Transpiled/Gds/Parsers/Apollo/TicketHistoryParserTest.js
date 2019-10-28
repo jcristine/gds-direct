@@ -1,6 +1,6 @@
 
 const php = require('../../../php.js');
-const TicketHistoryParser = require("../../../../../../backend/Transpiled/Gds/Parsers/Apollo/TicketHistoryParser");
+const TicketHistoryParser = require("gds-utils/src/text_format_processing/apollo/TicketHistoryParser");
 
 class TicketHistoryParserTest extends require('../../../Lib/TestCase.js') {
 	provideDumps() {

@@ -51,8 +51,6 @@ const PnrHistoryParser = require('../../../../Gds/Parsers/Apollo/PnrHistoryParse
 const TariffDisplayParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParser.js');
 const NmeMaskParser = require("../../../../../Actions/ManualPricing/NmeMaskParser");
 
-const TicketHistoryParser = require("../../../../Gds/Parsers/Apollo/TicketHistoryParser");
-
 // 'SEGMENTS CANCELLED - NEXT REPLACES  1'
 // 'CNLD FROM  1'
 const isSuccessXiOutput = (output) => {

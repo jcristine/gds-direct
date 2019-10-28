@@ -11,7 +11,7 @@ const FopParser = require("./FopParser");
 const TktgParser = require("./TktgParser");
 const SsrBlockParser = require("./SsrBlockParser");
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const TicketHistoryParser = require("../TicketHistoryParser");
+const TicketHistoryParser = require("gds-utils/src/text_format_processing/apollo/TicketHistoryParser");
 
 class PnrParser {
 	static detectSectionHeader($line) {
