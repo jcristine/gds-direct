@@ -1,15 +1,15 @@
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
-const AtfqParser = require('../../../../Gds/Parsers/Apollo/Pnr/AtfqParser.js');
+const AtfqParser = require('gds-utils/src/text_format_processing/apollo/pnr/AtfqParser.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const GenericRemarkParser = require('../../../../Gds/Parsers/Common/GenericRemarkParser.js');
 const ItineraryParser = require("gds-utils/src/text_format_processing/apollo/pnr/ItineraryParser.js");
-const HeaderParser = require("./HeaderParser");
-const GdsPassengerBlockParser = require("../../Common/GdsPassengerBlockParser");
-const FopParser = require("./FopParser");
-const TktgParser = require("./TktgParser");
-const SsrBlockParser = require("./SsrBlockParser");
+const HeaderParser = require("gds-utils/src/text_format_processing/apollo/pnr/HeaderParser");
+const GdsPassengerBlockParser = require("gds-utils/src/text_format_processing/agnostic/GdsPassengerBlockParser");
+const FopParser = require("gds-utils/src/text_format_processing/apollo/pnr/FopParser");
+const TktgParser = require("gds-utils/src/text_format_processing/apollo/pnr/TktgParser");
+const SsrBlockParser = require("gds-utils/src/text_format_processing/apollo/pnr/SsrBlockParser");
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const TicketHistoryParser = require("gds-utils/src/text_format_processing/apollo/TicketHistoryParser");
 

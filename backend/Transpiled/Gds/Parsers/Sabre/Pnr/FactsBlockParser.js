@@ -1,7 +1,7 @@
 
 
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
-const SsrBlockParser = require('../../../../Gds/Parsers/Apollo/Pnr/SsrBlockParser.js');
+const SsrBlockParser = require('gds-utils/src/text_format_processing/apollo/pnr/SsrBlockParser.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 
 /**

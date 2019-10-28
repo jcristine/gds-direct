@@ -1,6 +1,6 @@
 
 
-const SsrBlockParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/Pnr/SsrBlockParser.js');
+const SsrBlockParser = require('gds-utils/src/text_format_processing/apollo/pnr/SsrBlockParser.js');
 
 const php = require('../../../../php.js');
 class SsrBlockParserTest extends require('../../../../Lib/TestCase.js')

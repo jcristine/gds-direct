@@ -2,7 +2,7 @@
 const DateTime = require('../../Lib/Utils/DateTime.js');
 const Fp = require('../../Lib/Utils/Fp.js');
 const ApolloReservationItineraryParser = require('gds-utils/src/text_format_processing/apollo/pnr/ItineraryParser.js');
-const SsrBlockParser = require('../../Gds/Parsers/Apollo/Pnr/SsrBlockParser.js');
+const SsrBlockParser = require('gds-utils/src/text_format_processing/apollo/pnr/SsrBlockParser.js');
 const ImportPnrCommonFormatAdapter = require('../../Rbs/Process/Common/ImportPnr/ImportPnrCommonFormatAdapter.js');
 const ItineraryParser = require('../../Gds/Parsers/Sabre/Pnr/ItineraryParser.js');
 

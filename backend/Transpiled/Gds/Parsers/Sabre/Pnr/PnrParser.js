@@ -8,7 +8,7 @@ const SabreTicketListParser = require('../../../../Gds/Parsers/Sabre/SabreTicket
 const SeatsParser = require('../../../../Gds/Parsers/Sabre/SeatsParser.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const GdsPassengerBlockParser = require("../../Common/GdsPassengerBlockParser");
+const GdsPassengerBlockParser = require("gds-utils/src/text_format_processing/agnostic/GdsPassengerBlockParser");
 const ItineraryParser = require("./ItineraryParser");
 const FactsBlockParser = require("./FactsBlockParser");
 const PnrInfoBlockParser = require("./PnrInfoBlockParser");

@@ -1,6 +1,6 @@
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
-const SsrBlockParser = require('../../../../Gds/Parsers/Apollo/Pnr/SsrBlockParser.js');
+const SsrBlockParser = require('gds-utils/src/text_format_processing/apollo/pnr/SsrBlockParser.js');
 const PtcUtil = require('../../../../Rbs/Process/Common/PtcUtil.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 

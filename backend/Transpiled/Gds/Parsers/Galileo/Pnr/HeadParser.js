@@ -1,6 +1,6 @@
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
-const GdsPassengerBlockParser = require('../../../../Gds/Parsers/Common/GdsPassengerBlockParser.js');
+const GdsPassengerBlockParser = require('gds-utils/src/text_format_processing/agnostic/GdsPassengerBlockParser.js');
 const ItineraryParser = require('gds-utils/src/text_format_processing/galileo/pnr/ItineraryParser.js');
 
 /**
