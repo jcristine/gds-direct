@@ -55,6 +55,8 @@ const chooseTmpCls = (seg) => {
 	// BA allows: B,C,D,H,I,J,K,L,M,N,O,Q,R,S,V,Y
 	// SK allows: C,D,E,H,K,L,M,Q,T,U,W,Z
 	// AT allows: Q,W,R,T,Y,U,O,P,D,G,H,J,K,L,X,C,V,B,M
+	// KL allows: Q,E,R,T,Y,U,I,O,D,G,H,J,K,L,Z,X,C,V,B,N,M
+	// ... maybe should automate this at some point...
 	const defaultCls = {
 		SK: 'W',
 	}[seg.airline] || 'Y';
@@ -62,6 +64,7 @@ const chooseTmpCls = (seg) => {
 	const fallbackCls = {
 		SK: 'Z',
 		AT: 'Q',
+		KL: 'Q',
 	}[seg.airline] || 'S';
 
 	return seg.bookingClass !== defaultCls ? defaultCls : fallbackCls;
