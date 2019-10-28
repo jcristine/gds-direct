@@ -1,6 +1,6 @@
 const AbstractMaskParser = require("../../Transpiled/Gds/Parsers/Apollo/AbstractMaskParser");
 const Rej = require('klesun-node-tools/src/Rej.js');
-const NmeScreenParser = require("../../Transpiled/Gds/Parsers/Apollo/ManualPricing/NmeScreenParser");
+const NmeScreenParser = require("gds-utils/src/text_format_processing/apollo/ticketing_masks/NmeScreenParser");
 
 const POSITIONS = AbstractMaskParser.getPositionsBy('_', [
 	"$NME LIB/MAR                                                   ",
