@@ -2,7 +2,6 @@ import {get} from "../helpers/requests";
 import {CLOSE_PQ_WINDOW} from "../actions/priceQuoutes";
 import {notify} from "../helpers/debug";
 import {UPDATE_CUR_GDS} from "../actions/gdsActions";
-import {getStore} from "../store";
 
 const reject = err => {
 
@@ -22,7 +21,7 @@ const reject = err => {
 	return Promise.reject('PQ creation rejected - ' + JSON.stringify(err));
 };
 
-let loaderToggle = (state) => {
+const loaderToggle = (state) => {
 	const spinner = document.querySelector('#spinners');
 	const loadingDots = document.querySelector('#loadingDots');
 
@@ -33,7 +32,7 @@ let loaderToggle = (state) => {
 		loadingDots.classList.toggle('loading-hidden', state);
 };
 
-let blockAllUi = (action) => {
+const blockAllUi = (action) => {
 	loaderToggle(false);
 	let whenResult = action();
 	whenResult.finally(() => loaderToggle(true));
@@ -41,13 +40,27 @@ let blockAllUi = (action) => {
 };
 
 /** @param {IRbsGetPqItineraryRs} rbsData */
-let updateSessionState = (rbsData, gdsName) => {
+const updateSessionState = (rbsData, gdsName) => {
 	UPDATE_CUR_GDS({
 		...rbsData.sessionInfo,
 		canCreatePqErrors: rbsData.sessionInfo.canCreatePqErrors,
 		startNewSession: false,
 		gdsName: gdsName,
 	});
+};
+
+const normPnrData = (pqRs) => {
+	if (pqRs.pnrData) {
+		return Promise.resolve(pqRs);
+	} else if (pqRs.userMessages && pqRs.userMessages.length > 0) {
+		const exc = new Error('PQ creation user errors: ' + pqRs.userMessages.join('; '));
+		exc.httpStatusCode = 400; // BadRequest, to not report to diag
+		return Promise.reject(exc);
+	} else {
+		const exc = new Error('Invalid getPqItinerary Response format');
+		exc.data = pqRs;
+		return Promise.reject(exc);
+	}
 };
 
 export class PqParser
@@ -80,24 +93,16 @@ export class PqParser
 			return Promise.reject('canCreatePq');
 		}
 
-		let pqErrors = gds.get('canCreatePqErrors') || [];
+		const pqErrors = gds.get('canCreatePqErrors') || [];
 		if (pqErrors.length > 0)
 		{
 			return reject('Can\'t create PQ - ' + pqErrors.join('; '));
 		}
 
-		let url = `terminal/getPqItinerary?pqTravelRequestId=${rId}&gds=${gds.get('name')}`;
-		let whenPq = this.blockTerminal(() => get(url), 'GET PRICING');
+		const url = `terminal/getPqItinerary?pqTravelRequestId=${rId}&gds=${gds.get('name')}`;
+		const whenPq = this.blockTerminal(() => get(url), 'GET PRICING');
 		return blockAllUi(() => whenPq)
-			.then(rbsData => {
-				if (rbsData.pnrData) {
-					return Promise.resolve(rbsData);
-				} else {
-					const exc = new Error('Invalid getPqItinerary Response format');
-					exc.data = rbsData;
-					return Promise.reject(exc);
-				}
-			})
+			.then(normPnrData)
 			.then(rbsData => {
 				updateSessionState(rbsData, gds.get('name'));
 				return {pqTravelRequestId: rId, gds: gds.get('name'), rbsData: rbsData};
