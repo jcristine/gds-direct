@@ -10,7 +10,9 @@ const normalizeMarriages = (segments) => {
 	const rqMarriageToSeqs = new Map();
 	for (const seg of segments) {
 		let marriage = seg.marriage;
-		if (marriage) {
+		if (seg.segmentStatus === 'GK') {
+			marriage = null;
+		} else if (marriage) {
 			rqMarriageToSeqs.set(marriage, rqMarriageToSeqs.get(marriage) || []);
 			rqMarriageToSeqs.get(marriage).push(seg);
 			marriage = [...rqMarriageToSeqs.keys()].indexOf(marriage) + 1;
