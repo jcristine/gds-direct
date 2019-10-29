@@ -13,7 +13,7 @@ const normalizeMarriages = (segments) => {
 		if (marriage) {
 			rqMarriageToSeqs.set(marriage, rqMarriageToSeqs.get(marriage) || []);
 			rqMarriageToSeqs.get(marriage).push(seg);
-			marriage = [...rqMarriageToSeqs.keys()].indexOf(marriage + '') + 1;
+			marriage = [...rqMarriageToSeqs.keys()].indexOf(marriage) + 1;
 		}
 		normalized.push({...seg, marriage});
 	}
