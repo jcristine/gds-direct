@@ -38,7 +38,7 @@ const TravelportBuildItineraryActionViaXml = async ({
 	for (const statusSegments of Object.values(byStatus)) {
 		// Travelport returns SYSTEM ERROR if you book more than 8 segments at same time
 		for (const chunk of _.chunk(statusSegments, 8)) {
-			const airSegments = chunk.map(segment => ({
+			let airSegments = chunk.map(segment => ({
 				airline: segment.airline,
 				flightNumber: segment.flightNumber,
 				bookingClass: segment.bookingClass,
