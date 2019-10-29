@@ -13,7 +13,7 @@ const normalizeMarriages = (segments) => {
 		if (marriage) {
 			rqMarriageToSeqs[marriage] = rqMarriageToSeqs[marriage] || [];
 			rqMarriageToSeqs[marriage].push(seg);
-			marriage = +Object.keys(rqMarriageToSeqs).indexOf(marriage) + 1;
+			marriage = +Object.keys(rqMarriageToSeqs).indexOf(marriage + '') + 1;
 		}
 		normalized.push({...seg, marriage});
 	}
@@ -34,6 +34,7 @@ const TravelportBuildItineraryActionViaXml = async ({
 	travelport = TravelportClient(),
 }) => {
 	const segments = [];
+	const failedSegments = [];
 	const byStatus = _.groupBy(itinerary, e => e.segmentStatus);
 	const startDate = baseDate;
 	let reservation = null;
@@ -65,14 +66,20 @@ const TravelportBuildItineraryActionViaXml = async ({
 
 			const result = await travelport.processPnr(session.getGdsData(), params);
 
-			segments.push(...result.newAirSegments.filter(seg => seg.success));
+			result.newAirSegments.forEach(seg => {
+				if (seg.success) {
+					segments.push(seg);
+				} else {
+					failedSegments.push(seg);
+				}
+			});
 
 			if (result.error) {
 				return {
 					success: false,
 					errorType: REBUILD_MULTISEGMENT,
 					errorData: {response: result.error},
-					segments,
+					segments, failedSegments,
 				};
 			}
 
@@ -80,7 +87,7 @@ const TravelportBuildItineraryActionViaXml = async ({
 		}
 	}
 
-	return {success: true, segments, reservation};
+	return {success: true, segments, failedSegments, reservation};
 };
 
 module.exports = TravelportBuildItineraryActionViaXml;
