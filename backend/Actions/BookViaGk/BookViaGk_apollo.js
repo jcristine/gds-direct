@@ -21,7 +21,7 @@ const bookTp = async (params) => {
 			// right JrnyNum instead of booking as GK and then rebooking
 			const msg = 'Flight does not allow default RBD used for Y/GK rebook - ' + response;
 			return Rej.NotImplemented(msg, built);
-		} else if (response.match(/0 AVAIL\/WL/)) {
+		} else if (response.match(/0 AVAIL\/WL/) || response.match(/CK CLASS/)) {
 			const segStr = built.failedSegments
 				.map(s => s.airline + s.flightNumber)
 				.join(', ');
@@ -115,7 +115,6 @@ const BookViaGk_apollo = async (params) => {
 				messages: [{type: 'error', text: exc + ''}],
 			};
 		}));
-		// const messages = [];
 		// const noRebook = [];
 		// let forRebook = [];
 		// for (const seg of itinerary) {
