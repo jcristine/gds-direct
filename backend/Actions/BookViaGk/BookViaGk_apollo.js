@@ -15,6 +15,11 @@ const bookTp = async (params) => {
 		const response = (built.errorData || {}).response || '';
 		if (response.match(/INVALID DATE/)) {
 			return Rej.BadRequest(response);
+		} else if (response.match(/CLASS NOT FOUND - PASSIVE PROHIBITED BY AIRLINE/)) {
+			// probably would be fixed if we used single PNRBFManagement with
+			// right JrnyNum instead of booking as GK and then rebooking
+			const msg = 'Flight does not allow default RBD used for Y/GK rebook - ' + response;
+			return Rej.NotImplemented(msg, built);
 		} else {
 			const msg = Errors.getMessage(built.errorType, built.errorData);
 			return Rej.UnprocessableEntity(msg, built);
@@ -85,36 +90,41 @@ const BookViaGk_apollo = async (params) => {
 	};
 
 	const bookReal = async (itinerary) => {
-		const noRebook = [];
-		let forRebook = [];
-		for (const seg of itinerary) {
-			if (seg.segmentStatus === 'GK' || withoutRebook) {
-				noRebook.push(seg);
-			} else {
-				forRebook.push({...seg,
-					segmentStatus: 'GK',
-					// any different booking class will do, since it's GK
-					bookingClass: GkUtil.chooseTmpCls(seg),
-					desiredBookingClass: seg.bookingClass,
-				});
-			}
-		}
 		let {reservation} = await bookTp({
 			...bookParams, session,
-			itinerary: [...noRebook, ...forRebook],
+			itinerary: itinerary,
 		});
-		let {failedSegments, messages} = await rebookGkSegments(forRebook, reservation);
-		// mandatory between calls if segment numbers changed apparently...
-		const pnrCmdRec = await TravelportUtils.fetchAll('*R', session);
-		reservation = ApolloPnr.makeFromDump(pnrCmdRec.output).getReservation(baseDate);
-
-		// Apollo does not allow cancelling segments in non-sequential order, like >X1|6|4|5;
-		failedSegments = failedSegments.sort((a,b) => a.segmentNumber - b.segmentNumber);
-		if (failedSegments.length > 0) {
-			await session.runCmd('X' + failedSegments.map(s => s.segmentNumber).join('|'));
-			const built = await bookPassive(failedSegments);
-			reservation = built.reservation;
-		}
+		const messages = [];
+		// const noRebook = [];
+		// let forRebook = [];
+		// for (const seg of itinerary) {
+		// 	if (seg.segmentStatus === 'GK' || withoutRebook) {
+		// 		noRebook.push(seg);
+		// 	} else {
+		// 		forRebook.push({...seg,
+		// 			segmentStatus: 'GK',
+		// 			// any different booking class will do, since it's GK
+		// 			bookingClass: GkUtil.chooseTmpCls(seg),
+		// 			desiredBookingClass: seg.bookingClass,
+		// 		});
+		// 	}
+		// }
+		// let {reservation} = await bookTp({
+		// 	...bookParams, session,
+		// 	itinerary: [...noRebook, ...forRebook],
+		// });
+		// let {failedSegments, messages} = await rebookGkSegments(forRebook, reservation);
+		// // mandatory between calls if segment numbers changed apparently...
+		// const pnrCmdRec = await TravelportUtils.fetchAll('*R', session);
+		// reservation = ApolloPnr.makeFromDump(pnrCmdRec.output).getReservation(baseDate);
+		//
+		// // Apollo does not allow cancelling segments in non-sequential order, like >X1|6|4|5;
+		// failedSegments = failedSegments.sort((a,b) => a.segmentNumber - b.segmentNumber);
+		// if (failedSegments.length > 0) {
+		// 	await session.runCmd('X' + failedSegments.map(s => s.segmentNumber).join('|'));
+		// 	const built = await bookPassive(failedSegments);
+		// 	reservation = built.reservation;
+		// }
 		return {reservation, messages};
 	};
 
