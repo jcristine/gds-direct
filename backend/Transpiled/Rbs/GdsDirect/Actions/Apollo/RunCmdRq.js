@@ -371,7 +371,14 @@ const RunCmdRq = ({
 		if (itinerary.length > 0) {
 			// would be better to use number returned by ApolloBuildItineraryAction
 			// as it may be not in same order in case of marriages...
-			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
+			itinerary = itinerary.map((s, i) => ({...s,
+				segmentNumber: +i + 1,
+				segmentStatus: {
+					'DK': 'SS', // amadeus
+					'AK': 'GK', // galileo
+					'HS': 'SS', // galileo
+				}[s.segmentStatus] || s.segmentStatus,
+			}));
 			const prevState = getSessionData();
 			const booked = await bookItinerary({itinerary, fallbackToGk: true})
 				.catch(coverExc([Rej.UnprocessableEntity], exc => {
