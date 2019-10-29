@@ -313,10 +313,10 @@ const RunCmdRq = ({
 			: [{cmd: '*R', output: (await getCurrentPnr()).getDump()}];
 		return {
 			calledCommands,
-			userMessages: built.messages
+			userMessages: (built.messages || [])
 				.filter(r => r.type === 'info')
 				.map(r => r.text),
-			errors: built.messages
+			errors: (built.messages || [])
 				.filter(r => r.type === 'error')
 				.map(r => r.text),
 		};
