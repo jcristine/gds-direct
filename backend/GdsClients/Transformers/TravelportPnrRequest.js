@@ -97,7 +97,7 @@ const transformDateFromSoap = date => {
 	return {
 		raw: date,
 		parsed: m + '-' + d,
-		full: y + '-' + m + '-' + d,
+		full: !y ? null : y + '-' + m + '-' + d,
 	};
 };
 
