@@ -1,3 +1,4 @@
+const Rej = require('klesun-node-tools/src/Rej.js');
 const DateTime = require('../../../Transpiled/Lib/Utils/DateTime');
 const _ = require('lodash');
 const moment = require('moment');
@@ -6,17 +7,20 @@ const {REBUILD_MULTISEGMENT} = require('../GdsDirect/Errors');
 
 const normalizeMarriages = (segments) => {
 	const normalized = [];
-	const inputMarriageToSeq = {};
-	let lastMarriage = 0;
+	const rqMarriageToSeqs = {};
 	for (const seg of segments) {
 		let marriage = seg.marriage;
 		if (marriage) {
-			if (!inputMarriageToSeq[marriage]) {
-				inputMarriageToSeq[marriage] = ++lastMarriage;
-			}
-			marriage = inputMarriageToSeq[marriage];
+			rqMarriageToSeqs[marriage] = rqMarriageToSeqs[marriage] || [];
+			rqMarriageToSeqs[marriage].push(seg);
+			marriage = +Object.keys(rqMarriageToSeqs).indexOf(marriage) + 1;
 		}
 		normalized.push({...seg, marriage});
+	}
+	for (const [rqMarriage, segs] of Object.entries(rqMarriageToSeqs)) {
+		if (segs.length === 1) {
+			throw new Rej.BadRequest('Invalid itinerary: unary marriage #' + rqMarriage);
+		}
 	}
 	return normalized;
 };
