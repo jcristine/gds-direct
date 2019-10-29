@@ -8,6 +8,7 @@ const TravelportBuildItineraryActionViaXml = require('../../Transpiled/Rbs/GdsAc
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {findSegmentInPnr} = require('../../Transpiled/Rbs/GdsDirect/Actions/Common/ItinerarySegments.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
+const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 const bookTp = async (params) => {
 	const built = await TravelportBuildItineraryActionViaXml(params);
@@ -20,6 +21,13 @@ const bookTp = async (params) => {
 			// right JrnyNum instead of booking as GK and then rebooking
 			const msg = 'Flight does not allow default RBD used for Y/GK rebook - ' + response;
 			return Rej.NotImplemented(msg, built);
+		} else if (response.match(/0 AVAIL\/WL/)) {
+			const segStr = built.failedSegments
+				.map(s => s.airline + s.flightNumber)
+				.join(', ');
+			const errorData = {segNums: segStr};
+			const msg = Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, errorData);
+			return Rej.InsufficientStorage(msg, built);
 		} else {
 			const msg = Errors.getMessage(built.errorType, built.errorData);
 			return Rej.UnprocessableEntity(msg, built);
@@ -29,7 +37,11 @@ const bookTp = async (params) => {
 	}
 };
 
-/** @param {BookViaGk_rq} params */
+/**
+ * does not book via GK anymore - sells directly ir desired class with singe PNRBFManagement request
+ *
+ * @param {BookViaGk_rq} params
+ */
 const BookViaGk_apollo = async (params) => {
 	const {
 		bookRealSegments = false,
@@ -90,11 +102,20 @@ const BookViaGk_apollo = async (params) => {
 	};
 
 	const bookReal = async (itinerary) => {
-		let {reservation} = await bookTp({
-			...bookParams, session,
-			itinerary: itinerary,
-		});
-		const messages = [];
+		const {reservation, messages = []} = await bookTp({
+			...bookParams, session, itinerary,
+		}).catch(coverExc([Rej.InsufficientStorage], async exc => {
+			const failedSegments = exc.data.failedSegments.map(seg => ({...seg,
+				departureDt: seg.departureDt || seg.departureDate,
+				seatCount: seg.seatCount || itinerary[0].seatCount,
+			}));
+			const built = await bookPassive(failedSegments);
+			return {
+				reservation: built.reservation,
+				messages: [{type: 'error', text: exc + ''}],
+			};
+		}));
+		// const messages = [];
 		// const noRebook = [];
 		// let forRebook = [];
 		// for (const seg of itinerary) {

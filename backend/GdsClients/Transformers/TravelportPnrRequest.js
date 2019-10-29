@@ -96,7 +96,8 @@ const transformDateFromSoap = date => {
 
 	return {
 		raw: date,
-		parsed: y + '-' + m + '-' + d,
+		parsed: m + '-' + d,
+		full: y + '-' + m + '-' + d,
 	};
 };
 
@@ -110,11 +111,10 @@ const transformTimeFromSoap = time => {
 
 	const h = paddedDate.substr(0, 2);
 	const m = paddedDate.substr(2, 2);
-	const s = paddedDate.substr(4, 2) || '00';
 
 	return {
 		raw: paddedDate,
-		parsed: h + ':' + m + ':' + s,
+		parsed: h + ':' + m,
 	};
 };
 
