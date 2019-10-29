@@ -384,7 +384,9 @@ const RunCmdRq = ({
 							exc.httpStatusCode = Rej.BadRequest.httpStatusCode;
 						}
 					} else {
-						if (exc.message.includes('DUPLICATE SEGMENT NOT PERMITTED')) {
+						if (exc.message.includes('DUPLICATE SEGMENT NOT PERMITTED') ||
+							exc.message.includes('/*(RECORD LOCATOR)  OR  ')
+						) {
 							const dupes = findDupeSegments(itinerary);
 							if (dupes) {
 								exc.message = 'Duplicate segments at positions: ' +
