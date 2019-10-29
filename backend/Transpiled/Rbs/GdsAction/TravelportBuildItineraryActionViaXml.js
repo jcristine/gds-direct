@@ -19,7 +19,7 @@ const normalizeMarriages = (segments) => {
 	}
 	for (const [rqMarriage, segs] of Object.entries(rqMarriageToSeqs)) {
 		if (segs.length === 1) {
-			throw new Rej.BadRequest('Invalid itinerary: unary marriage #' + rqMarriage);
+			throw Rej.BadRequest.makeExc('Invalid itinerary: unary marriage #' + rqMarriage);
 		}
 	}
 	return normalized;
