@@ -10,6 +10,12 @@ const {findSegmentInPnr} = require('../../Transpiled/Rbs/GdsDirect/Actions/Commo
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
+const makeSegStr = (failedSegments) => {
+	return failedSegments
+		.map(s => s.airline + s.flightNumber)
+		.join(', ');
+};
+
 const bookTp = async (params) => {
 	const built = await TravelportBuildItineraryActionViaXml(params);
 	if (built.errorType) {
@@ -25,9 +31,7 @@ const bookTp = async (params) => {
 				|| response.match(/NO MESSAGE WILL BE SENT/)
 				|| built.failedSegments.length > 0
 		) {
-			const segStr = built.failedSegments
-				.map(s => s.airline + s.flightNumber)
-				.join(', ');
+			const segStr = makeSegStr(built.failedSegments);
 			const errorData = {segNums: segStr};
 			const msg = isNoAvail
 				? Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, errorData)
@@ -106,8 +110,79 @@ const BookViaGk_apollo = async (params) => {
 		return {reservation: built.reservation, errors: []};
 	};
 
+	const bookViaGkRebook = async (itinerary) => {
+		const noRebook = [];
+		let forRebook = [];
+		for (const seg of itinerary) {
+			if (seg.segmentStatus === 'GK' || withoutRebook) {
+				noRebook.push(seg);
+			} else {
+				forRebook.push({...seg,
+					segmentStatus: 'GK',
+					// any different booking class will do, since it's GK
+					bookingClass: GkUtil.chooseTmpCls(seg),
+					desiredBookingClass: seg.bookingClass,
+				});
+			}
+		}
+		let {reservation} = await bookTp({
+			...bookParams, session,
+			itinerary: [...noRebook, ...forRebook],
+		});
+		let {failedSegments, messages} = await rebookGkSegments(forRebook, reservation);
+		// mandatory between calls if segment numbers changed apparently...
+		const pnrCmdRec = await TravelportUtils.fetchAll('*R', session);
+		reservation = ApolloPnr.makeFromDump(pnrCmdRec.output).getReservation(baseDate);
+
+		// Apollo does not allow cancelling segments in non-sequential order, like >X1|6|4|5;
+		failedSegments = failedSegments.sort((a,b) => a.segmentNumber - b.segmentNumber);
+		if (failedSegments.length > 0) {
+			await session.runCmd('X' + failedSegments.map(s => s.segmentNumber).join('|'));
+			const built = await bookPassive(failedSegments);
+			reservation = built.reservation;
+		}
+		return {reservation, messages};
+	};
+
+	const toNormSysErrExc = (itinerary) => async (exc) => {
+		// note that SYSTEM ERROR OCCURRED does not
+		// necessary mean that no segments were added...
+		if (exc.message.includes('SYSTEM ERROR OCCURRED')) {
+			// got many cases where first segments resulted
+			// in "UNA PROC" on SS, but booked fine on GK
+			const pnrCmdRec = await TravelportUtils.fetchAll('*R', session);
+			const pnrItinerary = ApolloPnr.makeFromDump(pnrCmdRec.output)
+				.getReservation(baseDate).itinerary;
+
+			if (pnrItinerary.length === 0) {
+				// when first segment is SYSTEM ERROR, no segments are added - try the Y GK
+				// rebook logic then, as some following segments may still be SS-able
+				return bookViaGkRebook(itinerary);
+			} else {
+				// otherwise just add rest (failed) segments as GK
+				const failedSegments = itinerary.filter(seg => {
+					try {
+						const pnrSeg = findSegmentInPnr(seg, pnrItinerary);
+						return pnrSeg ? false : true;
+					} catch (exc) {
+						return true;
+					}
+				});
+				const built = await bookPassive(failedSegments);
+				const segStr = makeSegStr(failedSegments);
+				const text = 'Failed to rebook ' + segStr +  ' - SYSTEM ERROR OCCURRED';
+				return {
+					reservation: built.reservation,
+					messages: [{type: 'error', text}],
+				};
+			}
+		} else {
+			return Rej.BadRequest(exc);
+		}
+	};
+
 	const bookReal = async (itinerary) => {
-		const {reservation, messages = []} = await bookTp({
+		return bookTp({
 			...bookParams, session, itinerary,
 		}).catch(coverExc([Rej.PartialContent], async exc => {
 			const failedSegments = exc.data.failedSegments.map(seg => ({...seg,
@@ -119,54 +194,7 @@ const BookViaGk_apollo = async (params) => {
 				reservation: built.reservation,
 				messages: [{type: 'error', text: exc + ''}],
 			};
-		}))
-		// SYSTEM ERROR OCCURRED does not mean that no segments were added...
-		// .catch(coverExc([Rej.UnprocessableEntity], async exc => {
-		// 	if (exc.message.includes('SYSTEM ERROR OCCURRED')) {
-		// 		// got few cases where first segments resulted
-		// 		// in "UNA PROC" on SS, but booked fine on GK
-		// 		const built = await bookPassive(itinerary);
-		// 		const text = 'Failed to rebook all segments - SYSTEM ERROR OCCURRED';
-		// 		return {
-		// 			reservation: built.reservation,
-		// 			messages: [{type: 'error', text}],
-		// 		};
-		// 	} else {
-		// 		return Rej.BadRequest(exc);
-		// 	}
-		// }))
-		;
-		// const noRebook = [];
-		// let forRebook = [];
-		// for (const seg of itinerary) {
-		// 	if (seg.segmentStatus === 'GK' || withoutRebook) {
-		// 		noRebook.push(seg);
-		// 	} else {
-		// 		forRebook.push({...seg,
-		// 			segmentStatus: 'GK',
-		// 			// any different booking class will do, since it's GK
-		// 			bookingClass: GkUtil.chooseTmpCls(seg),
-		// 			desiredBookingClass: seg.bookingClass,
-		// 		});
-		// 	}
-		// }
-		// let {reservation} = await bookTp({
-		// 	...bookParams, session,
-		// 	itinerary: [...noRebook, ...forRebook],
-		// });
-		// let {failedSegments, messages} = await rebookGkSegments(forRebook, reservation);
-		// // mandatory between calls if segment numbers changed apparently...
-		// const pnrCmdRec = await TravelportUtils.fetchAll('*R', session);
-		// reservation = ApolloPnr.makeFromDump(pnrCmdRec.output).getReservation(baseDate);
-		//
-		// // Apollo does not allow cancelling segments in non-sequential order, like >X1|6|4|5;
-		// failedSegments = failedSegments.sort((a,b) => a.segmentNumber - b.segmentNumber);
-		// if (failedSegments.length > 0) {
-		// 	await session.runCmd('X' + failedSegments.map(s => s.segmentNumber).join('|'));
-		// 	const built = await bookPassive(failedSegments);
-		// 	reservation = built.reservation;
-		// }
-		return {reservation, messages};
+		})).catch(coverExc([Rej.UnprocessableEntity], toNormSysErrExc(itinerary)));
 	};
 
 	if (bookRealSegments) {

@@ -20,9 +20,6 @@ class ImportApolloPnrFormatAdapter
      * @param array $parsedData = ApolloReservationParser::parse()
      */
 	static transformReservation(parsedData, baseDate)  {
-		if (php.isset(parsedData.error)) {
-			return parsedData;
-		}
 		const recentPast = !baseDate ? null : php.date('Y-m-d', php.strtotime('-2 days', php.strtotime(baseDate))); // -2 for timezone error
 		const nearFuture = !baseDate ? null : php.date('Y-m-d', php.strtotime('+2 days', php.strtotime(baseDate))); // +2 for timezone error
 
