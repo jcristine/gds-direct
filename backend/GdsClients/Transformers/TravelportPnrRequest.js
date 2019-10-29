@@ -121,7 +121,7 @@ const transformTimeFromSoap = time => {
 const transformAirSegmentFromSoap = element => {
 	const departureDate = transformDateFromSoap(getValueOrNullFromDomElement(element, 'Dt'));
 	const departureTime = transformTimeFromSoap(getValueOrNullFromDomElement(element, 'StartTm'));
-	let departureDtStr = departureDate.parsed;
+	let departureDtStr = departureDate.full;
 	if (departureDtStr && departureTime) {
 		departureDtStr += ' ' + departureTime.parsed;
 	}
