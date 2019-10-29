@@ -32,6 +32,7 @@ const TravelportBuildItineraryActionViaXml = async ({
 				destinationAirport: segment.destinationAirport,
 				segmentStatus: segment.segmentStatus,
 				seatCount: segment.seatCount,
+				marriage: segment.marriage,
 			}));
 
 			const params = {
