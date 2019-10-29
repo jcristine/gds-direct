@@ -4,6 +4,23 @@ const moment = require('moment');
 const TravelportClient = require('../../../GdsClients/TravelportClient');
 const {REBUILD_MULTISEGMENT} = require('../GdsDirect/Errors');
 
+const normalizeMarriages = (segments) => {
+	const normalized = [];
+	const inputMarriageToSeq = {};
+	let lastMarriage = 0;
+	for (const seg of segments) {
+		let marriage = seg.marriage;
+		if (marriage) {
+			if (!inputMarriageToSeq[marriage]) {
+				inputMarriageToSeq[marriage] = ++lastMarriage;
+			}
+			marriage = inputMarriageToSeq[marriage];
+		}
+		normalized.push({...seg, marriage});
+	}
+	return normalized;
+};
+
 // Used by both Galileo and Apollo itinerary build actions
 // They use same underlying API, the only difference is slight
 // changes in format data is returned
@@ -32,8 +49,11 @@ const TravelportBuildItineraryActionViaXml = async ({
 				destinationAirport: segment.destinationAirport,
 				segmentStatus: segment.segmentStatus,
 				seatCount: segment.seatCount,
+				// marriage must be sequential, not sure if we should
+				// sort segments chronologically to not receive ADMs...
 				marriage: segment.marriage,
 			}));
+			airSegments = normalizeMarriages(airSegments);
 
 			const params = {
 				addAirSegments: airSegments,
