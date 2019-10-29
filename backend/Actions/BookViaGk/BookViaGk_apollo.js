@@ -22,6 +22,7 @@ const bookTp = async (params) => {
 				|| response.match(/UNABLE - CODESHARE FLIGHT/)
 				|| response.match(/UNABLE - WAITLIST CLOSED/)
 				|| response.match(/SELL RESTRICTED - CALL AIRLINE/)
+				|| response.match(/NO MESSAGE WILL BE SENT/)
 		) {
 			const segStr = built.failedSegments
 				.map(s => s.airline + s.flightNumber)
