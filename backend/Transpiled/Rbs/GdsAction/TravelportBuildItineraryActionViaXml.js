@@ -7,17 +7,17 @@ const {REBUILD_MULTISEGMENT} = require('../GdsDirect/Errors');
 
 const normalizeMarriages = (segments) => {
 	const normalized = [];
-	const rqMarriageToSeqs = {};
+	const rqMarriageToSeqs = new Map();
 	for (const seg of segments) {
 		let marriage = seg.marriage;
 		if (marriage) {
-			rqMarriageToSeqs[marriage] = rqMarriageToSeqs[marriage] || [];
-			rqMarriageToSeqs[marriage].push(seg);
-			marriage = +Object.keys(rqMarriageToSeqs).indexOf(marriage + '') + 1;
+			rqMarriageToSeqs.set(marriage, rqMarriageToSeqs.get(marriage) || []);
+			rqMarriageToSeqs.get(marriage).push(seg);
+			marriage = [...rqMarriageToSeqs.keys()].indexOf(marriage + '') + 1;
 		}
 		normalized.push({...seg, marriage});
 	}
-	for (const [rqMarriage, segs] of Object.entries(rqMarriageToSeqs)) {
+	for (const [rqMarriage, segs] of rqMarriageToSeqs) {
 		if (segs.length === 1) {
 			throw Rej.BadRequest.makeExc('Invalid itinerary: unary marriage #' + rqMarriage);
 		}
