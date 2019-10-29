@@ -118,6 +118,19 @@ const BookViaGk_apollo = async (params) => {
 				reservation: built.reservation,
 				messages: [{type: 'error', text: exc + ''}],
 			};
+		})).catch(coverExc([Rej.UnprocessableEntity], async exc => {
+			if (exc.message.includes('SYSTEM ERROR OCCURRED')) {
+				// got few cases where first segments resulted
+				// in "UNA PROC" on SS, but booked fine on GK
+				const built = await bookPassive(itinerary);
+				const text = 'Failed to rebook all segments - SYSTEM ERROR OCCURRED';
+				return {
+					reservation: built.reservation,
+					messages: [{type: 'error', text}],
+				};
+			} else {
+				return Rej.BadRequest(exc);
+			}
 		}));
 		// const noRebook = [];
 		// let forRebook = [];
