@@ -275,7 +275,7 @@ const collectErrors = (dom, sellSegments) => {
 		errors.push(error);
 	}
 
-	return errors.length > 0 ? errors.join("; ") : null;
+	return errors.length > 0 ? errors.join('\n') : null;
 };
 
 /** @param {Element} blockEl */

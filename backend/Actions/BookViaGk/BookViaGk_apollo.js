@@ -14,20 +14,23 @@ const bookTp = async (params) => {
 	const built = await TravelportBuildItineraryActionViaXml(params);
 	if (built.errorType) {
 		const response = (built.errorData || {}).response || '';
+		const isNoAvail = response.match(/0 AVAIL\/WL/);
 		if (response.match(/INVALID DATE/)) {
 			return Rej.BadRequest(response);
-		} else if (response.match(/CLASS NOT FOUND - PASSIVE PROHIBITED BY AIRLINE/)) {
-			// probably would be fixed if we used single PNRBFManagement with
-			// right JrnyNum instead of booking as GK and then rebooking
-			const msg = 'Flight does not allow default RBD used for Y/GK rebook - ' + response;
-			return Rej.NotImplemented(msg, built);
-		} else if (response.match(/0 AVAIL\/WL/) || response.match(/CK CLASS/)) {
+		} else if (isNoAvail
+				|| response.match(/CK CLASS/)
+				|| response.match(/UNABLE - CODESHARE FLIGHT/)
+				|| response.match(/UNABLE - WAITLIST CLOSED/)
+				|| response.match(/SELL RESTRICTED - CALL AIRLINE/)
+		) {
 			const segStr = built.failedSegments
 				.map(s => s.airline + s.flightNumber)
 				.join(', ');
 			const errorData = {segNums: segStr};
-			const msg = Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, errorData);
-			return Rej.InsufficientStorage(msg, built);
+			const msg = isNoAvail
+				? Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, errorData)
+				: 'Failed to rebook ' + segStr + ':\n' + response;
+			return Rej.PartialContent(msg, built);
 		} else {
 			const msg = Errors.getMessage(built.errorType, built.errorData);
 			return Rej.UnprocessableEntity(msg, built);
@@ -104,7 +107,7 @@ const BookViaGk_apollo = async (params) => {
 	const bookReal = async (itinerary) => {
 		const {reservation, messages = []} = await bookTp({
 			...bookParams, session, itinerary,
-		}).catch(coverExc([Rej.InsufficientStorage], async exc => {
+		}).catch(coverExc([Rej.PartialContent], async exc => {
 			const failedSegments = exc.data.failedSegments.map(seg => ({...seg,
 				departureDt: seg.departureDt || seg.departureDate,
 				seatCount: seg.seatCount || itinerary[0].seatCount,

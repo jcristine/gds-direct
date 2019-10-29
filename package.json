@@ -13,7 +13,7 @@
     "@types/http-server": "^0.10.0",
     "@types/ioredis": "^4.0.13",
     "@types/socket.io": "^2.1.2",
-    "klesun-node-tools": "git+https://github.com/klesun-misc/klesun-node-tools.git#db08e188c1f8e4f688c7cc1932905da2202912e5",
+    "klesun-node-tools": "git+https://github.com/klesun-misc/klesun-node-tools.git#fe4780458c77f7736e6926a6396461dde09e989d",
     "chokidar": "^3.0.2",
     "dyn-utils": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/dyn-utils.git#e21e4f5827ff7036b414b23afe98eb7faeeb561f",
     "gds-parsers": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/gds-parsers.git#270e85ebd299bd7da12d95dd63ef7b61bd096218",
