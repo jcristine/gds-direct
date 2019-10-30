@@ -30,10 +30,8 @@ const main = async () => {
 	return RunTests({
 		rootPath: __dirname + '/backend/',
 		ignoredPaths: [
-			__dirname + '/backend/Transpiled/Lib/TestCase.js',
 			__dirname + '/backend/Transpiled/Rbs/TestUtils/AnyGdsStubSession.js',
 			__dirname + '/backend/Transpiled/Rbs/TestUtils/GdsDirectDefaults.js',
-			__dirname + '/backend/Transpiled/php.js',
 		],
 	});
 };
