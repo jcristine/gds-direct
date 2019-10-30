@@ -249,7 +249,7 @@ const provide_parseXml = () => {
 					"segmentStatus": "GK",
 					"departureDate": {
 						"raw": "20200520",
-						"parsed": "2020-05-20",
+						"full": "2020-05-20",
 					},
 					"dayOffset": "01",
 					"airline": "PR",
@@ -258,11 +258,11 @@ const provide_parseXml = () => {
 					"destinationAirport": "MNL",
 					"departureTime": {
 						"raw": "0145",
-						"parsed": "01:45:00",
+						"parsed": "01:45",
 					},
 					"destinationTime": {
 						"raw": "0615",
-						"parsed": "06:15:00",
+						"parsed": "06:15",
 					},
 					"bookingClass": "C",
 					"flightNumber": "127",
@@ -281,18 +281,18 @@ const provide_parseXml = () => {
 				"bookingClass": "C",
 				"departureDate": {
 					"raw": "20200525",
-					"parsed": "2020-05-25",
+					"full": "2020-05-25",
 				},
 				"dayOffset": "0",
 				"departureAirport": "MNL",
 				"destinationAirport": "JFK",
 				"departureTime": {
 					"raw": "1940",
-					"parsed": "19:40:00",
+					"parsed": "19:40",
 				},
 				"destinationTime": {
 					"raw": "2315",
-					"parsed": "23:15:00",
+					"parsed": "23:15",
 				},
 				"segmentStatus": "GK",
 				"seatCount": "1",
@@ -321,18 +321,18 @@ const provide_parseXml = () => {
 				"bookingClass": "C",
 				"departureDate": {
 					"raw": "20200520",
-					"parsed": "2020-05-20",
+					"full": "2020-05-20",
 				},
 				"dayOffset": "1",
 				"departureAirport": "JFK",
 				"destinationAirport": "MNL",
 				"departureTime": {
 					"raw": "0145",
-					"parsed": "01:45:00",
+					"parsed": "01:45",
 				},
 				"destinationTime": {
 					"raw": "0615",
-					"parsed": "06:15:00",
+					"parsed": "06:15",
 				},
 				"segmentStatus": "GK",
 				"seatCount": "1",
@@ -350,18 +350,18 @@ const provide_parseXml = () => {
 				"bookingClass": "C",
 				"departureDate": {
 					"raw": "20200525",
-					"parsed": "2020-05-25",
+					"full": "2020-05-25",
 				},
 				"dayOffset": "0",
 				"departureAirport": "MNL",
 				"destinationAirport": "JFK",
 				"departureTime": {
 					"raw": "1940",
-					"parsed": "19:40:00",
+					"parsed": "19:40",
 				},
 				"destinationTime": {
 					"raw": "2315",
-					"parsed": "23:15:00",
+					"parsed": "23:15",
 				},
 				"segmentStatus": "GK",
 				"seatCount": "1",
@@ -391,7 +391,10 @@ const provide_parseXml = () => {
 		title: 'Build result object with air segment errors messages',
 		input: '<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> <soapenv:Body><SubmitXmlOnSessionResponse xmlns="http://webservices.galileo.com"><SubmitXmlOnSessionResult><PNRBFManagement_51 xmlns=""><TransactionErrorCode><Domain>AppErrorSeverityLevel</Domain><Code>1</Code></TransactionErrorCode><SessionInfo><AreaInfoResp><Sys>1V</Sys><Processor>B</Processor><GrpModeActivatedInd>N</GrpModeActivatedInd><AAAAreaAry><AAAAreaInfo><AAAArea>A</AAAArea><ActiveInd>Y</ActiveInd><AAACity>QSB</AAACity><AAADept>YC</AAADept><SONCity>QSB</SONCity><SONDept>YC</SONDept><AgntID>ZDPBVWS</AgntID><ChkDigit/><AgntInitials>WS</AgntInitials><Duty>AG</Duty><AgncyPCC>2F3K</AgncyPCC><DomMode>BASIC</DomMode><IntlMode>US-ECAC</IntlMode><PNRDataInd>N</PNRDataInd><PNRName/><GrpModeActiveInd>A</GrpModeActiveInd><GrpModeDutyCode/><GrpModePCC/><GrpModeDataInd/><GrpModeName/></AAAAreaInfo><AAAAreaInfo><AAAArea>B</AAAArea><ActiveInd>A</ActiveInd><AAACity>QSB</AAACity><AAADept>YC</AAADept><SONCity>QSB</SONCity><SONDept>YC</SONDept><AgntID>ZDPBVWS</AgntID><ChkDigit/><AgntInitials/><Duty/><AgncyPCC/><DomMode/><IntlMode/><PNRDataInd>N</PNRDataInd><PNRName/><GrpModeActiveInd>A</GrpModeActiveInd><GrpModeDutyCode/><GrpModePCC/><GrpModeDataInd/><GrpModeName/></AAAAreaInfo><AAAAreaInfo><AAAArea>C</AAAArea><ActiveInd>A</ActiveInd><AAACity>QSB</AAACity><AAADept>YC</AAADept><SONCity>QSB</SONCity><SONDept>YC</SONDept><AgntID>ZDPBVWS</AgntID><ChkDigit/><AgntInitials/><Duty/><AgncyPCC/><DomMode/><IntlMode/><PNRDataInd>N</PNRDataInd><PNRName/><GrpModeActiveInd>A</GrpModeActiveInd><GrpModeDutyCode/><GrpModePCC/><GrpModeDataInd/><GrpModeName/></AAAAreaInfo><AAAAreaInfo><AAAArea>D</AAAArea><ActiveInd>A</ActiveInd><AAACity>QSB</AAACity><AAADept>YC</AAADept><SONCity>QSB</SONCity><SONDept>YC</SONDept><AgntID>ZDPBVWS</AgntID><ChkDigit/><AgntInitials/><Duty/><AgncyPCC/><DomMode/><IntlMode/><PNRDataInd>N</PNRDataInd><PNRName/><GrpModeActiveInd>A</GrpModeActiveInd><GrpModeDutyCode/><GrpModePCC/><GrpModeDataInd/><GrpModeName/></AAAAreaInfo><AAAAreaInfo><AAAArea>E</AAAArea><ActiveInd>A</ActiveInd><AAACity>QSB</AAACity><AAADept>YC</AAADept><SONCity>QSB</SONCity><SONDept>YC</SONDept><AgntID>ZDPBVWS</AgntID><ChkDigit/><AgntInitials/><Duty/><AgncyPCC/><DomMode/><IntlMode/><PNRDataInd>N</PNRDataInd><PNRName/><GrpModeActiveInd>A</GrpModeActiveInd><GrpModeDutyCode/><GrpModePCC/><GrpModeDataInd/><GrpModeName/></AAAAreaInfo></AAAAreaAry></AreaInfoResp></SessionInfo><PNRBFRetrieve><Control><KLRCnt>3</KLRCnt><KlrAry><Klr><ID>BP08</ID><NumOccur>1</NumOccur></Klr></KlrAry></Control><GenPNRInfo><FileAddr/><CodeCheck/><RecLoc/><Ver>0</Ver><OwningCRS>1V</OwningCRS><OwningAgncyName>INTERNATIONAL TRAVEL NET</OwningAgncyName><OwningAgncyPCC>2F3K</OwningAgncyPCC><CreationDt/><CreatingAgntSignOn/><CreatingAgntDuty/><CreatingAgncyIATANum/><OrigBkLocn/><SATONum/><PTAInd>N</PTAInd><InUseInd/><SimultaneousUpdInd/><BorrowedInd>N</BorrowedInd><GlobInd>N</GlobInd><ReadOnlyInd>N</ReadOnlyInd><FareDataExistsInd>N</FareDataExistsInd><PastDtQuickInd>N</PastDtQuickInd><CurAgncyPCC>2F3K</CurAgncyPCC><QInd>N</QInd><TkNumExistInd>N</TkNumExistInd><IMUdataexists>Y</IMUdataexists><ETkDataExistInd>N</ETkDataExistInd><CurDtStamp>20190731</CurDtStamp><CurTmStamp>045909</CurTmStamp><CurAgntSONID>DPBVWS</CurAgntSONID><TravInsuranceInd>N</TravInsuranceInd><PNRBFTicketedInd>N</PNRBFTicketedInd><ZeppelinAgncyInd>N</ZeppelinAgncyInd><AgncyAutoServiceInd>N</AgncyAutoServiceInd><AgncyAutoNotifyInd>N</AgncyAutoNotifyInd><ZeppelinPNRInd>N</ZeppelinPNRInd><PNRAutoServiceInd>N</PNRAutoServiceInd><PNRNotifyInd/><SuperPNRInd>N</SuperPNRInd><PNRBFPurgeDt>NO PURGE</PNRBFPurgeDt><PNRBFChangeInd>N</PNRBFChangeInd><MCODataExists>N</MCODataExists><OrigRcvdField/><IntContExists/><AllDataAllTime>N</AllDataAllTime><LastActAgntID/><TransPCCName>INTERNATIONAL TRAVEL NET</TransPCCName><URrecordLoc/><UROSindLoc>N</UROSindLoc><URRCBInd>N</URRCBInd><GMTPNRBFCreationDt/><PricingRecordExist>N</PricingRecordExist><ArchivedFeeDataExists>N</ArchivedFeeDataExists><LeisureshopperDataExists>N</LeisureshopperDataExists><SeatDataExists>N</SeatDataExists><FrequentFlyerDataExists>N</FrequentFlyerDataExists><NetTicketDataExists>N</NetTicketDataExists><TinsRemarksExist>N</TinsRemarksExist><ElectronicDataExists>N</ElectronicDataExists><AdditionalItineraryDataExists>N</AdditionalItineraryDataExists><GroupAllocationFileExists>N</GroupAllocationFileExists><ProfileAssociationsExist>N</ProfileAssociationsExist><VendorLocatorDataExists>N</VendorLocatorDataExists><BookingCodeDataExists/><ArneDataExists>N</ArneDataExists><TimaticDataExists>N</TimaticDataExists><LinearFareDataExists>N</LinearFareDataExists><ItineraryRemarksExist>N</ItineraryRemarksExist><IdentificationFieldExists>N</IdentificationFieldExists><EmailAddressExists>N</EmailAddressExists><RuleDataExists>N</RuleDataExists><LSVendorConfirmationExists>N</LSVendorConfirmationExists><AdditionalSrvcs>N</AdditionalSrvcs><ElectronicMiscDocumentList>N</ElectronicMiscDocumentList><TDSProfileExists>N</TDSProfileExists><ServiceInformationExists/><FiledFareDataExists/><VendorRemarksDataExists/><MembershipDataExists/><DividedBookingsExist>N</DividedBookingsExist><ClientFileReferencesExist/><CustomCheckRulesExist/><PassengerInformationExists/><GUID/><ARCNewPNR/><ARCFares/><ARCTicketed/><ARCSplitDivide/><ARCNameAdd/><ARCNameDelete/><ARCItinAdd/><ARCItinDEL/><ARCPhoneAdd/><ARCPhoneDel/><ARCFOPAdd/><ARCFOPDelete/><ARCSSRAdd/><ARCSSRDel/><ARCOSIAdd/><ARCOSIDel/><ReasonCodesspares/></GenPNRInfo></PNRBFRetrieve><AirSegSell><AirSell><DisplaySequenceNumber/><Vnd>xx</Vnd><FltNum>127</FltNum><OpSuf/><Class>C</Class><StartDt>20200520</StartDt><DtChg/><StartAirp>JFK</StartAirp><EndAirp>MNL</EndAirp><StartTm/><EndTm/><Status>GK</Status><NumPsgrs/><SellType/><SellValidityPeriod/><MarriageNum/><SuccessInd>N</SuccessInd><COG/><TklessInd/><FareQuoteTkIgnInd/><StopoverInd/><AvailyBypassInd/><OpAirV/></AirSell><ErrText><Err/><KlrInErr/><InsertedTextAry></InsertedTextAry><Text>CK FRMT</Text></ErrText><AirSell><DisplaySequenceNumber/><Vnd>yy</Vnd><FltNum>127</FltNum><OpSuf/><Class>C</Class><StartDt>20200520</StartDt><DtChg/><StartAirp>JFK</StartAirp><EndAirp>MNL</EndAirp><StartTm/><EndTm/><Status>GK</Status><NumPsgrs/><SellType/><SellValidityPeriod/><MarriageNum/><SuccessInd>N</SuccessInd><COG/><TklessInd/><FareQuoteTkIgnInd/><StopoverInd/><AvailyBypassInd/><OpAirV/></AirSell><ErrText><Err/><KlrInErr/><InsertedTextAry></InsertedTextAry><Text>CK FRMT</Text></ErrText></AirSegSell></PNRBFManagement_51></SubmitXmlOnSessionResult></SubmitXmlOnSessionResponse></soapenv:Body></soapenv:Envelope>',
 		output: {
-			error: "Failed to sell 0xx127C20MAYJFKMNLGK1 - CK FRMT; Failed to sell 0yy127C20MAYJFKMNLGK1 - CK FRMT",
+			error: [
+				"Failed to sell 0xx127C20MAYJFKMNLGK1 - CK FRMT",
+				"Failed to sell 0yy127C20MAYJFKMNLGK1 - CK FRMT",
+			].join("\n"),
 			reservation: {
 				itinerary: [],
 			},
@@ -403,7 +406,7 @@ const provide_parseXml = () => {
 				"bookingClass": "C",
 				"departureDate": {
 					"raw": "20200520",
-					"parsed": "2020-05-20",
+					"full": "2020-05-20",
 				},
 				"dayOffset": "",
 				"departureAirport": "JFK",
@@ -426,7 +429,7 @@ const provide_parseXml = () => {
 				"bookingClass": "C",
 				"departureDate": {
 					"raw": "20200520",
-					"parsed": "2020-05-20",
+					"full": "2020-05-20",
 				},
 				"dayOffset": "",
 				"departureAirport": "JFK",
