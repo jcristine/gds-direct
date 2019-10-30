@@ -260,7 +260,7 @@ const collectErrors = (dom, sellSegments) => {
 			+ sell.airline
 			+ sell.flightNumber
 			+ sell.bookingClass
-			+ moment.utc(sell.departureDate.parsed).format("DDMMM").toUpperCase()
+			+ moment.utc(sell.departureDate.full).format("DDMMM").toUpperCase()
 			+ sell.departureAirport
 			+ sell.destinationAirport
 			+ sell.segmentStatus

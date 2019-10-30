@@ -177,7 +177,7 @@ const BookViaGk_apollo = async (params) => {
 				};
 			}
 		} else {
-			return Rej.BadRequest(exc);
+			return Promise.reject(exc);
 		}
 	};
 
