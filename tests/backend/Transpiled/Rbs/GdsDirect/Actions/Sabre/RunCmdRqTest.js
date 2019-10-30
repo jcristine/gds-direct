@@ -10,7 +10,7 @@ const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.j
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Sabre/RunCmdRq.js');
 const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
 
-const php = require('../../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class RunCmdRqTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideActionTestCases() {

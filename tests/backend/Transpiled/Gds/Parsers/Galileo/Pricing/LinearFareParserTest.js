@@ -1,6 +1,6 @@
 
 
-const php = require('../../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const LinearFareParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Galileo/Pricing/LinearFareParser");
 
 class LinearFareParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {

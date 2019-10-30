@@ -2,7 +2,7 @@
 const GetCurrentPricingDumpAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Amadeus/GetCurrentPricingDumpAction.js');
 const AnyGdsStubSession = require('../../../../../../../backend/Utils/Testing/AnyGdsStubSession.js');
 
-const php = require('../../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class GetCurrentPricingDumpActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {

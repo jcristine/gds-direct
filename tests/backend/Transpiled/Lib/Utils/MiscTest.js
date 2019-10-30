@@ -1,6 +1,6 @@
 const Misc = require("../../../../../backend/Transpiled/Lib/Utils/MaskUtil.js");
 
-const TestCase = require('../TestCase.js');
+const TestCase = require('klesun-node-tools/src/Transpiled/Lib/TestCase.js');
 
 class MiscTest extends TestCase
 {

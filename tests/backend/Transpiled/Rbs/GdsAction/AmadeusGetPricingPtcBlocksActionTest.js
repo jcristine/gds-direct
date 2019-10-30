@@ -3,7 +3,7 @@ const PnrParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus
 const AnyGdsStubSession = require('../../../../../backend/Utils/Testing/AnyGdsStubSession.js');
 const AmadeusGetPricingPtcBlocksAction = require('../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Amadeus/AmadeusGetPricingPtcBlocksAction.js');
 
-const php = require('../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class AmadeusGetPricingPtcBlocksActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {

@@ -2,7 +2,7 @@
 
 const GdsDialectTranslator = require('../../../../../../backend/Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
 
-const php = require('../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /** $BBCUA -> $BB/CUA */
 const normCmd = (gds, cmd) => {

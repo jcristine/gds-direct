@@ -2,7 +2,7 @@ const ImportPqApolloAction = require('../../../../../../../backend/Transpiled/Rb
 const PersistentHttpRqStub = require('../../../../../../../backend/Utils/Testing/PersistentHttpRqStub.js');
 const TravelportClient = require('../../../../../../../backend/GdsClients/TravelportClient.js');
 const GdsDirectDefaults = require('../../../../../../../backend/Utils/Testing/GdsDirectDefaults.js');
-const php = require('../../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class ImportPqApolloActionXmlTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {

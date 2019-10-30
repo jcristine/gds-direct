@@ -1,7 +1,7 @@
 
 const CommandParser = require('gds-utils/src/text_format_processing/amadeus/commands/CmdParser.js');
 
-const php = require('../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class CommandParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideCommands() {

@@ -4,7 +4,7 @@ const GdsSessions = require('../../../../../../../backend/Repositories/GdsSessio
 const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.js');
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Galileo/RunCmdRq.js');
 
-const php = require('../../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class RunCmdRqXmlTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {

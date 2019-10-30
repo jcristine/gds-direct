@@ -1,7 +1,7 @@
 
 const StubLocationGeographyProvider = require('../../../../../backend/Transpiled/Rbs/DataProviders/StubLocationGeographyProvider.js');
 const AnyGdsStubSession = require('../../Rbs/TestUtils/AnyGdsStubSession.js');
-const php = require('../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const AmadeusGetFareRulesAction = require('../../../../../backend/Transpiled/Rbs/GdsAction/AmadeusGetFareRulesAction.js');
 
 class AmadeusGetFareRulesActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {

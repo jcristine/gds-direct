@@ -9,7 +9,7 @@ const GdsDirectDefaults = require('../../../../../../../backend/Utils/Testing/Gd
 const Agent = require('../../../../../../../backend/DataFormats/Wrappers/Agent.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
-const php = require('../../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
 
 const sinon = require('sinon');

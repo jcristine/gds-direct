@@ -3,7 +3,7 @@
 
 const FqParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Galileo/Pricing/FqParser.js');
 
-const php = require('../../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class FqParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideTestCases()  {

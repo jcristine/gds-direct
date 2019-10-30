@@ -2,7 +2,7 @@
 const ImportPqSabreAction = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Sabre/ImportPqSabreAction.js');
 const GdsDirectDefaults = require('../../../../../../../backend/Utils/Testing/GdsDirectDefaults.js');
 
-const php = require('../../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class ImportPqSabreActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {

@@ -1,1 +1,0 @@
-module.exports = require('klesun-node-tools/src/Transpiled/Lib/TestCase.js');

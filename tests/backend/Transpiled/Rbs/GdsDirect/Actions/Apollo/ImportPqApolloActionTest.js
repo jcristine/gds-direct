@@ -3,7 +3,7 @@ const ImportPqApolloAction = require('../../../../../../../backend/Transpiled/Rb
 const AnyGdsStubSession = require('../../../../../../../backend/Utils/Testing/AnyGdsStubSession.js');
 const ItineraryParser = require('gds-utils/src/text_format_processing/apollo/pnr/ItineraryParser.js');
 
-const php = require('../../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const GdsActionTestUtil = require("../../../../../../../backend/Utils/Testing/GdsActionTestUtil");
 
 class ImportPqApolloActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {

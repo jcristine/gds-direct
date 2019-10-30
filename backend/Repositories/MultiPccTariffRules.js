@@ -1,5 +1,5 @@
 const LocationGeographyProvider = require('../Transpiled/Rbs/DataProviders/LocationGeographyProvider.js');
-const php = require('../../tests/backend/Transpiled/php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const Db = require('../Utils/Db.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {sqlNow} = require('klesun-node-tools/src/Utils/Misc.js');

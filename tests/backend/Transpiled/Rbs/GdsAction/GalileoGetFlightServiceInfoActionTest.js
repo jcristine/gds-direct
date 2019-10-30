@@ -6,7 +6,7 @@ const FormatAdapter = require('../../../../../backend/Transpiled/Rbs/IqControlle
 const ItineraryParser = require('gds-utils/src/text_format_processing/galileo/pnr/ItineraryParser.js');
 const AnyGdsStubSession = require('../../Rbs/TestUtils/AnyGdsStubSession.js');
 
-const php = require('../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class GalileoGetFlightServiceInfoActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	static makeFullItinerary(baseDate, dump)  {

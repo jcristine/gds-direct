@@ -1,6 +1,6 @@
 
 const TariffDisplayParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParser.js');
-const php = require('../../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class TariffDisplayParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTreeTestCases() {

@@ -2,7 +2,7 @@
 
 const SsrBlockParser = require('gds-utils/src/text_format_processing/apollo/pnr/SsrBlockParser.js');
 
-const php = require('../../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideTreeTestDumpList()  {

@@ -5,7 +5,7 @@ const PtcUtil = require('../../../../../../../backend/Transpiled/Rbs/Process/Com
 const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.js');
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Galileo/RunCmdRq.js');
 
-const php = require('../../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const Agent = require("../../../../../../../backend/DataFormats/Wrappers/Agent");
 
 class RunCmdRqTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {

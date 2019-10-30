@@ -1,5 +1,5 @@
 
-const php = require('../../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const FareRuleParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Amadeus/Pricing/FareRuleParser");
 
 class FareRuleParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {

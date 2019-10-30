@@ -3,7 +3,7 @@ const ImportPqAmadeusAction = require('../../../../../backend/Transpiled/Rbs/Gds
 const GdsDirectDefaults = require('../../Rbs/TestUtils/GdsDirectDefaults.js');
 const AmaduesClient = require('../../../../../backend/GdsClients/AmadeusClient');
 const sinon = require('sinon');
-const php = require('../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class ImportPqAmadeusActionXmlTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {

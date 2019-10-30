@@ -6,7 +6,7 @@ const TariffDisplayParser = require('../../../../../Gds/Parsers/Apollo/TariffDis
 const StringUtil = require('../../../../../Lib/Utils/StringUtil.js');
 const AirAvailabilityParser = require('gds-utils/src/text_format_processing/apollo/AirAvailabilityParser.js');
 const CmsApolloTerminal = require('../../../GdsInterface/CmsApolloTerminal.js');
-const php = require('../../../../../../../tests/backend/Transpiled/php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 const ApoAliasParser = require('../../../../../../Parsers/Apollo/AliasParser.js');
 

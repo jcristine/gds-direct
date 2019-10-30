@@ -2,7 +2,7 @@
 
 const TicketParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/HteParser/TicketParser.js');
 
-const php = require('../../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class TicketParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideTestCases()  {

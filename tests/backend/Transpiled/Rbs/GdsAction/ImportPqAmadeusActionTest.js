@@ -4,7 +4,7 @@ const ImportPqAmadeusAction = require('../../../../../backend/Transpiled/Rbs/Gds
 const AnyGdsStubSession = require('../../Rbs/TestUtils/AnyGdsStubSession.js');
 const GdsDirectDefaults = require('../../Rbs/TestUtils/GdsDirectDefaults.js');
 
-const php = require('../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class ImportPqAmadeusActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {

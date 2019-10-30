@@ -5,7 +5,7 @@ const CommandParser = require('gds-utils/src/text_format_processing/amadeus/comm
 const FxParser = require('gds-utils/src/text_format_processing/amadeus/FxParser.js');
 const PnrParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 
-const php = require('../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const AmadeusPricingCommonFormatAdapter = require("../../../../../backend/Transpiled/Rbs/FormatAdapters/AmadeusPricingCommonFormatAdapter");
 class AmadeusPricingCommonFormatAdapterTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {

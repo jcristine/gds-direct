@@ -1,7 +1,7 @@
 
 
 const FlightInfoParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus/FlightInfoParser.js');
-const php = require('../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 const AmadeusFlightInfoAdapter = require('../../../../../backend/Transpiled/Rbs/FormatAdapters/AmadeusFlightInfoAdapter.js');
 
 class AmadeusFlightInfoAdapterTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')

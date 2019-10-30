@@ -3,7 +3,7 @@
 
 const FareRuleParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Sabre/FareRuleParser.js');
 
-const php = require('../../../php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 class FareRuleParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideDumps()  {
