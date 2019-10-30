@@ -1,3 +1,4 @@
+const Normalize_fareSearch = require('gds-utils/src/cmd_translators/Normalize_fareSearch.js');
 const FluentLogger = require('../../../../../LibWrappers/FluentLogger.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const MultiPccTariffRules = require('../../../../../Repositories/MultiPccTariffRules.js');
@@ -5,7 +6,6 @@ const _ = require('lodash');
 
 const LocationGeographyProvider = require('../../../../Rbs/DataProviders/LocationGeographyProvider.js');
 const RbsClient = require("../../../../../IqClients/RbsClient");
-const NormalizeTariffCmd = require('../../../../../Actions/CmdTranslators/NormalizeTariffCmd.js');
 const MakeMultiPccTariffDumpAction = require('./MakeMultiPccTariffDumpAction.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
@@ -17,21 +17,18 @@ const {allWrap, timeout} = require('klesun-node-tools/src/Lang.js');
  */
 class GetMultiPccTariffDisplayAction {
 	constructor() {
-		this.$repriceRules = null;
-		this.$log = ($msg, $data) => {};
-		this.$geoProvider = new LocationGeographyProvider();
+		this.repriceRules = null;
+		this.geoProvider = new LocationGeographyProvider();
 		this.baseDate = php.date('Y-m-d H:i:s');
 	}
 
-	log($msg, $data) {
-		let $log;
-		$log = this.$log;
-		$log($msg, $data);
+	log(msg, data) {
+		// should implement probably...
 		return this;
 	}
 
 	setGeoProvider($geoProvider) {
-		this.$geoProvider = $geoProvider;
+		this.geoProvider = $geoProvider;
 		return this;
 	}
 
@@ -40,8 +37,8 @@ class GetMultiPccTariffDisplayAction {
 		return this;
 	}
 
-	setRepriceRules($rules) {
-		this.$repriceRules = $rules;
+	setRepriceRules(rules) {
+		this.repriceRules = rules;
 		return this;
 	}
 
@@ -51,8 +48,8 @@ class GetMultiPccTariffDisplayAction {
 			destinationAirport: cmdData.destinationAirport,
 			gds: sessionData.gds,
 			pcc: sessionData.pcc,
-			repricePccRules: this.$repriceRules,
-			geoProvider: this.$geoProvider,
+			repricePccRules: this.repriceRules,
+			geoProvider: this.geoProvider,
 		});
 	}
 
@@ -96,11 +93,15 @@ class GetMultiPccTariffDisplayAction {
 	}
 
 	async makeRpcParamOptions(cmd, sessionData) {
-		const cmdData = (new NormalizeTariffCmd())
-			.setBaseDate(this.baseDate)
-			.execute(cmd, sessionData.gds);
+		const cmdData = Normalize_fareSearch({cmd,
+			gds: sessionData.gds,
+			baseDate: this.baseDate,
+		});
 		if (!cmdData) {
 			const msg = 'Failed to parse your command - ' + cmd;
+			return Rej.NotImplemented(msg);
+		} else if (cmdData.unparsed) {
+			const msg = 'Failed to parse some tariff modifiers - ' + cmdData.unparsed;
 			return Rej.NotImplemented(msg);
 		} else if (!cmdData.departureAirport) {
 			return Rej.BadRequest('Departure airport must be specified');
