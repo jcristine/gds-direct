@@ -189,7 +189,7 @@ export default class GdsDirectPlusApp
 							return Promise.reject(exc);
 						}
 					});
-			}, 3 * 60 * 1000);
+			}, 55 * 1000); // 55 seconds
 		}
 	}
 
