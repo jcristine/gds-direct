@@ -737,7 +737,7 @@ const execute = ({
 
 		if (cmd === 'MD') {
 			if (lastCmdRec = await stateful.getLog().getLastCalledCommand()) {
-				if (lastCmdRec.type) {
+				if (lastCmdRec.type === 'calculator') {
 					// for some reason, Amadeus fails with "17|Session|No
 					// agreement on destination" on attempt to >MD; after DF1+1
 					return Rej.BadRequest('Calculator output can not be scrolled');
