@@ -40,7 +40,9 @@ const parseOutput = (output) => {
 			output.trim() === 'TAX TOTAL ERROR' ||
 			output.match(/^\s*TX\d+ ERROR-DECIMAL PLACEMENT\s*$/) ||
 			output.match(/^\s*TAX\d+ NOT ALLOWED IN US\s*$/) ||
-			output.match(/^\s*TX\d+ ERROR\s*$/)
+			output.match(/^\s*TX\d+ ERROR\s*$/) ||
+			// following - TOTAL ADD COLLECT screen
+			output.match(/^\s*FOP NBR \d+ ERR-PAYMENT TYPE\s*$/)
 		) {
 			// if agent accidentally entered amount
 			// instead of tax code for example
