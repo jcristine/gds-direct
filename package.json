@@ -26,7 +26,7 @@
     "dynatech-client-component-contract-tool": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/client-component-contract-tool.git#69835abb4e377f4d2a5c33b34e0a6efe323bbd8d",
     "dynatech-diag-service": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/diag-service.git#v0.1.6",
     "dynatech-logger": "git+ssh://git@gitlab.dyninno.net:1022/node-libraries/logger#v0.1.9",
-    "gds-utils": "git+https://github.com/golotenko/gds-utils.git#ba12795d5442f0cf04746e29da7f652cd969a8e5",
+    "gds-utils": "git+https://github.com/golotenko/gds-utils.git#8c6c737623eb343dfa99b546a63faf3a7b1771f9",
     "express": "^4.16.4",
     "ioredis": "^4.3.0",
     "jsdom": "^13.0.0",
