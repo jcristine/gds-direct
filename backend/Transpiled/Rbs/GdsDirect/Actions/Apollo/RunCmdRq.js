@@ -53,9 +53,11 @@ const NmeMaskParser = require("../../../../../Actions/ManualPricing/NmeMaskParse
 
 // 'SEGMENTS CANCELLED - NEXT REPLACES  1'
 // 'CNLD FROM  1'
+// '*** PROG SSR(S) DELETED ***'
+// 'CNLD FROM  1'
 const isSuccessXiOutput = (output) => {
 	return php.preg_match(/^\s*SEGMENTS CANCELLED - NEXT REPLACES\s*\d+\s*(><)?$/, output)
-		|| php.preg_match(/^\s*CNLD FROM\s*\d+\s*(><)?$/, output)
+		|| php.preg_match(/^[\s\S]*\s*CNLD FROM\s*\d+\s*(><)?$/, output)
 		|| php.preg_match(/^\s*NEXT REPLACES\s*\d+\s*(><)?$/, output)
 		|| output.match(/^\s*CANCEL REQUEST COMPLETED\s*(><)?$/) // 12NJ
 	;
