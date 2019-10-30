@@ -1,4 +1,4 @@
-const TranslatePricingCmd = require('../../../../Actions/CmdTranslators/TranslatePricingCmd.js');
+const TranslatePricingCmd = require('gds-utils/src/cmd_translators/Translate_priceItinerary.js');
 
 
 /**

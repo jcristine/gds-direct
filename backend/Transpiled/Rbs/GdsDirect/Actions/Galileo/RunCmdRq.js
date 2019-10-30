@@ -1,6 +1,6 @@
+const Normalize_priceItinerary = require('gds-utils/src/cmd_translators/Normalize_priceItinerary.js');
 const Parse_priceItinerary = require('gds-utils/src/text_format_processing/galileo/commands/Parse_priceItinerary.js');
-const TranslatePricingCmd = require('../../../../../Actions/CmdTranslators/TranslatePricingCmd.js');
-const NormalizePricingCmd = require('gds-utils/src/cmd_translators/NormalizePricingCmd.js');
+const TranslatePricingCmd = require('gds-utils/src/cmd_translators/Translate_priceItinerary.js');
 const SortItinerary = require('../../../../../Actions/SortItinerary.js');
 const RepriceInPccMix = require('../../../../../Actions/RepriceInPccMix.js');
 const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
@@ -839,7 +839,7 @@ const RunCmdRq = ({
 	};
 
 	const translateMods = async (apolloPricingModifiers) => {
-		const normalized = NormalizePricingCmd.inApollo({
+		const normalized = Normalize_priceItinerary.inApollo({
 			type: 'storePricing',
 			data: {
 				baseCmd: 'B',

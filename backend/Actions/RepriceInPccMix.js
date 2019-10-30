@@ -1,11 +1,11 @@
+const Normalize_priceItinerary = require('gds-utils/src/cmd_translators/Normalize_priceItinerary.js');
 const BookViaGk = require('./BookViaGk/BookViaGk.js');
 const MultiPccTariffRules = require('../Repositories/MultiPccTariffRules.js');
 const MarriageItineraryParser = require('../Transpiled/Gds/Parsers/Amadeus/MarriageItineraryParser.js');
 const AmadeusUtils = require('../GdsHelpers/AmadeusUtils.js');
 const SabrePnr = require('../Transpiled/Rbs/TravelDs/SabrePnr.js');
 const PtcUtil = require('../Transpiled/Rbs/Process/Common/PtcUtil.js');
-const TranslatePricingCmd = require('./CmdTranslators/TranslatePricingCmd.js');
-const NormalizePricingCmd = require('gds-utils/src/cmd_translators/NormalizePricingCmd.js');
+const TranslatePricingCmd = require('gds-utils/src/cmd_translators/Translate_priceItinerary.js');
 const RbsUtils = require('../GdsHelpers/RbsUtils.js');
 const RepriceInAnotherPccAction = require('../Transpiled/Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
 const GetCurrentPnr = require('./GetCurrentPnr.js');
@@ -16,7 +16,7 @@ const _ = require('lodash');
 const normalizePricingCmd = async (aliasData, pccRec) => {
 	aliasData = JSON.parse(JSON.stringify(aliasData));
 	const dialect = aliasData.dialect;
-	const normalized = NormalizePricingCmd({
+	const normalized = Normalize_priceItinerary({
 		type: 'priceItinerary',
 		data: aliasData,
 	}, dialect);
