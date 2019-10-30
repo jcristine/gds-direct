@@ -1,7 +1,6 @@
 
 
-const TestCase = require('../../Transpiled/Lib/TestCase.js');
-const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
+const TestCase = require('klesun-node-tools/src/Transpiled/Lib/TestCase.js');
 const BadGateway = require("klesun-node-tools/src/Rej").BadGateway;
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');

@@ -12,7 +12,7 @@ const provideCompression = () => {
 	return list.map(c => [c]);
 };
 
-class CompressionTest extends require('../../Transpiled/Lib/TestCase') {
+class CompressionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	async testCompressDecompress({text, dictionary}) {
 		const archive = await Compression.compress(text, dictionary);
 		this.assertSame(true, Buffer.isBuffer(archive));

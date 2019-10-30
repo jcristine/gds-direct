@@ -12,7 +12,7 @@ const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
 
 const php = require('../../../../php.js');
 
-class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
+class RunCmdRqTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideActionTestCases() {
 		let $list, $agentBaseDate, $argumentTuples, $testCase;
 

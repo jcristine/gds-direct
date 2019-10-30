@@ -451,7 +451,7 @@ const provide_parseXml = () => {
 	return list.map(a => [a]);
 };
 
-class SabreItineraryTest extends require('../../Transpiled/Lib/TestCase') {
+class SabreItineraryTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	async test_buildXml({input, output}) {
 		this.assertSame(output, SabreItinerary.buildItineraryXml(input));
 	}

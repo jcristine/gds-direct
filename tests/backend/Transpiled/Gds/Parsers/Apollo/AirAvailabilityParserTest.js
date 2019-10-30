@@ -3,7 +3,7 @@
 const AirAvailabilityParser = require('gds-utils/src/text_format_processing/apollo/AirAvailabilityParser.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
-class AirAvailabilityParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js')
+class AirAvailabilityParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideDumps()  {
 		let $list;

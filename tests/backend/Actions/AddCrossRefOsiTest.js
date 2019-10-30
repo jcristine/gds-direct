@@ -358,7 +358,7 @@ const provide_call = () => {
 	return testCases.map(a => [a]);
 };
 
-class AddCrossRefOsiTest extends require('../../../backend/Transpiled/Lib/TestCase.js') {
+class AddCrossRefOsiTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	async test_call(testCase) {
 		const gds = testCase.input.gds;
 		testCase.fullState = testCase.fullState || {

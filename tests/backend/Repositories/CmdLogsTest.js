@@ -1,6 +1,6 @@
 const CmdLogs = require("../../../backend/Repositories/CmdLogs");
 
-class CmdLogsTest extends require('../Transpiled/Lib/TestCase.js') {
+class CmdLogsTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provide_isInvalidFormat() {
 		let list = [
 			[

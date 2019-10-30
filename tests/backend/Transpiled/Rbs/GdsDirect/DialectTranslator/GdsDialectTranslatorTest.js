@@ -29,7 +29,7 @@ const normCmd = (gds, cmd) => {
 	return cmd;
 };
 
-class GdsDialectTranslatorTest extends require('../../../Lib/TestCase.js')
+class GdsDialectTranslatorTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideCommands()  {
 		let $tests;

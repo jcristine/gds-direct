@@ -110,7 +110,7 @@ const provideItineraryTestCases = () => {
 	return list.map(c => [c]);
 };
 
-class SabreClientTest extends require('../../../backend/Transpiled/Lib/TestCase') {
+class SabreClientTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	async testItinerary({input, output, httpRequests}) {
 		const PersistentHttpRq = PersistentHttpRqStub(httpRequests);
 

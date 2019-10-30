@@ -3,7 +3,7 @@
 const HteParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/HteParser/HteParser.js');
 
 const php = require('../../../../php.js');
-class HteParserTest extends require('../../../../Lib/TestCase.js')
+class HteParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideTestDumpList()  {
 		let $list;

@@ -8,7 +8,7 @@ const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/
 const php = require('../../../../php.js');
 const Agent = require("../../../../../../../backend/DataFormats/Wrappers/Agent");
 
-class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
+class RunCmdRqTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	static makeTableRows($keys, $valuesPerRow) {
 		let $rows, $values;
 

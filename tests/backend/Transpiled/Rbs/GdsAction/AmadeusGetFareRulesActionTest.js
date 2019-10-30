@@ -4,7 +4,7 @@ const AnyGdsStubSession = require('../../Rbs/TestUtils/AnyGdsStubSession.js');
 const php = require('../../php.js');
 const AmadeusGetFareRulesAction = require('../../../../../backend/Transpiled/Rbs/GdsAction/AmadeusGetFareRulesAction.js');
 
-class AmadeusGetFareRulesActionTest extends require('../../Lib/TestCase.js') {
+class AmadeusGetFareRulesActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {
 		let $list, $argumentTuples, $testCase;
 

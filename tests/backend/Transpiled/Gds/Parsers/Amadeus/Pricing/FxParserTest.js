@@ -28,7 +28,7 @@ const provide_unwrapFcLine = () => {
 	return testCases.map(a => [a]);
 };
 
-class FxParserTest extends require('../../../../Lib/TestCase.js')
+class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideDumps()  {
 		let $list;

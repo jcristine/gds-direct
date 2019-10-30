@@ -13,7 +13,7 @@ const Rej = require('klesun-node-tools/src/Rej');
 const stubPccs = require('../../../../../../data/stubPccs.js');
 const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
 
-class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
+class RunCmdRqTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestForgeAreasDumpCases() {
 		let $list;
 

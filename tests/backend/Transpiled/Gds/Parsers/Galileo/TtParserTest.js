@@ -4,7 +4,7 @@
 const TtParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Galileo/TtParser.js');
 
 const php = require('../../../php.js');
-class TtParserTest extends require('../../../Lib/TestCase.js')
+class TtParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideTestCases()  {
 		let $list;

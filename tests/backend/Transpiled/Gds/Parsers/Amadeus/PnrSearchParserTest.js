@@ -2,7 +2,7 @@
 
 const php = require('../../../php.js');
 const PnrSearchParser = require("../../../../../../backend/Transpiled/Gds/Parsers/Amadeus/PnrSearchParser");
-class PnrSearchParserTest extends require('../../../Lib/TestCase.js')
+class PnrSearchParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideDumps()  {
 		let $list;

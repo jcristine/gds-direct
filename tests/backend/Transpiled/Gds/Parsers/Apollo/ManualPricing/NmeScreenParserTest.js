@@ -2,7 +2,7 @@
 const php = require('../../../../php.js');
 const NmeScreenParser = require("gds-utils/src/text_format_processing/apollo/ticketing_masks/NmeScreenParser");
 
-class NmeScreenParserTest extends require('../../../../Lib/TestCase.js') {
+class NmeScreenParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideDumps() {
 		let $list;
 

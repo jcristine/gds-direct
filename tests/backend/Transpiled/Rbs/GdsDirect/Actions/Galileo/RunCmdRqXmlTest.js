@@ -6,7 +6,7 @@ const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/
 
 const php = require('../../../../php.js');
 
-class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
+class RunCmdRqXmlTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {
 		const list = [];
 

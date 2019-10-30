@@ -1,7 +1,7 @@
 const GdsActionTestUtil = require("../../../backend/Utils/Testing/GdsActionTestUtil");
 const TravelportUtils = require("../../../backend/GdsHelpers/TravelportUtils");
 
-class TravelportUtilsTest extends require('../Transpiled/Lib/TestCase.js') {
+class TravelportUtilsTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestFetchAll() {
 		let testCases = [];
 

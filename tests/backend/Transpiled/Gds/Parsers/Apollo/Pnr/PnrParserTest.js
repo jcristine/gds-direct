@@ -2,7 +2,9 @@
 const PnrParser = require("gds-utils/src/text_format_processing/apollo/pnr/PnrParser");
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
-class PnrParserTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js') {
+// klesun-node-tools/src/Transpiled/Lib/TestCase.js
+
+class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTreeTestCases() {
 		let $list;
 		$list = [];

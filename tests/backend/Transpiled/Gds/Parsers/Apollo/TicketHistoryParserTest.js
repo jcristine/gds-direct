@@ -2,7 +2,7 @@
 const php = require('../../../php.js');
 const TicketHistoryParser = require("gds-utils/src/text_format_processing/apollo/TicketHistoryParser");
 
-class TicketHistoryParserTest extends require('../../../Lib/TestCase.js') {
+class TicketHistoryParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideDumps() {
 		let $list;
 

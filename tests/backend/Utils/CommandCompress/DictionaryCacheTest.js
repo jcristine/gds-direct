@@ -18,7 +18,7 @@ const provideForReadMultiple = () => {
 	return list.map(c => [c]);
 };
 
-class DictionaryCacheTest extends require('../../Transpiled/Lib/TestCase') {
+class DictionaryCacheTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	async testBuildMultipleNew({apollo}) {
 		const stub = sinon.stub(CmdLogs, 'getLastNCommands')
 			.withArgs({

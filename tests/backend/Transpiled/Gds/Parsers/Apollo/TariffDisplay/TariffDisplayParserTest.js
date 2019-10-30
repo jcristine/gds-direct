@@ -2,7 +2,7 @@
 const TariffDisplayParser = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParser.js');
 const php = require('../../../../php.js');
 
-class TariffDisplayParserTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js') {
+class TariffDisplayParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTreeTestCases() {
 		let $list;
 		$list = [];

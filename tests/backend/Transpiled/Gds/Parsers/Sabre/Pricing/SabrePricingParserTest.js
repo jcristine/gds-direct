@@ -2,7 +2,7 @@
 const php = require('../../../../php.js');
 const SabrePricingParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Sabre/Pricing/SabrePricingParser");
 
-class SabrePricingParserTest extends require('../../../../Lib/TestCase.js') {
+class SabrePricingParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideDumps() {
 		const list = [];
 

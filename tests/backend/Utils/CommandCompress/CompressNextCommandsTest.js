@@ -84,7 +84,7 @@ const provideNoDictionary = () => {
 	return list.map(c => [c]);
 };
 
-class CompressNextCommandsTest extends require('../../Transpiled/Lib/TestCase') {
+class CompressNextCommandsTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	async testCommandCompresison({commandsFetched}) {
 
 		const {removeStub, store, compressor} = setupStubs({commandsFetched});

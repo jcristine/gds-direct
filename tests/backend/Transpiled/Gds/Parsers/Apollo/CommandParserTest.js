@@ -1,7 +1,7 @@
 const Parse_fareSearch = require('gds-utils/src/text_format_processing/apollo/commands/Parse_fareSearch.js');
 const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 
-class CommandParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js') {
+class CommandParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestDumpList() {
 		let $list;
 		$list = [];

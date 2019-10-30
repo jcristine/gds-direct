@@ -925,7 +925,7 @@ const provide_call = () => {
 	return testCases.map(c => [c]);
 };
 
-class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
+class RunCmdRqXmlTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	async test_call(testCase) {
 		// Sets stable start date, dates are created in multiple locations deep
 		// in execution stack

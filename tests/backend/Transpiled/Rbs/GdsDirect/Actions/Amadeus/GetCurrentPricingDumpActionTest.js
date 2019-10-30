@@ -4,7 +4,7 @@ const AnyGdsStubSession = require('../../../../../../../backend/Utils/Testing/An
 
 const php = require('../../../../php.js');
 
-class GetCurrentPricingDumpActionTest extends require('../../../../Lib/TestCase.js') {
+class GetCurrentPricingDumpActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {
 		let $list, $argumentTuples, $testCase;
 

@@ -5,7 +5,7 @@ const AmaduesClient = require('../../../../../backend/GdsClients/AmadeusClient')
 const sinon = require('sinon');
 const php = require('../../php.js');
 
-class ImportPqAmadeusActionXmlTest extends require('../../Lib/TestCase.js') {
+class ImportPqAmadeusActionXmlTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {
 		let list;
 

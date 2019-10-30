@@ -188,7 +188,7 @@ const provide_call = () => {
 	return testCases.map(a => [a]);
 };
 
-class ProcessTerminalInputTest extends require('../../../backend/Transpiled/Lib/TestCase.js') {
+class ProcessTerminalInputTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	async test_call(testCase) {
 		testCase.fullState = testCase.fullState || {gds: 'apollo'};
 		let unit = this;

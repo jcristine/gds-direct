@@ -2,7 +2,7 @@
 const php = require('../../../../php.js');
 const FareRuleParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Amadeus/Pricing/FareRuleParser");
 
-class FareRuleParserTest extends require('../../../../Lib/TestCase.js') {
+class FareRuleParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideDumps() {
 		let $list;
 

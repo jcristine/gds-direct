@@ -3,7 +3,7 @@ let PnrParser = require("gds-utils/src/text_format_processing/apollo/pnr/PnrPars
 const GdsActionTestUtil = require("../../../../../../../../backend/Utils/Testing/GdsActionTestUtil");
 const RetrieveFlightServiceInfo = require('../../../../../../../../backend/Transpiled/Rbs/Process/Apollo/ImportPnr/Actions/RetrieveFlightServiceInfoAction.js');
 
-class RetrieveFlightServiceInfoActionTest extends require('../../../../../Lib/TestCase.js') {
+class RetrieveFlightServiceInfoActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideExecute() {
 		let testCases = [];
 

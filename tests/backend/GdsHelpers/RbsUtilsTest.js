@@ -1,6 +1,6 @@
 const RbsUtils = require('../../../backend/GdsHelpers/RbsUtils.js');
 
-class RbsUtilsTest extends require('../Transpiled/Lib/TestCase.js') {
+class RbsUtilsTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provide_makeContractInfo() {
 		let testCases = [];
 

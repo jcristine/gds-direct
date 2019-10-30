@@ -1,6 +1,6 @@
 const DateTime = require("../../../../../backend/Transpiled/Lib/Utils/DateTime");
 
-class DateTimeTest extends require('../TestCase.js') {
+class DateTimeTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	fromUtc() {
 		const tests = [];
 

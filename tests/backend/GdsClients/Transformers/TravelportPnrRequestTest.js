@@ -452,7 +452,7 @@ const provide_parseXml = () => {
 };
 
 
-class TravelportClientTest extends require('../../Transpiled/Lib/TestCase') {
+class TravelportClientTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	async test_buildXml({input, output}) {
 		this.assertSame(output, TravelportClient.buildPnrXmlDataObject(input));
 	}

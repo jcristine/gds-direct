@@ -4,7 +4,7 @@ const ImportPqGalileoAction = require('../../../../../../../backend/Transpiled/R
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
-class ImportPqGalileoActionTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js') {
+class ImportPqGalileoActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {
 		let $list, $argumentTuples, $testCase;
 

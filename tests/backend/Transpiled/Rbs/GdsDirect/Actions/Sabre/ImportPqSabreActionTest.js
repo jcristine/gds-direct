@@ -4,7 +4,7 @@ const GdsDirectDefaults = require('../../../../../../../backend/Utils/Testing/Gd
 
 const php = require('../../../../php.js');
 
-class ImportPqSabreActionTest extends require('../../../../Lib/TestCase.js') {
+class ImportPqSabreActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {
 		let $list, $argumentTuples, $testCase;
 

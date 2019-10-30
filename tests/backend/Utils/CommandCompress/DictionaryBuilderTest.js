@@ -21,7 +21,7 @@ const provideInput = () => {
 	return list.map(c => [c]);
 };
 
-class DictionaryBuilderTest extends require('../../Transpiled/Lib/TestCase') {
+class DictionaryBuilderTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	async testCompressDecompress({samples, output}) {
 		const builder = new DictionaryBuilder({
 			rounds: 3,

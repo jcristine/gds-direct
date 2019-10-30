@@ -3,7 +3,7 @@ const ExchangeApolloTicket = require('../../../backend/Actions/ExchangeApolloTic
 const ParseHbFex = require('gds-utils/src/text_format_processing/apollo/ticketing_masks/ParseHbFex.js');
 const GdsDirectDefaults = require("../../../backend/Utils/Testing/GdsDirectDefaults");
 
-class ExchangeApolloTicketTest extends require('../Transpiled/Lib/TestCase.js')
+class ExchangeApolloTicketTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideTestCases() {
 		let testCases = [];

@@ -310,7 +310,7 @@ const provide_replace = () => {
 	return list;
 };
 
-class TerminalHighlightServiceTest extends require('../../../../../backend/Transpiled/Lib/TestCase.js') {
+class TerminalHighlightServiceTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 
 	/**
 	 * checks that all normalized php regex-es from DB are valid

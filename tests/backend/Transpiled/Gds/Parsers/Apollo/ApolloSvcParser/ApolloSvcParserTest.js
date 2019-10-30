@@ -3,7 +3,7 @@ const ApolloSvcParser = require('../../../../../../../backend/Transpiled/Gds/Par
 
 const php = require('../../../../php.js');
 
-class ApolloSvcParserTest extends require('../../../../Lib/TestCase.js') {
+class ApolloSvcParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestDumpList() {
 		let $list;
 

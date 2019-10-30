@@ -1,7 +1,7 @@
 
 
 const CommandParser = require('gds-utils/src/text_format_processing/galileo/commands/CmdParser.js');
-class CommandParserTest extends require('../../../Lib/TestCase.js')
+class CommandParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideCommands()  {
 		let $list;

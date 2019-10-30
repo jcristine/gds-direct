@@ -3,7 +3,7 @@
 const PricingParser = require('gds-parsers/src/Gds/Parsers/Apollo/PricingParser/PricingParser.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
-class PricingParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js')
+class PricingParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideDumps()  {
 		let $list;

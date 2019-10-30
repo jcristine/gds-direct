@@ -5,7 +5,7 @@ const ApolloMakeMcoAction = require("../../../../../backend/Transpiled/Rbs/GdsAc
 let php = require('klesun-node-tools/src/Transpiled/php.js');
 const GdsActionTestUtil = require("../../../../../backend/Utils/Testing/GdsActionTestUtil");
 
-class ApolloMakeMcoActionTest extends require('../../../../../backend/Transpiled/Lib/TestCase.js')
+class ApolloMakeMcoActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideMakeCmdTestCases()  {
 		let $list;

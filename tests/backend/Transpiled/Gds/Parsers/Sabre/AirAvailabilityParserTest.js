@@ -2,7 +2,7 @@
 
 const php = require('../../../php.js');
 const AirAvailabilityParser = require("../../../../../../backend/Transpiled/Gds/Parsers/Sabre/AirAvailabilityParser");
-class AirAvailabilityParserTest extends require('../../../Lib/TestCase.js')
+class AirAvailabilityParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideDumps()  {
 		let $list;

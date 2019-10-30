@@ -2,7 +2,7 @@
 
 const CommonParserHelpers = require('../../../../../../../backend/Transpiled/Gds/Parsers/Apollo/CommonParserHelpers.js');
 
-class CommonParserHelpersTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js')
+class CommonParserHelpersTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideDecodeApolloTimeData()  {
 		return [

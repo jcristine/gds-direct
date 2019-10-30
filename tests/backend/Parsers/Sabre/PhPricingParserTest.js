@@ -551,7 +551,7 @@ let provide_parse = () => {
 	return list.map(a => [a]);
 };
 
-class PhPricingParserTest extends require('../../Transpiled/Lib/TestCase.js') {
+class PhPricingParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	async test_parse({input, output}) {
 		let actual = await PhPricingParser.parse(input);
 		this.assertArrayElementsSubset(output, actual);

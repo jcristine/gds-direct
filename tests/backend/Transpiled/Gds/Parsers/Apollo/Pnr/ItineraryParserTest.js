@@ -4,7 +4,7 @@
 const ItineraryParser = require('gds-utils/src/text_format_processing/apollo/pnr/ItineraryParser.js');
 const php                              = require('klesun-node-tools/src/Transpiled/php.js');
 
-class ItineraryParserTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js')
+class ItineraryParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideTreeTestCases()  {
 		let $list;

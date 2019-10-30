@@ -7,7 +7,7 @@ const GetMultiPccTariffDisplayAction = require('../../../../../../../backend/Tra
 
 let php = require('klesun-node-tools/src/Transpiled/php.js');
 
-class GetMultiPccTariffDisplayActionTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js')
+class GetMultiPccTariffDisplayActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	static getGeoProvider()  {
 		let $airportRows;

@@ -4,7 +4,7 @@ const PnrHistoryParser = require("gds-utils/src/text_format_processing/apollo/Pn
 
 let php = require('klesun-node-tools/src/Transpiled/php.js');
 
-class PnrHistoryParserTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js') {
+class PnrHistoryParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideDumps() {
 		let $list;
 		$list = [];

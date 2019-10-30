@@ -4,7 +4,7 @@ const SabreTicketParser = require('../../../../../../backend/Transpiled/Gds/Pars
 
 const php = require('../../../php.js');
 
-class SabreTicketParserTest extends require('../../../Lib/TestCase.js') {
+class SabreTicketParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideDumps() {
 		let $list;
 

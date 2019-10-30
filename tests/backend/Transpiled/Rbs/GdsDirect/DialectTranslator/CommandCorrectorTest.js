@@ -2,7 +2,7 @@
 const php = require('../../../php.js');
 const CommandCorrector = require("../../../../../../backend/Transpiled/Rbs/GdsDirect/DialectTranslator/CommandCorrector");
 
-class CommandCorrectorTest extends require('../../../Lib/TestCase.js') {
+class CommandCorrectorTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideCommands() {
 
 		return [

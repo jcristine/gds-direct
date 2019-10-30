@@ -3,7 +3,7 @@ const GdsActionTestUtil = require('../../../../../../../backend/Utils/Testing/Gd
 const GdsDirectDefaults = require('../../../../Rbs/TestUtils/GdsDirectDefaults.js');
 const RunCmdRq = require('../../../../../../../backend/Transpiled/Rbs/GdsDirect/Actions/Sabre/RunCmdRq.js');
 
-class RunCmdRqXmlTest extends require('../../../../Lib/TestCase.js') {
+class RunCmdRqXmlTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideActionTestCases() {
 		const list = [];
 

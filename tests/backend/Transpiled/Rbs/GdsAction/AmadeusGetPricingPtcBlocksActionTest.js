@@ -5,7 +5,7 @@ const AmadeusGetPricingPtcBlocksAction = require('../../../../../backend/Transpi
 
 const php = require('../../php.js');
 
-class AmadeusGetPricingPtcBlocksActionTest extends require('../../Lib/TestCase.js') {
+class AmadeusGetPricingPtcBlocksActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {
 		let $list, $argumentTuples, $testCase;
 

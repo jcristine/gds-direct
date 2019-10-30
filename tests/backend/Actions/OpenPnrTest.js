@@ -37,7 +37,7 @@ const provide_call = () => {
 	return testCases.map(a => [a]);
 };
 
-class AddMpRemarkTest extends require('../../../backend/Transpiled/Lib/TestCase.js') {
+class AddMpRemarkTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	async test_call(testCase) {
 		const getActual = async (gdsSession, input) => {
 			let {pcc, pnr} = await OpenPnr({gdsSession, ...input});

@@ -2,7 +2,7 @@
 const php = require('../../../../php.js');
 const FcScreenParser = require("gds-utils/src/text_format_processing/apollo/ticketing_masks/FcScreenParser");
 
-class FcScreenParserTest extends require('../../../../Lib/TestCase.js') {
+class FcScreenParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideDumps() {
 		let $list;
 

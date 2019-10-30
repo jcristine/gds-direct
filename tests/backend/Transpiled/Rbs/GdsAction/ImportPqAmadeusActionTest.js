@@ -6,7 +6,7 @@ const GdsDirectDefaults = require('../../Rbs/TestUtils/GdsDirectDefaults.js');
 
 const php = require('../../php.js');
 
-class ImportPqAmadeusActionTest extends require('../../Lib/TestCase.js') {
+class ImportPqAmadeusActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {
 		let $list, $argumentTuples, $testCase;
 

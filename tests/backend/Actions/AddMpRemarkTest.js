@@ -146,7 +146,7 @@ const provide_call = () => {
 	return list.map(a => [a]);
 };
 
-class AddMpRemarkTest extends require('../../../backend/Transpiled/Lib/TestCase.js') {
+class AddMpRemarkTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	async test_call({input, output, sessionInfo}) {
 		let stateful = GdsDirectDefaults.makeStatefulSession(sessionInfo.gds, input, sessionInfo);
 		let actual = await AddMpRemark({stateful, ...input});

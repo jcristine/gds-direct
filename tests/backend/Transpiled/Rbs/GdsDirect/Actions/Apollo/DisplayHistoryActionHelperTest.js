@@ -3,7 +3,7 @@ const DisplayHistoryActionHelper = require("../../../../../../../backend/Transpi
 
 let php = require('klesun-node-tools/src/Transpiled/php.js');
 
-class DisplayHistoryActionHelperTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js') {
+class DisplayHistoryActionHelperTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	providePnrDumps() {
 		let list = [];
 

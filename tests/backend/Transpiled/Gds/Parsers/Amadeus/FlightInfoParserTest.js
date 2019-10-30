@@ -2,7 +2,7 @@
 const php = require('../../../php.js');
 const FlightInfoParser = require("../../../../../../backend/Transpiled/Gds/Parsers/Amadeus/FlightInfoParser");
 
-class FlightInfoParserTest extends require('../../../Lib/TestCase.js') {
+class FlightInfoParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	// "DO1-2" to get hidden stop info for segments "1" through "2"
 	provideDumps() {
 		let $list;

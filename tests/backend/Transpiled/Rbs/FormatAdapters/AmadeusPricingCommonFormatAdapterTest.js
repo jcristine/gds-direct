@@ -7,7 +7,7 @@ const PnrParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus
 
 const php = require('../../php.js');
 const AmadeusPricingCommonFormatAdapter = require("../../../../../backend/Transpiled/Rbs/FormatAdapters/AmadeusPricingCommonFormatAdapter");
-class AmadeusPricingCommonFormatAdapterTest extends require('../../Lib/TestCase.js')
+class AmadeusPricingCommonFormatAdapterTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	providePtcLinkingCases()  {
 		let $list;

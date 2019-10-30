@@ -2,7 +2,7 @@
 const php = require('../../../php.js');
 const TicketMaskParser = require("../../../../../../backend/Transpiled/Gds/Parsers/Amadeus/TicketMaskParser");
 
-class TicketMaskParserTest extends require('../../../Lib/TestCase.js') {
+class TicketMaskParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideDumps() {
 		let $list;
 

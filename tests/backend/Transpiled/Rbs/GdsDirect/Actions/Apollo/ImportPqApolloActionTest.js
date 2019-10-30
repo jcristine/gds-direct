@@ -6,7 +6,7 @@ const ItineraryParser = require('gds-utils/src/text_format_processing/apollo/pnr
 const php = require('../../../../php.js');
 const GdsActionTestUtil = require("../../../../../../../backend/Utils/Testing/GdsActionTestUtil");
 
-class ImportPqApolloActionTest extends require('../../../../Lib/TestCase.js') {
+class ImportPqApolloActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {
 		let $list, $argumentTuples, $testCase;
 

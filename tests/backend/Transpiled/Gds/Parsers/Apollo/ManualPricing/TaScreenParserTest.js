@@ -2,7 +2,7 @@
 const php = require('../../../../php.js');
 const TaScreenParser = require("gds-utils/src/text_format_processing/apollo/ticketing_masks/TaScreenParser");
 
-class TaScreenParserTest extends require('../../../../Lib/TestCase.js') {
+class TaScreenParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideDumps() {
 		let $list;
 

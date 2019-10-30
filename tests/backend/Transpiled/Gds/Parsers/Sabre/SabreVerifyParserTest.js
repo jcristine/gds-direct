@@ -3,7 +3,7 @@
 const SabreVerifyParser = require('../../../../../../backend/Transpiled/Gds/Parsers/Sabre/SabreVerifyParser.js');
 
 const php = require('../../../php.js');
-class SabreVerifyParserTest extends require('../../../Lib/TestCase.js')
+class SabreVerifyParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideViParserData()  {
 		let $list;

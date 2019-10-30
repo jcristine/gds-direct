@@ -8,7 +8,7 @@ const {coverExc} = require('klesun-node-tools/src/Lang.js');
 const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
 const _ = require('lodash');
 
-class RunCmdRqHbFexTest extends require('../../../../../Lib/TestCase.js') {
+class RunCmdRqHbFexTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {
 		const list = [];
 

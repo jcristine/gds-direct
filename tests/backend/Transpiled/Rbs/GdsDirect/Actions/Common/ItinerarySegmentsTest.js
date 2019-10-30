@@ -21,7 +21,7 @@ const defaultSegment = {
 	segmentStatus: 'SS',
 };
 
-class ItinerarySegmentsTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js') {
+class ItinerarySegmentsTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	getThrowingCases()	{
 		const l = [];
 

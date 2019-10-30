@@ -85,7 +85,7 @@ const provideTestCases = () => {
 	return list.map(c => [c]);
 };
 
-class AmadeusClientTest extends require('../../../backend/Transpiled/Lib/TestCase') {
+class AmadeusClientTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	async testClient({input, output, httpRequests}) {
 		const PersistentHttpRq = PersistentHttpRqStub(httpRequests);
 

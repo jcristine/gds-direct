@@ -3,7 +3,7 @@ const CommandParser = require('gds-utils/src/text_format_processing/sabre/comman
 
 const php = require('../../../php.js');
 
-class CommandParserTest extends require('../../../Lib/TestCase.js') {
+class CommandParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestDumpList() {
 		let $list;
 

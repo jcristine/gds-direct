@@ -1,7 +1,7 @@
 const GdsActionTestUtil = require("../../../backend/Utils/Testing/GdsActionTestUtil");
 const SubmitTaxBreakdownMask = require('../../../backend/Actions/ManualPricing/SubmitTaxBreakdownMask.js');
 
-class SubmitTaxBreakdownMaskTest extends require('../Transpiled/Lib/TestCase.js')
+class SubmitTaxBreakdownMaskTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideTestCases() {
 		let testCases = [];

@@ -4,7 +4,7 @@ const TravelportClient = require('../../../../../../../backend/GdsClients/Travel
 const GdsDirectDefaults = require('../../../../../../../backend/Utils/Testing/GdsDirectDefaults.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
-class ImportPqGalileoXmlActionTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js') {
+class ImportPqGalileoXmlActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {
 		const list = [];
 

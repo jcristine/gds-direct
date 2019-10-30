@@ -4,7 +4,7 @@ const UpdateState = require('../../../../../../backend/Transpiled/Rbs/GdsDirect/
 const GdsDirectDefaults = require('../../../../../../backend/Utils/Testing/GdsDirectDefaults.js');
 let php = require('klesun-node-tools/src/Transpiled/php.js');
 
-class SessionStateProcessorTest extends require('../../../../../../backend/Transpiled/Lib/TestCase.js')
+class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideCalledCommands()  {
 		let $sessionRecords, $argumentTuples, $sessionRecord;

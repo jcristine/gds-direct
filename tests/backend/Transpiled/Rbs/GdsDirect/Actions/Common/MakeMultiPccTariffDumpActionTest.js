@@ -7,7 +7,7 @@ const MakeMultiPccTariffDumpAction = require("../../../../../../../backend/Trans
 
 let php = require('klesun-node-tools/src/Transpiled/php.js');
 
-class MakeMultiPccTariffDumpActionTest extends require('../../../../../../../backend/Transpiled/Lib/TestCase.js')
+class MakeMultiPccTariffDumpActionTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	static makeTableRows($valuesPerRow)  {
 		let $keys, $rows, $values;

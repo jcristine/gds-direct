@@ -14,7 +14,7 @@ const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
 
 const sinon = require('sinon');
 
-class RunCmdRqTest extends require('../../../../Lib/TestCase.js') {
+class RunCmdRqTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	static makeTableRows($keys, $valuesPerRow) {
 		let $rows, $values;
 
