@@ -114,7 +114,14 @@ export class PqParser
 						updateSessionState(rbsData, gds.get('name'));
 						return {rbsData: rbsData};
 					});
-				return this.modal(pqBtnData, CLOSE_PQ_WINDOW, importPq);
+				return Promise.resolve()
+					.then(() => this.modal(pqBtnData, CLOSE_PQ_WINDOW, importPq))
+					.catch(exc => {
+						exc = exc || '(empty CMS PQ modal error)';
+						exc = typeof exc === 'string' ? new Error(exc) : exc;
+						exc.httpStatusCode = 502; // BadGateway, to not write to diag
+						return Promise.reject(exc);
+					});
 			})
 			.catch(exc => {
 				exc = exc || '(empty PQ error)';
