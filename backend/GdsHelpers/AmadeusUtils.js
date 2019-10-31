@@ -102,6 +102,8 @@ const fetchAllWith = async ($runCmd, $cmd, $mrCmd, $parsePager) => {
 	return php.implode(php.PHP_EOL, $cleanPages);
 };
 
+const isRtFormatPage = output => php.preg_match(/^\/\$(.+?)(\n\)\s*)$/s, output);
+
 const guessFormatFromCmd = ($cmd) => {
 	let $formats, $format, $prefix;
 
@@ -109,17 +111,17 @@ const guessFormatFromCmd = ($cmd) => {
 	$formats = [
 		{
 			'moveRestCmd': 'MDR',
-			'parsePager': (...args) => parseRtPager(...args),
-			'prefixes': ['RT', 'DO', 'TQT', 'DAN', 'DAC', 'QV\/', 'SM', 'RH', 'FRN'],
+			'parsePager': parseRtPager,
+			'prefixes': ['RT', 'DO', 'TQT', 'TTH', 'DAN', 'DAC', 'QV/', 'SM', 'RH', 'FRN'],
 		},
 		{
 			'moveRestCmd': 'MD',
-			'parsePager': (...args) => parseFxPager(...args),
+			'parsePager': parseFxPager,
 			'prefixes': ['FX', 'FQ'],
 		},
 		{
 			'moveRestCmd': 'MD',
-			'parsePager': (...args) => parseHePager(...args),
+			'parsePager': parseHePager,
 			'prefixes': ['HE', 'GP', 'MS'],
 		},
 	];
@@ -225,6 +227,10 @@ class AmadeusUtils {
 			}
 		}
 		return fullCmdRecs;
+	}
+
+	static isRtFormatPage(output) {
+		return isRtFormatPage(output);
 	}
 }
 

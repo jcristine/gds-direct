@@ -742,8 +742,7 @@ const execute = ({
 					// agreement on destination" on attempt to >MD; after DF1+1
 					return Rej.BadRequest('Calculator output can not be scrolled');
 				}
-				wasRtFormatPage = php.preg_match(/^\/\$(.+?)(\n\)\s*)$/s, lastCmdRec.output);
-				if (wasRtFormatPage) {
+				if (AmadeusUtils.isRtFormatPage(lastCmdRec.output)) {
 					// MD without overlapping - more
 					// useful for reusing output
 					cmd = 'MDR';
