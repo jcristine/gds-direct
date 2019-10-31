@@ -53,7 +53,7 @@ class StateOperator
 	static async checkCanCreatePq(cmdLog, leadData, agent = null)  {
 		let errors = [];
 		const gds = cmdLog.getSessionData().gds;
-		const cmdList = await cmdLog.getLastCommandsOfTypes(this.getCanCreatePqSafeTypes());
+		const cmdList = await cmdLog.getLastCommandsOfTypes(StateHelper.createPqSafeTypes);
 		const cmdPricing = await this.getPricingCmdRow(cmdLog);
 		let cmdItinerary = null;
 		for (const cmdRec of cmdList) {

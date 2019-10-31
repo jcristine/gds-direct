@@ -523,18 +523,16 @@ const RunCmdRq = ({
 	};
 
 	const moveDownAll = async (limit) => {
-		let pageLimit, mds, pages, lastPage, nextPage, cleanDumps, output, calledCommand, calledCommands;
-
-		pageLimit = limit || 100;
-		mds = await stateful.getLog().getLastCommandsOfTypes(['moveRest']);
+		const pageLimit = limit || 100;
+		const mds = await stateful.getLog().getLastCommandsOfTypes(['moveRest']);
 		if (php.empty(mds)) {
 			return {userMessages: ['There is nothing to scroll']};
 		}
-		pages = php.array_column(mds, 'output');
-		lastPage = ArrayUtil.getLast(pages);
+		const pages = php.array_column(mds, 'output');
+		let lastPage = ArrayUtil.getLast(pages);
 		let i = pages.length;
 		while (CmsGalileoTerminal.isScrollingAvailable(lastPage) && i < pageLimit) {
-			nextPage = await runCommand('MR', false);
+			const nextPage = await runCommand('MR', false);
 			if (nextPage === lastPage) {
 				break;
 			}
@@ -542,11 +540,11 @@ const RunCmdRq = ({
 			pages.push(lastPage);
 			++i;
 		}
-		cleanDumps = Fp.map((...args) => CmsGalileoTerminal.trimScrollingIndicator(...args), pages);
-		output = php.implode('', cleanDumps);
-		calledCommand = {cmd: 'MDA', output: output};
+		const cleanDumps = Fp.map((...args) => CmsGalileoTerminal.trimScrollingIndicator(...args), pages);
+		const output = php.implode('', cleanDumps);
+		let calledCommand = {cmd: 'MDA', output: output};
 		calledCommand = await modifyOutput(calledCommand);
-		calledCommands = [calledCommand];
+		const calledCommands = [calledCommand];
 		return {calledCommands: calledCommands};
 	};
 

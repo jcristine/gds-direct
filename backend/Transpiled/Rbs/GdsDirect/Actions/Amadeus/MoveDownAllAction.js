@@ -1,20 +1,19 @@
+const StateHelper = require('gds-utils/src/state_tracking/StateHelper.js');
 
 const AbstractGdsAction = require('../../../GdsAction/AbstractGdsAction.js');
 const AmadeusUtils = require('../../../../../GdsHelpers/AmadeusUtils.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 /**
  * determine scrolling format run all remaining MD-s if
  * possible, return full output including all MD-s called before
  */
-const php = require('klesun-node-tools/src/Transpiled/php.js');
-const SessionStateHelper = require("../../SessionStateProcessor/StateOperator");
-
 class MoveDownAllAction extends AbstractGdsAction {
 	async execute($cmdLog, $limit) {
 		let $usedMdCmds, $mdCmdRows, $originalCmdRow, $format, $wrongMds, $pages, $i, $cleanPages, $hasMore, $page,
 			$pager, $fullCalledCommand;
 
-		$usedMdCmds = SessionStateHelper.mrCmdTypes;
+		$usedMdCmds = StateHelper.mrCmdTypes;
 		$mdCmdRows = await $cmdLog.getScrolledCmdMrs();
 		if (!($originalCmdRow = php.array_shift($mdCmdRows))) {
 			// if session just started for example

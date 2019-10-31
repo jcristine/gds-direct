@@ -37,6 +37,9 @@ const bookSa = async ({sabre, session, baseDate, itinerary}) => {
 			return Rej.BadRequest(response);
 		} else if (response.match(/INVALID DATE/)) {
 			return Rej.BadRequest(response);
+		} else if (response.match(/INVALID BOARD POINT/)) {
+			// sometimes returned when there is no such flight
+			return Rej.BadRequest(response);
 		} else {
 			const msg = Errors.getMessage(built.errorType, built.errorData);
 			return Rej.UnprocessableEntity(msg, built);

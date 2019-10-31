@@ -1,3 +1,4 @@
+const StateHelper = require('gds-utils/src/state_tracking/StateHelper.js');
 const CanCreatePqRules = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/CanCreatePqRules.js');
 
 const UpdateState = require('../Transpiled/Rbs/GdsDirect/SessionStateProcessor/UpdateState.js');
@@ -188,7 +189,7 @@ const CmdLog = ({
 					[['has_pnr', '=', false]],
 					[['record_locator', '!=', getSessionData().recordLocator]],
 				],
-			}).catch(ignoreExc(null, [Rej.NoContent]));
+			}).catch(coverExc([Rej.NoContent]));
 
 			return getCommandsStartingFrom(pnrStarter, {
 				where: [['area', '=', fullState.area]],
@@ -199,10 +200,13 @@ const CmdLog = ({
 			const stateStarter = await selectLastCmdOf({
 				where: [
 					['area', '=', fullState.area],
-					['type', 'NOT IN', types],
+					['OR', [
+						['type', 'NOT IN', types],
+						['type', 'IS', null],
+					]],
 					['is_mr', '=', false],
 				],
-			}).catch(ignoreExc(null, [Rej.NoContent]));
+			}).catch(coverExc([Rej.NoContent]));
 
 			const matched = await getCommandsStartingFrom(stateStarter, {
 				where: [['area', '=', fullState.area]],
@@ -229,7 +233,10 @@ const CmdLog = ({
 			const mrStarter = await selectLastCmdOf({
 				where: [
 					['is_mr', '=', false],
-					['type', 'NOT LIKE', '!xml:%'],
+					['OR', [
+						['type', 'IS', null],
+						['type', 'NOT LIKE', '!xml:%'],
+					]],
 				],
 			}).catch(coverExc([Rej.NoContent]));
 
@@ -245,10 +252,13 @@ const CmdLog = ({
 			const stateStarter = await selectLastCmdOf({
 				where: [
 					['area', '=', fullState.area],
-					['type', 'NOT IN', SessionStateHelper.nonAffectingTypes],
+					['OR', [
+						['type', 'NOT IN', StateHelper.nonAffectingTypes],
+						['type', 'IS', null],
+					]],
 					['is_mr', '=', false],
 				],
-			}).catch(ignoreExc(null, [Rej.NoContent]));
+			}).catch(coverExc([Rej.NoContent]));
 
 			return getCommandsStartingFrom(stateStarter, {
 				where: [['area', '=', fullState.area]],
