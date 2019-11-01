@@ -42,13 +42,13 @@ class MoveDownAllAction extends AbstractGdsAction {
 
 		let i = 1;
 		const cleanPages = [];
-		const hasMore = true;
+		let hasMore = true;
 		let done = false;
 		while (!done) {
 			const page = php.array_shift(pages)
 				|| (await this.runCmd(format.moveRestCmd)).output;
 			const pager = format.parsePager(page);
-			const hasMore = pager.hasMore;
+			hasMore = pager.hasMore;
 			cleanPages.push(pager.content);
 			done = !hasMore || i++ >= limit;
 		}
