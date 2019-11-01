@@ -159,7 +159,7 @@ const TravelportClient = ({
 			const resultTag = parseXml(resp).querySelectorAll('SubmitTerminalTransactionResult')[0];
 			if (resultTag) {
 				const output = resultTag.textContent;
-				if (['TIME EXPIRED SIGNED-OFF - APOLLO\\n', 'SIGN IN\n><'].includes(output)) {
+				if (['TIME EXPIRED SIGNED-OFF - APOLLO\n><', 'SIGN IN \n><'].includes(output)) {
 					// when session lives for nearly a day, travelport would sometimes log you
 					// out of PCC, and logging back is not possible from WS terminal AFAIK
 					return LoginTimeOut('Logged out of PCC - ' + output, {isOk: false});
