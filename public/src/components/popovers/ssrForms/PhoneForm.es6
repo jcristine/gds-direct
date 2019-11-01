@@ -26,6 +26,7 @@ const paxToPhoneTr = (pax, paxes, ssrs) => {
 			Dom('input', {
 				name: 'phoneNumber', type: 'tel',
 				value: (ssr.content || '').replace(/^\/?/, ''),
+				pattern: /[0-9*]*/.source,
 			}),
 		]),
 	]);
@@ -70,7 +71,10 @@ const PhoneForm = ({close}) => {
 		const writeCmds = [];
 		for (const phoneRecord of dataRecords) {
 			const newContent = phoneRecord.phoneNumber.replace('+', '00');
-			if (!phoneRecord.oldSsrs.some(old => old.content.replace(/^\//, '') === newContent)) {
+			const doesMatch = old => old.content.replace(/^\//, '') === newContent;
+			if (newContent.match(/^\d*$/) &&
+				!phoneRecord.oldSsrs.some(doesMatch)
+			) {
 				deleteSsrs.push(...phoneRecord.oldSsrs);
 				const cmds = phoneDataToCmds(phoneRecord, gds);
 				writeCmds.push(...cmds);
@@ -96,7 +100,8 @@ const PhoneForm = ({close}) => {
 			tbody,
 		]),
 		Dom('div', {style: 'text-align: right'}, [
-			Dom('button[Save]'),
+			Dom('button', {textContent: 'Save', className: 'save-changes'}),
+			Dom('button', {textContent: 'Save', className: 'save-changes', disabled: 'disabled'}),
 		]),
 	]);
 

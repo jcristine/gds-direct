@@ -578,4 +578,14 @@
     font-family: Georgia, "Times New Roman", Times, serif;
     color: black;
   }
+  input:invalid {
+    border: solid red 2px;
+  }
+  /** show enabled submit button if all fields valid, disabled one otherwise */
+  form:invalid button.save-changes:not(:disabled) {
+    display: none;
+  }
+  form:valid button.save-changes:disabled {
+    display: none;
+  }
 }

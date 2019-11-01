@@ -476,7 +476,7 @@ const RunCmdRq = ({
 		if (dupes) {
 			const msg = 'Rebook would result in duplicate ' +
 				'segments: ' + dupes.map(s => s.segmentNumber);
-			return Rej.NotImplemented(msg);
+			return Rej.BadRequest(msg);
 		}
 		stateful.flushCalledCommands();
 		const xOutput = await runCommand('X' + php.implode('|', segNums));

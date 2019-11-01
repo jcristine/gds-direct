@@ -150,6 +150,9 @@ const StorePricing_apollo = ({
 			const msg = 'PNR already has an ATFQ - if you know what ' +
 				'you are doing, you can cancel it with >XT;';
 			return Rej.BadRequest(msg);
+		} else if (pnr.getPassengers().length > 9) {
+			const msg = 'Greater than 9 passengers not supported';
+			return Rej.BadRequest(msg, {isOk: false});
 		}
 		for (const seg of pnr.getItinerary()) {
 			// would result in "INVALID NUMBER OF SEGMENTS SELECTED"

@@ -15,9 +15,9 @@ const onClickOutside = (element, callback) => {
 			callback();
 		}
 	};
-	document.addEventListener('click', outsideClickListener);
+	document.addEventListener('mousedown', outsideClickListener);
 	return {
-		removeListener: () => document.removeEventListener('click', outsideClickListener),
+		removeListener: () => document.removeEventListener('mousedown', outsideClickListener),
 	};
 };
 

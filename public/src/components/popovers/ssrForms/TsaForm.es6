@@ -40,6 +40,7 @@ const paxToTsaTrCmp = (pax, paxes, ssrs) => {
 				max: new Date().toISOString().slice(0, 10),
 				min: '1903-01-02', // Kane Tanaka
 				value: (ssrData.dob || {}).parsed || (pax.dob || {}).parsed || null,
+				required: 'required',
 			}),
 		]),
 		Cmp('td').attach([
@@ -55,13 +56,25 @@ const paxToTsaTrCmp = (pax, paxes, ssrs) => {
 			}),
 		]),
 		Cmp('td').attach([
-			Cmp('input', {name: 'lastName', type: 'text', value: ssrData.lastName || pax.lastName}),
+			Cmp('input', {
+				name: 'lastName', type: 'text',
+				value: ssrData.lastName || pax.lastName,
+				pattern: /[a-zA-Z][a-zA-Z\-\s]*/.source,
+			}),
 		]),
 		Cmp('td').attach([
-			Cmp('input', {name: 'firstName', type: 'text', value: ssrData.firstName || firstName}),
+			Cmp('input', {
+				name: 'firstName', type: 'text',
+				value: ssrData.firstName || firstName,
+				pattern: /[a-zA-Z][a-zA-Z\-\s]*/.source,
+			}),
 		]),
 		Cmp('td').attach([
-			Cmp('input', {name: 'middleName', type: 'text', value: ssrData.middleName || middleName || ''}),
+			Cmp('input', {
+				name: 'middleName', type: 'text',
+				value: ssrData.middleName || middleName || '',
+				pattern: /[a-zA-Z][a-zA-Z\-\s]*/.source,
+			}),
 		]),
 	]);
 };
@@ -153,7 +166,8 @@ const TsaForm = ({close}) => {
 			tbodyCmp,
 		]),
 		Cmp('div', {style: 'text-align: right'}).attach([
-			Cmp('button[Save]'),
+			Cmp('button', {textContent: 'Save', className: 'save-changes'}),
+			Cmp('button', {textContent: 'Save', className: 'save-changes', disabled: 'disabled'}),
 		]),
 	]).context;
 
