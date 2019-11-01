@@ -4,6 +4,7 @@ import Drop		from 'tether-drop';
 import Dom 		from '../../helpers/dom.es6';
 import TsaForm from "./ssrForms/TsaForm";
 import SsrHelper from "./ssrForms/SsrHelper";
+import PhoneForm from "./ssrForms/PhoneForm";
 
 const Component = require('../../modules/component.es6').default;
 const Cmp = (...args) => new Component(...args);
@@ -43,6 +44,7 @@ const SsrForm = ({icon, popoverTarget}) => {
 		},
 	});
 	const tsaForm = TsaForm({close: () => popover.close()});
+	const phoneForm = PhoneForm({close: () => popover.close()});
 
 	const makeSectionsSwitchCmp = () => {
 		const sectionButtons = [
@@ -59,33 +61,15 @@ const SsrForm = ({icon, popoverTarget}) => {
 		];
 		const sectionsContCmp = Cmp('div.sections', {'data-active-section': 'tsa'}).attach([
 			Cmp('div', {'data-section': 'tsa'}).attach([tsaForm.dom]),
-			Cmp('div', {'data-section': 'apis'}).attach([
-				Cmp('h2[Not Implemented Yet apis]'),
-			]),
-			Cmp('div', {'data-section': 'frequent-flyer'}).attach([
-				Cmp('h2[Not Implemented Yet frequent-flyer]'),
-			]),
-			Cmp('div', {'data-section': 'ktn'}).attach([
-				Cmp('h2[Not Implemented Yet ktn]'),
-			]),
-			Cmp('div', {'data-section': 'meal'}).attach([
-				Cmp('h2[Not Implemented Yet meal]'),
-			]),
-			Cmp('div', {'data-section': 'osi'}).attach([
-				Cmp('h2[Not Implemented Yet osi]'),
-			]),
-			Cmp('div', {'data-section': 'redress-number'}).attach([
-				Cmp('h2[Not Implemented Yet redress-number]'),
-			]),
-			Cmp('div', {'data-section': 'phone-number'}).attach([
-				Cmp('h2[Not Implemented Yet phone-number]'),
-			]),
-			Cmp('div', {'data-section': 'email'}).attach([
-				Cmp('h2[Not Implemented Yet email]'),
-			]),
-			Cmp('div', {'data-section': 'assistance'}).attach([
-				Cmp('h2[Not Implemented Yet assistance]'),
-			]),
+			Cmp('div', {'data-section': 'phone-number'}).attach([phoneForm.dom]),
+			Cmp('div', {'data-section': 'apis'}).attach([Cmp('h2[Not Implemented Yet apis]')]),
+			Cmp('div', {'data-section': 'frequent-flyer'}).attach([Cmp('h2[Not Implemented Yet frequent-flyer]')]),
+			Cmp('div', {'data-section': 'ktn'}).attach([Cmp('h2[Not Implemented Yet ktn]')]),
+			Cmp('div', {'data-section': 'meal'}).attach([Cmp('h2[Not Implemented Yet meal]')]),
+			Cmp('div', {'data-section': 'osi'}).attach([Cmp('h2[Not Implemented Yet osi]')]),
+			Cmp('div', {'data-section': 'redress-number'}).attach([Cmp('h2[Not Implemented Yet redress-number]')]),
+			Cmp('div', {'data-section': 'email'}).attach([Cmp('h2[Not Implemented Yet email]')]),
+			Cmp('div', {'data-section': 'assistance'}).attach([Cmp('h2[Not Implemented Yet assistance]')]),
 		]);
 		const sectionSwitchCmp = Cmp('div.section-switch').attach([
 			Cmp('div.switch-buttons').attach(sectionButtons),
@@ -143,9 +127,9 @@ const SsrForm = ({icon, popoverTarget}) => {
 			statusHolderCmp.context.textContent = msg;
 		};
 
-		/** @param reservation = require('ImportApolloPnrFormatAdapter.js').transformReservation() */
+		/** @param imported = require('GdsSessionController.js').getCurrentPnr() */
 		const updateFromPnr = (imported) => {
-			const {reservation, docSsrList} = imported;
+			const {reservation, docSsrList, serviceSsrList} = imported;
 			paxListCmp.context.innerHTML = '';
 			segListCmp.context.innerHTML = '';
 
@@ -175,6 +159,7 @@ const SsrForm = ({icon, popoverTarget}) => {
 			}));
 
 			tsaForm.updateBlock(paxes, docSsrList.data || []);
+			phoneForm.updateBlock(paxes, serviceSsrList.data || []);
 			onRendered();
 
 			const selector = '[data-section="tsa"] input[name="dob"]';

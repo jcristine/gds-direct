@@ -10,8 +10,14 @@ const getAllSabreSsrs = async ({stateful}) => {
 	// *PE - email, *PAC - accounting, *IMSL - itinerary with marriages
 	// *CID - corporate id
 	const fullPnrCmd = '*P3D*P4D*P3*P4*P5*P6*P9*N*T*B*PAC*PE*PDK*FN*PAD*FF*IMSL'; // *SC*DL-*FN*/*CID*CC;
-	const cmdRec = await stateful.runCmd(fullPnrCmd);
-	const fullPnr = SabrePnr.makeFromDump(cmdRec.output);
+	let pnrCmdRec = null;
+	for (const cmdRec of await stateful.getLog().getLastStateSafeCommands()) {
+		if (cmdRec.cmd === fullPnrCmd) {
+			pnrCmdRec = cmdRec;
+		}
+	}
+	pnrCmdRec = pnrCmdRec || (await stateful.runCmd(fullPnrCmd));
+	const fullPnr = SabrePnr.makeFromDump(pnrCmdRec.output);
 	return fullPnr.getSsrList();
 };
 
@@ -23,7 +29,7 @@ const getGalileoOtherSsrs = async ({stateful}) => {
 
 const getTravelportNameNumber = (ssr, pnr) => {
 	const pnrPaxes = pnr.getPassengers();
-	const pnrPaxName = (ssr.data || {}).pnrPaxName;
+	const pnrPaxName = ssr.pnrPaxName || null;
 	if (pnrPaxName) {
 		const [lastName, firstName] = pnrPaxName.split('/');
 		const matching = pnrPaxes
@@ -62,44 +68,69 @@ const getSabreNameNumber = (ssr, pnr) => {
 const getAmadeusNameNumber = (ssr, pnr) => {
 	const nameNumbers = pnr.getPassengers()
 		.map(pnrPax => pnrPax.nameNumber);
-	const paxNum = (ssr.data || {}).paxNum;
+	const paxNum = (ssr.paxNums || [])[0] || null;
 	return nameNumbers.length === 1
 		? nameNumbers[0]
 		: nameNumbers.filter(numRec => numRec.fieldNumber == paxNum)[0];
 };
 
+const isDocSsr = ssr => ['DOCS', 'DOCA', 'DOCO'].includes(ssr.ssrCode);
+const isServiceSsr = ssr => !isDocSsr(ssr);
+
 /** @param {IPnr|ApolloPnr|AmadeusPnr} pnr */
-const GetDocSsrList = ({pnr, stateful}) => {
-	const getSsrs = async () => {
+const ImportPnr = ({pnr, stateful}) => {
+	const getPnrFields = async () => {
 		const gds = pnr.getGdsName();
 		return {
-			apollo: () => pnr.getSsrList()
-				.map(ssr => ({...ssr,
+			apollo: () => {
+				const ssrs = pnr.getSsrList().map(ssr => ({...ssr,
 					nameNumber: getTravelportNameNumber(ssr, pnr),
-				})),
-			sabre: () => getAllSabreSsrs({stateful})
-				.then(ssrs => ssrs.map(ssr => ({...ssr,
-					nameNumber: getSabreNameNumber(ssr, pnr),
-				}))),
-			galileo: () => getGalileoOtherSsrs({stateful})
-				.then(ssrs => ssrs.map(ssr => ({...ssr,
-					nameNumber: getTravelportNameNumber(ssr, pnr),
-				}))),
-			amadeus: () => pnr.getSsrList()
-				.map(ssr => ({...ssr,
+				}));
+				return {
+					docSsrList: {data: ssrs.filter(isDocSsr)},
+					serviceSsrList: {data: ssrs.filter(isServiceSsr)},
+				};
+			},
+			sabre: async () => {
+				const ssrs = (await getAllSabreSsrs({stateful}))
+					.map(ssr => ({...ssr,
+						nameNumber: getSabreNameNumber(ssr, pnr),
+					}));
+				return {
+					docSsrList: {data: ssrs.filter(isDocSsr)},
+					serviceSsrList: {data: ssrs.filter(isServiceSsr)},
+				};
+			},
+			galileo: async () => {
+				const ssrs = (await getGalileoOtherSsrs({stateful}))
+					.map(ssr => ({...ssr,
+						nameNumber: getTravelportNameNumber(ssr, pnr),
+					}));
+				return {
+					docSsrList: {data: ssrs.filter(isDocSsr)},
+					serviceSsrList: {data: ssrs.filter(isServiceSsr)},
+				};
+			},
+			amadeus: () => {
+				const ssrs = pnr.getSsrList().map(ssr => ({...ssr,
 					nameNumber: getAmadeusNameNumber(ssr, pnr),
-				})),
+				}));
+				return {
+					docSsrList: {data: ssrs.filter(isDocSsr)},
+					serviceSsrList: {data: ssrs.filter(isServiceSsr)},
+				};
+			},
 		}[gds]();
 	};
 
 	const main = async () => {
-		const ssrs = await getSsrs();
+		const pnrFields = await getPnrFields();
 		const isDoc = ssr => ['DOCS', 'DOCA', 'DOCO']
 			.includes(ssr.ssrCode);
-		return {data: ssrs.filter(isDoc)};
+		return {pnrFields};
 	};
 
 	return main();
 };
 
-module.exports = GetDocSsrList;
+module.exports = ImportPnr;

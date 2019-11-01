@@ -1,7 +1,5 @@
-
-
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
-const CommonParserHelpers = require('../../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 
 /**
  * parses output of >*SI; - non-airline SSR-s
@@ -36,9 +34,7 @@ class SiParser
 		//              'S 4. DL  0180 M  28SEP MNLNRT',
 		//              'S11. OS  0655 D  21JUN VIEKIV',
 		const pattern = 'SNN. YY  FFFF B  DDDDD PPPTTT';
-		const symbols = php.str_split(pattern, 1);
-		const names = php.array_combine(symbols, symbols);
-		const split = StringUtil.splitByPosition(line, pattern, names, true);
+		const split = ParserUtil.splitByPosition(line, pattern, null, true);
 		const result = {
 			segmentNumber: php.trim(split['N'], ' .'),
 			airline: split['Y'],
@@ -46,7 +42,7 @@ class SiParser
 			bookingClass: split['B'],
 			departureDate: {
 				raw: split['D'],
-				parsed: CommonParserHelpers.parsePartialDate(split['D']),
+				parsed: ParserUtil.parsePartialDate(split['D']),
 			},
 			departureAirport: split['P'],
 			destinationAirport: split['T'],
@@ -64,9 +60,7 @@ class SiParser
 		//              '                          LANG PN 1  ONLY SPEAKS JAPANESE',
 		//              '                          VGML PN 1',
 		const pattern = '                          CCCC SS Q  MMMMMMMMMMMMMMMMMMMMMMMMMMM';
-		const symbols = php.str_split(pattern, 1);
-		const names = php.array_combine(symbols, symbols);
-		const split = StringUtil.splitByPosition(line, pattern, names, true);
+		const split = ParserUtil.splitByPosition(line, pattern, null, true);
 		const result = {
 			ssrCode: split['C'],
 			status: split['S'],
@@ -86,9 +80,7 @@ class SiParser
 		//              '                          WCHC NN 1  DISABLED LIKE A BUTTON ON -'.
 		//              '                                     SALE SCREEN',
 		const pattern = '                                     MMMMMMMMMMMMMMMMMMMMMMMMMMM';
-		const symbols = php.str_split(pattern, 1);
-		const names = php.array_combine(symbols, symbols);
-		const split = StringUtil.splitByPosition(line, pattern, names, false);
+		const split = ParserUtil.splitByPosition(line, pattern);
 		if (php.trim(split[' ']) === '' && php.trim(split['M'])) {
 			return split['M'];
 		} else {
@@ -97,12 +89,12 @@ class SiParser
 	}
 
 	/**
-     * @param $mainLine = '/R/LV/MASK 012345678 AVAS 315/RIGA//13245--'
-     * @param $wrappedLine = '1LIBERMANE/MARINA'
+     * @param mainLine = '/R/LV/MASK 012345678 AVAS 315/RIGA//13245--'
+     * @param wrappedLine = '1LIBERMANE/MARINA'
      */
-	static unwrap($mainLine, $wrappedLine)  {
+	static unwrap(mainLine, wrappedLine)  {
 
-		return php.preg_replace(/-$/, '', $mainLine)+$wrappedLine;
+		return php.preg_replace(/-$/, '', mainLine)+wrappedLine;
 	}
 
 	static parsePassengerLine(line)  {
@@ -116,19 +108,17 @@ class SiParser
 		if (!ssr) {
 			return null;
 		}
-		const $symbols = php.str_split(paxPattern, 1);
-		const $names = php.array_combine($symbols, $symbols);
-		const $split = StringUtil.splitByPosition(line, paxPattern, $names, true);
-		const $result = {
-			passengerNumber: $split['N'],
-			passengerName: $split['F'],
-			isNameTruncated: $split['|'] === '|',
+		const split = ParserUtil.splitByPosition(line, paxPattern, null, true);
+		const result = {
+			passengerNumber: split['N'],
+			passengerName: split['F'],
+			isNameTruncated: split['|'] === '|',
 			ssrs: [ssr],
 		};
-		if ($split['P'] === 'P' && $split[' '] === ''  &&
-            $split['.'] === '.' && php.intval($result['passengerNumber'])
+		if (split['P'] === 'P' && split[' '] === ''  &&
+            split['.'] === '.' && php.intval(result['passengerNumber'])
 		) {
-			return $result;
+			return result;
 		} else {
 			return null;
 		}
@@ -180,47 +170,43 @@ class SiParser
 	// '/////XXXXXXX/F//WILLIAMS/MARIAMA-1LIBERMANE/STAS',
 	// '/P/LV/X2345/LV/XXXXXXX/F/11MAR22/IVANOV/ZHORA/D /D/INVALID TEXT DATA-1LIBERMANE/LEPIN',
 	// '/ /  /     /  /XXXXXXX/F/       /WILLIA/MARIA-1LIBERMANE/STAS',
-	static parseDocsContent($content)  {
-		let $message, $_, $travelDocType, $issuingCountry, $travelDocNumber, $nationality, $dob, $genderAndI, $expirationDate, $lastName, $firstName, $middleName, $primaryPassportHolderToken;
+	static parseDocsContent(content)  {
+		let message, $_, travelDocType, issuingCountry, travelDocNumber, nationality, dob, genderAndI, expirationDate, lastName, firstName, middleName, primaryPassportHolderToken;
 
-		[$content, $message] = php.array_pad(php.preg_split(/\s+/, $content), 2, '');
-		[$_, $travelDocType, $issuingCountry, $travelDocNumber, $nationality, $dob, $genderAndI, $expirationDate, $lastName, $firstName, $middleName, $primaryPassportHolderToken] = php.array_pad(php.explode('/', $content), 12, '');
+		[content, message] = php.array_pad(php.preg_split(/\s+/, content), 2, '');
+		[$_, travelDocType, issuingCountry, travelDocNumber, nationality, dob, genderAndI, expirationDate, lastName, firstName, middleName, primaryPassportHolderToken] = php.array_pad(php.explode('/', content), 12, '');
 
 		return {
-			travelDocType: $travelDocType,
-			issuingCountry: $issuingCountry,
-			travelDocNumber: $travelDocNumber,
-			nationality: $nationality,
-			dob: CommonParserHelpers.parsePastFullDate($dob),
-			gender: $genderAndI[0],
-			expirationDate: CommonParserHelpers.parseCurrentCenturyFullDate($expirationDate),
-			lastName: $lastName,
-			firstName: $firstName,
-			middleName: $middleName,
-			primaryPassportHolderToken: $primaryPassportHolderToken,  // Optional
-			paxIsInfant: ($genderAndI[1]) === 'I',
-			message: $message,
+			travelDocType: travelDocType,
+			issuingCountry: issuingCountry,
+			travelDocNumber: travelDocNumber,
+			nationality: nationality,
+			dob: ParserUtil.parsePastFullDate(dob),
+			gender: genderAndI[0],
+			expirationDate: ParserUtil.parse2kDate(expirationDate),
+			lastName: lastName,
+			firstName: firstName,
+			middleName: middleName,
+			primaryPassportHolderToken: primaryPassportHolderToken,  // Optional
+			paxIsInfant: (genderAndI[1]) === 'I',
+			message: message,
 		};
 	}
 
-	static parseSsrContent($ssrCode, $content)  {
-		let $matches, $_, $pnrPaxName, $data;
-
-		if (php.preg_match(/^(.*)-1([A-Z][^\/]*\/[A-Z][^\/]*)$/, $content, $matches = [])) {
-			[$_, $content, $pnrPaxName] = $matches;
+	static parseSsrContent(ssrCode, content)  {
+		let matches, pnrPaxName;
+		if (php.preg_match(/^(.*)-1([A-Z][^\/]*\/[A-Z][^\/]*)$/, content, matches = [])) {
+			[, content, pnrPaxName] = matches;
 		} else {
-			$pnrPaxName = null;
+			pnrPaxName = null;
 		}
-		if ($ssrCode === 'DOCS') {
-			$data = this.parseDocsContent($content);
+		let data;
+		if (ssrCode === 'DOCS') {
+			data = this.parseDocsContent(content);
 		} else {
-			$data = null;
+			data = null;
 		}
-		return {
-			content: $content,
-			pnrPaxName: $pnrPaxName,
-			data: $data,
-		};
+		return {content, pnrPaxName, data};
 	}
 
 	// '  1. YY  1CHD SHIELDS/BMISS AGED 6YRS',
@@ -250,10 +236,10 @@ class SiParser
 	// '  3. SSRCHLDDL NO  1 /-1SMITH/JOHN.INVLD FORMAT',
 	// '  3. SSRDOCSPS HK  1 /P/LV/X2345/LV/XXXXXXX/F/11MAR22/IVANOV/ZH-'.
 	// '                     ORA/D/D-1LIBERMANE/LEPIN',
-	static parseOtherSsrLine($line)  {
-		let $regex, $matches;
+	static parseOtherSsrLine(line)  {
+		let regex, matches;
 
-		$regex =
+		regex =
             '/^\\s*'+
             '(?<lineNumber>\\d+)\\.\\s+SSR'+
             '(?<ssrCode>[A-Z]{4})\\s*'+
@@ -262,14 +248,14 @@ class SiParser
             '(?<statusNumber>\\d*)\\s*'+
             '(?<content>\\S.*?)'+
             '\\s*$/';
-		if (php.preg_match($regex, $line, $matches = [])) {
+		if (php.preg_match(regex, line, matches = [])) {
 			return {
-				lineNumber: $matches['lineNumber'],
-				ssrCode: $matches['ssrCode'],
-				airline: $matches['airline'],
-				status: $matches['status'],
-				statusNumber: $matches['statusNumber'],
-				content: $matches['content'],
+				lineNumber: matches['lineNumber'],
+				ssrCode: matches['ssrCode'],
+				airline: matches['airline'],
+				status: matches['status'],
+				statusNumber: matches['statusNumber'],
+				content: matches['content'],
 			};
 		} else {
 			return null;
@@ -289,10 +275,10 @@ class SiParser
 		let line;
 		while (line = php.array_shift(linesLeft)) {
 			const ssr = this.parseOsiLine(line) || this.parseOtherSsrLine(line);
-			if (ssrs && StringUtil.startsWith(line, ssrIndent)) {
+			if (ssrs && line.startsWith(ssrIndent)) {
 				ssrs[php.count(ssrs) - 1].content = this.unwrap(ssrs[php.count(ssrs) - 1].content,
 					php.substr(line, php.strlen(ssrIndent)));
-			} else if (ssrs && StringUtil.startsWith(line, osiIndent)) {
+			} else if (ssrs && line.startsWith(osiIndent)) {
 				ssrs[php.count(ssrs) - 1].content = this.unwrap(ssrs[php.count(ssrs) - 1].content,
 					php.substr(line, php.strlen(osiIndent)));
 			} else if (ssr) {
@@ -306,18 +292,15 @@ class SiParser
 			const parsed = this.parseSsrContent(ssr.ssrCode, ssr.content);
 			ssr.content = parsed.content;
 			ssr.data = parsed.data;
-			if (parsed.pnrPaxName) {
-				ssr.data = ssr.data || {};
-				ssr.data.pnrPaxName = parsed.pnrPaxName;
-			}
+			ssr.pnrPaxName = parsed.pnrPaxName;
 			return ssr;
 		});
 		return [ssrs, linesLeft];
 	}
 
 	static parse(dump)  {
-		dump = StringUtil.wrapLinesAt(dump, 64);
-		let linesLeft = StringUtil.lines(dump);
+		dump = ParserUtil.wrapLinesAt(dump, 64);
+		let linesLeft = dump.split('\n');
 		let headerLine = php.array_shift(linesLeft);
 		let ssrSegments = [];
 		let otherSsrs = [];

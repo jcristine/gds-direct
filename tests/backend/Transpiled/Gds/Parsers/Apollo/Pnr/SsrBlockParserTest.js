@@ -37,8 +37,8 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 			'GFAX-SSROTHS1V  NOSHOW WILL RESULT IN ADM IF UNTKTD/BRUSN 04AUG'+php.PHP_EOL+
             '   2 SSRNSSWSNKK1JFKBRU0502Y10SEP.33K'+php.PHP_EOL,
 			[
-				{'lineNumber': 1,'airline': '1V','ssrCode': 'OTHS','data': null,'line': 'GFAX-SSROTHS1V  NOSHOW WILL RESULT IN ADM IF UNTKTD/BRUSN 04AUG'},
-				{'lineNumber': 2,'airline': 'SN','ssrCode': 'NSSW','data': null,'line': '   2 SSRNSSWSNKK1JFKBRU0502Y10SEP.33K'},
+				{'lineNumber': 1,'airline': '1V','ssrCode': 'OTHS','data': null,'content': '  NOSHOW WILL RESULT IN ADM IF UNTKTD/BRUSN 04AUG'},
+				{'lineNumber': 2,'airline': 'SN','ssrCode': 'NSSW','data': null,'content': 'JFKBRU0502Y10SEP.33K'},
 			]
 		]);
 
@@ -46,8 +46,8 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 			'GFAX-SSROTHS1V  NOSHOW WILL RESULT IN ADM IF UNTKTD/BRUSN 04AUG'+php.PHP_EOL+
             '   2 SSRNSSTSNKK1JFKBRU0502Y20SEP.20E',
 			[
-				{'lineNumber': 1,'airline': '1V','ssrCode': 'OTHS','data': null,'line': 'GFAX-SSROTHS1V  NOSHOW WILL RESULT IN ADM IF UNTKTD/BRUSN 04AUG'},
-				{'lineNumber': 2,'airline': 'SN','ssrCode': 'NSST','data': null,'line': '   2 SSRNSSTSNKK1JFKBRU0502Y20SEP.20E'},
+				{'lineNumber': 1,'airline': '1V','ssrCode': 'OTHS','data': null},
+				{'lineNumber': 2,'airline': 'SN','ssrCode': 'NSST','data': null},
 			]
 		]);
 
@@ -60,10 +60,10 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 				'   4 SSRNSSTSNKK1JFKBRU0502Y20SEP-1LIBERMANE/MARINA.021A'
 			]),
 			[
-				{'lineNumber': 1,'airline': '1V','ssrCode': 'OTHS','data': null,'line': 'GFAX-SSROTHS1V  NOSHOW WILL RESULT IN ADM IF UNTKTD/BRUSN 04AUG'},
-				{'lineNumber': 2,'airline': '1V','ssrCode': 'OTHS','data': null,'line': '   2 SSROTHS1V  MND SN DOES NOT OFFER SMOKING SEAT'},
-				{'lineNumber': 3,'airline': 'SN','ssrCode': 'SMSA','data': null,'line': '   3 SSRSMSASNNO1JFKBRU0502Y20SEP-1LIBERMANE/MARINA'},
-				{'lineNumber': 4,'airline': 'SN','ssrCode': 'NSST','data': null,'line': '   4 SSRNSSTSNKK1JFKBRU0502Y20SEP-1LIBERMANE/MARINA.021A'},
+				{'lineNumber': 1,'airline': '1V','ssrCode': 'OTHS','data': null},
+				{'lineNumber': 2,'airline': '1V','ssrCode': 'OTHS','data': null},
+				{'lineNumber': 3,'airline': 'SN','ssrCode': 'SMSA','data': null},
+				{'lineNumber': 4,'airline': 'SN','ssrCode': 'NSST','data': null},
 			]
 		]);
 
@@ -81,7 +81,7 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 				'   9 SSRNSSTBAKK1LAXLHR1509I20NOV.03J'
 			]),
 			[
-				{'lineNumber': 1,'airline': 'BA','ssrCode': 'FQTV','data': null,'line': 'GFAX-SSRFQTVBANO/BA0056322-BONAN/CHARLES.INVLD ACCT NUMBER'},
+				{'lineNumber': 1,'airline': 'BA','ssrCode': 'FQTV','data': null,'content': '/BA0056322-BONAN/CHARLES.INVLD ACCT NUMBER'},
 				{
 					'lineNumber': 2,
 					'airline': 'BA',
@@ -93,19 +93,19 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 						'firstName': 'CHARLES',
 						'paxNum': '1',
 						'paxIsInfant': false,
-						'pnrPaxName': 'BONAN/CHARLES',
 					},
-					'line': '   2 SSRDOCSBAHK1/////09SEP51/M//BONAN/CHARLES-1BONAN/CHARLES',
+					'pnrPaxName': 'BONAN/CHARLES',
+					'content': '/////09SEP51/M//BONAN/CHARLES',
 				},
 				{'lineNumber': 3,'airline': 'BA','ssrCode': 'TKNE','data': {
 
-				},'line': '   3 SSRTKNEBAHK01 BLQLHR 0541J 11JUL-1BONAN/CHARLES.1257408947052C1'},
-				{'lineNumber': 4,'airline': 'BA','ssrCode': 'TKNE','line': '   4 SSRTKNEBAHK01 LHRLAX 0269I 11JUL-1BONAN/CHARLES.1257408947052C2'},
-				{'lineNumber': 5,'airline': 'BA','ssrCode': 'TKNE','line': '   5 SSRTKNEBAHK01 LAXLHR 1509I 20NOV-1BONAN/CHARLES.1257408947052C3'},
-				{'lineNumber': 6,'airline': 'BA','ssrCode': 'TKNE','line': '   6 SSRTKNEBAHK01 LHRBLQ 0542J 21NOV-1BONAN/CHARLES.1257408947052C4'},
-				{'lineNumber': 7,'airline': 'BA','ssrCode': 'RQST','line': '   7 SSRRQSTBAHK1BLQLHR0541J11JUL.03DN'},
-				{'lineNumber': 8,'airline': 'BA','ssrCode': 'RQST','line': '   8 SSRRQSTBAHK1BLQLHR0541J11JUL.03DN'},
-				{'lineNumber': 9,'airline': 'BA','ssrCode': 'NSST','line': '   9 SSRNSSTBAKK1LAXLHR1509I20NOV.03J'},
+				},'content': ' BLQLHR 0541J 11JUL'},
+				{'lineNumber': 4,'airline': 'BA','ssrCode': 'TKNE','content': ' LHRLAX 0269I 11JUL'},
+				{'lineNumber': 5,'airline': 'BA','ssrCode': 'TKNE','content': ' LAXLHR 1509I 20NOV'},
+				{'lineNumber': 6,'airline': 'BA','ssrCode': 'TKNE','content': ' LHRBLQ 0542J 21NOV'},
+				{'lineNumber': 7,'airline': 'BA','ssrCode': 'RQST','content': 'BLQLHR0541J11JUL.03DN'},
+				{'lineNumber': 8,'airline': 'BA','ssrCode': 'RQST','content': 'BLQLHR0541J11JUL.03DN'},
+				{'lineNumber': 9,'airline': 'BA','ssrCode': 'NSST','content': 'LAXLHR1509I20NOV.03J'},
 			]
 		]);
 
@@ -130,10 +130,10 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 						'bookingClass': 'J',
 						'departureDate': {'raw': '11SEP','parsed': '09-11'},
 						'paxIsInfant': false,
-						'pnrPaxName': null,
 						'comment': null,
 					},
-					'line': 'GFAX-SSRKSMLLHNN01 FRAFLR 0314J 11SEP  ',
+					'pnrPaxName': null,
+					'content': ' FRAFLR 0314J 11SEP  ',
 				},
 				{
 					'lineNumber': 2,
@@ -149,10 +149,10 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 						'bookingClass': 'J',
 						'departureDate': {'raw': '11SEP','parsed': '09-11'},
 						'paxIsInfant': false,
-						'pnrPaxName': null,
 						'comment': null,
 					},
-					'line': '   2 SSRWCHRLHNN01 FRAFLR 0314J 11SEP',
+					'pnrPaxName': null,
+					'content': ' FRAFLR 0314J 11SEP',
 				},
 			]
 		]);
@@ -182,10 +182,10 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 						'bookingClass': 'Y',
 						'departureDate': {'raw': '10SEP','parsed': '09-10'},
 						'paxIsInfant': false,
-						'pnrPaxName': 'LIBERMANE/MARINA',
 						'comment': null,
 					},
-					'line': 'GFAX-SSRWCHRCXNN01 LHRHKG 0252Y 10SEP-1LIBERMANE/MARINA ',
+					'pnrPaxName': 'LIBERMANE/MARINA',
+					'content': ' LHRHKG 0252Y 10SEP',
 				},
 				{
 					'lineNumber': 2,
@@ -201,10 +201,10 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 						'bookingClass': 'J',
 						'departureDate': {'raw': '11SEP','parsed': '09-11'},
 						'paxIsInfant': false,
-						'pnrPaxName': 'LIBERMANE/MARINA',
 						'comment': null,
 					},
-					'line': '   2 SSRWCHRPRNN01 HKGMNL 0313J 11SEP-1LIBERMANE/MARINA ',
+					'pnrPaxName': 'LIBERMANE/MARINA',
+					'content': ' HKGMNL 0313J 11SEP',
 				},
 				{
 					'lineNumber': 3,
@@ -220,10 +220,10 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 						'bookingClass': 'Y',
 						'departureDate': {'raw': '10SEP','parsed': '09-10'},
 						'paxIsInfant': false,
-						'pnrPaxName': 'LIBERMANE/MARINA',
 						'comment': null,
 					},
-					'line': '   3 SSRKSMLCXKK01 LHRHKG 0252Y 10SEP-1LIBERMANE/MARINA ',
+					'pnrPaxName': 'LIBERMANE/MARINA',
+					'content': ' LHRHKG 0252Y 10SEP',
 				},
 				{
 					'lineNumber': 4,
@@ -239,10 +239,10 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 						'bookingClass': 'J',
 						'departureDate': {'raw': '11SEP','parsed': '09-11'},
 						'paxIsInfant': false,
-						'pnrPaxName': 'ZIMICH/ALEXANDER',
 						'comment': null,
 					},
-					'line': '   4 SSRBBMLPRNN01 HKGMNL 0313J 11SEP-1ZIMICH/ALEXANDER ',
+					'pnrPaxName': 'ZIMICH/ALEXANDER',
+					'content': ' HKGMNL 0313J 11SEP',
 				},
 				{
 					'lineNumber': 5,
@@ -258,10 +258,10 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 						'bookingClass': 'Y',
 						'departureDate': {'raw': '10SEP','parsed': '09-10'},
 						'paxIsInfant': false,
-						'pnrPaxName': 'ZIMICH/ALEXANDER',
 						'comment': null,
 					},
-					'line': '   5 SSRDEAFCXNN01 LHRHKG 0252Y 10SEP-1ZIMICH/ALEXANDER ',
+					'pnrPaxName': 'ZIMICH/ALEXANDER',
+					'content': ' LHRHKG 0252Y 10SEP',
 				},
 				{
 					'lineNumber': 6,
@@ -277,10 +277,10 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 						'bookingClass': 'J',
 						'departureDate': {'raw': '11SEP','parsed': '09-11'},
 						'paxIsInfant': false,
-						'pnrPaxName': 'ZIMICH/ALEXANDER',
 						'comment': null,
 					},
-					'line': '   6 SSRDEAFPRNN01 HKGMNL 0313J 11SEP-1ZIMICH/ALEXANDER',
+					'pnrPaxName': 'ZIMICH/ALEXANDER',
+					'content': ' HKGMNL 0313J 11SEP',
 				},
 			]
 		]);
@@ -333,8 +333,8 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 				'  21 SSRWCHSUAKK01 NRTORD 7926K 07MAR-1ACLO/DEODORO C.PAX CANT WALK ON HIS OWN ESPECIALLY IN LONG DISTANCES/PAX CANT WALK ON HISOWNESPECIAL',
 			]),
 			[
-				{'lineNumber': 16, 'ssrCode': 'TKNE', 'data': {
-					'pnrPaxName': 'ARCE/MARIAPAZ',
+				{'lineNumber': 16, 'ssrCode': 'TKNE', 'pnrPaxName': 'ARCE/MARIAPAZ','data': {
+
 					'ticketNumber': '0167827230576',
 					'couponNumber': '1',
 					'unparsed': '/575-576',
@@ -450,31 +450,29 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 				{'lineNumber': 1, 'airline': '1V', 'ssrCode': 'OTHS'},
 				{'lineNumber': 2, 'airline': '1V', 'ssrCode': 'OTHS'},
 				{'lineNumber': 3, 'airline': '1V', 'ssrCode': 'OTHS'},
-				{'lineNumber': 4, 'airline': 'ET', 'ssrCode': 'DOCS',
-					'data': {'pnrPaxName': 'MARFO/JOHN K'},
-				},
+				{'lineNumber': 4, 'airline': 'ET', 'ssrCode': 'DOCS', 'pnrPaxName': 'MARFO/JOHN K'},
 				{'lineNumber': 5, 'airline': 'ET', 'ssrCode': 'CTCE'},
 				{'lineNumber': 6, 'airline': 'ET', 'ssrCode': 'CTCM'},
 				{'lineNumber': 7, 'airline': 'ET', 'ssrCode': 'WCHR',
-					'data': {'pnrPaxName': 'MARFO/JOHN K'},
+					'pnrPaxName': 'MARFO/JOHN K',
 				},
 				{'lineNumber': 8, 'airline': 'ET', 'ssrCode': 'WCHR',
-					'data': {'pnrPaxName': 'MARFO/JOHN K'},
+					'pnrPaxName': 'MARFO/JOHN K',
 				},
 				{'lineNumber': 9, 'airline': 'ET', 'ssrCode': 'WCHR',
-					'data': {'pnrPaxName': 'MARFO/JOHN K'},
+					'pnrPaxName': 'MARFO/JOHN K',
 				},
 				{'lineNumber': 10, 'airline': 'ET', 'ssrCode': 'WCHR',
-					'data': {'pnrPaxName': 'MARFO/JOHN K'},
+					'pnrPaxName': 'MARFO/JOHN K',
 				},
 				{'lineNumber': 11, 'airline': 'ET', 'ssrCode': 'NLML',
-					'data': {'pnrPaxName': 'MARFO/JOHN K'},
+					'pnrPaxName': 'MARFO/JOHN K',
 				},
 				{'lineNumber': 12, 'airline': 'ET', 'ssrCode': 'NLML',
-					'data': {'pnrPaxName': 'MARFO/JOHN K'},
+					'pnrPaxName': 'MARFO/JOHN K',
 				},
 				{'lineNumber': 13, 'airline': 'ET', 'ssrCode': 'NLML',
-					'data': {'pnrPaxName': 'MARFO/JOHN K'},
+					'pnrPaxName': 'MARFO/JOHN K',
 				},
 				{'lineNumber': 14, 'airline': 'ET', 'ssrCode': 'NLML',
 					'data': {
@@ -486,8 +484,8 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 						'bookingClass': 'L',
 						'departureDate': {'raw': '28JAN','parsed': '01-28'},
 						'paxIsInfant': false,
-						'pnrPaxName': 'MARFO/JOHN K',
 					},
+					'pnrPaxName': 'MARFO/JOHN K',
 				},
 				{'lineNumber': 15, 'airline': 'ET', 'ssrCode': 'TKNE'},
 				{'lineNumber': 16, 'airline': 'ET', 'ssrCode': 'TKNE'},
@@ -526,9 +524,9 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 						'bookingClass': 'L',
 						'departureDate': {'raw': '28JAN','parsed': '01-28'},
 						'paxIsInfant': false,
-						'pnrPaxName': null,
 						'comment': null,
 					},
+					'pnrPaxName': null,
 				},
 			],
 		]);
@@ -560,8 +558,8 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 						'lastName': 'KUHNELL',
 						'firstName': 'MICHAEL',
 						'middleName': 'ANDREW',
-						'pnrPaxName': 'KUHNELL/MICHAEL ANDREW',
 					},
+					'pnrPaxName': 'KUHNELL/MICHAEL ANDREW',
 				},
 				{'lineNumber': 2,'airline': 'DL','ssrCode': 'DOCS','content': '/////01JAN13/F//KUHNELL/MERET/ELISABETH',
 					'data': {
@@ -570,8 +568,8 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 						'lastName': 'KUHNELL',
 						'firstName': 'MERET',
 						'middleName': 'ELISABETH',
-						'pnrPaxName': 'KUHNELL/MERET ELISABETH',
 					},
+					'pnrPaxName': 'KUHNELL/MERET ELISABETH',
 				},
 				{'lineNumber': 3,'airline': '1V','ssrCode': 'ADTK','content': 'BY 03JUN 2359 SFO OTHERWISE MAY BE XLD'},
 				{'lineNumber': 4,'airline': '1V','ssrCode': 'ADTK','content': 'BY 03JUN FARE MAY NEED EARLIER TKT DTE'},
@@ -620,77 +618,75 @@ class SsrBlockParserTest extends require('klesun-node-tools/src/Transpiled/Lib/T
 					'flightNumber': '0007',
 					'bookingClass': 'L',
 					'departureDate': {'raw': '18SEP'},
-					'pnrPaxName': 'VILLANUEVAJR/',
 					'ticketNumber': '2977192902769',
 					'couponNumber': '1',
-				}},
-				{'lineNumber': 8,'airline': 'CI','ssrCode': 'TKNE','data': {
+				}, 'pnrPaxName': 'VILLANUEVAJR/'},
+				{'lineNumber': 8,'airline': 'CI','ssrCode': 'TKNE','pnrPaxName': 'PASCUAL/AMELI','data': {
 					'departureAirport': 'LAX',
 					'destinationAirport': 'TPE',
 					'flightNumber': '0007',
 					'bookingClass': 'L',
 					'departureDate': {'raw': '18SEP'},
-					'pnrPaxName': 'PASCUAL/AMELI',
 					'ticketNumber': '2977192902770',
 					'couponNumber': '1',
 				}},
-				{'lineNumber': 9,'airline': 'CI','ssrCode': 'TKNE','data': {
+				{'lineNumber': 9,'airline': 'CI','ssrCode': 'TKNE','pnrPaxName': 'VILLANUEVAJR/','data': {
 					'departureAirport': 'TPE',
 					'destinationAirport': 'MNL',
 					'flightNumber': '0701',
 					'bookingClass': 'L',
 					'departureDate': {'raw': '19SEP'},
-					'pnrPaxName': 'VILLANUEVAJR/',
+
 					'ticketNumber': '2977192902769',
 					'couponNumber': '2',
 				}},
-				{'lineNumber': 10,'airline': 'CI','ssrCode': 'TKNE','data': {
+				{'lineNumber': 10,'airline': 'CI','ssrCode': 'TKNE','pnrPaxName': 'PASCUAL/AMELI','data': {
 					'departureAirport': 'TPE',
 					'destinationAirport': 'MNL',
 					'flightNumber': '0701',
 					'bookingClass': 'L',
 					'departureDate': {'raw': '19SEP'},
-					'pnrPaxName': 'PASCUAL/AMELI',
+
 					'ticketNumber': '2977192902770',
 					'couponNumber': '2',
 				}},
-				{'lineNumber': 11,'airline': 'CI','ssrCode': 'TKNE','data': {
+				{'lineNumber': 11,'airline': 'CI','ssrCode': 'TKNE','pnrPaxName': 'VILLANUEVAJR/','data': {
 					'departureAirport': 'MNL',
 					'destinationAirport': 'TPE',
 					'flightNumber': '0704',
 					'bookingClass': 'L',
 					'departureDate': {'raw': '25SEP'},
-					'pnrPaxName': 'VILLANUEVAJR/',
+
 					'ticketNumber': '2977192902769',
 					'couponNumber': '3',
 				}},
-				{'lineNumber': 12,'airline': 'CI','ssrCode': 'TKNE','data': {
+				{'lineNumber': 12,'airline': 'CI','ssrCode': 'TKNE','pnrPaxName': 'PASCUAL/AMELI','data': {
 					'departureAirport': 'MNL',
 					'destinationAirport': 'TPE',
 					'flightNumber': '0704',
 					'bookingClass': 'L',
 					'departureDate': {'raw': '25SEP'},
-					'pnrPaxName': 'PASCUAL/AMELI',
+
 					'ticketNumber': '2977192902770',
 					'couponNumber': '3',
 				}},
-				{'lineNumber': 13,'airline': 'CI','ssrCode': 'TKNE','data': {
+				{'lineNumber': 13,'airline': 'CI','ssrCode': 'TKNE','pnrPaxName': 'VILLANUEVAJR/','data': {
 					'departureAirport': 'TPE',
 					'destinationAirport': 'LAX',
 					'flightNumber': '0008',
 					'bookingClass': 'L',
 					'departureDate': {'raw': '25SEP'},
-					'pnrPaxName': 'VILLANUEVAJR/',
+
 					'ticketNumber': '2977192902769',
 					'couponNumber': '4',
 				}},
-				{'lineNumber': 14,'airline': 'CI','ssrCode': 'TKNE','data': {
+				{'lineNumber': 14,'airline': 'CI','ssrCode': 'TKNE','pnrPaxName': 'PASCUAL/AMELI','data': {
 					'departureAirport': 'TPE',
 					'destinationAirport': 'LAX',
 					'flightNumber': '0008',
 					'bookingClass': 'L',
 					'departureDate': {'raw': '25SEP'},
-					'pnrPaxName': 'PASCUAL/AMELI',
+
 					'ticketNumber': '2977192902770',
 					'couponNumber': '4',
 				}},

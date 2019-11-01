@@ -1,4 +1,4 @@
-const GetSsrDocs = require('../Actions/GetDocSsrList.js');
+const ImportPnr = require('../Actions/ImportPnr.js');
 const FluentLogger = require('../LibWrappers/FluentLogger.js');
 const GetCurrentPnr = require('../Actions/GetCurrentPnr.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
@@ -208,10 +208,11 @@ exports.getCurrentPnr = async ({rqBody, ...controllerData}) => {
 	const stateful = await StatefulSession.makeFromDb(controllerData);
 	const pnr = await GetCurrentPnr(stateful);
 	const reservation = pnr.getReservation(stateful.getStartDt());
-	const docSsrList = await GetSsrDocs({pnr, stateful});
+	const {pnrFields} = await ImportPnr({pnr, stateful});
 	return {
 		reservation,
-		docSsrList,
+		docSsrList: pnrFields.docSsrList,
+		serviceSsrList: pnrFields.serviceSsrList,
 	};
 };
 

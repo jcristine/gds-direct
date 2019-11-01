@@ -66,7 +66,6 @@ const paxToTsaTrCmp = (pax, paxes, ssrs) => {
 	]);
 };
 
-
 /**
  * note, all GDS-es except for Apollo allow joining them all into one
  * through "|", "§", ";" in Galileo, Sabre and Amadeus respectively
@@ -113,26 +112,6 @@ const tsaTrToData = (tr) => {
 	};
 };
 
-const cancelOldSsrs = (deleteSsrs, gds) => {
-	if (deleteSsrs.length > 0) {
-		const nums = deleteSsrs.map(ssr => ssr.lineNumber);
-		const cmd = {
-			apollo: 'C:' + nums.join('*') + '@:3',
-			// cancel SSR-s from end so following line numbers were not affected
-			sabre: deleteSsrs
-				.sort((a,b) => b.lineNumber - a.lineNumber)
-				.map(ssr => (ssr.isForAmericanAirlines ? '4' : '3') + ssr.lineNumber + '¤')
-				.join('§'),
-			// not sure if in galileo should be sorted backwards as well...
-			galileo: nums
-				.map(n => 'SI.' + n + '@')
-				.join('|'),
-			amadeus: 'XE' + nums.join(','),
-		}[gds];
-		DEV_CMD_STACK_RUN(cmd);
-	}
-};
-
 const TsaForm = ({close}) => {
 	const tbodyCmp = Cmp('tbody');
 	const dom = Cmp('form', {onsubmit: (e) => {
@@ -143,7 +122,7 @@ const TsaForm = ({close}) => {
 		const dataRecords = [...tbodyCmp.context.querySelectorAll(':scope > tr')]
 			.map(tsaTrToData);
 		const deleteSsrs = dataRecords.flatMap(rec => rec.oldSsrs);
-		cancelOldSsrs(deleteSsrs, gds);
+		SsrHelper().cancelOldSsrs(deleteSsrs, gds);
 		let changed = false;
 		for (const tsaData of dataRecords) {
 			deleteSsrs.push(...tsaData.oldSsrs);
@@ -153,13 +132,13 @@ const TsaForm = ({close}) => {
 				changed = true;
 			}
 		}
-		if (changed && deleteSsrs.length === 0) {
+		if (changed || deleteSsrs.length === 0) {
 			SsrHelper().saveChanges(gds);
 		}
 		close();
 		return false; // no page reload
 	}}).attach([
-		Cmp('table.tsa-data').attach([
+		Cmp('table').attach([
 			Cmp('thead').attach([
 				Cmp('tr').attach([
 					Cmp('th[#]'),
@@ -176,7 +155,7 @@ const TsaForm = ({close}) => {
 		Cmp('div', {style: 'text-align: right'}).attach([
 			Cmp('button[Save]'),
 		]),
-	]);
+	]).context;
 
 	const updateBlock = (paxes, docSsrs) => {
 		tbodyCmp.context.innerHTML = '';
@@ -192,14 +171,10 @@ const TsaForm = ({close}) => {
 		}));
 	};
 
-	const main = () => {
-		return {
-			dom,
-			updateBlock,
-		};
+	return {
+		dom,
+		updateBlock,
 	};
-
-	return main();
 };
 
 export default TsaForm;

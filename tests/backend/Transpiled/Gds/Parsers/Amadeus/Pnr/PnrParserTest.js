@@ -92,7 +92,6 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 					'ssrData': [
 						{
 							'lineNumber': '7',
-							'type': 'SSR',
 							'ssrCode': 'DOCS',
 							'airline': 'PR',
 							'status': 'HK',
@@ -116,11 +115,9 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 								'lastName': 'CASTRO',
 								'firstName': 'ADELFAMONTANO',
 							},
-							'line': '  7 SSR DOCS PR HK1 ////01FEB46/F//CASTRO/ADELFAMONTANO',
 						},
 						{
 							'lineNumber': '8',
-							'type': 'SSR',
 							'ssrCode': 'FQTV',
 							'airline': 'PR',
 							'status': 'HK',
@@ -130,11 +127,9 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 								'airline': 'PR',
 								'flyerNumber': '203833593',
 							},
-							'line': '  8 SSR FQTV PR HK1 PR203833593',
 						},
 						{
 							'lineNumber': '33',
-							'type': 'SSR',
 							'ssrCode': 'FQTV',
 							'airline': 'PR',
 							'status': 'HK',
@@ -144,7 +139,6 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 								'airline': 'PS',
 								'flyerNumber': '1005775190',
 							},
-							'line': ' 33 SSR FQTV PR HK/ PS1005775190/3',
 						},
 					],
 					'mcoRecords': [
@@ -952,9 +946,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 					],
 					'ssrData': [
 						{
-							'line': '  8 SSR DOCS QR HK1 ////23MAY76/M//HABTEMARIAM/BINYAM',
 							'lineNumber': '8',
-							'type': 'SSR',
 							'ssrCode': 'DOCS',
 							'airline': 'QR',
 							'status': 'HK',
@@ -979,9 +971,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							},
 						},
 						{
-							'line': '  9 SSR DOCS QR HK1 P/USA/498670229/USA/23MAY76/M/07AUG22/HABTEMARIAM/BINYAM MEKONNEN',
 							'lineNumber': '9',
-							'type': 'SSR',
 							'ssrCode': 'DOCS',
 							'airline': 'QR',
 							'status': 'HK',
@@ -1006,9 +996,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							},
 						},
 						{
-							'line': ' 10 SSR DOCS QR HK1 P/USA/498670229/USA/23MAY76/M/07AUG22/HABTEMARIAM/BINYAM MEKONNEN/S2',
 							'lineNumber': '10',
-							'type': 'SSR',
 							'ssrCode': 'DOCS',
 							'airline': 'QR',
 							'status': 'HK',
@@ -1030,13 +1018,11 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 								},
 								'lastName': 'HABTEMARIAM',
 								'firstName': 'BINYAM MEKONNEN',
-								'segNum': '2',
 							},
+							'segNums': ['2'],
 						},
 						{
-							'line': ' 11 SSR DOCS QR HK1 P/USA/498670229/USA/23MAY76/M/07AUG22/HABTEMARIAM/BINYAM MEKONNEN/S3',
 							'lineNumber': '11',
-							'type': 'SSR',
 							'ssrCode': 'DOCS',
 							'airline': 'QR',
 							'status': 'HK',
@@ -1058,8 +1044,8 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 								},
 								'lastName': 'HABTEMARIAM',
 								'firstName': 'BINYAM MEKONNEN',
-								'segNum': '3',
 							},
+							'segNums': ['3'],
 						},
 					],
 					'formOfPayment': [
@@ -2163,7 +2149,6 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 						},
 						{
 							'lineNumber': '9',
-							'type': 'SSR',
 							'ssrCode': 'NSST',
 							'airline': 'EK',
 							'status': 'KK',
@@ -2172,7 +2157,6 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 						},
 						{
 							'lineNumber': '10',
-							'type': 'SSR',
 							'ssrCode': 'NSST',
 							'airline': 'EK',
 							'status': 'KK',
@@ -2181,7 +2165,6 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 						},
 						{
 							'lineNumber': '11',
-							'type': 'SSR',
 							'ssrCode': 'NSST',
 							'airline': 'EK',
 							'status': 'KK',
@@ -2190,7 +2173,6 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 						},
 						{
 							'lineNumber': '12',
-							'type': 'SSR',
 							'ssrCode': 'DOCS',
 							'airline': 'EK',
 							'status': 'HK',
