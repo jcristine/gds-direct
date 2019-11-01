@@ -199,16 +199,15 @@ const execute = ({
 	};
 
 	const makeAddDkNumberCmdIfNeeded = async (cmdLog) => {
-		let sessionData, number, flatCmd;
-
-		sessionData = cmdLog.getSessionData();
+		const sessionData = cmdLog.getSessionData();
 		if (sessionData.isPnrStored) {
 			return null;
 		}
-		if (!(number = await getDkNumber(sessionData.pcc))) {
+		const number = await getDkNumber(sessionData.pcc);
+		if (!number) {
 			return null;
 		}
-		for (flatCmd of Object.values(getPerformedCommands(cmdLog))) {
+		for (const flatCmd of await getPerformedCommands(cmdLog)) {
 			if (flatCmd.type === 'addDkNumber' && flatCmd.data == number) {
 				// already added DK number
 				return null;
