@@ -77,7 +77,10 @@ const getAmadeusNameNumber = (ssr, pnr) => {
 const isDocSsr = ssr => ['DOCS', 'DOCA', 'DOCO'].includes(ssr.ssrCode);
 const isServiceSsr = ssr => !isDocSsr(ssr);
 
-/** @param {IPnr|ApolloPnr|AmadeusPnr} pnr */
+/**
+ * @param {IPnr|ApolloPnr|AmadeusPnr} pnr
+ * @param stateful = require('StatefulSession.js')()
+ */
 const ImportPnr = ({pnr, stateful}) => {
 	const getPnrFields = async () => {
 		const gds = pnr.getGdsName();
@@ -125,8 +128,13 @@ const ImportPnr = ({pnr, stateful}) => {
 
 	const main = async () => {
 		const pnrFields = await getPnrFields();
-		const isDoc = ssr => ['DOCS', 'DOCA', 'DOCO']
-			.includes(ssr.ssrCode);
+		pnrFields.serviceSsrList.data.forEach(ssr => {
+			if (ssr.ssrCode === 'CTCM') {
+				if (!stateful.getAgent().canSeeContactInfo()) {
+					ssr.content = ssr.content.replace(/.(?=\d{3})/g, '*');
+				}
+			}
+		});
 		return {pnrFields};
 	};
 

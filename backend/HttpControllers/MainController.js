@@ -11,7 +11,7 @@ const FluentLogger = require('../LibWrappers/FluentLogger.js');
 const Config = require('../Config.js');
 const Agents = require("../Repositories/Agents");
 const Agent = require('../DataFormats/Wrappers/Agent.js');
-const MaskUtil = require("../Transpiled/Lib/Utils/MaskUtil");
+const MaskUtil = require("../Transpiled/Lib/Utils/MaskingUtil");
 const {HttpUtil} = require('klesun-node-tools');
 const {jsExport} = require('klesun-node-tools/src/Utils/Misc.js');
 

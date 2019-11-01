@@ -1,5 +1,5 @@
 const Misc = require('klesun-node-tools/src/Utils/Misc.js');
-const MaskUtil = require("../Transpiled/Lib/Utils/MaskUtil");
+const MaskUtil = require("../Transpiled/Lib/Utils/MaskingUtil");
 const Rej = require('klesun-node-tools/src/Rej.js');
 
 exports.withLog = (session, log) => {

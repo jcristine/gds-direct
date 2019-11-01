@@ -1,4 +1,4 @@
-const MaskUtil = require('../Transpiled/Lib/Utils/MaskUtil.js');
+const MaskUtil = require('../Transpiled/Lib/Utils/MaskingUtil.js');
 const Agent = require('../DataFormats/Wrappers/Agent.js');
 const MultiLevelMap = require('../Utils/MultiLevelMap.js');
 const Db = require('../Utils/Db.js');

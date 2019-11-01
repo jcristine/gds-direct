@@ -4,7 +4,7 @@
 const Fp = require('../../Lib/Utils/Fp.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
-class MaskUtil {
+class MaskingUtil {
 	static maskCcNumbers($data, $showDigits = 4) {
 		const internal = ($data) => {
 			if (php.is_array($data)) {
@@ -44,4 +44,4 @@ class MaskUtil {
 	}
 }
 
-module.exports = MaskUtil;
+module.exports = MaskingUtil;

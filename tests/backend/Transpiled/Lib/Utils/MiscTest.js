@@ -1,4 +1,4 @@
-const Misc = require("../../../../../backend/Transpiled/Lib/Utils/MaskUtil.js");
+const Misc = require("../../../../../backend/Transpiled/Lib/Utils/MaskingUtil.js");
 
 const TestCase = require('klesun-node-tools/src/Transpiled/Lib/TestCase.js');
 

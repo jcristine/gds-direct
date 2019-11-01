@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const GdsSessions = require('../Repositories/GdsSessions.js');
 const GdsProfiles = require('../Repositories/GdsProfiles.js');
 const {TRAVELPORT, AMADEUS, SABRE} = GdsProfiles;
-const MaskUtil = require('../Transpiled/Lib/Utils/MaskUtil.js');
+const MaskUtil = require('../Transpiled/Lib/Utils/MaskingUtil.js');
 const FluentLogger = require('../LibWrappers/FluentLogger.js');
 
 const AmadeusClient = require("../GdsClients/AmadeusClient.js");
