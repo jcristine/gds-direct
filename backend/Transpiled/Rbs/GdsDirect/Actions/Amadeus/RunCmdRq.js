@@ -417,9 +417,9 @@ const execute = ({
 			}
 		}
 		bookItinerary = itinerary.map((segment) => {
-			const cls = !php.in_array(segment.segmentStatus, PASSIVE_STATUSES)
-				? 'Y' : segment.bookingClass;
-			return {...segment, bookingClass: cls};
+			const isPassive = PASSIVE_STATUSES.includes(segment.segmentStatus);
+			const bookingClass = !isPassive ? 'Y' : segment.bookingClass;
+			return {...segment, bookingClass};
 		});
 
 		result = await (new AmadeusBuildItineraryAction())

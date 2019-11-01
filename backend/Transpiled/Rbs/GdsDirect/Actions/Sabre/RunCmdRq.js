@@ -572,8 +572,13 @@ const execute = ({
 		if (itinerary.length > 0) {
 			itinerary = itinerary.map((s, i) => ({...s,
 				segmentNumber: +i + 1,
-				segmentStatus: s.airline === 'AA' && s.segmentStatus === 'GK'
-					? BookViaGk_sabre.AA_PASSIVE_STATUS : s.segmentStatus,
+				segmentStatus: {
+					'GK': s.airline !== 'AA' ? 'GK' :
+						BookViaGk_sabre.AA_PASSIVE_STATUS,
+					'HK': 'SS', // from stored PNR
+					'DK': 'SS', // amadeus
+					'HS': 'SS', // galileo
+				}[s.segmentStatus] || s.segmentStatus,
 			}));
 			const booked = await bookItinerary(itinerary, true)
 				.catch(coverExc([Rej.UnprocessableEntity], exc => {
