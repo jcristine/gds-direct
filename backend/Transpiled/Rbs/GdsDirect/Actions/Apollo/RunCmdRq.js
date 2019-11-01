@@ -379,6 +379,7 @@ const RunCmdRq = ({
 					'DK': 'SS', // amadeus
 					'AK': 'GK', // galileo
 					'HS': 'SS', // galileo
+					'HK': 'SS', // airline does not add star when you book with HK status
 				}[s.segmentStatus] || s.segmentStatus,
 			}));
 			const prevState = getSessionData();
