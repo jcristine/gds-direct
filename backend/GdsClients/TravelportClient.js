@@ -158,7 +158,13 @@ const TravelportClient = ({
 		return sendRequest(body, profileName).then(resp => {
 			const resultTag = parseXml(resp).querySelectorAll('SubmitTerminalTransactionResult')[0];
 			if (resultTag) {
-				return {output: resultTag.textContent};
+				const output = resultTag.textContent;
+				if (['TIME EXPIRED SIGNED-OFF - APOLLO\\n', 'SIGN IN\n><'].includes(output)) {
+					// when session lives for nearly a day, travelport would sometimes log you
+					// out of PCC, and logging back is not possible from WS terminal AFAIK
+					return LoginTimeOut('Logged out of PCC - ' + output, {isOk: false});
+				}
+				return {output: output};
 			} else {
 				return BadGateway('Unexpected Travelport response format - ' + resp);
 			}
