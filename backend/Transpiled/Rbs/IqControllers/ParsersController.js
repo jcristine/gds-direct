@@ -1,7 +1,7 @@
 
 const ApoPnrParser = require('gds-utils/src/text_format_processing/apollo/pnr/PnrParser.js');
 const SabPnrParser = require('../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
-const GalPnrParser = require("../../Gds/Parsers/Galileo/Pnr/PnrParser");
+const GalPnrParser = require("gds-utils/src/text_format_processing/galileo/pnr/PnrParser");
 const AmaPnrParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
 const FormatAdapter = require("./FormatAdapter");
 

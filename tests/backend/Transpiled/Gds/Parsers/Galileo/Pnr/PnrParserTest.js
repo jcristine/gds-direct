@@ -1,7 +1,7 @@
 
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const PnrParser = require("../../../../../../../backend/Transpiled/Gds/Parsers/Galileo/Pnr/PnrParser");
+const PnrParser = require("gds-utils/src/text_format_processing/galileo/pnr/PnrParser");
 
 class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideTestCases() {

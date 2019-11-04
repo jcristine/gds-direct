@@ -3,7 +3,7 @@ const GalileoPnrCommonFormatAdapter = require('../FormatAdapters/GalileoPnrCommo
 
 const DateTime = require('../../Lib/Utils/DateTime.js');
 const StringUtil = require('../../Lib/Utils/StringUtil.js');
-const PnrParser = require('../../Gds/Parsers/Galileo/Pnr/PnrParser.js');
+const PnrParser = require('gds-utils/src/text_format_processing/galileo/pnr/PnrParser.js');
 const ItineraryParser = require('gds-utils/src/text_format_processing/galileo/pnr/ItineraryParser.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');

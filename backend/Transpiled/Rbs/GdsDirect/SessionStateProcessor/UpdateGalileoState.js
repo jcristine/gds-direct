@@ -5,7 +5,7 @@ const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const GalileoBuildItineraryAction = require('../../../Rbs/GdsAction/GalileoBuildItineraryAction.js');
 const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const CommandParser = require('gds-utils/src/text_format_processing/galileo/commands/CmdParser.js');
-const PnrParser = require('../../../Gds/Parsers/Galileo/Pnr/PnrParser.js');
+const PnrParser = require('gds-utils/src/text_format_processing/galileo/pnr/PnrParser.js');
 const GalileoPnr = require('../../../Rbs/TravelDs/GalileoPnr.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');

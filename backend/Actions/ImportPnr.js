@@ -1,4 +1,4 @@
-const SiParser = require('../Transpiled/Gds/Parsers/Galileo/Pnr/SiParser.js');
+const SiParser = require('gds-utils/src/text_format_processing/galileo/pnr/SiParser.js');
 const TravelportUtils = require('../GdsHelpers/TravelportUtils.js');
 const SabrePnr = require('../Transpiled/Rbs/TravelDs/SabrePnr.js');
 
