@@ -35,6 +35,10 @@ const TravelportBuildItineraryActionViaXml = async ({
 	baseDate = moment().format('YYYY-MM-DD'),
 	travelport = TravelportClient(),
 }) => {
+	if (itinerary.length === 0) {
+		// should return error, as user expects there to be "reservation" key in the success output
+		return Rej.InternalServerError('Tried to rebuild empty itinerary');
+	}
 	const segments = [];
 	const failedSegments = [];
 	const byStatus = _.groupBy(itinerary, e => e.segmentStatus);

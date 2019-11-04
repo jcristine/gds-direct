@@ -18,7 +18,7 @@ class AliasParser {
 			'(?<pcc>[A-Z0-9]{3,9})' +
 			'(\/' +
 			'(?<status>[A-Z]{2}|)' +
-			'(?<seatCount>\\d*)' +
+			'(?<seatCount>\\d{0,2})' +
 			')?' +
 			'(?<keepOriginalMark>\\+|\\||)' +
 			'$/';

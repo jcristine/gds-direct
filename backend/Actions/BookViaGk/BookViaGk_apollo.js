@@ -151,8 +151,10 @@ const BookViaGk_apollo = async (params) => {
 			// got many cases where first segments resulted
 			// in "UNA PROC" on SS, but booked fine on GK
 			const pnrCmdRec = await TravelportUtils.fetchAll('*R', session);
-			const pnrItinerary = ApolloPnr.makeFromDump(pnrCmdRec.output)
-				.getReservation(baseDate).itinerary;
+			const redisplayReservation = ApolloPnr
+				.makeFromDump(pnrCmdRec.output)
+				.getReservation(baseDate);
+			const pnrItinerary = redisplayReservation.itinerary;
 
 			if (pnrItinerary.length === 0) {
 				// when first segment is SYSTEM ERROR, no segments are added - try the Y GK
@@ -168,11 +170,13 @@ const BookViaGk_apollo = async (params) => {
 						return true;
 					}
 				});
-				const built = await bookPassive(failedSegments);
+				const reservation = failedSegments.length > 0
+					? (await bookPassive(failedSegments)).reservation
+					: redisplayReservation;
 				const segStr = makeSegStr(failedSegments);
 				const text = 'Failed to rebook ' + segStr +  ' - SYSTEM ERROR OCCURRED';
 				return {
-					reservation: built.reservation,
+					reservation,
 					messages: [{type: 'error', text}],
 				};
 			}
