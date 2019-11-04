@@ -93,16 +93,23 @@ class GetMultiPccTariffDisplayAction {
 	}
 
 	async makeRpcParamOptions(cmd, sessionData) {
+		const gds = sessionData.gds;
 		const cmdData = Normalize_fareSearch({cmd,
-			gds: sessionData.gds,
-			baseDate: this.baseDate,
+			gds, baseDate: this.baseDate,
 		});
 		if (!cmdData) {
 			const msg = 'Failed to parse your command - ' + cmd;
 			return Rej.NotImplemented(msg);
 		} else if (cmdData.unparsed) {
-			const msg = 'Failed to parse some tariff modifiers - ' + cmdData.unparsed;
-			return Rej.NotImplemented(msg);
+			if (gds === 'apollo' && cmdData.unparsed.match(/^\.[A-Z0-9]{2}\b/)) {
+				// they mistype it way too often
+				const msg = 'Invalid airline modifier, the delimiter in $D is "+", ' +
+					'not "." - do not confuse with availability format - ' + cmdData.unparsed;
+				return Rej.BadRequest(msg);
+			} else {
+				const msg = 'Failed to parse some tariff modifiers - ' + cmdData.unparsed;
+				return Rej.NotImplemented(msg);
+			}
 		} else if (!cmdData.departureAirport) {
 			return Rej.BadRequest('Departure airport must be specified');
 		} else if (!cmdData.destinationAirport) {
