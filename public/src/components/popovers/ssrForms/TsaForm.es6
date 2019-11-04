@@ -40,7 +40,6 @@ const paxToTsaTrCmp = (pax, paxes, ssrs) => {
 				max: new Date().toISOString().slice(0, 10),
 				min: '1903-01-02', // Kane Tanaka
 				value: (ssrData.dob || {}).parsed || (pax.dob || {}).parsed || null,
-				required: 'required',
 			}),
 		]),
 		Cmp('td').attach([
