@@ -5,6 +5,7 @@ import Dom 		from '../../helpers/dom.es6';
 import TsaForm from "./ssrForms/TsaForm";
 import SsrHelper from "./ssrForms/SsrHelper";
 import PhoneForm from "./ssrForms/PhoneForm";
+import EmailForm from "./ssrForms/EmailForm";
 
 const Component = require('../../modules/component.es6').default;
 const Cmp = (...args) => new Component(...args);
@@ -45,30 +46,31 @@ const SsrForm = ({icon, popoverTarget}) => {
 	});
 	const tsaForm = TsaForm({close: () => popover.close()});
 	const phoneForm = PhoneForm({close: () => popover.close()});
+	const emailForm = EmailForm({close: () => popover.close()});
 
 	const makeSectionsSwitchCmp = () => {
 		const sectionButtons = [
 			Cmp('span[TSA].active-section-btn', {'data-section': 'tsa'}),
 			Cmp('span[Phone number]'          , {'data-section': 'phone-number'}),
+			Cmp('span[E-mail]'                , {'data-section': 'email'}),
 			Cmp('span[APIS]'                  , {'data-section': 'apis'}),
 			Cmp('span[Frequent flyer]'        , {'data-section': 'frequent-flyer'}),
 			Cmp('span[KTN]'                   , {'data-section': 'ktn'}),
 			Cmp('span[Meal]'                  , {'data-section': 'meal'}),
 			Cmp('span[OSI]'                   , {'data-section': 'osi'}),
 			Cmp('span[Redress number]'        , {'data-section': 'redress-number'}),
-			Cmp('span[E-mail]'                , {'data-section': 'email'}),
 			Cmp('span[Assistance]'            , {'data-section': 'assistance'}),
 		];
 		const sectionsContCmp = Cmp('div.sections', {'data-active-section': 'tsa'}).attach([
 			Cmp('div', {'data-section': 'tsa'}).attach([tsaForm.dom]),
 			Cmp('div', {'data-section': 'phone-number'}).attach([phoneForm.dom]),
+			Cmp('div', {'data-section': 'email'}).attach([emailForm.dom]),
 			Cmp('div', {'data-section': 'apis'}).attach([Cmp('h2[Not Implemented Yet apis]')]),
 			Cmp('div', {'data-section': 'frequent-flyer'}).attach([Cmp('h2[Not Implemented Yet frequent-flyer]')]),
 			Cmp('div', {'data-section': 'ktn'}).attach([Cmp('h2[Not Implemented Yet ktn]')]),
 			Cmp('div', {'data-section': 'meal'}).attach([Cmp('h2[Not Implemented Yet meal]')]),
 			Cmp('div', {'data-section': 'osi'}).attach([Cmp('h2[Not Implemented Yet osi]')]),
 			Cmp('div', {'data-section': 'redress-number'}).attach([Cmp('h2[Not Implemented Yet redress-number]')]),
-			Cmp('div', {'data-section': 'email'}).attach([Cmp('h2[Not Implemented Yet email]')]),
 			Cmp('div', {'data-section': 'assistance'}).attach([Cmp('h2[Not Implemented Yet assistance]')]),
 		]);
 		const sectionSwitchCmp = Cmp('div.section-switch').attach([
@@ -160,6 +162,7 @@ const SsrForm = ({icon, popoverTarget}) => {
 
 			tsaForm.updateBlock(paxes, docSsrList.data || []);
 			phoneForm.updateBlock(paxes, serviceSsrList.data || []);
+			emailForm.updateBlock(paxes, serviceSsrList.data || []);
 			onRendered();
 
 			const selector = '[data-section="tsa"] input[name="dob"]';
