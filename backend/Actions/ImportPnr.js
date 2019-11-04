@@ -129,9 +129,11 @@ const ImportPnr = ({pnr, stateful}) => {
 	const main = async () => {
 		const pnrFields = await getPnrFields();
 		pnrFields.serviceSsrList.data.forEach(ssr => {
-			if (ssr.ssrCode === 'CTCM') {
-				if (!stateful.getAgent().canSeeContactInfo()) {
+			if (!stateful.getAgent().canSeeContactInfo()) {
+				if (ssr.ssrCode === 'CTCM') {
 					ssr.content = ssr.content.replace(/.(?=\d{3})/g, '*');
+				} else if (ssr.ssrCode === 'CTCE') {
+					ssr.content = ssr.content.replace(/.(?=\S{2,}\/\/)/g, '*');
 				}
 			}
 		});

@@ -58,18 +58,18 @@ class CommonDataHelper {
 		];
 	}
 
-	static async shouldAddCreationRemark($msg, $cmdLog) {
-		let $sessionData, $commands, $cmdRecord, $parsed, $flatCmds, $flatCmd;
-		$sessionData = $cmdLog.getSessionData();
-		if ($sessionData['isPnrStored']) {
+	static async shouldAddCreationRemark(msg, cmdLog) {
+		let sessionData, commands, cmdRecord, parsed, flatCmds, flatCmd;
+		sessionData = cmdLog.getSessionData();
+		if (sessionData['isPnrStored']) {
 			return false;
 		}
-		$commands = await $cmdLog.getCurrentPnrCommands();
-		for ($cmdRecord of Object.values($commands)) {
-			$parsed = this.parseCmdByGds($sessionData['gds'], $cmdRecord['cmd']);
-			$flatCmds = php.array_merge([$parsed], $parsed['followingCommands']);
-			for ($flatCmd of Object.values($flatCmds)) {
-				if ($flatCmd['type'] === 'addRemark' && $flatCmd['data'] === $msg) {
+		commands = await cmdLog.getCurrentPnrCommands();
+		for (cmdRecord of Object.values(commands)) {
+			parsed = this.parseCmdByGds(sessionData['gds'], cmdRecord['cmd']);
+			flatCmds = php.array_merge([parsed], parsed['followingCommands']);
+			for (flatCmd of Object.values(flatCmds)) {
+				if (flatCmd['type'] === 'addRemark' && flatCmd['data'] === msg) {
 					return false;
 				}
 			}
@@ -79,64 +79,64 @@ class CommonDataHelper {
 
 	/** @param stateful = await require('StatefulSession.js')() */
 	static async createCredentialMessage(stateful) {
-		const $leadData = await stateful.getGdRemarkData();
+		const leadData = await stateful.getGdRemarkData();
 
-		const $agent = stateful.getAgent();
-		let $maxLen, $leadPart, $pattern, $minLen;
-		$maxLen = {
+		const agent = stateful.getAgent();
+		let maxLen, leadPart, pattern, minLen;
+		maxLen = {
 			apollo: 87 - php.strlen('@:5'),
 			galileo: 87,
 			// 71 is limit for whole remark command: >5MSG LIMIT IS 70; >53¤MSG LIMIT IS 68;
 			sabre: 71 - php.strlen('5'),
 			amadeus: 126 - php.strlen('RM'),
 		}[stateful.gds];
-		$leadPart = php.empty($leadData) ? '' : (
-			($agent.canSavePnrWithoutLead() ? '' : /FOR {leadAgent}/ + ($leadData['leadOwnerId'] || '')) +
-			'/LEAD-' + $leadData['leadId']
+		leadPart = php.empty(leadData) ? '' : (
+			(agent.canSavePnrWithoutLead() ? '' : /FOR {leadAgent}/ + (leadData['leadOwnerId'] || '')) +
+			'/LEAD-' + leadData['leadId']
 		);
 		// if you make changes here, please also update
 		// Common\GenericRemarkParser::parseCmsLeadRemark()
-		$pattern = php.implode('', [
+		pattern = php.implode('', [
 			'GD-',
 			'{pnrAgent}',
-			'/' + $agent.getId(),
-			$leadPart,
+			'/' + agent.getId(),
+			leadPart,
 			' IN ' + stateful.getSessionData().pcc,
 		]);
-		$minLen = php.mb_strlen(StringUtil.format($pattern, {
+		minLen = php.mb_strlen(StringUtil.format(pattern, {
 			pnrAgent: '', leadAgent: '',
 		}));
-		return php.strtoupper(StringUtil.format($pattern, {
-			pnrAgent: php.mb_substr($agent.getLogin(), 0, php.floor(($maxLen - $minLen) / 2)),
-			leadAgent: php.mb_substr(!$leadData ? '' : $leadData.leadOwnerLogin, 0, php.floor(($maxLen - $minLen) / 2)),
+		return php.strtoupper(StringUtil.format(pattern, {
+			pnrAgent: php.mb_substr(agent.getLogin(), 0, php.floor((maxLen - minLen) / 2)),
+			leadAgent: php.mb_substr(!leadData ? '' : leadData.leadOwnerLogin, 0, php.floor((maxLen - minLen) / 2)),
 		}));
 	}
 
-	static checkSeatCount($pnr) {
-		let $errors, $passengerCount, $pax, $itinerary, $segment;
-		$errors = [];
-		$passengerCount = 0;
-		for ($pax of Object.values($pnr.getPassengers())) {
-			if (!$pax['nameNumber']['isInfant']) {
-				$passengerCount++;
+	static checkSeatCount(pnr) {
+		let errors, passengerCount, pax, itinerary, segment;
+		errors = [];
+		passengerCount = 0;
+		for (pax of Object.values(pnr.getPassengers())) {
+			if (!pax['nameNumber']['isInfant']) {
+				passengerCount++;
 			}
 		}
-		if ($passengerCount === 0) {
-			$errors.push(Errors.getMessage(Errors.NO_NAMES_IN_PNR));
-		} else if (!($itinerary = $pnr.getItinerary())) {
-			$errors.push(Errors.getMessage(Errors.ITINERARY_IS_EMPTY));
+		if (passengerCount === 0) {
+			errors.push(Errors.getMessage(Errors.NO_NAMES_IN_PNR));
+		} else if (!(itinerary = pnr.getItinerary())) {
+			errors.push(Errors.getMessage(Errors.ITINERARY_IS_EMPTY));
 		} else {
-			for ($segment of Object.values($itinerary)) {
-				if ($segment['seatCount'] != $passengerCount) {
-					$errors.push(Errors.getMessage(Errors.WRONG_SEAT_COUNT, {
-						seatCount: $segment['seatCount'],
-						nameCount: $passengerCount,
+			for (segment of Object.values(itinerary)) {
+				if (segment['seatCount'] != passengerCount) {
+					errors.push(Errors.getMessage(Errors.WRONG_SEAT_COUNT, {
+						seatCount: segment['seatCount'],
+						nameCount: passengerCount,
 					}));
 					break;
 				}
 			}
 		}
-		return $errors;
+		return errors;
 	}
 
 	/**
@@ -147,65 +147,65 @@ class CommonDataHelper {
 	 * '   6 SSRCTCEQRHK1/XXXXXXXXXXXY//YAHOO+COM-1PANDEY/DEVENDRA'
 	 * '   7 SSRCTCMQRHK1/XXXXXXXXX27-1PANDEY/DEVENDRA'
 	 */
-	static maskSsrContactInfo($output, $lettersShown = 1, $digitsShown = 2) {
-		let $lines, $line, $lineNumber, $ssrStart, $emailRegex, $phoneRegex, $matches, $_, $prefix, $masked, $postfix;
-		$lines = [];
-		for ($line of Object.values(StringUtil.lines($output))) {
-			$lineNumber = '(?:\\s*\\d+|GFAX-)\\.?\\s*';
-			$ssrStart = '(?:[A-Z0-9]{2})?\\s*(?:[A-Z]{2}\\d+)?\\s*[\\\/\\s]';
-			$emailRegex = '/^(' + $lineNumber + 'SSR\\s*CTCE\\s*' + $ssrStart + ')(.+?)(\\S{' + $lettersShown + '}\\\/\\\/.*|)$/';
-			$phoneRegex = '/^(' + $lineNumber + 'SSR\\s*CTCM\\s*' + $ssrStart + ')(.+)(\\d{' + $digitsShown + '}.*)$/';
-			if (php.preg_match($emailRegex, $line, $matches = [])) {
-				[$_, $prefix, $masked, $postfix] = $matches;
-				$line = $prefix + php.preg_replace(/./, 'X', $masked) + $postfix;
+	static maskSsrContactInfo(output, lettersShown = 1, digitsShown = 2) {
+		const lines = [];
+		for (let line of StringUtil.lines(output)) {
+			const lineNumber = '(?:\\s*\\d+|GFAX-)\\.?\\s*';
+			const ssrStart = '(?:[A-Z0-9]{2})?\\s*(?:[A-Z]{2}\\d+)?\\s*[\\\/\\s]';
+			const emailRegex = '/^(' + lineNumber + 'SSR\\s*CTCE\\s*' + ssrStart + ')(.+?)(\\S{' + lettersShown + '}\\\/\\\/.*|)$/';
+			const phoneRegex = '/^(' + lineNumber + 'SSR\\s*CTCM\\s*' + ssrStart + ')(.+)(\\d{' + digitsShown + '}.*)$/';
+			let matches;
+			if (php.preg_match(emailRegex, line, matches = [])) {
+				const [, prefix, masked, postfix] = matches;
+				line = prefix + php.preg_replace(/./, 'X', masked) + postfix;
 			}
-			if (php.preg_match($phoneRegex, $line, $matches = [])) {
-				[$_, $prefix, $masked, $postfix] = $matches;
-				$line = $prefix + php.preg_replace(/./, 'X', $masked) + $postfix;
+			if (php.preg_match(phoneRegex, line, matches = [])) {
+				const [, prefix, masked, postfix] = matches;
+				line = prefix + php.preg_replace(/./, 'X', masked) + postfix;
 			}
-			$lines.push($line);
+			lines.push(line);
 		}
-		return php.implode(php.PHP_EOL, $lines);
+		return php.implode(php.PHP_EOL, lines);
 	}
 
-	static isValidPnr($pnr) {
-		if ($pnr.hasItinerary() ||
-			!php.empty($pnr.getPassengers()) ||
-			!php.empty($pnr.getRecordLocator())
+	static isValidPnr(pnr) {
+		if (pnr.hasItinerary() ||
+			!php.empty(pnr.getPassengers()) ||
+			!php.empty(pnr.getRecordLocator())
 		) {
 			return true;
 		}
 		return false;
 	}
 
-	static parseCmdByGds($gds, $cmd) {
-		if ($gds === 'apollo') {
-			return ApoCmdParser.parse($cmd);
-		} else if ($gds === 'galileo') {
-			return GalCmdParser.parse($cmd);
-		} else if ($gds === 'sabre') {
-			return SabCmdParser.parse($cmd);
-		} else if ($gds === 'amadeus') {
-			return AmaCmdParser.parse($cmd);
+	static parseCmdByGds(gds, cmd) {
+		if (gds === 'apollo') {
+			return ApoCmdParser.parse(cmd);
+		} else if (gds === 'galileo') {
+			return GalCmdParser.parse(cmd);
+		} else if (gds === 'sabre') {
+			return SabCmdParser.parse(cmd);
+		} else if (gds === 'amadeus') {
+			return AmaCmdParser.parse(cmd);
 		} else {
 			return null;
 		}
 	}
 
-	static parsePnrByGds($gds, $pnrDump) {
+	static parsePnrByGds(gds, pnrDump) {
 		const baseDt = php.date('Y-m-d H:i:s');
-		if ($gds === 'apollo') {
-			const $pnr = ApolloPnr.makeFromDump($pnrDump);
-			return ImportApolloPnrFormatAdapter.transformReservation($pnr.getParsedData(), baseDt);
-		} else if ($gds === 'galileo') {
-			const $parsed = GalPnrParser.parse($pnrDump);
-			return GalileoPnrCommonFormatAdapter.transform($parsed, baseDt);
-		} else if ($gds === 'sabre') {
-			const $pnr = SabrePnr.makeFromDump($pnrDump);
-			return FormatAdapter.adaptSabrePnrParseForClient($pnr.getParsedData(), baseDt);
-		} else if ($gds === 'amadeus') {
-			const $pnr = AmadeusPnr.makeFromDump($pnrDump);
-			return AmadeusPnrCommonFormatAdapter.transform($pnr.getParsedData(), baseDt);
+		if (gds === 'apollo') {
+			const pnr = ApolloPnr.makeFromDump(pnrDump);
+			return ImportApolloPnrFormatAdapter.transformReservation(pnr.getParsedData(), baseDt);
+		} else if (gds === 'galileo') {
+			const parsed = GalPnrParser.parse(pnrDump);
+			return GalileoPnrCommonFormatAdapter.transform(parsed, baseDt);
+		} else if (gds === 'sabre') {
+			const pnr = SabrePnr.makeFromDump(pnrDump);
+			return FormatAdapter.adaptSabrePnrParseForClient(pnr.getParsedData(), baseDt);
+		} else if (gds === 'amadeus') {
+			const pnr = AmadeusPnr.makeFromDump(pnrDump);
+			return AmadeusPnrCommonFormatAdapter.transform(pnr.getParsedData(), baseDt);
 		} else {
 			return null;
 		}
