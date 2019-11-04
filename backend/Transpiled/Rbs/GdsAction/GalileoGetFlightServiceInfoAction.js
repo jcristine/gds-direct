@@ -1,6 +1,6 @@
 
 const ApolloSvcParser = require('../../Gds/Parsers/Apollo/ApolloSvcParser/ApolloSvcParser.js');
-const TtParser = require('../../Gds/Parsers/Galileo/TtParser.js');
+const TtParser = require('gds-utils/src/text_format_processing/galileo/TtParser.js');
 const AbstractGdsAction = require('./AbstractGdsAction.js');
 const {fetchAll} = require('../../../GdsHelpers/TravelportUtils.js');
 
