@@ -23,7 +23,7 @@ class FqParser {
 
 	static parse(dump) {
 		const parsed = LibParser.parse(dump);
-		parsed.bagPtcPricingBlocks = parsed.bagPtcPricingBlocks
+		parsed.bagPtcPricingBlocks = (parsed.bagPtcPricingBlocks || [])
 			.map(block => this.parseBagPtcBlock('BAGGAGE ALLOWANCE', block.raw));
 
 		return parsed;
