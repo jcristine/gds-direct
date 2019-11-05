@@ -3,7 +3,7 @@
 const StringUtil = require('../../../../../backend/Transpiled/Lib/Utils/StringUtil.js');
 const CommandParser = require('gds-utils/src/text_format_processing/amadeus/commands/CmdParser.js');
 const FxParser = require('gds-utils/src/text_format_processing/amadeus/FxParser.js');
-const PnrParser = require('../../../../../backend/Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParser.js');
+const PnrParser = require('gds-utils/src/text_format_processing/amadeus/pnr/PnrParser.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const AmadeusPricingCommonFormatAdapter = require("../../../../../backend/Transpiled/Rbs/FormatAdapters/AmadeusPricingCommonFormatAdapter");

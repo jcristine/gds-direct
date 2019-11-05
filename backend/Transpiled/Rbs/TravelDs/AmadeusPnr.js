@@ -1,7 +1,7 @@
 const AmadeusPnrCommonFormatAdapter = require('../FormatAdapters/AmadeusPnrCommonFormatAdapter.js');
 
 const Fp = require('../../Lib/Utils/Fp.js');
-const PnrParser = require('../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
+const PnrParser = require('gds-utils/src/text_format_processing/amadeus/pnr/PnrParser.js');
 const GenericRemarkParser = require('gds-utils/src/text_format_processing/agnostic/GenericRemarkParser.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');

@@ -3,7 +3,7 @@ const PnrStatusParser = require('gds-utils/src/text_format_processing/apollo/act
 const SabrePnr = require('../Transpiled/Rbs/TravelDs/SabrePnr.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const GalPnrParser = require('gds-utils/src/text_format_processing/galileo/pnr/PnrParser.js');
-const AmaPnrParser = require('../Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParser.js');
+const AmaPnrParser = require('gds-utils/src/text_format_processing/amadeus/pnr/PnrParser.js');
 const {safe} = require('../Utils/TmpLib.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 

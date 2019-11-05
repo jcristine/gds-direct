@@ -1,5 +1,5 @@
 const Errors = require('../../Transpiled/Rbs/GdsDirect/Errors.js');
-const PnrParser = require('../../Transpiled/Gds/Parsers/Amadeus/Pnr/PnrParser.js');
+const PnrParser = require('gds-utils/src/text_format_processing/amadeus/pnr/PnrParser.js');
 const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const AmadeusBuildItineraryAction = require('../../Transpiled/Rbs/GdsAction/AmadeusBuildItineraryAction.js');

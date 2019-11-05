@@ -1,7 +1,7 @@
 
 const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
-const PnrFieldLineParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrFieldLineParser.js');
+const PnrFieldLineParser = require('gds-utils/src/text_format_processing/amadeus/pnr/PnrFieldLineParser.js');
 const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const FareConstructionParser = require('gds-utils/src/text_format_processing/agnostic/fare_calculation/FcParser.js');
 const BagAllowanceParser = require('gds-utils/src/text_format_processing/sabre/pricing/BagAllowanceParser.js');

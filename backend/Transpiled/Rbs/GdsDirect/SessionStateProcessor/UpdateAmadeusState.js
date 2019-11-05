@@ -3,7 +3,7 @@
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const CommandParser = require('gds-utils/src/text_format_processing/amadeus/commands/CmdParser.js');
 const PnrSearchParser = require('../../../Gds/Parsers/Amadeus/PnrSearchParser.js');
-const PnrParser = require('../../../Gds/Parsers/Amadeus/Pnr/PnrParser.js');
+const PnrParser = require('gds-utils/src/text_format_processing/amadeus/pnr/PnrParser.js');
 const SessionStateDs = require('../../../Rbs/GdsDirect/SessionStateProcessor/SessionStateDs.js');
 const CmsAmadeusTerminal = require('../../../Rbs/GdsDirect/GdsInterface/CmsAmadeusTerminal.js');
 
