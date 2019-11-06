@@ -190,7 +190,8 @@ const PricePccMixList = ({
 	};
 
 	/** @param {{gds, pcc}} pccResult = (new (require('RepriceInAnotherPccAction.js'))).repriceIn() */
-	const addRow = ({pccResult}) => {
+	const addRow = (data) => {
+		const {pccResult} = data;
 		console.debug('pccResult', pccResult);
 
 		const {gds, pcc, rulePricingCmd, pricingBlockList = []} = pccResult;
@@ -220,11 +221,11 @@ const PricePccMixList = ({
 
 	return {
 		dom: rootCmp.context,
-		addRow: addRow,
-		finalize: finalize,
+		addRow,
 	};
 };
 
+const cmdRqToDelayedRecs = {};
 const cmdRqToList = {};
 
 PricePccMixList.initialize = (plugin, data) => {
@@ -238,10 +239,21 @@ PricePccMixList.initialize = (plugin, data) => {
 		dom: priceMixList.dom,
 		onCancel: () => remove(),
 	});
+	if (cmdRqToDelayedRecs[cmdRqId]) {
+		cmdRqToDelayedRecs[cmdRqId].forEach(priceMixList.addRow);
+		delete cmdRqToDelayedRecs[cmdRqId];
+	}
 };
 
-PricePccMixList.displayPriceMixPccRow = (pccResult) => {
-	cmdRqToList[pccResult.cmdRqId].addRow(pccResult);
+PricePccMixList.displayPriceMixPccRow = (data) => {
+	if (cmdRqToList[data.cmdRqId]) {
+		cmdRqToList[data.cmdRqId].addRow(data);
+	} else {
+		// may happen if first row socket message comes back faster
+		// than initialization HTTP request itself responds
+		cmdRqToDelayedRecs[data.cmdRqId] = cmdRqToDelayedRecs[data.cmdRqId] || [];
+		cmdRqToDelayedRecs[data.cmdRqId].push(data);
+	}
 };
 
 export default PricePccMixList;

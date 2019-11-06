@@ -115,7 +115,7 @@ export const initGlobEvents = (htmlRootDom) => {
 			return false;
 		}
 		errorsLog[keyIndex] = 1;
-		handleGenericError({message, filename, lineno, colno, stack: stack});
+		handleGenericError({message, caughtMs: Date.now(), filename, lineno, colno, stack: stack});
 	};
 	/** @param {PromiseRejectionEvent} e */
 	let onrejection = (e) => {
