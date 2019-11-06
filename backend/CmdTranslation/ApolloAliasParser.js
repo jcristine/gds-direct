@@ -1,3 +1,4 @@
+const Rej = require('klesun-node-tools/src/Rej.js');
 const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 const RepriceInAnotherPccAction = require('../Transpiled/Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
 
@@ -106,6 +107,9 @@ exports.parse = async (cmdRequested, stateful, PtcUtil = require('../Transpiled/
 			},
 			'bookingClass': cls || null,
 		};
+		if (data.departureDate && !data.departureDate.parsed) {
+			return Rej.BadRequest('Invalid departure date - ' + date);
+		}
 	} else if (php.preg_match(/^\/GK$/, realCmd, matches = [])) {
 		type = 'rebookAsGk';
 		data = {
@@ -130,5 +134,5 @@ exports.parse = async (cmdRequested, stateful, PtcUtil = require('../Transpiled/
 			dialect: result.dialect,
 		};
 	}
-	return {realCmd, moveDownAll, data, type};
+	return Promise.resolve({realCmd, moveDownAll, data, type});
 };
