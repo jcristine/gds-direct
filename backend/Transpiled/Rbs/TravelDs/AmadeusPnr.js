@@ -1,6 +1,6 @@
+const GdsConstants = require('gds-utils/src/text_format_processing/agnostic/GdsConstants.js');
 const AmadeusPnrCommonFormatAdapter = require('../FormatAdapters/AmadeusPnrCommonFormatAdapter.js');
 
-const Fp = require('../../Lib/Utils/Fp.js');
 const PnrParser = require('gds-utils/src/text_format_processing/amadeus/pnr/PnrParser.js');
 const GenericRemarkParser = require('gds-utils/src/text_format_processing/agnostic/GenericRemarkParser.js');
 
@@ -30,7 +30,7 @@ class AmadeusPnr {
 	}
 
 	getRecordLocator() {
-		return (((this.parsed || {})['parsed'] || {})['pnrInfo'] || {})['recordLocator'];
+		return (((this.parsed || {}).parsed || {}).pnrInfo || {}).recordLocator;
 	}
 
 	getGdsName() {
@@ -38,21 +38,17 @@ class AmadeusPnr {
 	}
 
 	getPassengers() {
-		return ((this.parsed || {})['parsed'] || {})['passengers'] || [];
+		return ((this.parsed || {}).parsed || {}).passengers || [];
 	}
 
 	getItinerary() {
-		return this.getSegmentsWithType([PnrParser.ITINERARY_SEGMENT]);
+		return this.getSegmentsWithType([GdsConstants.SEG_AIR]);
 	}
 
-	getSegmentsWithType($types) {
-		let $itinerary, $matches;
-
-		$itinerary = ((this.parsed || {})['parsed'] || {})['itinerary'] || [];
-		$matches = ($seg) => {
-			return php.in_array($seg['segmentType'], $types);
-		};
-		return php.array_values(Fp.filter($matches, $itinerary));
+	getSegmentsWithType(types) {
+		const itinerary = ((this.parsed || {}).parsed || {}).itinerary || [];
+		const matches = (seg) => types.includes(seg.segmentType);
+		return itinerary.filter(matches);
 	}
 
 	getSsrList() {
@@ -64,14 +60,14 @@ class AmadeusPnr {
 	}
 
 	hasEtickets() {
-		return php.count(((this.parsed || {})['parsed'] || {})['tickets'] || []) > 0;
+		return php.count(((this.parsed || {}).parsed || {}).tickets || []) > 0;
 	}
 
 	getReservationDt($fetchedDt) {
 		let $date, $time;
 
-		$date = ((((this.parsed || {})['parsed'] || {})['pnrInfo'] || {})['date'] || {})['parsed'];
-		$time = ((((this.parsed || {})['parsed'] || {})['pnrInfo'] || {})['time'] || {})['parsed'];
+		$date = ((((this.parsed || {}).parsed || {}).pnrInfo || {}).date || {}).parsed;
+		$time = ((((this.parsed || {}).parsed || {}).pnrInfo || {}).time || {}).parsed;
 
 		return $date && $time ? $date + ' ' + $time : null;
 	}
@@ -81,22 +77,22 @@ class AmadeusPnr {
 	}
 
 	getAgentInitials() {
-		return (((this.parsed || {})['parsed'] || {})['pnrInfo'] || {})['agentInitials'];
+		return (((this.parsed || {}).parsed || {}).pnrInfo || {}).agentInitials;
 	}
 
 	getSsrList() {
 
-		return ((this.parsed || {})['parsed'] || {})['ssrData'] || [];
+		return ((this.parsed || {}).parsed || {}).ssrData || [];
 	}
 
 	getRemarks() {
 
-		return ((this.parsed || {})['parsed'] || {})['remarks'] || [];
+		return ((this.parsed || {}).parsed || {}).remarks || [];
 	}
 
 	getBookingPcc() {
 
-		return (((this.parsed || {})['parsed'] || {})['pnrCreationInfo'] || {})['officeId'] || this.parsed['parsed']['pnrInfo']['responsibleOfficeId'];
+		return (((this.parsed || {}).parsed || {}).pnrCreationInfo || {}).officeId || this.parsed.parsed.pnrInfo.responsibleOfficeId;
 	}
 
 	wasCreatedInGdsDirect() {
