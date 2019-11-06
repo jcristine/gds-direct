@@ -23,11 +23,11 @@ const CommandParser = require('gds-utils/src/text_format_processing/sabre/comman
 const SabrePnr = require('../../../../Rbs/TravelDs/SabrePnr.js');
 const CommonDataHelper = require('../../../../Rbs/GdsDirect/CommonDataHelper.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const SabreTicketListParser = require('../../../../Gds/Parsers/Sabre/SabreTicketListParser.js');
+const SabreTicketListParser = require('gds-utils/src/text_format_processing/sabre/pnr/TicketListParser.js');
 const PnrParser = require('../../../../Gds/Parsers/Sabre/Pnr/PnrParser.js');
 const getRbsPqInfo = require("../../../../../GdsHelpers/RbsUtils").getRbsPqInfo;
 const UnprocessableEntity = require("klesun-node-tools/src/Rej").UnprocessableEntity;
-const SabreTicketParser = require('../../../../Gds/Parsers/Sabre/SabreTicketParser.js');
+const SabreTicketParser = require('gds-utils/src/text_format_processing/sabre/TicketMaskParser.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
