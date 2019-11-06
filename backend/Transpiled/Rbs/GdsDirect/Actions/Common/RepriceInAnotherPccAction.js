@@ -1,7 +1,7 @@
 const RepriceItinerary = require('../../../../../Actions/RepriceItinerary/RepriceItinerary.js');
 const GdsSession = require('../../../../../GdsHelpers/GdsSession.js');
 
-const GdsDialectTranslator = require('../../../../Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
+const GdsDialectTranslator = require('../../../../../CmdTranslation/RomanSereda/GdsDialectTranslator.js');
 const Pccs = require("../../../../../Repositories/Pccs");
 const {BadRequest, NotImplemented, Forbidden, UnprocessableEntity, NotFound} = require("klesun-node-tools/src/Rej");
 const {ignoreExc} = require('../../../../../Utils/TmpLib.js');

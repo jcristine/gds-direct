@@ -1,6 +1,6 @@
 
-const StringUtil = require('../../../Lib/Utils/StringUtil.js');
-const Variables = require('../../../Rbs/GdsDirect/DialectTranslator/VariableTranslator.js');
+const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
+const Variables = require('./VariableTranslator.js');
 
 /**
  * PatternTranslator::translate('A01MARRIXLAX', 'apollo', 'sabre', 'A{date}{city_pair}', '1{date}{city_pair}');

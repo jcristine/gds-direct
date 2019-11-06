@@ -45,8 +45,8 @@ const DisplayHistoryActionHelper = require('./DisplayHistoryActionHelper.js');
 // parsers
 const ItineraryParser = require('gds-utils/src/text_format_processing/apollo/pnr/ItineraryParser.js');
 const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
-const AliasParser = require('../../../../Rbs/GdsDirect/AliasParser.js');
-const ApoAliasParser = require('../../../../../Parsers/Apollo/AliasParser.js');
+const AliasParser = require('../../../../../CmdTranslation/AliasParser.js');
+const ApoAliasParser = require('../../../../../CmdTranslation/ApolloAliasParser.js');
 const PnrHistoryParser = require('gds-utils/src/text_format_processing/apollo/PnrHistoryParser.js');
 const TariffDisplayParser = require('../../../../Gds/Parsers/Apollo/TariffDisplay/TariffDisplayParser.js');
 const NmeMaskParser = require("../../../../../Actions/ManualPricing/NmeMaskParser");

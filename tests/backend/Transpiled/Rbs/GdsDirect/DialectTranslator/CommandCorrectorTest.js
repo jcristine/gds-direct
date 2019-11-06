@@ -1,6 +1,6 @@
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const CommandCorrector = require("../../../../../../backend/Transpiled/Rbs/GdsDirect/DialectTranslator/CommandCorrector");
+const CommandCorrector = require("../../../../../../backend/CmdTranslation/RomanSereda/CommandCorrector");
 
 class CommandCorrectorTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
 	provideCommands() {

@@ -14,10 +14,10 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 const PatternTranslator = require("./PatternTranslator");
 const TranslateAvailabilityCmdAction = require("./TranslateAvailabilityCmdAction");
 const TranslateTariffDisplayCmdAction = require("./TranslateTariffDisplayCmdAction");
-const TranslateAssignOrCancelSeat = require("./TranslateAssignOrCancelSeat");
-const TranslateAddFrequentFlyerNumber = require("./TranslateAddFrequentFlyerNumber");
-const TranslateChangeFrequentFlyerNumber = require("./TranslateChangeFrequentFlyerNumber");
-const CommonDataHelper = require("../CommonDataHelper");
+const TranslateAssignOrCancelSeat = require("../TranslateAssignOrCancelSeat");
+const TranslateAddFrequentFlyerNumber = require("../TranslateAddFrequentFlyerNumber");
+const TranslateChangeFrequentFlyerNumber = require("../TranslateChangeFrequentFlyerNumber");
+const CommonDataHelper = require("../../Transpiled/Rbs/GdsDirect/CommonDataHelper");
 
 /** RAM caching */
 const patternList = [

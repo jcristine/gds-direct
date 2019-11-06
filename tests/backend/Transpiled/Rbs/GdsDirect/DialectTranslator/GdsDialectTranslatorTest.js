@@ -1,6 +1,6 @@
 
 
-const GdsDialectTranslator = require('../../../../../../backend/Transpiled/Rbs/GdsDirect/DialectTranslator/GdsDialectTranslator.js');
+const GdsDialectTranslator = require('../../../../../../backend/CmdTranslation/RomanSereda/GdsDialectTranslator.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 

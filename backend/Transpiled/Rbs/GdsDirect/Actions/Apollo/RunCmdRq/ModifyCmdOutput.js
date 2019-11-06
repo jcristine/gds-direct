@@ -8,7 +8,7 @@ const AirAvailabilityParser = require('gds-utils/src/text_format_processing/apol
 const CmsApolloTerminal = require('../../../GdsInterface/CmsApolloTerminal.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
-const ApoAliasParser = require('../../../../../../Parsers/Apollo/AliasParser.js');
+const ApoAliasParser = require('../../../../../../CmdTranslation/ApolloAliasParser.js');
 
 /** @return bool - true if not error response, false otherwise */
 const doesAvailJourneyTimeApply = (output) => {

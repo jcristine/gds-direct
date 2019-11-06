@@ -1,6 +1,6 @@
 
-const Fp = require('../../../Lib/Utils/Fp.js');
-const StringUtil = require('../../../Lib/Utils/StringUtil.js');
+const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
+const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const separateWithLex = require("./Helper").separateWithLex;
 

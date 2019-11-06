@@ -1,6 +1,6 @@
 const Parse_airAvailability = require('gds-utils/src/text_format_processing/sabre/commands/Parse_airAvailability.js');
 
-const StringUtil = require('../../../Lib/Utils/StringUtil.js');
+const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const VariableTranslator = require("./VariableTranslator");
 const SimplePatternTranslator = require("./SimplePatternTranslator");

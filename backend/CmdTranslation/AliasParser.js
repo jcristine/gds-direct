@@ -1,10 +1,10 @@
 const Rej = require('klesun-node-tools/src/Rej.js');
-const PtcUtil = require('../Process/Common/PtcUtil.js');
-const ParsersController = require('../../Rbs/IqControllers/ParsersController.js');
+const PtcUtil = require('../Transpiled/Rbs/Process/Common/PtcUtil.js');
+const ParsersController = require('../Transpiled/Rbs/IqControllers/ParsersController.js');
 const Parse_apollo_priceItinerary = require('gds-utils/src/text_format_processing/apollo/commands/Parse_priceItinerary.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const CmsClient = require("../../../IqClients/CmsClient");
+const CmsClient = require("../IqClients/CmsClient");
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
 
 /**
@@ -81,7 +81,7 @@ class AliasParser {
 		};
 	}
 
-	static async parseStore(cmd, PtcUtil = require('../Process/Common/PtcUtil.js')) {
+	static async parseStore(cmd, PtcUtil = require('../Transpiled/Rbs/Process/Common/PtcUtil.js')) {
 		let matches;
 		if (php.preg_match(/^STORE\s*([A-Z0-9]{3}|)\/?(.*)$/, cmd, matches = [])) {
 			let [, ptc, modsPart] = matches;

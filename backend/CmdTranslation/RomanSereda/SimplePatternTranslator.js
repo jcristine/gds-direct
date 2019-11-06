@@ -1,5 +1,5 @@
 
-const StringUtil = require('../../../Lib/Utils/StringUtil.js');
+const StringUtil = require('../../Transpiled/Lib/Utils/StringUtil.js');
 
 /**
  * SimplePatternTranslator::translate('120DECRIXLON', '1{date}{city_pair}', 'A{date}{city_pair}', $variableRegExList);

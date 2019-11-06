@@ -1,7 +1,7 @@
 const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
-const RepriceInAnotherPccAction = require('../../Transpiled/Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
+const RepriceInAnotherPccAction = require('../Transpiled/Rbs/GdsDirect/Actions/Common/RepriceInAnotherPccAction.js');
 
-const AliasParser = require('../../Transpiled/Rbs/GdsDirect/AliasParser.js');
+const ApolloAliasParser = require('./AliasParser.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CommandParser = require('gds-utils/src/text_format_processing/apollo/commands/CmdParser.js');
 
@@ -52,11 +52,11 @@ const extendPricingCmd = ($mainCmd, $newPart) => {
 	return newParsed.data.baseCmd + (rawMods.length ? '/' + rawMods.join('/') : '');
 };
 
-exports.parse = async (cmdRequested, stateful, PtcUtil = require('../../Transpiled/Rbs/Process/Common/PtcUtil.js')) => {
+exports.parse = async (cmdRequested, stateful, PtcUtil = require('../Transpiled/Rbs/Process/Common/PtcUtil.js')) => {
 	let realCmd = cmdRequested;
 	let data = null;
 	let type = null;
-	const moveDownAll = AliasParser.parseMda(cmdRequested);
+	const moveDownAll = ApolloAliasParser.parseMda(cmdRequested);
 	if (moveDownAll) {
 		realCmd = moveDownAll.realCmd;
 	}
@@ -87,11 +87,11 @@ exports.parse = async (cmdRequested, stateful, PtcUtil = require('../../Transpil
 			const cmds = [mainCmd, ...followingCommands];
 			data = {'pricingCommands': cmds};
 		}
-	} else if (data = await AliasParser.parseStore(realCmd, PtcUtil)) {
+	} else if (data = await ApolloAliasParser.parseStore(realCmd, PtcUtil)) {
 		type = 'storePricing';
-	} else if (data = await AliasParser.parsePrice(realCmd, stateful)) {
+	} else if (data = await ApolloAliasParser.parsePrice(realCmd, stateful)) {
 		type = 'priceAll';
-	} else if (data = AliasParser.parseRe(cmdRequested)) {
+	} else if (data = ApolloAliasParser.parseRe(cmdRequested)) {
 		type = 'rebookInPcc';
 	} else if (data = matchMultipleCityAvailabilityCmd(realCmd)) {
 		type = 'multiDstAvail';
