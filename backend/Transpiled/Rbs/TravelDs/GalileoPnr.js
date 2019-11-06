@@ -1,3 +1,4 @@
+const GdsConstants = require('gds-utils/src/text_format_processing/agnostic/GdsConstants.js');
 const GalileoPnrCommonFormatAdapter = require('../FormatAdapters/GalileoPnrCommonFormatAdapter.js');
 
 
@@ -57,8 +58,7 @@ class GalileoPnr
 
 	getItinerary() {
 		return php.array_values(php.array_filter(this.$parsed['itineraryData'], ($seg) => {
-
-			return $seg['segmentType'] === ItineraryParser.SEGMENT_TYPE_ITINERARY_SEGMENT;
+			return $seg['segmentType'] === GdsConstants.SEG_AIR;
 		}));
 	}
 

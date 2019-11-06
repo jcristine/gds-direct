@@ -60,7 +60,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							'destinationTime': {'parsed': '08:45'},
 							'confirmationAirline': '9U',
 							'confirmationNumber': 'QEPF7',
-							'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
+							'segmentType': 'AIR',
 						},
 					],
 					'tktgData': {
@@ -179,7 +179,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							'confirmationAirline': 'KQ',
 							'confirmationNumber': 'Y24K24',
 							'operatedBy': 'KLM ROYAL DUTCH AIRLINES',
-							'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
+							'segmentType': 'AIR',
 						},
 						{
 							'segmentNumber': 2,
@@ -199,7 +199,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							'confirmationAirline': 'AC',
 							'confirmationNumber': 'ARYTWR',
 							'operatedBy': 'UNITED AIRLINES',
-							'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
+							'segmentType': 'AIR',
 						},
 						{
 							'segmentNumber': 3,
@@ -219,7 +219,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							'confirmationAirline': 'UA',
 							'confirmationNumber': 'CLK26C',
 							'operatedBy': '/GOJET AIRLINES DBA UNITED EXPRESS',
-							'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
+							'segmentType': 'AIR',
 						},
 						{
 							'segmentNumber': 4,
@@ -238,7 +238,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							'destinationDayOfWeek': {'raw': null, 'parsed': null},
 							'confirmationAirline': 'UA',
 							'confirmationNumber': 'CLK26C',
-							'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
+							'segmentType': 'AIR',
 						},
 						{
 							'segmentNumber': 5,
@@ -257,7 +257,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							'destinationDayOfWeek': {'raw': 'Q', 'parsed': 4},
 							'confirmationAirline': 'AC',
 							'confirmationNumber': 'ARYTWR',
-							'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
+							'segmentType': 'AIR',
 						},
 						{
 							'segmentNumber': 6,
@@ -276,7 +276,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							'destinationDayOfWeek': {'raw': null, 'parsed': null},
 							'confirmationAirline': 'KQ',
 							'confirmationNumber': 'Y24K24',
-							'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
+							'segmentType': 'AIR',
 						},
 					],
 					'phones': [{'lineNumber': 1, 'raw': 'SFO SFO/1234', 'parsed': null}],
@@ -340,7 +340,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							'departureTime': {'parsed': '13:40'},
 							'destinationTime': {'parsed': '15:00'},
 							'confirmationAirline': 'S7',
-							'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
+							'segmentType': 'AIR',
 						},
 						{
 							'segmentNumber': 2,
@@ -358,7 +358,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							'departureTime': {'parsed': '15:50'},
 							'destinationTime': {'parsed': '19:05'},
 							'confirmationAirline': 'S7',
-							'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
+							'segmentType': 'AIR',
 						},
 					],
 					'phones': [{
@@ -433,7 +433,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							'bookingClass': 'V',
 							'confirmationAirline': null,
 							'confirmationNumber': null,
-							'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
+							'segmentType': 'AIR',
 						},
 					],
 					'tktgData': {'ticketingInfo': {'type': 'timeLimit', 'tauDate': {'parsed': '11-16'}}},
@@ -472,7 +472,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							'bookingClass': 'Z',
 							'confirmationAirline': 'A3',
 							'confirmationNumber': '58CCRE',
-							'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
+							'segmentType': 'AIR',
 						},
 					],
 					'tktgData': {
@@ -509,7 +509,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							'airline': 'UT',
 							'flightNumber': '579',
 							'bookingClass': 'N',
-							'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
+							'segmentType': 'AIR',
 						},
 					],
 				},
@@ -578,7 +578,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							'departureDate': {'parsed': '02-05'},
 							'departureAirport': 'DXB',
 							'destinationAirport': 'GOI',
-							'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
+							'segmentType': 'AIR',
 						},
 						'2': {
 							'segmentNumber': 3,
@@ -588,7 +588,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							'departureDate': {'parsed': '02-28'},
 							'departureAirport': 'GOI',
 							'destinationAirport': 'DXB',
-							'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
+							'segmentType': 'AIR',
 						},
 					},
 				},
@@ -760,7 +760,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							'departureAirport': 'TLV',
 							'destinationAirport': 'VKO',
 							'segmentStatus': 'DS',
-							'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
+							'segmentType': 'AIR',
 						},
 					},
 				},
@@ -1293,7 +1293,7 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 							'destinationDayOfWeek': {'raw': 'M', 'parsed': 1},
 							'confirmationAirline': 'AA',
 							'confirmationNumber': 'JCUALA',
-							'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT',
+							'segmentType': 'AIR',
 						},
 					},
 					'tktgData': {
@@ -1332,10 +1332,10 @@ class PnrParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCa
 			{
 				'parsedData': {
 					'itinerary': [
-						{'segmentNumber': 1, 'airline': 'LH', 'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT'},
-						{'segmentNumber': 2, 'airline': 'LH', 'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT'},
-						{'segmentNumber': 3, 'airline': 'BA', 'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT'},
-						{'segmentNumber': 4, 'airline': 'BA', 'segmentType': 'SEGMENT_TYPE_ITINERARY_SEGMENT'},
+						{'segmentNumber': 1, 'airline': 'LH', 'segmentType': 'AIR'},
+						{'segmentNumber': 2, 'airline': 'LH', 'segmentType': 'AIR'},
+						{'segmentNumber': 3, 'airline': 'BA', 'segmentType': 'AIR'},
+						{'segmentNumber': 4, 'airline': 'BA', 'segmentType': 'AIR'},
 					],
 					'pnrInfo': {
 						'receivedFrom': null,

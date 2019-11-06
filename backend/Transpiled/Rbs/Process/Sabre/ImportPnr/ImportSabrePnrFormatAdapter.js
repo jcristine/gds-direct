@@ -1,3 +1,5 @@
+const GdsConstants = require('gds-utils/src/text_format_processing/agnostic/GdsConstants.js');
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 const ArrayUtil = require('../../../../Lib/Utils/ArrayUtil.js');
 const DateTime = require('../../../../Lib/Utils/DateTime.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
@@ -673,7 +675,7 @@ class ImportSabrePnrFormatAdapter {
 		$segment = {};
 
 		$segment['segmentType'] = $segmentData['segmentType'];
-		if ($segment['segmentType'] === ItineraryParser.SEGMENT_TYPE_ITINERARY_SEGMENT) {
+		if ($segment['segmentType'] === GdsConstants.SEG_AIR) {
 
 			$fullDate = DateTime.decodeRelativeDateInFuture($segmentData['departureDate']['parsed'], $reservationDate);
 			if ($time = ($segmentData['departureTime'] || {})['parsed']) {

@@ -16,11 +16,11 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 	constructor({session = null} = {}) {
 		super();
 		this.session = session;
-		this.$cmdCmdToFullDump = {};
+		this.cmdCmdToFullDump = {};
 	}
 
-	setCmdToFullDump($cmdCmdToFullDump)  {
-		this.$cmdCmdToFullDump = $cmdCmdToFullDump;
+	setCmdToFullDump(cmdCmdToFullDump)  {
+		this.cmdCmdToFullDump = cmdCmdToFullDump;
 		return this;
 	}
 
@@ -30,8 +30,8 @@ class AmadeusGetPricingPtcBlocksAction extends AbstractGdsAction
 
 	/** get full output of a state-safe command like FQQ or FQN */
 	async runOrReuseFx($cmd)  {
-		return (this.$cmdCmdToFullDump || {})[$cmd]
-			|| (this.$cmdCmdToFullDump[$cmd] = await this.amadeusFx($cmd));
+		return (this.cmdCmdToFullDump || {})[$cmd]
+			|| (this.cmdCmdToFullDump[$cmd] = await this.amadeusFx($cmd));
 	}
 
 	/** @param $ptcPricing = AmadeusPricingCommonFormatAdapter::transformPtcBlock() */

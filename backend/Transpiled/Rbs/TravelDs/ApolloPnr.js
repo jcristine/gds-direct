@@ -92,7 +92,7 @@ class ApolloPnr {
 	 * @see ApolloReservationItineraryParser::parseSegmentLine()
 	 */
 	getItinerary() {
-		return this.getSegmentsWithType(['SEGMENT_TYPE_ITINERARY_SEGMENT']);
+		return this.getSegmentsWithType(['AIR']);
 	}
 
 	getReservation(baseDate) {

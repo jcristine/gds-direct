@@ -1,10 +1,11 @@
+const GdsConstants = require('gds-utils/src/text_format_processing/agnostic/GdsConstants.js');
 
 const DateTime = require('../../Lib/Utils/DateTime.js');
 const Fp = require('../../Lib/Utils/Fp.js');
 const ApolloReservationItineraryParser = require('gds-utils/src/text_format_processing/apollo/pnr/ItineraryParser.js');
 const SsrBlockParser = require('gds-utils/src/text_format_processing/apollo/pnr/SsrBlockParser.js');
 const ImportPnrCommonFormatAdapter = require('../../Rbs/Process/Common/ImportPnr/ImportPnrCommonFormatAdapter.js');
-const ItineraryParser = require('../../Gds/Parsers/Sabre/Pnr/ItineraryParser.js');
+const ItineraryParser = require('gds-utils/src/text_format_processing/sabre/pnr/ItineraryParser.js');
 
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
@@ -29,7 +30,7 @@ class FormatAdapter
 
 	static adaptSabreItineraryParseForClient($parse, $baseDate)  {
 		return $parse
-			.filter(s => s['segmentType'] === ItineraryParser.SEGMENT_TYPE_ITINERARY_SEGMENT)
+			.filter(s => s['segmentType'] === GdsConstants.SEG_AIR)
 			.map(s => this.transformSabreAirSegment(s, $baseDate));
 	}
 
@@ -383,7 +384,7 @@ class FormatAdapter
 		return php.array_values(Fp.map(($parsedSegment) => {
 			return this.transformApolloAirSegment($parsedSegment, $baseDate);
 		}, Fp.filter(($s) => {
-			return $s['segmentType'] === ApolloReservationItineraryParser.SEGMENT_TYPE_ITINERARY_SEGMENT;
+			return $s['segmentType'] === GdsConstants.SEG_AIR;
 		}, $parse || [])));
 	}
 

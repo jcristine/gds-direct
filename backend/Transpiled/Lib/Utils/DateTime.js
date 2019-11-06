@@ -3,17 +3,15 @@ const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/Parser
 const moment = require('moment-timezone');
 const Diag = require('../../../LibWrappers/Diag.js');
 
-const php = require('klesun-node-tools/src/Transpiled/php.js');
-
 class DateTime {
 	/** @deprecated - use directly from the lib */
 	static decodeRelativeDateInFuture($date, $baseDate) {
-		return ParserUtil.addPastYear($date, $baseDate);
+		return ParserUtil.addYear($date, $baseDate);
 	}
 
 	/** @deprecated - use directly from the lib */
 	static decodeRelativeDateInPast($date, $baseDate) {
-		return ParserUtil.addYear($date, $baseDate);
+		return ParserUtil.addPastYear($date, $baseDate);
 	}
 
 	/** @deprecated - use directly from the lib */

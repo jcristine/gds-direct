@@ -497,7 +497,7 @@ class ImportApolloPnrFormatAdapter
 		$segment['bookingStatus'] = $segmentData['bookingStatus'];
 		$segment['fareBasis'] = $segmentData['fareBasis'];
 		$segment['ticketDesignator'] = $segmentData['ticketDesignator'] || null;
-		$segment['segmentType'] = 'SEGMENT_TYPE_ITINERARY_SEGMENT';
+		$segment['segmentType'] = 'AIR';
 		return $segment;
 	}
 }

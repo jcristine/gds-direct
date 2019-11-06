@@ -1,10 +1,11 @@
+const GdsConstants = require('gds-utils/src/text_format_processing/agnostic/GdsConstants.js');
 
 
 const Fp = require('../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const CommonParserHelpers = require('../../../Gds/Parsers/Apollo/CommonParserHelpers.js');
 const FareConstructionParser = require('gds-utils/src/text_format_processing/agnostic/fare_calculation/FcParser.js');
-const ItineraryParser = require('../../../Gds/Parsers/Sabre/Pnr/ItineraryParser.js');
+const ItineraryParser = require('gds-utils/src/text_format_processing/sabre/pnr/ItineraryParser.js');
 
 /**
  * parses output of >WETR*2 (where 2 is an index of ticket in >*T output)
@@ -248,13 +249,13 @@ class SabreTicketParser
 				fareBasis: $matches['fareBasis'],
 				ticketDesignator: $matches['ticketDesignator'],
 				couponStatus: $matches['couponStatus'],
-				segmentType: ItineraryParser.SEGMENT_TYPE_ITINERARY_SEGMENT,
+				segmentType: GdsConstants.SEG_AIR,
 			};
 		} else if (php.preg_match(/^(\d+)\s+ARUNK\s*$/, $line, $matches = [])) {
 			[$_, $couponNumber] = $matches;
 			return {
 				couponNumber: $couponNumber,
-				segmentType: ItineraryParser.SEGMENT_TYPE_ARNK,
+				segmentType: GdsConstants.SEG_ARNK,
 			};
 		} else {
 			return null;

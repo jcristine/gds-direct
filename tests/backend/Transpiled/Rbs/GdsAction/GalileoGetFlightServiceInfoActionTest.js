@@ -15,16 +15,14 @@ class GalileoGetFlightServiceInfoActionTest extends require('klesun-node-tools/s
 	}
 
 	provideTestCases()  {
-		let $list, $argumentTuples, $testCase;
-
-		$list = [];
+		const list = [];
 
 		// compilation of various rare segment date offsets
 		// segment 1: 2 day offset in single flight
 		// segment 2: hidden stop with 1 day offset in second leg destination
 		// segment 3: hidden stop with 1 day offset in first leg destination and 2 days offset in second leg destination
 		// segment 4: -1 day offset
-		$list.push({
+		list.push({
 			'input': {
 				'rSegments': this.constructor.makeFullItinerary('2018-03-20', php.implode(php.PHP_EOL, [
 					' 1. UA 7315 E  13SEP ORDICN HS1  1155P * 400A O          TH',
@@ -257,22 +255,22 @@ class GalileoGetFlightServiceInfoActionTest extends require('klesun-node-tools/s
 			],
 		});
 
-		$argumentTuples = [];
-		for ($testCase of Object.values($list)) {
-			$argumentTuples.push([$testCase['input'], $testCase['output'], $testCase['calledCommands']]);}
+		const argumentTuples = [];
+		for (const testCase of list) {
+			argumentTuples.push([testCase['input'], testCase['output'], testCase['calledCommands']]);}
 
-		return $argumentTuples;
+		return argumentTuples;
 	}
 
 	/**
      * @test
      * @dataProvider provideTestCases
      */
-	async testAction($input, $expected, $calledCommands)  {
-		let $actual = await (new GalileoGetFlightServiceInfoAction())
-			.setSession(new AnyGdsStubSession($calledCommands))
-			.execute($input['rSegments']);
-		this.assertArrayElementsSubset($expected, $actual);
+	async testAction(input, expected, calledCommands)  {
+		const actual = await (new GalileoGetFlightServiceInfoAction())
+			.setSession(new AnyGdsStubSession(calledCommands))
+			.execute(input['rSegments']);
+		this.assertArrayElementsSubset(expected, actual);
 	}
 
 	getTestMapping() {
