@@ -3,7 +3,7 @@ const Parse_priceItinerary = require('gds-utils/src/text_format_processing/sabre
 
 const Fp = require('../../../../Lib/Utils/Fp.js');
 const StringUtil = require('../../../../Lib/Utils/StringUtil.js');
-const FrequentFlyerParser = require('../../../../Gds/Parsers/Sabre/FrequentFlyerParser.js');
+const FrequentFlyerParser = require('gds-utils/src/text_format_processing/sabre/FfListParser.js');
 const SabreTicketListParser = require('../../../../Gds/Parsers/Sabre/SabreTicketListParser.js');
 const SeatsParser = require('../../../../Gds/Parsers/Sabre/SeatsParser.js');
 

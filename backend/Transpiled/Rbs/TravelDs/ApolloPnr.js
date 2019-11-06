@@ -28,7 +28,7 @@ class ApolloPnr {
 	}
 
 	getRecordLocator() {
-		return ((this.parsed['headerData'] || {})['reservationInfo'] || {})['recordLocator'] || null;
+		return ((this.parsed.headerData || {}).reservationInfo || {}).recordLocator || null;
 	}
 
 	getGdsName() {
@@ -37,8 +37,8 @@ class ApolloPnr {
 
 	getCreatorFpInitials() {
 		let $agentToken, $fpInitials;
-		$agentToken = (this.parsed['headerData']['reservationInfo'] || {})['agentToken'];
-		$fpInitials = (this.parsed['headerData']['reservationInfo'] || {})['focalPointInitials'];
+		$agentToken = (this.parsed.headerData.reservationInfo || {}).agentToken;
+		$fpInitials = (this.parsed.headerData.reservationInfo || {}).focalPointInitials;
 		if (!$agentToken) {
 			return $fpInitials;
 		} else if (php.preg_match(/^0\d{2}$/, $agentToken)) {
@@ -55,7 +55,7 @@ class ApolloPnr {
 	wasCreatedInGdsDirect() {
 		let $initials, $homePcc;
 		$initials = this.getAgentInitials();
-		$homePcc = (this.parsed['headerData']['reservationInfo'] || {})['agencyToken'] || null;
+		$homePcc = (this.parsed.headerData.reservationInfo || {}).agencyToken || null;
 		return $homePcc === 'DPB' && php.in_array($initials, ['WS', 'VWS']);
 	}
 
@@ -72,8 +72,8 @@ class ApolloPnr {
 	 * team that is shown in ticketing itinitals field
 	 */
 	getRsprTeam() {
-		if (php.mb_strlen(this.parsed['headerData']['reservationInfo']['agentToken']) == 3) {
-			return (this.parsed['headerData']['reservationInfo'] || {})['focalPointInitials'];
+		if (php.mb_strlen(this.parsed.headerData.reservationInfo.agentToken) == 3) {
+			return (this.parsed.headerData.reservationInfo || {}).focalPointInitials;
 		} else {
 			return null;
 		}
@@ -84,7 +84,7 @@ class ApolloPnr {
 	 * @see GdsPassengerBlockParser::parsePassengerToken()
 	 */
 	getPassengers() {
-		return this.parsed['passengers']['passengerList'];
+		return this.parsed.passengers.passengerList;
 	}
 
 	/**
@@ -108,7 +108,7 @@ class ApolloPnr {
 	 * @see SsrBlockParser::parse()
 	 */
 	getSsrList() {
-		return this.parsed['ssrData'] || [];
+		return this.parsed.ssrData || [];
 	}
 
 	getStoredPricingList() {
@@ -116,7 +116,7 @@ class ApolloPnr {
 	}
 
 	getRemarks() {
-		return this.parsed['remarks'] || [];
+		return this.parsed.remarks || [];
 	}
 
 	getSsrList() {
@@ -139,26 +139,8 @@ class ApolloPnr {
 		return !php.empty(this.getItinerary());
 	}
 
-	getSegmentsWithStatus($status) {
-		return Fp.filter(($seg) => {
-			return $seg['segmentStatus'] == $status;
-		}, this.getItinerary());
-	}
-
-	hasSegmentsWithStatus($status) {
-		return Fp.any(($seg) => {
-			return $seg['segmentStatus'] == $status;
-		}, this.getItinerary());
-	}
-
-	hasOnlySegmentsWithStatus($status) {
-		return Fp.all(($seg) => {
-			return $seg['segmentStatus'] == $status;
-		}, this.getItinerary());
-	}
-
 	hasEtickets() {
-		return this.parsed['dataExistsInfo']['eTicketDataExists'] || this.parsed['dataExistsInfo']['tinRemarksExist'];
+		return this.parsed.dataExistsInfo.eTicketDataExists || this.parsed.dataExistsInfo.tinRemarksExist;
 	}
 
 	hasDividedBooking() {
@@ -166,30 +148,29 @@ class ApolloPnr {
 	}
 
 	hasLinearFare() {
-		return this.parsed['dataExistsInfo']['linearFareDataExists'] ? true : false;
+		return this.parsed.dataExistsInfo.linearFareDataExists ? true : false;
 	}
 
 	hasFrequentFlyerInfo() {
-		return this.parsed['dataExistsInfo']['frequentFlyerDataExists'] ? true : false;
+		return this.parsed.dataExistsInfo.frequentFlyerDataExists ? true : false;
 	}
 
 	hasSeatInfo() {
-		return this.parsed['dataExistsInfo']['seatDataExists'] ? true : false;
+		return this.parsed.dataExistsInfo.seatDataExists ? true : false;
 	}
 
 	hasMcoInfo() {
-		return this.parsed['dataExistsInfo']['miscDocumentDataExists'] ? true : false;
+		return this.parsed.dataExistsInfo.miscDocumentDataExists ? true : false;
 	}
 
 	belongsToItn() {
-		let $homePcc;
-		$homePcc = (this.parsed['headerData']['reservationInfo'] || {})['agencyToken'];
-		return php.in_array($homePcc, ['DYB', 'DPB']);
+		let homePcc = (this.parsed.headerData.reservationInfo || {}).agencyToken;
+		return ['DYB', 'DPB'].includes(homePcc);
 	}
 
 	/** @return string|null - PCC this PNR was created in or null if it is current PCC */
 	getControlPcc() {
-		return this.parsed['headerData']['shopInfo']['pcc'] || null;
+		return this.parsed.headerData.shopInfo.pcc || null;
 	}
 }
 

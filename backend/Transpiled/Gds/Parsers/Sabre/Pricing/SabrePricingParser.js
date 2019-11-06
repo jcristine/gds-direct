@@ -9,8 +9,8 @@ const PhToNormalPricing = require('../../../../../GdsClients/Transformers/PhToNo
  * parses >WP
  */
 const php = require('klesun-node-tools/src/Transpiled/php.js');
-const PricingCommonHelper = require("./PricingCommonHelper");
-const PhilippinePricingParser = require("../../../../../Parsers/Sabre/PhPricingParser");
+const PricingCommonHelper = require("gds-utils/src/text_format_processing/sabre/pricing/PricingCommonHelper");
+const PhilippinePricingParser = require("gds-utils/src/text_format_processing/sabre/pricing/PhPricingParser");
 
 const parseRebookSegmentsStr = segListStr => {
 	return segListStr.split(' ').map(token => {

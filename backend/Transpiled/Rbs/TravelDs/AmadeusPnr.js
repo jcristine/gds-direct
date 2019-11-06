@@ -77,27 +77,10 @@ class AmadeusPnr {
 	}
 
 	hasItinerary() {
-
 		return !php.empty(this.getItinerary());
 	}
 
-	hasSegmentsWithStatus($segmentStatus) {
-
-		return php.in_array($segmentStatus, php.array_column(this.getItinerary(), 'segmentStatus'));
-	}
-
-	getSegmentsWithStatus($segmentStatus) {
-		let $hasStatus;
-
-		$hasStatus = ($seg) => {
-
-			return $seg['segmentStatus'] === $segmentStatus;
-		};
-		return Fp.filter($hasStatus, this.getItinerary());
-	}
-
 	getAgentInitials() {
-
 		return (((this.parsed || {})['parsed'] || {})['pnrInfo'] || {})['agentInitials'];
 	}
 
