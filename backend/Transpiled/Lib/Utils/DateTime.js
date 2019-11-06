@@ -1,3 +1,4 @@
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 
 const moment = require('moment-timezone');
 const Diag = require('../../../LibWrappers/Diag.js');
@@ -5,61 +6,22 @@ const Diag = require('../../../LibWrappers/Diag.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 class DateTime {
-	/**
-	 * @deprecated - use addYear() instead, as it's much more convenient short name
-	 *
-	 * $date is relative date in format 'm-d', which we'd like to make absolute
-	 * $baseDate is a date strictly in the past of what $date is assumed to be
-	 * I.e. if $baseDate == '2014-12-14', then '12-17' --> '2014-12-17',
-	 *                                     but '01-17' --> '2015-01-17'
-	 */
+	/** @deprecated - use directly from the lib */
 	static decodeRelativeDateInFuture($date, $baseDate) {
-		let $assumedYear, $assumedDate;
-		if (!php.preg_match(/^\d{2}\-\d{2}$/, $date) ||
-			php.strtotime($baseDate) === false
-		) {
-			// safe check against dead locks
-			return null;
-		}
-		$baseDate = php.date('Y-m-d', php.strtotime($baseDate));
-		$assumedYear = php.intval(php.date('Y', php.strtotime($baseDate)));
-		do {
-			$assumedDate = php.date('Y-m-d', php.strtotime(php.strval($assumedYear) + '-' + $date));
-			++$assumedYear;
-		} while ($assumedDate < $baseDate || php.date('m-d', php.strtotime($assumedDate)) != $date);
-		return $assumedDate;
+		return ParserUtil.addPastYear($date, $baseDate);
 	}
 
-	/**
-	 * @deprecated - use addPastYear() instead
-	 *
-	 * $date is relative date in format 'm-d', which we'd like to make absolute
-	 * $baseDate is a date strictly in the future of what $date is assumed to be
-	 * I.e. if $baseDate == '2014-12-14', then '01-17' --> '2014-01-17',
-	 *                                     but '12-17' --> '2013-12-17'
-	 * Algorithm is essentially identical to decodeRelativeDateInFuture.
-	 */
+	/** @deprecated - use directly from the lib */
 	static decodeRelativeDateInPast($date, $baseDate) {
-		let $assumedYear, $assumedDate;
-		if (!php.preg_match(/^\d{2}\-\d{2}$/, $date) ||
-			php.strtotime($baseDate) === false
-		) {
-			// safe check against dead locks
-			return null;
-		}
-		$baseDate = php.date('Y-m-d', php.strtotime($baseDate));
-		$assumedYear = php.intval(php.date('Y', php.strtotime($baseDate)));
-		do {
-			$assumedDate = php.date('Y-m-d', php.strtotime(php.strval($assumedYear) + '-' + $date));
-			--$assumedYear;
-		} while ($assumedDate > $baseDate || php.date('m-d', php.strtotime($assumedDate)) != $date);
-		return $assumedDate;
+		return ParserUtil.addYear($date, $baseDate);
 	}
 
+	/** @deprecated - use directly from the lib */
 	static addYear(date, baseDate) {
 		return this.decodeRelativeDateInFuture(date, baseDate);
 	}
 
+	/** @deprecated - use directly from the lib */
 	static addPastYear(date, baseDate) {
 		return this.decodeRelativeDateInPast(date, baseDate);
 	}

@@ -1,8 +1,11 @@
+const MmParser = require('gds-utils/src/text_format_processing/galileo/pnr/MmParser.js');
+const Rej = require('klesun-node-tools/src/Rej.js');
+const MpListParser = require('gds-utils/src/text_format_processing/apollo/MpListParser.js');
 const SiParser = require('gds-utils/src/text_format_processing/galileo/pnr/SiParser.js');
 const TravelportUtils = require('../GdsHelpers/TravelportUtils.js');
 const SabrePnr = require('../Transpiled/Rbs/TravelDs/SabrePnr.js');
 
-const getAllSabreSsrs = async ({stateful}) => {
+const getSabreLongPnrData = async ({stateful}) => {
 	// Sabre shows _some_ SSRs on simple *R display, but not all of them
 
 	// *P3/4 - SSR-s, *P5 - remarks, *P6 - received from
@@ -17,7 +20,11 @@ const getAllSabreSsrs = async ({stateful}) => {
 		}
 	}
 	pnrCmdRec = pnrCmdRec || (await stateful.runCmd(fullPnrCmd));
-	const fullPnr = SabrePnr.makeFromDump(pnrCmdRec.output);
+	return SabrePnr.makeFromDump(pnrCmdRec.output);
+};
+
+const getAllSabreSsrs = async ({stateful}) => {
+	const fullPnr = await getSabreLongPnrData({stateful});
 	return fullPnr.getSsrList();
 };
 
@@ -77,6 +84,73 @@ const getAmadeusNameNumber = (ssr, pnr) => {
 const isDocSsr = ssr => ['DOCS', 'DOCA', 'DOCO'].includes(ssr.ssrCode);
 const isServiceSsr = ssr => !isDocSsr(ssr);
 
+const findNameNumByRaw = (rawPaxNum, nameRecords) => {
+	const allNameNumbers = nameRecords.map(pax => pax.nameNumber);
+	const match = rawPaxNum.match(/^\s*(\d+)\.(\d+)\s*$/);
+	if (match) {
+		const [, fieldNumber, firstNameNumber] = match;
+		return allNameNumbers.filter((nameNum) => {
+			return nameNum.fieldNumber == fieldNumber
+				&& nameNum.firstNameNumber == firstNameNumber;
+		})[0];
+	} else {
+		return null;
+	}
+};
+
+const normTpMps = (parsed, pnr) => {
+	if (parsed.error) {
+		const msg = 'Failed to parse Mileage Program List - ' + parsed.error;
+		return Rej.NotImplemented(msg, parsed);
+	} else {
+		const passengers = parsed.passengers;
+		return passengers.flatMap(pax => {
+			const pnrPax = pnr.getPassengers()[pax.passengerNumber - 1] || null;
+			return pax.mileagePrograms.map(mp => ({
+				airline: mp.airline,
+				code: mp.code,
+				passengerNameNumber: !pnrPax ? null : pnrPax.nameNumber,
+				passengerName: pax.passengerName,
+			}));
+		});
+	}
+};
+
+/** @param {ApolloPnr} pnr */
+const getApolloMileagePrograms = async ({pnr, stateful}) => {
+	if (!pnr.hasFrequentFlyerInfo()) {
+		return [];
+	} else {
+		const cmdRec = await TravelportUtils.fetchAll('*MP', stateful);
+		const parsed = MpListParser.parse(cmdRec.output);
+		return normTpMps(parsed, pnr);
+	}
+};
+
+/** @param {GalileoPnr} pnr */
+const getGalileoMileagePrograms = async ({pnr, stateful}) => {
+	if (!pnr.hasFrequentFlyerInfo()) {
+		return [];
+	} else {
+		const cmdRec = await TravelportUtils.fetchAll('*MM', stateful);
+		const parsed = MmParser.parse(cmdRec.output);
+		return normTpMps(parsed, pnr);
+	}
+};
+
+/** @param {SabrePnr} pnr */
+const getSabreMileagePrograms = async ({pnr, stateful}) => {
+	if (!pnr.hasFrequentFlyerInfo()) {
+		return [];
+	} else {
+		const fullPnr = await getSabreLongPnrData({stateful});
+		return fullPnr.parsed.parsedData.frequentTraveler.mileagePrograms.map(mp => ({
+			...mp,
+			passengerNameNumber: findNameNumByRaw(mp.passengerNumber, fullPnr.getPassengers()),
+		}));
+	}
+};
+
 /**
  * @param {IPnr|ApolloPnr|AmadeusPnr} pnr
  * @param stateful = require('StatefulSession.js')()
@@ -85,23 +159,14 @@ const ImportPnr = ({pnr, stateful}) => {
 	const getPnrFields = async () => {
 		const gds = pnr.getGdsName();
 		return {
-			apollo: () => {
+			apollo: async () => {
 				const ssrs = pnr.getSsrList().map(ssr => ({...ssr,
 					nameNumber: getTravelportNameNumber(ssr, pnr),
 				}));
 				return {
 					docSsrList: {data: ssrs.filter(isDocSsr)},
 					serviceSsrList: {data: ssrs.filter(isServiceSsr)},
-				};
-			},
-			sabre: async () => {
-				const ssrs = (await getAllSabreSsrs({stateful}))
-					.map(ssr => ({...ssr,
-						nameNumber: getSabreNameNumber(ssr, pnr),
-					}));
-				return {
-					docSsrList: {data: ssrs.filter(isDocSsr)},
-					serviceSsrList: {data: ssrs.filter(isServiceSsr)},
+					frequentFlyerInfo: {mileagePrograms: await getApolloMileagePrograms({pnr, stateful})},
 				};
 			},
 			galileo: async () => {
@@ -112,6 +177,18 @@ const ImportPnr = ({pnr, stateful}) => {
 				return {
 					docSsrList: {data: ssrs.filter(isDocSsr)},
 					serviceSsrList: {data: ssrs.filter(isServiceSsr)},
+					frequentFlyerInfo: {mileagePrograms: await getGalileoMileagePrograms({pnr, stateful})},
+				};
+			},
+			sabre: async () => {
+				const ssrs = (await getAllSabreSsrs({stateful}))
+					.map(ssr => ({...ssr,
+						nameNumber: getSabreNameNumber(ssr, pnr),
+					}));
+				return {
+					docSsrList: {data: ssrs.filter(isDocSsr)},
+					serviceSsrList: {data: ssrs.filter(isServiceSsr)},
+					frequentFlyerInfo: {mileagePrograms: await getSabreMileagePrograms({pnr, stateful})},
 				};
 			},
 			amadeus: () => {
@@ -121,6 +198,16 @@ const ImportPnr = ({pnr, stateful}) => {
 				return {
 					docSsrList: {data: ssrs.filter(isDocSsr)},
 					serviceSsrList: {data: ssrs.filter(isServiceSsr)},
+					frequentFlyerInfo: {
+						mileagePrograms: ssrs
+							.filter(ssr => ssr.ssrCode === 'FQTV')
+							.map(ssr => ({
+								airline: ssr.data.airline,
+								flyerNumber: ssr.data.flyerNumber,
+								passengerNameNumber: ssr.nameNumber,
+								passengerName: null,
+							})),
+					},
 				};
 			},
 		}[gds]();
