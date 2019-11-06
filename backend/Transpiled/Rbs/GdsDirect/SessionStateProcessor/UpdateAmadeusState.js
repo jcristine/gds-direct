@@ -23,7 +23,7 @@ class UpdateAmadeusState
 		// '',
 		// 'NO FARE FOR BOOKING CODE-TRY OTHER PRICING OPTIONS',
 		// ' ',
-		const isErrorOutput = StringUtil.lines(output.trim()).length < 4;
+		const isErrorOutput = StringUtil.lines(output.trim()).length < 5;
 		return !isErrorOutput;
 	}
 
