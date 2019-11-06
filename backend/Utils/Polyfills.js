@@ -8,8 +8,9 @@ process.env.TZ = 'UTC';
 
 Array.prototype.flatMap = function(flatten) {
 	const result = [];
-	for (const el of this) {
-		const chunk = flatten(el);
+	for (let i = 0; i < this.length; ++i) {
+		const el = this[i];
+		const chunk = flatten(el, i);
 		result.push(...chunk);
 	}
 	return result;

@@ -5,7 +5,7 @@ const SabCmdParser = require('gds-utils/src/text_format_processing/sabre/command
 
 const ApoPnrParser = require('gds-utils/src/text_format_processing/apollo/pnr/PnrParser.js');
 
-const SabPricingParser = require('../Transpiled/Gds/Parsers/Sabre/Pricing/SabrePricingParser.js');
+const SabPricingParser = require('gds-utils/src/text_format_processing/sabre/pricing/WpPricingParser.js');
 
 const FareConstructionParser = require('gds-utils/src/text_format_processing/agnostic/fare_calculation/FcParser.js');
 const {safe} = require('../Utils/TmpLib.js');

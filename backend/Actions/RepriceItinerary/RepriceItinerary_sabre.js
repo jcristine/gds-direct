@@ -1,6 +1,6 @@
 const Parse_priceItinerary = require('gds-utils/src/text_format_processing/sabre/commands/Parse_priceItinerary.js');
 const BookViaGk = require('../BookViaGk/BookViaGk.js');
-const SabrePricingParser = require('../../Transpiled/Gds/Parsers/Sabre/Pricing/SabrePricingParser.js');
+const SabrePricingParser = require('gds-utils/src/text_format_processing/sabre/pricing/WpPricingParser.js');
 const BookingClasses = require('../../Repositories/BookingClasses.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const SabrePricingAdapter = require('../../Transpiled/Rbs/FormatAdapters/SabrePricingAdapter.js');
