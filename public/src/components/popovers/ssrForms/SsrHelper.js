@@ -1,4 +1,5 @@
 import {DEV_CMD_STACK_RUN} from "../../../actions";
+import Dom from "../../../helpers/dom";
 
 const SsrHelper = () => {
 	const formatNameNum = (nameNumber) => {
@@ -36,10 +37,23 @@ const SsrHelper = () => {
 		}
 	};
 
+	const makePaxNumSelect = (paxes, pax = null) => {
+		const abs = !pax ? null : pax.nameNumber.absolute;
+		return Dom('select', {name: 'nameNumber'}, paxes
+			.map(p => p.nameNumber)
+			.map(numRec => Dom('option', {
+				textContent: SsrHelper().formatNameNum(numRec),
+				value: JSON.stringify(numRec),
+				required: 'required',
+				...(abs == numRec.absolute ? {selected: 'selected'} : {}),
+			})));
+	};
+
 	return {
 		formatNameNum,
 		saveChanges,
 		cancelOldSsrs,
+		makePaxNumSelect,
 	};
 };
 

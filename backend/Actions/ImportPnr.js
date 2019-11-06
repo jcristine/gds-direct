@@ -202,8 +202,9 @@ const ImportPnr = ({pnr, stateful}) => {
 						mileagePrograms: ssrs
 							.filter(ssr => ssr.ssrCode === 'FQTV')
 							.map(ssr => ({
+								lineNumber: ssr.lineNumber,
 								airline: ssr.data.airline,
-								flyerNumber: ssr.data.flyerNumber,
+								code: ssr.data.flyerNumber,
 								passengerNameNumber: ssr.nameNumber,
 								passengerName: null,
 							})),

@@ -6,6 +6,7 @@ import TsaForm from "./ssrForms/TsaForm";
 import SsrHelper from "./ssrForms/SsrHelper";
 import PhoneForm from "./ssrForms/PhoneForm";
 import EmailForm from "./ssrForms/EmailForm";
+import FrequentFlyerForm from "./ssrForms/FrequentFlyerForm";
 
 const Component = require('../../modules/component.es6').default;
 const Cmp = (...args) => new Component(...args);
@@ -47,14 +48,15 @@ const SsrForm = ({icon, popoverTarget}) => {
 	const tsaForm = TsaForm({close: () => popover.close()});
 	const phoneForm = PhoneForm({close: () => popover.close()});
 	const emailForm = EmailForm({close: () => popover.close()});
+	const frequentFlyerForm = FrequentFlyerForm({close: () => popover.close()});
 
 	const makeSectionsSwitchCmp = () => {
 		const sectionButtons = [
 			Cmp('span[TSA].active-section-btn', {'data-section': 'tsa'}),
 			Cmp('span[Phone number]'          , {'data-section': 'phone-number'}),
 			Cmp('span[E-mail]'                , {'data-section': 'email'}),
-			Cmp('span[APIS]'                  , {'data-section': 'apis'}),
 			Cmp('span[Frequent flyer]'        , {'data-section': 'frequent-flyer'}),
+			Cmp('span[APIS]'                  , {'data-section': 'apis'}),
 			Cmp('span[KTN]'                   , {'data-section': 'ktn'}),
 			Cmp('span[Meal]'                  , {'data-section': 'meal'}),
 			Cmp('span[OSI]'                   , {'data-section': 'osi'}),
@@ -65,8 +67,8 @@ const SsrForm = ({icon, popoverTarget}) => {
 			Cmp('div', {'data-section': 'tsa'}).attach([tsaForm.dom]),
 			Cmp('div', {'data-section': 'phone-number'}).attach([phoneForm.dom]),
 			Cmp('div', {'data-section': 'email'}).attach([emailForm.dom]),
+			Cmp('div', {'data-section': 'frequent-flyer'}).attach([frequentFlyerForm.dom]),
 			Cmp('div', {'data-section': 'apis'}).attach([Cmp('h2[Not Implemented Yet apis]')]),
-			Cmp('div', {'data-section': 'frequent-flyer'}).attach([Cmp('h2[Not Implemented Yet frequent-flyer]')]),
 			Cmp('div', {'data-section': 'ktn'}).attach([Cmp('h2[Not Implemented Yet ktn]')]),
 			Cmp('div', {'data-section': 'meal'}).attach([Cmp('h2[Not Implemented Yet meal]')]),
 			Cmp('div', {'data-section': 'osi'}).attach([Cmp('h2[Not Implemented Yet osi]')]),
@@ -131,7 +133,7 @@ const SsrForm = ({icon, popoverTarget}) => {
 
 		/** @param imported = require('GdsSessionController.js').getCurrentPnr() */
 		const updateFromPnr = (imported) => {
-			const {reservation, docSsrList, serviceSsrList} = imported;
+			const {reservation, docSsrList, serviceSsrList, frequentFlyerInfo} = imported;
 			paxListCmp.context.innerHTML = '';
 			segListCmp.context.innerHTML = '';
 
@@ -163,6 +165,7 @@ const SsrForm = ({icon, popoverTarget}) => {
 			tsaForm.updateBlock(paxes, docSsrList.data || []);
 			phoneForm.updateBlock(paxes, serviceSsrList.data || []);
 			emailForm.updateBlock(paxes, serviceSsrList.data || []);
+			frequentFlyerForm.updateBlock(paxes, frequentFlyerInfo.mileagePrograms || []);
 			onRendered();
 
 			const selector = '[data-section="tsa"] input[name="dob"]';

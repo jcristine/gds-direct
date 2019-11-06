@@ -213,6 +213,7 @@ exports.getCurrentPnr = async ({rqBody, ...controllerData}) => {
 		reservation,
 		docSsrList: pnrFields.docSsrList,
 		serviceSsrList: pnrFields.serviceSsrList,
+		frequentFlyerInfo: pnrFields.frequentFlyerInfo,
 	};
 };
 

@@ -4,6 +4,7 @@ import Component from '../../../modules/component.es6';
 import {getStore} from "../../../store";
 import {DEV_CMD_STACK_RUN} from "../../../actions";
 import SsrHelper from "./SsrHelper";
+import Dom from "../../../helpers/dom";
 
 const Cmp = (...args) => new Component(...args);
 
@@ -25,8 +26,7 @@ const paxToTsaTrCmp = (pax, paxes, ssrs) => {
 	const middleName = nameParts.slice(1).join(' ');
 	return Cmp('tr').attach([
 		Cmp('td').attach([
-			Cmp('select', {name: 'nameNumber'})
-				.attach(makeNumOpts(pax)),
+			Cmp({context: SsrHelper().makePaxNumSelect(paxes, pax)}),
 			Cmp('input', {
 				type: 'hidden',
 				name: 'oldSsrs',
