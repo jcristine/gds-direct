@@ -68,7 +68,6 @@ class PnrInfoBlockParser
 				pcc: $match['pcc'],
 				homePcc: $match['homePcc'],
 				agentInitials: $initials,
-				time: $match['time'],
 				time: {
 					raw: $match['time'],
 					parsed: this.parseReservationTime($match['time']),
