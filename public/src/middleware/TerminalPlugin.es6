@@ -16,7 +16,7 @@ import ActionReader	from '../modules/actionReader.es6';
 import History 		from '../modules/history.es6';
 import {getReplacement}		from '../helpers/helpers.es6';
 import {CHANGE_ACTIVE_TERMINAL} from "../actions/settings";
-import {UPDATE_CUR_GDS} from "../actions/gdsActions";
+import {CHANGE_GDS, UPDATE_CUR_GDS} from "../actions/gdsActions";
 // import {debugOutput} from "../helpers/logger";
 import {loggerOutput} from "../helpers/logger";
 import {post} from "../helpers/requests";
@@ -28,10 +28,10 @@ import {ZpTaxBreakdownForm} from "../components/popovers/maskForms/zpTaxBreakdow
 import {FareCalculationForm} from "../components/popovers/maskForms/fareCalculationForm.es6";
 import PricePccMixList from "../components/popovers/PricePccMixList.es6";
 
-let Component = require('../modules/component.es6').default;
-let Cmp = (...args) => new Component(...args);
+const Component = require('../modules/component.es6').default;
+const Cmp = (...args) => new Component(...args);
 
-let chooseStrFromList = (plugin, options, caption = 'Choose One Of The Following Values') =>
+const chooseStrFromList = (plugin, options, caption = 'Choose One Of The Following Values') =>
 	new Promise((resolve, reject) => {
 		if (options.length === 0) {
 			reject(new Error('Can not choose from 0 options'));
@@ -66,6 +66,26 @@ let chooseStrFromList = (plugin, options, caption = 'Choose One Of The Following
 			selectCmp.context.querySelector('option').setAttribute('selected', 'selected');
 		}
 	});
+
+const tryInterpretAsGdsChangeAlias = (command) => {
+	const semMatch = command.match(/^SEM\/([0-9A-Z]{2,3})(?:\/AG|)$/);
+	if (semMatch) {
+		const pcc = semMatch[1];
+		const gdsToAliases = {
+			apollo: ['AP', 'APO', '1V'],
+			sabre: ['SA', 'SAB', '1S'],
+			galileo: ['GA', 'GAL', '1G'],
+			amadeus: ['AM', 'AMA', '1A'],
+		};
+		for (const [gds, aliases] of Object.entries(gdsToAliases)) {
+			if (aliases.includes(pcc)) {
+				CHANGE_GDS(gds);
+				return true;
+			}
+		}
+	}
+	return false;
+};
 
 /** element of Terminal class */
 export default class TerminalPlugin
@@ -293,26 +313,25 @@ export default class TerminalPlugin
 		});
 	}
 
-	_checkSabreCommand( command, terminal )
-	{
+	_tryInterpretAsSabreMdAlias(command) {
 		if ( this.allowManualPaging )
 		{
-			switch (command.toUpperCase())
+			switch (command)
 			{
 				case 'MD' :
 					this._printOutput(this.pagination.next().print(), false);
 					// this.print( this.pagination.next().print() );
-				return true;
+					return true;
 
 				case 'MU' :
 					this._printOutput(this.pagination.prev().print(), false);
 					// this.print( this.pagination.prev().print() );
-				return true;
+					return true;
 
 				case 'MDA' :
 					this._printOutput(this.pagination.printAll(), false);
 					// this.print( this.pagination.printAll() );
-				return true;
+					return true;
 
 				case 'MDA5' :
 				case 'MDA20' :
@@ -323,10 +342,16 @@ export default class TerminalPlugin
 		return false;
 	}
 
+	_checkOfflineCommand(command, terminal)
+	{
+		command = command.toUpperCase();
+		return tryInterpretAsGdsChangeAlias(command)
+			|| this._tryInterpretAsSabreMdAlias(command);
+	}
+
 	_checkBeforeEnter( terminal, command )
 	{
-		if ( this._checkSabreCommand( command, terminal ) )
-		{
+		if (this._checkOfflineCommand(command, terminal)) {
 			return command;
 		}
 
