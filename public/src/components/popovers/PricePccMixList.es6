@@ -247,7 +247,6 @@ PricePccMixList.initialize = (plugin, data) => {
 		cmdRqToDelayedRecs[cmdRqId].forEach(priceMixList.addRow);
 		delete cmdRqToDelayedRecs[cmdRqId];
 	}
-	console.info('cmdRqToList', cmdRqToList);
 };
 
 PricePccMixList.displayPriceMixPccRow = (data) => {
