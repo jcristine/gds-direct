@@ -20,11 +20,6 @@ const makeMpTr = (paxes, mp = null) => {
 			value: !mp ? '' : mp.code,
 			required: 'required',
 		})]),
-		Dom('td', {}, [Dom('input', {
-			type: 'text', size: 2, name: 'operatingAirline',
-			pattern: /^[A-Z0-9]{2}$/.source,
-			value: !mp ? '' : mp.operatingAirline || '',
-		})]),
 		Dom('td', {}, [Dom('button', {
 			type: 'button',
 			textContent: 'Remove',
@@ -40,7 +35,6 @@ const mpTrToData = (tr) => {
 		nameNumber: !nameNumSel ? null : JSON.parse(nameNumSel.value),
 		airline: tr.querySelector('[name="airline"]').value,
 		code: tr.querySelector('[name="code"]').value,
-		operatingAirline: tr.querySelector('[name="operatingAirline"]').value,
 	};
 };
 
@@ -60,7 +54,6 @@ const deleteAll = (mileagePrograms, gds) => {
 };
 
 const addRecords = (newRecords, gds) => {
-	// TODO: operating airline!
 	if (newRecords.length > 0) {
 		let cmd;
 		if (gds === 'apollo') {
@@ -109,7 +102,6 @@ const FrequentFlyerForm = ({close}) => {
 					Dom('th', {textContent: 'Pax'}),
 					Dom('th', {textContent: 'Airline'}),
 					Dom('th', {textContent: 'Frequent Flyer Number'}),
-					Dom('th', {textContent: 'Operating Airline'}),
 				]),
 			]),
 			tbody,
