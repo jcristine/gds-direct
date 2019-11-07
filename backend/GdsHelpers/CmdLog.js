@@ -157,7 +157,7 @@ const CmdLog = ({
 
 	return {
 		gds: gds,
-		getCmdRqId: () => whenCmdRqId.then(nonEmpty),
+		getCmdRqId: () => whenCmdRqId.then(nonEmpty('cmd rq id not supplied')),
 		logCommand: logCommand,
 		getFullState: () => fullState,
 		updateFullState: (newFullState) => {
