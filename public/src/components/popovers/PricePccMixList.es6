@@ -190,8 +190,7 @@ const PricePccMixList = ({
 	};
 
 	/** @param {{gds, pcc}} pccResult = (new (require('RepriceInAnotherPccAction.js'))).repriceIn() */
-	const addRow = (data) => {
-		const {pccResult} = data;
+	const addRow = (pccResult) => {
 		console.debug('pccResult', pccResult);
 
 		const {gds, pcc, rulePricingCmd, pricingBlockList = []} = pccResult;
@@ -200,6 +199,11 @@ const PricePccMixList = ({
 		const selector = ':scope > tr[data-gds="' + gds + '"][data-pcc="' + pcc + '"]:not(.filled)';
 		const tr = [...tbodyCmp.context.querySelectorAll(selector)]
 			.filter(tr => tr.getAttribute('data-cmd') === rulePricingCmd)[0];
+		if (!tr) {
+			const msg = 'Failed to find row with selector ' +
+				selector + ' for command >' + rulePricingCmd + ';';
+			throw new Error(msg);
+		}
 		const trCmp = Cmp({context: tr});
 
 		if (error) {
@@ -243,16 +247,19 @@ PricePccMixList.initialize = (plugin, data) => {
 		cmdRqToDelayedRecs[cmdRqId].forEach(priceMixList.addRow);
 		delete cmdRqToDelayedRecs[cmdRqId];
 	}
+	console.info('cmdRqToList', cmdRqToList);
 };
 
 PricePccMixList.displayPriceMixPccRow = (data) => {
-	if (cmdRqToList[data.cmdRqId]) {
-		cmdRqToList[data.cmdRqId].addRow(data);
+	const {pccResult} = data;
+	const {cmdRqId} = pccResult;
+	if (cmdRqToList[cmdRqId]) {
+		cmdRqToList[cmdRqId].addRow(pccResult);
 	} else {
 		// may happen if first row socket message comes back faster
 		// than initialization HTTP request itself responds
-		cmdRqToDelayedRecs[data.cmdRqId] = cmdRqToDelayedRecs[data.cmdRqId] || [];
-		cmdRqToDelayedRecs[data.cmdRqId].push(data);
+		cmdRqToDelayedRecs[cmdRqId] = cmdRqToDelayedRecs[cmdRqId] || [];
+		cmdRqToDelayedRecs[cmdRqId].push(data);
 	}
 };
 
