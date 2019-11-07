@@ -68,7 +68,7 @@ const chooseStrFromList = (plugin, options, caption = 'Choose One Of The Followi
 	});
 
 const tryInterpretAsGdsChangeAlias = (command) => {
-	const semMatch = command.match(/^SEM\/([0-9A-Z]{2,3})(?:\/AG|)$/);
+	const semMatch = command.match(/^SEM\/([0-9A-Z]{2,3})(?:\/AG|)\s*$/);
 	if (semMatch) {
 		const pcc = semMatch[1];
 		const gdsToAliases = {
