@@ -31,12 +31,12 @@ const provide_unwrapFcLine = () => {
 class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
 {
 	provideDumps()  {
-		let $list;
+		let list;
 
-		$list = [];
+		list = [];
 
 		// another itinerary example
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXA',
 				'',
@@ -151,7 +151,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		// fare calculation wrapped on "/"
 		// empty endorsement text
 		// XT taxes text steps on net price line
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXP/P1',
 				'',
@@ -232,7 +232,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 			},
 		]);
 
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXA/R,UP',
 				'',
@@ -351,7 +351,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 
 		// Space in wrapped fare calculation - "HY NYC". Should do
 		// unwrapping by IATA format - two letters always spaced if not fb
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXA',
 				'',
@@ -419,7 +419,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		// FXP/P1
 		// with "BG CXR: 2*SU"
 		// with equivalent currency
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXP/P1',
 				'',
@@ -482,7 +482,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		]);
 
 		// multiple PTC-s - FXA will display PTC list instead of fare calculation
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXA/R,UP',
 				'',
@@ -544,7 +544,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		]);
 
 		// simple multi-ptc FXP pricing
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXP',
 				'',
@@ -589,7 +589,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		]);
 
 		// apollo>*X3LFBQ; with "S U R F A C E" segment also known as ARNK (arrival unknown) also known as VOID
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXP1',
 				'',
@@ -663,7 +663,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		]);
 
 		// no taxes because it is infant
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FQQ5',
 				'',
@@ -737,7 +737,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		]);
 
 		// numbers of PTC in pricing instead of names when priced without names in PNR
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXX/RIN*CH*ADT*INF*MIL',
 				'',
@@ -806,7 +806,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		]);
 
 		// with "through" selection
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXX/RADT*CNN*ADT*ADT*ADT',
 				'',
@@ -835,7 +835,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		]);
 
 		// "...Q47.13" and "360.25YFO/CH50" lines wrapped on digits
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FQQ1',
 				'',
@@ -880,7 +880,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		]);
 
 		// with CAT35 NEGOTIATED FARES
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXX/R,U',
 				'',
@@ -934,7 +934,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 
 		// with CAT35 NEGOTIATED FARES F
 		// I copied this dump from jira, formatting could be wrong somewhere
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXX/R,UP',
 				'',
@@ -998,7 +998,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 
 		// with "50" bag amount code without letters
 		// >AD18JANHMOBOG12A/XMEX/A4O; >SS1Q1; >FXA;
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXA',
 				'',
@@ -1042,7 +1042,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		// with "25" bag amount code without letters
 		// >AD18JANHMOBOG12A/XMEX/A4O; >SS1Q1; >FXR/R,U;
 		// also with PRIVATE RATES USED instead of NEGOTIATED FARES USED
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXR/R,U',
 				'',
@@ -1092,7 +1092,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 			},
 		]);
 
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXR',
 				'',
@@ -1142,7 +1142,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 
 		// failed because it unwrapped FC to "AV X/ BOG", but should have "AV X/BOG"
 		// I guess we can just unwrap any character that is nor letter, nor number without space
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXA',
 				'',
@@ -1199,7 +1199,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		]);
 
 		// infant has INF mark next to cmdPaxNums
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXX/RADT*C05*INF',
 				'',
@@ -1237,7 +1237,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		]);
 
 		// looks like as if someone changed our account config - now tax codes are always prefixed with "-"
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXX',
 				'',
@@ -1302,7 +1302,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 			},
 		]);
 
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXA/RADT',
 				'',
@@ -1503,7 +1503,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		]);
 
 		// new Philippines PCC, no dot in amount, also 2 letter PTC
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				"FXP",
 				"",
@@ -1532,7 +1532,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		]);
 
 		// new Philippines PCC, with "T" column in segment list
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				"FXX",
 				"",
@@ -1627,7 +1627,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		]);
 
 		// (PA) pacific flight mark in Fare Calculation
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				"FQQ1",
 				"",
@@ -1698,7 +1698,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		]);
 
 		// CH33* PTC. 33* does not seem to be neither age, nor discount percent...
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				'FXX/R,P,24AUG19',
 				'',
@@ -1729,8 +1729,36 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 			},
 		]);
 
+		// three empty lines
+		list.push([
+			[
+				'FXX/RADT*C07',
+				'',
+				'',
+				'',
+				'   PASSENGER         PTC    NP  FARE USD      TAX   PER PSGR',
+				'01 1                 ADT     1     867.00  513.60    1380.60',
+				'02 2                 ADT   * 1     696.00  513.60    1209.60',
+				'',
+				'                   TOTALS    2    1563.00 1027.20    2590.20',
+				'',
+				'1-2 LAST TKT DTE 08NOV19 - SEE ADV PURCHASE',
+				'1-2 E-TICKET NOT PERMITTED',
+				'1-2 TICKETS ARE NON-REFUNDABLE',
+			].join('\n'),
+			{
+				commandCopy: 'FXX/RADT*C07',
+				data: {
+					passengers: [
+						{lineNumber: '01', ptc: 'ADT'},
+						{lineNumber: '02', ptc: 'ADT'},
+					],
+				},
+			},
+		]);
+
 		// failed to parse FC, likely because of wrapped 'QKE' + '0ZMML' fare basis
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				"FQQ1",
 				"",
@@ -1785,7 +1813,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		]);
 
 		// same fare basis issue, fails on FC again
-		$list.push([
+		list.push([
 			php.implode(php.PHP_EOL, [
 				"FXA/K",
 				"",
@@ -1850,7 +1878,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 		//    SEE RTSVC
 		// 4  WB 202 N 20DEC 5 KGLLOS GK1  1000A 130P 20DEC  A
 		//    SEE RTSVC
-		$list.push([
+		list.push([
 			[
 				'FXA/K',
 				'',
@@ -1899,7 +1927,7 @@ class FxParserTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 			},
 		]);
 
-		return $list;
+		return list;
 	}
 
 	test_unwrapFcLine({input, output}) {

@@ -13,7 +13,6 @@ const Agents = require("../Repositories/Agents");
 const Agent = require('../DataFormats/Wrappers/Agent.js');
 const MaskUtil = require("../Transpiled/Lib/Utils/MaskingUtil");
 const {HttpUtil} = require('klesun-node-tools');
-const {jsExport} = require('klesun-node-tools/src/Utils/Misc.js');
 
 const isSystemError = (exc) =>
 	!exc.isOk &&
@@ -178,10 +177,10 @@ const withGdsSession = (sessionAction, canStartNew = false) => (req, res, protoc
 };
 
 // UnhandledPromiseRejectionWarning
-process.on('unhandledRejection', (exc, promise) => {
+process.on('unhandledRejection', async (exc, promise) => {
 	exc = exc || 'Empty error ' + exc;
-	const dataStr = typeof exc === 'string' ? exc : jsExport({
-		message: exc + ' ' + promise,
+	const dataStr = typeof exc === 'string' ? exc : Debug.jsExport({
+		message: exc + '',
 		stack: exc.stack,
 		promise: promise,
 		...exc,
