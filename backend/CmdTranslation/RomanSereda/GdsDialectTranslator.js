@@ -1,3 +1,6 @@
+const Translate_changeSeats = require('gds-utils/src/cmd_translators/Translate_changeSeats.js');
+const Translate_changeFrequentFlyerNumber = require('gds-utils/src/cmd_translators/Translate_changeFrequentFlyerNumber.js');
+const Translate_addFrequentFlyerNumber = require('gds-utils/src/cmd_translators/Translate_addFrequentFlyerNumber.js');
 const TranslatePricingCmd = require('gds-utils/src/cmd_translators/Translate_priceItinerary.js');
 
 
@@ -14,9 +17,6 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 const PatternTranslator = require("./PatternTranslator");
 const TranslateAvailabilityCmdAction = require("./TranslateAvailabilityCmdAction");
 const TranslateTariffDisplayCmdAction = require("./TranslateTariffDisplayCmdAction");
-const TranslateAssignOrCancelSeat = require("../TranslateAssignOrCancelSeat");
-const TranslateAddFrequentFlyerNumber = require("../TranslateAddFrequentFlyerNumber");
-const TranslateChangeFrequentFlyerNumber = require("../TranslateChangeFrequentFlyerNumber");
 const CommonDataHelper = require("../../Transpiled/Rbs/GdsDirect/CommonDataHelper");
 
 /** RAM caching */
@@ -1213,17 +1213,18 @@ class GdsDialectTranslator
 		let result = null;
 		const messages = [];
 		const parsed = CommonDataHelper.parseCmdByGds(fromGds, cmdRq);
+		const data = parsed.data;
 		if (TranslateAvailabilityCmdAction.isAvailabilityCommand(cmdRq, fromGds)) {
 			result = TranslateAvailabilityCmdAction.translate(cmdRq, fromGds, toGds);
 		} else if (TranslateTariffDisplayCmdAction.isTariffDisplayCommand(cmdRq, fromGds)) {
 			result = TranslateTariffDisplayCmdAction.translate(cmdRq, fromGds, toGds);
-		} else if (parsed.data) {
+		} else if (data) {
 			if (parsed['type'] === 'addFrequentFlyerNumber') {
-				result = TranslateAddFrequentFlyerNumber.translate(parsed['data'], fromGds, toGds);
+				result = Translate_addFrequentFlyerNumber({data, fromGds, toGds});
 			} else if (parsed['type'] === 'changeFrequentFlyerNumber') {
-				result = TranslateChangeFrequentFlyerNumber.translate(parsed['data'], fromGds, toGds);
+				result = Translate_changeFrequentFlyerNumber({data, fromGds, toGds});
 			} else if (['requestSeats', 'cancelSeats'].includes(parsed['type'])) {
-				result = TranslateAssignOrCancelSeat.translate(parsed, fromGds, toGds);
+				result = Translate_changeSeats({parsed, fromGds, toGds});
 			} else if (['priceItinerary', 'storePricing'].includes(parsed['type'])) {
 				try {
 					result = TranslatePricingCmd({

@@ -2954,14 +2954,6 @@ class GdsDialectTranslatorTest extends require('klesun-node-tools/src/Transpiled
 			// SX/S{segNum3} -> S.S{segNum3}@
 			['amadeus', 'galileo', 'SX/S3', 'S.S3@', true],
 
-			// MP*{al}{ffNumber} -> M.{al}{ffNumber}
-			['apollo', 'galileo', 'MP*UA12345678910', 'M.UA12345678910', true],
-			// MP*¤{alFF}{ffNumber} -> M.{al}{ffNumber}/{alFF}
-			['galileo', 'apollo', 'M.UA12345678910/LH', 'MP*@LH12345678910', false],
-			// MPN{paxNum}*{al}{ffNumber} -> M.P{paxNum}/{al}{ffNumber}
-			['apollo', 'galileo', 'MPN1*UA12345678910', 'M.P1/UA12345678910', true],
-			// MPN{paxNum}*¤{alFF}{ffNumber} -> M.P{paxNum}/{al}{ffNumber}/{alFF}
-			['galileo', 'apollo', 'M.P1/UA12345678910/LH', 'MPN1*\u00A4LH12345678910', false],
 			['apollo', 'galileo', '*MP', '*MM', true],
 			['apollo', 'galileo', 'MP/X/*ALL', 'M.@', true],
 			// MP/X/N{paxNum}*{alFF} -> M.P{paxNum}@
@@ -2969,14 +2961,6 @@ class GdsDialectTranslatorTest extends require('klesun-node-tools/src/Transpiled
 			// F:{al}{flightNum}/{date} -> L@{al}/LF{al}{flightNum}/{date}
 			['apollo', 'galileo', 'F:LH123/29APR', 'L@LH/LFLH123/29APR', true],
 
-			// FF{al}{ffNumber} -> M.{al}{ffNumber}
-			['sabre', 'galileo', 'FFUA12345678910', 'M.UA12345678910', true],
-			// FF{al}{ffNumber}/{alFF} -> M.{al}{ffNumber}/{alFF}
-			['sabre', 'galileo', 'FFUA12345678910/LH', 'M.UA12345678910/LH', true],
-			// FF{al}{ffNumber}-{paxNum} -> M.P{paxNum}/{al}{ffNumber}
-			['sabre', 'galileo', 'FFUA12345678910-1.1', 'M.P1/UA12345678910', true],
-			// FF{al}{ffNumber}/{alFF}-{paxNum} -> M.P{paxNum}/{al}{ffNumber}/{alFF}
-			['sabre', 'galileo', 'FFUA12345678910/LH-1.1', 'M.P1/UA12345678910/LH', true],
 			['sabre', 'galileo', '*FF', '*MM', true],
 			['sabre', 'galileo', 'FF\u00A4ALL', 'M.@', true],
 			// FF{paxNum}¤ -> M.P{paxNum}@
@@ -2985,14 +2969,6 @@ class GdsDialectTranslatorTest extends require('klesun-node-tools/src/Transpiled
 			// 2{al}{flightNum}/{date} -> L@{al}/LF{al}{flightNum}/{date}
 			['sabre', 'galileo', '2LH123/29APR', 'L@LH/LFLH123/29APR', true],
 
-			// FFN{al}-{ffNumber} -> M.{al}{ffNumber}
-			['amadeus', 'galileo', 'FFNUA-12345678910', 'M.UA12345678910', true],
-			// FFN{al}-{ffNumber},{al},{alFF} -> M.{al}{ffNumber}/{alFF}
-			['amadeus', 'galileo', 'FFNUA-12345678910,UA,LH', 'M.UA12345678910/LH', true],
-			// FFN{al}-{ffNumber}/P{paxNum} -> M.P{paxNum}/{al}{ffNumber}
-			['amadeus', 'galileo', 'FFNUA-12345678910/P1', 'M.P1/UA12345678910', true],
-			// FFN{alff}-{ffNumber},{al}/P{paxNum} -> M.P{paxNum}/{al}{ffNumber}/{alFF}
-			['amadeus', 'galileo', 'FFNUA-12345678910,UA,LH/P1', 'M.P1/UA12345678910/LH', true],
 			// DO{al}{flightNum}/{date} -> L@{al}/LF{al}{flightNum}/{date}
 			['amadeus', 'galileo', 'DOLH123/29APR', 'L@LH/LFLH123/29APR', true],
 
@@ -3066,10 +3042,6 @@ class GdsDialectTranslatorTest extends require('klesun-node-tools/src/Transpiled
 			['apollo', 'amadeus', '$BB:15JUN17', 'FXA/R,15JUN17'],
 			// needs current date
 			['apollo', 'amadeus', '$BB:15JUN', 'FXA/R,15JUN18'],
-			['apollo', 'amadeus', 'MP*UA12345678910', 'FFNUA-12345678910'],
-			['apollo', 'amadeus', 'MP*\u00A4LH12345678910', 'FFNLH-12345678910'],
-			['apollo', 'amadeus', 'MPN1*UA12345678910', 'FFNUA-12345678910/P1'],
-			['apollo', 'amadeus', 'MPN1*\u00A4LH12345678910', 'FFNLH-12345678910/P1'],
 			['apollo', 'amadeus', '.1HK', '1/HK'],
 			['apollo', 'amadeus', 'F:LH123/29APR', 'DOLH123/29APR'],
 			['apollo', 'amadeus', 'FS', 'FXD'],
@@ -3089,10 +3061,6 @@ class GdsDialectTranslatorTest extends require('klesun-node-tools/src/Transpiled
 			['apollo', 'amadeus', 'FS:CAD', 'FXD/R,FC-CAD'],
 			['apollo', 'amadeus', 'FS03', 'FXZ03'],
 			['sabre', 'amadeus', 'WPNC¥B15JUN17', 'FXA/R,15JUN17'],
-			['sabre', 'amadeus', 'FFUA12345678910-1.1', 'FFNUA-12345678910/P1'],
-			['sabre', 'amadeus', 'FFUA12345678910/LH', 'FFNUA-12345678910,UA,LH'],
-			['sabre', 'amadeus', 'FFUA12345678910-1.1', 'FFNUA-12345678910/P1'],
-			['sabre', 'amadeus', 'FFUA12345678910/LH-1.1', 'FFNUA-12345678910,UA,LH/P1'],
 			['sabre', 'amadeus', '.1HK', '1/HK'],
 			['sabre', 'amadeus', '2LH123/29APR', 'DOLH123/29APR'],
 			['sabre', 'amadeus', 'WPNI', 'FXD'],
