@@ -377,7 +377,13 @@ export default class TerminalPlugin
 				if (command) {
 					const actions = (response || {}).actions || [];
 					if (response && (response.output || actions.length > 0)) {
-						this.parseBackEnd( response, command );
+						let activePlugin = this;
+						if (response.switchToGds && response.switchToGds !== this.gdsName) {
+							const gdsUnit = CHANGE_GDS(response.switchToGds);
+							activePlugin = gdsUnit.getActiveTerminal().plugin;
+							activePlugin.terminal.focus();
+						}
+						activePlugin.parseBackEnd(response, command);
 					} else if (actions.length === 0) {
 						this.print(`[[;;;errorMessage;]EMPTY SERVER RESPONSE]`);
 					}

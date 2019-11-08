@@ -1,20 +1,16 @@
+const RunGlobalCmdRq = require('../Actions/RunGlobalCmdRq.js');
 const ImportPnr = require('../Actions/ImportPnr.js');
 const FluentLogger = require('../LibWrappers/FluentLogger.js');
 const GetCurrentPnr = require('../Actions/GetCurrentPnr.js');
-const Rej = require('klesun-node-tools/src/Rej.js');
-const Debug = require('klesun-node-tools/src/Debug.js');
-const Diag = require('../LibWrappers/Diag.js');
 const AddCrossRefOsi = require('../Actions/AddCrossRefOsi.js');
 const GoToPricing = require('../Actions/GoToPricing.js');
 const MaskFormUtils = require('../Actions/ManualPricing/TpMaskUtils.js');
 const CmdRqLog = require('../Repositories/CmdRqLog.js');
-const RbsClient = require('../IqClients/RbsClient.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
 const AddMpRemark = require('../Actions/AddMpRemark.js');
 const Db = require('../Utils/Db.js');
-const {Forbidden, NotImplemented, LoginTimeOut, NotFound, ServiceUnavailable} = require('klesun-node-tools/src/Rej.js');
+const {NotImplemented} = require('klesun-node-tools/src/Rej.js');
 const StatefulSession = require('../GdsHelpers/StatefulSession.js');
-const ProcessTerminalInput = require('../Actions/ProcessTerminalInput.js');
 const MakeMcoApolloAction = require('../Transpiled/Rbs/GdsDirect/Actions/Apollo/MakeMcoApolloAction.js');
 const CmdResultAdapter = require('../Transpiled/App/Services/CmdResultAdapter.js');
 
@@ -30,61 +26,6 @@ const SubmitTaxBreakdownMask = require('../Actions/ManualPricing/SubmitTaxBreakd
 const SubmitZpTaxBreakdownMask = require('../Actions/ManualPricing/SubmitZpTaxBreakdownMask.js');
 const SubmitFcMask = require('../Actions/ManualPricing/FcMaskSubmit.js');
 const GdsSessionManager = require('../GdsHelpers/GdsSessionManager.js');
-const {coverExc} = require('klesun-node-tools/src/Lang.js');
-
-const initStateful = async (params) => {
-	const stateful = await StatefulSession.makeFromDb(params);
-	stateful.addPnrSaveHandler(recordLocator => {
-		RbsClient.reportCreatedPnr({
-			recordLocator: recordLocator,
-			gds: params.session.context.gds,
-			pcc: stateful.getSessionData().pcc,
-			agentId: params.session.context.agentId,
-		}).then(rs => {
-			const msg = 'INFO: Successfully reported saved PNR to RBS';
-			FluentLogger.logit(msg, stateful.getSessionRecord().logId, rs);
-		}).catch(exc => {
-			const msg = 'Failed to report saved PNR to RBS';
-			stateful.logExc('ERROR: ' + msg, exc);
-			const excData = Debug.getExcData(exc, {
-				session: stateful.getSessionRecord(),
-			});
-			Diag.logExc(msg, excData);
-		});
-	});
-	return stateful;
-};
-
-const runInSession = async (params) => {
-	const {session, rqBody} = params;
-	const whenCmdRqId = CmdRqLog.storeNew(rqBody, session);
-	const stateful = await initStateful({...params, whenCmdRqId});
-	const cmdRq = rqBody.command;
-	const whenCmsResult = ProcessTerminalInput({
-		stateful, cmdRq, dialect: rqBody.language,
-	}).then((rbsResult) => CmdResultAdapter({
-		cmdRq, gds: stateful.gds,
-		rbsResp: rbsResult,
-		fullState: stateful.getFullState(),
-	}));
-	CmdRqLog.logProcess({params, whenCmdRqId, whenCmsResult})
-		.catch(coverExc(Rej.list, exc => {}));
-	return whenCmsResult.then(cmsResult => ({...cmsResult, session}));
-};
-
-/** @param rqBody = at('WebRoutes.js').normalizeRqBody() */
-exports.runInputCmd = async (params) => {
-	const {rqBody} = params;
-	rqBody.command = rqBody.command.trim();
-	return Promise.resolve()
-		.then(() => runInSession(params))
-		.catch(exc => GdsSessionManager.restartIfNeeded(exc, params, async (newSession) => {
-			const runt = await runInSession({...params, session: newSession});
-			runt.startNewSession = true;
-			runt.userMessages = ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'];
-			return runt;
-		}));
-};
 
 const sendPqToPqt = async ({stateful, leadData, imported}) => {
 	const $sessionData = stateful.getSessionData();
@@ -172,20 +113,6 @@ exports.addMpRemark = async ({rqBody, ...params}) => {
 	return AddMpRemark({stateful, airline})
 		.then(result => CmdResultAdapter({
 			cmdRq: 'MP', gds,
-			rbsResp: result,
-		}));
-};
-
-exports.goToPricing = async ({rqBody, ...controllerData}) => {
-	const stateful = await StatefulSession.makeFromDb(controllerData);
-	const gdsClients = GdsSession.makeLoggingGdsClients({
-		gds: controllerData.session.context.gds,
-		logId: controllerData.session.logId,
-	});
-	return GoToPricing({stateful, rqBody, controllerData, gdsClients})
-		.then(result => CmdResultAdapter({
-			cmdRq: 'GOTOPRICEMIX',
-			gds: rqBody.pricingGds,
 			rbsResp: result,
 		}));
 };
@@ -334,3 +261,19 @@ exports.clearBuffer = (rqBody, emcResult) => {
 		'  AND requestId = ?',
 	].join('\n'), [agentId, requestId]));
 };
+
+exports.goToPricing = async ({rqBody, ...controllerData}) => {
+	const stateful = await StatefulSession.makeFromDb(controllerData);
+	const gdsClients = GdsSession.makeLoggingGdsClients({
+		gds: controllerData.session.context.gds,
+		logId: controllerData.session.logId,
+	});
+	return GoToPricing({stateful, rqBody, controllerData, gdsClients})
+		.then(result => CmdResultAdapter({
+			cmdRq: 'GOTOPRICEMIX',
+			gds: rqBody.pricingGds,
+			rbsResp: result,
+		}));
+};
+
+exports.runInputCmd = RunGlobalCmdRq;

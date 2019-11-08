@@ -1,7 +1,7 @@
 const Rej = require('klesun-node-tools/src/Rej.js');
 const GdsSessions = require('../../../backend/Repositories/GdsSessions.js');
 const GdsActionTestUtil = require('../../../backend/Utils/Testing/GdsActionTestUtil.js');
-const ProcessTerminalInput = require('../../../backend/Actions/ProcessTerminalInput.js');
+const ProcessTerminalInput = require('../../../backend/Actions/RunLocalCmdRq.js');
 
 const provide_call = () => {
 	let testCases = [];

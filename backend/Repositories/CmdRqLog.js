@@ -65,8 +65,8 @@ const handleCmsExc = (exc) => {
 	}
 };
 
-exports.logProcess = async ({params, whenCmdRqId, whenCmsResult}) => {
-	const {session, rqBody, emcUser} = params;
+exports.logProcess = async ({rqBody, controllerParams, whenCmdRqId, whenCmsResult}) => {
+	const {session, emcUser} = controllerParams;
 	const calledDtObj = new Date();
 	const cmsResult = await whenCmsResult
 		.catch(coverExc(Rej.list, exc => Rej.NoContent('Cmd >' + rqBody.command +  '; Failed', exc)));

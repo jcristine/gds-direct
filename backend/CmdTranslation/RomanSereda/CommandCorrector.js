@@ -56,7 +56,7 @@ class CommandCorrector {
 				{
 					mistake: 'BB{free_text}',
 					correct: '$BB{free_text}',
-					message: 'CORRECTED! DON\\\'T FORGET $ SIGN NEXT TIME',
+					message: 'CORRECTED! DON\'T FORGET $ SIGN NEXT TIME',
 				},
 				{
 					mistake: '$BBB{free_text}',
@@ -100,7 +100,7 @@ class CommandCorrector {
 				{
 					mistake: 'A{date}',
 					correct: 'A*{date}',
-					message: 'CORRECTED! DON\\\'T FORGET * BEFORE THE DATE',
+					message: 'CORRECTED! DON\'T FORGET * BEFORE THE DATE',
 				},
 				{
 					mistake: '1*{date}{free_text}',
@@ -125,17 +125,17 @@ class CommandCorrector {
 				{
 					// Error
 					mistake: 'A{wrong_date}{city_pair}{free_text}',
-					message: 'ERROR! CHECK THE DATE, IT\\\'S TOO LONG',
+					message: 'ERROR! CHECK THE DATE, IT\'S TOO LONG',
 				},
 				{
 					// Error
 					mistake: 'A{wrong_month}{city_pair}',
-					message: 'ERROR! CHECK THE DATE, IT\\\'S TOO SHORT',
+					message: 'ERROR! CHECK THE DATE, IT\'S TOO SHORT',
 				},
 				{
 					mistake: 'A{date}{city_pair}{ss}',
 					correct: 'A{date}{city_pair}+{ss}',
-					message: 'CORRECTED! DON\\\'T FORGET + SIGN NEXT TIME',
+					message: 'CORRECTED! DON\'T FORGET + SIGN NEXT TIME',
 				},
 				{
 					// Error
@@ -150,7 +150,7 @@ class CommandCorrector {
 				{
 					mistake: 'SEM\/{pcc}',
 					correct: 'SEM\/{pcc}\/AG',
-					message: 'CORRECTED! DON\\\'T FORGET \/AG NEXT TIME',
+					message: 'CORRECTED! DON\'T FORGET \/AG NEXT TIME',
 				},
 				{
 					mistake: 'RE\/{pcc}\/AG',
@@ -300,12 +300,12 @@ class CommandCorrector {
 				{
 					// Error
 					mistake: '1{wrong_date}{free_text}',
-					message: 'ERROR! CHECK THE DATE, IT\\\'S TOO LONG',
+					message: 'ERROR! CHECK THE DATE, IT\'S TOO LONG',
 				},
 				{
 					// Error
 					mistake: '1{wrong_month}{city_pair}',
-					message: 'ERROR! CHECK THE DATE, IT\\\'S TOO SHORT',
+					message: 'ERROR! CHECK THE DATE, IT\'S TOO SHORT',
 				},
 				{
 					mistake: '1{date}{city_pair}+{ss}',
@@ -377,7 +377,7 @@ class CommandCorrector {
 				{
 					// Error
 					mistake: 'AAA{not_pcc}',
-					message: 'ERROR! CHECK PCC NAME, IT\\\'S TOO LONG',
+					message: 'ERROR! CHECK PCC NAME, IT\'S TOO LONG',
 				},
 				{
 					mistake: '0{number}{class}{int_num}**',
@@ -492,7 +492,7 @@ class CommandCorrector {
 				{
 					mistake: 'WPP{pax_pricing_type}{nc_modificator}{free_text}',
 					correct: 'WPP{pax_pricing_type}\u2021{nc_modificator}{free_text}',
-					message: 'CORRECTED! DON\\\'T FORGET ABOUT \u2021 NEXT TIME',
+					message: 'CORRECTED! DON\'T FORGET ABOUT \u2021 NEXT TIME',
 				},
 				{
 					mistake: 'RE\/{pcc}\/AG',

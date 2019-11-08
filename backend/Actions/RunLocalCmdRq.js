@@ -1,3 +1,4 @@
+const Pccs = require('../Repositories/Pccs.js');
 const RepriceInPccMix = require('./RepriceInPccMix.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
 const AddMpRemark = require('./AddMpRemark.js');
@@ -31,23 +32,23 @@ const {coverExc} = require('klesun-node-tools/src/Lang.js');
  * @param '$BN1|2*INF'
  * @return '$BN1+2*INF'
  */
-const encodeTpCmdForCms = ($cmd) =>
-	$cmd.replace(/\|/g, '+').replace(/@/g, '¤');
+const encodeTpCmdForCms = (cmd) =>
+	cmd.replace(/\|/g, '+').replace(/@/g, '¤');
 
-const decodeCmsInput = ($cmd, gds) => {
+const decodeCmsInput = (cmd, gds) => {
 	if (['apollo', 'galileo'].includes(gds)) {
-		$cmd = new CmsApolloTerminal().decodeCmsInput($cmd);
+		cmd = new CmsApolloTerminal().decodeCmsInput(cmd);
 	} else if (gds === 'sabre') {
-		$cmd = new CmsSabreTerminal().decodeCmsInput($cmd);
+		cmd = new CmsSabreTerminal().decodeCmsInput(cmd);
 	}
-	return $cmd;
+	return cmd;
 };
 
-const encodeTpOutputForCms = ($dump) => {
-	$dump = $dump.replace(/\|/g, '+').replace(/;/g, '·');
-	$dump = $dump.replace(/\n?\)><$/, '\n└─>');
-	$dump = $dump.replace(/><$/, '');
-	return $dump;
+const encodeTpOutputForCms = (dump) => {
+	dump = dump.replace(/\|/g, '+').replace(/;/g, '·');
+	dump = dump.replace(/\n?\)><$/, '\n└─>');
+	dump = dump.replace(/><$/, '');
+	return dump;
 };
 
 const isScreenCleaningCommand = (rec, gds) => {
@@ -191,10 +192,13 @@ const extendActions = async ({whenCmsResult, stateful}) => {
 /**
  * auto-correct typos in the command, convert it between
  * GDS dialects, run _alias_ chain of commands, etc...
+ *
+ * by "local" I mean that it is bound to a set session in a set GDS
+ *
  * @param stateful = require('StatefulSession.js')()
  * @param {{command: '*R'}} rqBody = at('MainController.js').normalizeRqBody()
  */
-const ProcessTerminalInput = async ({
+const RunLocalCmdRq = async ({
 	stateful, cmdRq, dialect = null,
 	AreaSettings = require("../Repositories/AreaSettings.js"),
 	gdsClients = GdsSession.makeLoggingGdsClients({
@@ -264,12 +268,7 @@ const ProcessTerminalInput = async ({
 			}
 			stateful.flushCalledCommands();
 		}
-		return {
-			status: status,
-			messages: messages,
-			actions: actions,
-			calledCommands: calledCommands,
-		};
+		return {status, messages, actions, calledCommands};
 	};
 
 	const getDefaultPcc = async (area, stateful) => {
@@ -357,4 +356,4 @@ const ProcessTerminalInput = async ({
 	return execute();
 };
 
-module.exports = ProcessTerminalInput;
+module.exports = RunLocalCmdRq;
