@@ -120,6 +120,19 @@ const restartIfNeeded = async (exc, params, action) => {
 	}
 };
 
+const retryOnExpire = async ({rqBody, emcUser, action}) => {
+	return getSession({rqBody, emcUser, canStartNew: true})
+		.then(({session, canStartNew}) => {
+			return Promise.resolve()
+				.then(() => action({session, canStartNew}))
+				.catch(exc => restartIfNeeded(exc, {
+					rqBody, emcUser, session,
+				}, session => {
+					return action({session, startedNew: true});
+				}));
+		});
+};
+
 const closeByGds = (gds, gdsData) => {
 	if (['apollo', 'galileo'].includes(gds)) {
 		return TravelportClient().closeSession(gdsData);
@@ -160,3 +173,4 @@ exports.keepAliveByUser = keepAliveByUser;
 exports.resetToDefaultPcc = resetToDefaultPcc;
 exports.restartIfNeeded = restartIfNeeded;
 exports.closeSession = closeSession;
+exports.retryOnExpire = retryOnExpire;

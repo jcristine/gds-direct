@@ -91,7 +91,7 @@ const CmdResultAdapter = ({
 	HighlightRules = require('../../../Repositories/HighlightRules.js'),
 }) => {
 	const execute =  () => {
-		const {calledCommands, messages = []} = rbsResp;
+		const {calledCommands = [], messages = []} = rbsResp;
 		const typeToMsgs = {};
 		for (const msgRec of messages) {
 			typeToMsgs[msgRec.type] = typeToMsgs[msgRec.type] || [];
@@ -102,7 +102,7 @@ const CmdResultAdapter = ({
 		return whenFormatted
 			.then(({output, appliedRules}) => {
 				output = appendOutput(output, messages);
-				const cmdTimes = rbsResp.calledCommands.map(rec => rec.duration).filter(a => a);
+				const cmdTimes = calledCommands.map(rec => rec.duration).filter(a => a);
 				return {
 					sessionInfo: sessionInfo,
 					output: output || rbsResp.status,
@@ -110,14 +110,14 @@ const CmdResultAdapter = ({
 						.map(call => call.tabCommands || [])
 						.reduce((a,b) => a.concat(b), [])
 						.filter(cmd => cmd.trim()),
-					clearScreen: rbsResp.clearScreen || rbsResp.calledCommands
+					clearScreen: rbsResp.clearScreen || calledCommands
 						.filter(rec => rec.clearScreen).length > 0,
 
 					gdsTime: cmdTimes.length > 0 ? cmdTimes.reduce((a,b) => a + b) : null,
 
 					...sessionInfo,
 					userMessages: typeToMsgs['pop_up'] ? typeToMsgs['pop_up'] : null,
-					calledCommands: rbsResp.calledCommands,
+					calledCommands: calledCommands,
 					actions: rbsResp.actions || [],
 					appliedRules: appliedRules,
 				};

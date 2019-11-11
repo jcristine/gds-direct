@@ -12,8 +12,11 @@ const {nonEmpty} = require('klesun-node-tools/src/Lang.js');
 const TABLE = 'terminal_sessions';
 
 const normalizeContext = (reqBody) => {
-	if (!reqBody.agentId || !reqBody.gds) {
-		const msg = 'Invalid GRECT session context: agentId or gds was not supplied';
+	if (!reqBody.agentId) {
+		const msg = 'Invalid GRECT session context: agentId was not supplied';
+		throw Rej.BadRequest(msg, reqBody);
+	} else if (!reqBody.gds) {
+		const msg = 'Invalid GRECT session context: gds was not supplied';
 		throw Rej.BadRequest(msg, reqBody);
 	}
 	return {

@@ -1,3 +1,4 @@
+const GoToPcc = require('./GoToPcc.js');
 const Pccs = require('../Repositories/Pccs.js');
 const GdsSessionManager = require('../GdsHelpers/GdsSessionManager.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
@@ -54,6 +55,25 @@ const runInSession = async (rqBody, controllerData) => {
 	return whenCmsResult.then(cmsResult => ({...cmsResult, session}));
 };
 
+const goToGds = async ({gds, pcc, controllerData, rqBody}) => {
+	const {emcUser, askClient} = controllerData;
+	rqBody = {...rqBody, gds};
+	return GdsSessionManager.retryOnExpire({
+		rqBody, emcUser, action: async ({startedNew, session}) => {
+			const stateful = await StatefulSession
+				.makeFromDb({...controllerData, session});
+			return GoToPcc({stateful, pcc})
+				.then(rbsResp => CmdResultAdapter({
+					gds, cmdRq: rqBody.command, rbsResp,
+					fullState: stateful.getFullState(),
+				})).then(result => ({
+					...result, switchToGds: gds,
+					startNewSession: startedNew,
+				}));
+		},
+	});
+};
+
 /**
  * by "global" I mean that this request is not bound to any particular session - it may
  * either reuse existing session or start new session and is not bound to a particular GDS
@@ -65,22 +85,12 @@ const RunGlobalCmdRq = async (params) => {
 	command = command.trim().toUpperCase();
 	rqBody = {...rqBody, command};
 	const semMatch = command.match(/^SEM\/([A-Z0-9]{3,9})(?:\/AG|)$/);
-	let startedNew = false;
 	if (semMatch) {
 		const pcc = semMatch[1];
 		const semGds = await Pccs.getGdsByPcc(pcc)
 			.catch(coverExc(Rej.list));
 		if (semGds && semGds !== gds) {
-			// TODO: pass some meta info further to tell that it
-			//  should happen in a free area or ignore area A
-			gds = semGds;
-			rqBody = {...rqBody, gds: semGds};
-			const rec = await GdsSessionManager.getSession({
-				rqBody, emcUser, canStartNew: true,
-			});
-			session = rec.session;
-			startedNew = rec.startedNew;
-			controllerData = {...controllerData, session};
+			return goToGds({gds: semGds, pcc, controllerData, rqBody});
 		}
 	}
 
@@ -91,10 +101,6 @@ const RunGlobalCmdRq = async (params) => {
 			runt.startNewSession = true;
 			runt.userMessages = ['New session started, reason: ' + (exc + '').slice(0, 800) + '...\n'];
 			return runt;
-		}))
-		.then(result => ({
-			startNewSession: startedNew,
-			...result, switchToGds: gds,
 		}));
 };
 
