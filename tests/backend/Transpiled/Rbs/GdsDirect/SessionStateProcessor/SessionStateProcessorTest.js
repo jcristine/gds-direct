@@ -1,18 +1,14 @@
-
-
 const UpdateState = require('../../../../../../backend/Transpiled/Rbs/GdsDirect/SessionStateProcessor/UpdateState.js');
 const GdsDirectDefaults = require('../../../../../../backend/Utils/Testing/GdsDirectDefaults.js');
-let php = require('klesun-node-tools/src/Transpiled/php.js');
+const php = require('klesun-node-tools/src/Transpiled/php.js');
 
-class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js')
-{
-	provideCalledCommands()  {
-		let $sessionRecords, $argumentTuples, $sessionRecord;
-		$sessionRecords = [];
+class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCase.js') {
+	provideCalledCommands() {
+		const sessionRecords = [];
 
 		// GDS Direct remark was not added because we
 		// did not handle Work Areas properly back then
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultApolloState(),
 			'calledCommands': [
 				{
@@ -353,7 +349,13 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 						' 5 DL 140T 17JUL MSPCDG SS2   424P  730A|*      MO/TU   E',
 						'><',
 					]),
-					'state': {'area': 'A', 'pcc': '2G55', 'pricingCmd': '$BBS1|2|5', 'hasPnr': true, 'isPnrStored': false},
+					'state': {
+						'area': 'A',
+						'pcc': '2G55',
+						'pricingCmd': '$BBS1|2|5',
+						'hasPnr': true,
+						'isPnrStored': false,
+					},
 				},
 				{
 					'cmd': 'X3|4',
@@ -783,7 +785,13 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 						' FQ-EUR 1652.00/USD 72.00US/USD 732.52XT/USD 2668.52 - 6JUN TKXRDFR.TKXRDFR.THWSRFR/TKXRDFR.TKXRDFR.THWSRFR',
 						')><',
 					]),
-					'state': {'area': 'A', 'pcc': '2G55', 'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'VH5M50'},
+					'state': {
+						'area': 'A',
+						'pcc': '2G55',
+						'hasPnr': true,
+						'isPnrStored': true,
+						'recordLocator': 'VH5M50',
+					},
 				},
 				{
 					'cmd': 'IR',
@@ -828,7 +836,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 
 		// CMS remark was not added because `isPnrStored` was mistakenly set to
 		// true due to mistyped command '**R' being parsed as "searchPnr" command
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultApolloState(),
 			'calledCommands': [
 				{
@@ -1018,7 +1026,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// opened PNR ignore example
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultApolloState(),
 			'calledCommands': [
 				{
@@ -1053,7 +1061,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// open PNR, unsuccessful rebook, show availability and ignore
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {'pcc': '2BQ6'}),
 			'calledCommands': [
 				{
@@ -1104,7 +1112,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// availability navigation and sell
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {'pcc': '2BQ6'}),
 			'calledCommands': [
 				{
@@ -1151,7 +1159,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// store PNR, then store pricing and ignore
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': {
 				'gds': 'apollo',
 				'area': 'A',
@@ -1241,7 +1249,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		// did not add remark because "**-BECK" was called in the middle
 		// of PNR creation causing us to set "isPnrStored" flag to true
 		// since the fix looks at output of "**-" command before setting the flag
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': {
 				'gds': 'apollo',
 				'area': 'A',
@@ -1436,7 +1444,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Apollo example of PNR search command that is currently handled incorrectly
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultApolloState(),
 			'calledCommands': [
 				{
@@ -1504,7 +1512,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Sabre example of PNR search command that is currently handled incorrectly
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultSabreState(),
 			'calledCommands': [
 				{
@@ -1579,7 +1587,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// when >I; prompts for another >I;, PNR context should not be dropped
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultApolloState(),
 			'calledCommands': [
 				{
@@ -1655,7 +1663,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Amadeus `canCreatePq` after basic pricing
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
 			'calledCommands': [
 				{
@@ -1747,7 +1755,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Amadeus `isPnrStored` basic test - search and ET
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
 			'calledCommands': [
 				{
@@ -1854,7 +1862,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Amadeus `isPnrStored` open by record locator and ignore
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
 			'calledCommands': [
 				{
@@ -1931,7 +1939,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Amadeus `isPnrStored` search and open from list
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
 			'calledCommands': [
 				{
@@ -1999,7 +2007,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Amadeus PNR created using a joined command
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
 			'calledCommands': [
 				{
@@ -2082,7 +2090,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Apollo - ignore incomplete PNR with IR
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultApolloState(),
 			'calledCommands': [
 				{
@@ -2127,7 +2135,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Sabre - ignore incomplete PNR with IR
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultSabreState(),
 			'calledCommands': [
 				{
@@ -2162,7 +2170,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 			],
 		});
 
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultApolloState(),
 			'calledCommands': [
 				{
@@ -2193,7 +2201,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 			],
 		});
 
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultApolloState(),
 			'calledCommands': [
 				{
@@ -2225,7 +2233,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// if there are changes, PNR context won't be dropped
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultApolloState(),
 			'calledCommands': [
 				{
@@ -2263,7 +2271,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 			],
 		});
 
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultApolloState(),
 			'calledCommands': [
 				{
@@ -2287,7 +2295,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 
 		// Sabre PNR context dropped after attempt to open other
 		// PNR even if it failed with "¥RESTRICTED¥ *NOT AA PNR*"
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultSabreState(),
 			'calledCommands': [
 				{
@@ -2319,7 +2327,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Same for "¥ADDR¥" response
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultSabreState(),
 			'calledCommands': [
 				{
@@ -2352,7 +2360,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Same for "SECURED PNR" response
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultSabreState(),
 			'calledCommands': [
 				{
@@ -2384,7 +2392,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// But not for "¥FIN OR IG¥" response
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultSabreState(),
 			'calledCommands': [
 				{
@@ -2412,7 +2420,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Same in Amadeus
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
 			'calledCommands': [
 				{
@@ -2440,7 +2448,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 			],
 		});
 
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
 			'calledCommands': [
 				{
@@ -2464,7 +2472,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 			],
 		});
 
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
 			'calledCommands': [
 				{
@@ -2500,7 +2508,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// RESALL example
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': {
 				'gds': 'apollo',
 				'area': 'C',
@@ -2534,7 +2542,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// more RESALL examples
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultApolloState(),
 			'calledCommands': [
 				{
@@ -2614,7 +2622,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// typo in RESALL
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultApolloState(),
 			'calledCommands': [
 				{
@@ -2658,7 +2666,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Sabre >EC; - "end and clone itinerary"
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultSabreState(),
 			'calledCommands': [
 				{
@@ -2686,7 +2694,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 				},
 				{
 					'cmd': '6KLESUN',
-					'output': php.implode(php.PHP_EOL, ['* ','']),
+					'output': php.implode(php.PHP_EOL, ['* ', '']),
 					'state': {'isPnrStored': true, 'recordLocator': 'IIPTER', 'hasPnr': true},
 				},
 				{
@@ -2706,7 +2714,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Sabre >IC; - "ignore and clone itinerary"
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultSabreState(),
 			'calledCommands': [
 				{
@@ -2745,7 +2753,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Sabre >IA; - apparently some alias that works like `I` (ignore)
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultSabreState(),
 			'calledCommands': [
 				{
@@ -2776,7 +2784,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Apollo '*R*@*R*' -- invalid command that breaks PNR state
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultApolloState(),
 			'calledCommands': [
 				{
@@ -2804,7 +2812,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Apollo PNR search drops current PNR when list is displayed
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultApolloState(),
 			'calledCommands': [
 				{
@@ -2847,7 +2855,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Apollo PNR search drops current PNR when search found no PNR-s
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {'pcc': '115Q'}),
 			'calledCommands': [
 				{
@@ -2879,7 +2887,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Sabre PNR search drops current PNR when list is displayed
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultSabreState(),
 			'calledCommands': [
 				{
@@ -2928,7 +2936,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Amadeus PNR search drops current PNR when list is displayed
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultAmadeusState(),
 			'calledCommands': [
 				{
@@ -2955,7 +2963,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		// Sabre PNR was ignored, but WPNI (low fare search) was
 		// still active, so Eldar succeeded rebooking it afterwards
 		// should know that hasPnr = true in such cases
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultSabreState(), {
 				'hasPnr': true,
 			}),
@@ -3096,10 +3104,10 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// should not throw exception on attempt to get 'recordLocator' from unset 'pnrInfo'
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultSabreState(), {
-				"area":"A","pcc":"6IIF","recordLocator":"",
-				"cmdType":"searchPnr","hasPnr":false,"isPnrStored":false,
+				"area": "A", "pcc": "6IIF", "recordLocator": "",
+				"cmdType": "searchPnr", "hasPnr": false, "isPnrStored": false,
 			}),
 			'calledCommands': [
 				{
@@ -3107,14 +3115,14 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 					"output": [
 						"  1 ABBASOVA/Z 6IIF 19MAY-30MAY   2 ABBASOVA/Z 6IIFX     -30MAY",
 						"  3 ABBASOVA/Z 6IIFX     -30MAY   4 ABBASOVA/Z 6IIFX     -26NOV",
-						"*0 FOR MORE NAMES                                              "
+						"*0 FOR MORE NAMES                                              ",
 					].join("\n"),
 					"duration": "1.276961623",
 					"type": "searchPnr",
 					"state": {
-						"area":"A","pcc":"6IIF","recordLocator":"",
-						"cmdType":"searchPnr","hasPnr":false,"isPnrStored":false,
-					}
+						"area": "A", "pcc": "6IIF", "recordLocator": "",
+						"cmdType": "searchPnr", "hasPnr": false, "isPnrStored": false,
+					},
 				},
 				{
 					"cmd": "*0",
@@ -3124,21 +3132,21 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 						"",
 						"",
 						"",
-						""
+						"",
 					].join("\n"),
 					"duration": "0.693150440",
 					"type": "displayPnrFromList",
 					"scrolledCmd": "*0",
 					"state": {
-						"area":"A","pcc":"6IIF","recordLocator":"",
-						"cmdType":"displayPnrFromList","hasPnr":true,"isPnrStored":true,
-					}
+						"area": "A", "pcc": "6IIF", "recordLocator": "",
+						"cmdType": "displayPnrFromList", "hasPnr": true, "isPnrStored": true,
+					},
 				},
 			],
 		});
 
 		// Apollo segments sold from Low Fare Search
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState()),
 			'calledCommands': [
 				{
@@ -3191,7 +3199,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// failed sell from FS should not result in hasPnr
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState()),
 			'calledCommands': [
 				{
@@ -3223,7 +3231,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// amadeus state processor did not detect that hasPnr for some reason
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState()),
 			'calledCommands': [
 				{
@@ -3240,7 +3248,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// failed sell from FS should not result in hasPnr
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState()),
 			'calledCommands': [
 				{
@@ -3252,7 +3260,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// should reset recordLocator too, not just the isPnrStored
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
 				'recordLocator': 'X7JDCC', 'isPnrStored': true, 'hasPnr': true,
 			}),
@@ -3271,7 +3279,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// One more INVLD command that breaks PNR state
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), {
 				'recordLocator': 'X7JDCC', 'isPnrStored': true, 'hasPnr': true,
 			}),
@@ -3288,8 +3296,11 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Amadeus canCreatePq after "NO FARE FOR BOOKING CODE" error check
-		$sessionRecords.push({
-			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState(), {'hasPnr': true, 'pricingCmd': null}),
+		sessionRecords.push({
+			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultAmadeusState(), {
+				'hasPnr': true,
+				'pricingCmd': null,
+			}),
 			'calledCommands': [
 				{
 					'cmd': 'FXX',
@@ -3305,7 +3316,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Apollo open PNR from list ending with ATFQ line - should not cause parser exceptions
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultApolloState(),
 			'calledCommands': [
 				{
@@ -3348,7 +3359,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Galileo area/pcc/sell examples
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
 			'calledCommands': [
 				{
@@ -3416,7 +3427,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Galileo open PNR examples
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
 			'calledCommands': [
 				{
@@ -3495,7 +3506,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Galileo PNR search example
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
 			'calledCommands': [
 				{
@@ -3601,7 +3612,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 			],
 		});
 
-		$sessionRecords.push({
+		sessionRecords.push({
 			'title': 'Galileo availability sell hasPnr',
 			'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
 			'calledCommands': [
@@ -3632,7 +3643,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 			],
 		});
 
-		$sessionRecords.push({
+		sessionRecords.push({
 			'title': 'Galileo ignore PNR',
 			'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
 			'calledCommands': [
@@ -3685,7 +3696,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Galileo instantly opens PNR if there was just one name match
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
 			'calledCommands': [
 				{
@@ -3716,7 +3727,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Galileo open PNR from search without showing record locator
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
 			'calledCommands': [
 				{
@@ -3741,7 +3752,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Galileo RESALL - unsuccessful
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
 			'calledCommands': [
 				{
@@ -3804,7 +3815,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Galileo RESALL - successful
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
 			'calledCommands': [
 				{
@@ -3895,7 +3906,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Galileo book from FS
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': GdsDirectDefaults.makeDefaultGalileoState(),
 			'calledCommands': [
 				{
@@ -3921,7 +3932,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// >*1; with response "LIST NUMBER DOES NOT EXIST" does not drop PNR context
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
 				'hasPnr': true, 'isPnrStored': true, 'recordLocator': 'RLHFDY',
 			}),
@@ -3953,7 +3964,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 				},
 			],
 		});
-		$sessionRecords.push({
+		sessionRecords.push({
 			'title': 'canCreatePq does not get set true with /++-AB/ for some reason',
 			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultGalileoState(), {
 				'hasPnr': true, 'canCreatePq': false,
@@ -3966,18 +3977,17 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 						"                   *** BEST BUY QUOTATION ***",
 						"             LOWEST FARE AVAILABLE FOR CABIN BOOKED",
 						"                   *** NO REBOOK REQUIRED ***",
-						"   PSGR   QUOTE BASIS         FARE    TAXES      TOTAL PSG DES  FQG 1       NLOWFNY   USD  1313.00    99.70    1412.70 ADT          GUARANTEED                                                  GRAND TOTAL INCLUDING TAXES ****     USD      1412.70                        **ADDITIONAL FEES MAY APPLY**SEE >FO;                     **CARRIER MAY OFFER ADDITIONAL SERVICES**SEE >FQBB/DASO;     ADT      LAST DATE TO PURCHASE TICKET: 10MAY19                  ADT      TICKETING AGENCY 711M                                  ADT      DEFAULT PLATING CARRIER PR                         )><"
+						"   PSGR   QUOTE BASIS         FARE    TAXES      TOTAL PSG DES  FQG 1       NLOWFNY   USD  1313.00    99.70    1412.70 ADT          GUARANTEED                                                  GRAND TOTAL INCLUDING TAXES ****     USD      1412.70                        **ADDITIONAL FEES MAY APPLY**SEE >FO;                     **CARRIER MAY OFFER ADDITIONAL SERVICES**SEE >FQBB/DASO;     ADT      LAST DATE TO PURCHASE TICKET: 10MAY19                  ADT      TICKETING AGENCY 711M                                  ADT      DEFAULT PLATING CARRIER PR                         )><",
 					].join("\n"),
 					"type": "priceItinerary",
-					"state": {'pricingCmd': 'FQBB||-AB'}
-				}
+					"state": {'pricingCmd': 'FQBB||-AB'},
+				},
 			],
 		});
 
 		// >*1; same deal with Apollo
-		$sessionRecords.push({
-			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), [
-			]),
+		sessionRecords.push({
+			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), []),
 			'calledCommands': [
 				{
 					'cmd': '*MMJ6Q1',
@@ -4029,9 +4039,8 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// but if there is an active >**-LIBER; in the session, then >*55; actually drops PNR
-		$sessionRecords.push({
-			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), [
-			]),
+		sessionRecords.push({
+			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), []),
 			'calledCommands': [
 				{
 					'cmd': '**-LIBER',
@@ -4093,7 +4102,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		});
 
 		// Apollo TUR segment successful sell example - should result in hasPnr = true
-		$sessionRecords.push({
+		sessionRecords.push({
 			'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), []),
 			'calledCommands': [
 				{
@@ -4106,8 +4115,16 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 				},
 			],
 		});
-		$sessionRecords.push({
-			"initialState": {"gds": "apollo", "area":"B","cmdType":"redisplayPnr","scrolledCmd":"*R","pricingCmd":null,"pcc":"2G8P","hasPnr":true},
+		sessionRecords.push({
+			"initialState": {
+				"gds": "apollo",
+				"area": "B",
+				"cmdType": "redisplayPnr",
+				"scrolledCmd": "*R",
+				"pricingCmd": null,
+				"pcc": "2G8P",
+				"hasPnr": true,
+			},
 			"calledCommands": [
 				{
 					"cmd": "PS-CREATED IN GDS DIRECT BY JAYDEN|@:5GD-JAYDEN/1092/FOR AGENT/1092/LEAD-11081962 IN 2G8P|T-CA-SFO@$0221686|P:SFOAS/800-750-2238 ASAP CUSTOMER SUPPORT|T:TAU/27MAR|R:JAYDEN|ER",
@@ -4124,11 +4141,11 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 				},
 			],
 		});
-		$sessionRecords.push({
+		sessionRecords.push({
 			"title": "3-line error responses in Apollo should not result in canCreatePq=true",
 			"initialState": {
-				"gds": "apollo", "area":"D","cmdType":"priceItinerary",
-				"pricingCmd":"$BB/SOBAKALOPATA","pcc":"2G2H","hasPnr":true,
+				"gds": "apollo", "area": "D", "cmdType": "priceItinerary",
+				"pricingCmd": "$BB/SOBAKALOPATA", "pcc": "2G2H", "hasPnr": true,
 			},
 			"calledCommands": [
 				{
@@ -4136,23 +4153,23 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 					"output": [
 						"ERROR 3844 - STOPOVER FORMAT ERROR",
 						"$BB/SOBAKALOPATA",
-						"><"
+						"><",
 					].join("\n"),
 					"type": "priceItinerary",
 					"state": {
-						"area":"D","cmdType":"priceItinerary",
-						"pricingCmd":null,"pcc":"2G2H","hasPnr":true,
-					}
+						"area": "D", "cmdType": "priceItinerary",
+						"pricingCmd": null, "pcc": "2G2H", "hasPnr": true,
+					},
 				},
 			],
 		});
 
-		$sessionRecords.push({
+		sessionRecords.push({
 			"title": "this pricing output should not result in canCreatePq=true, it is an error response even though it consists of many lines",
 			"initialState": {
 				"gds": 'sabre',
-				"area":"A","pcc":"C5VD","recordLocator":"","canCreatePq":true,"scrolledCmd":"WPNC¥MUSD",
-				"cmdCnt":6,"pricingCmd":"WPNC¥MUSD","cmdType":"priceItinerary","hasPnr":true,
+				"area": "A", "pcc": "C5VD", "recordLocator": "", "canCreatePq": true, "scrolledCmd": "WPNC¥MUSD",
+				"cmdCnt": 6, "pricingCmd": "WPNC¥MUSD", "cmdType": "priceItinerary", "hasPnr": true,
 			},
 			"calledCommands": [
 				{
@@ -4186,23 +4203,23 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 						"23¤HPH        H         USD      91.00    19.20      110.20 ADT",
 						"24¤HTPH       H         USD      92.00    19.40      111.40 ADT",
 						"ATTN*REBOOK OPTION OF CHOICE BEFORE STORING FARE",
-						"."
+						".",
 					].join("\n"),
 					"type": "priceItinerary",
 					"state": {
-						"area":"A","pcc":"C5VD","recordLocator":"", 'pricingCmd': null,
-						"cmdType":"priceItinerary","hasPnr":true,
-					}
+						"area": "A", "pcc": "C5VD", "recordLocator": "", 'pricingCmd': null,
+						"cmdType": "priceItinerary", "hasPnr": true,
+					},
 				},
 			],
 		});
 
-		$sessionRecords.push({
+		sessionRecords.push({
 			"title": "sell with N2Z1* instead of 02Z1* should still set the hasPnr=true flag",
 			"initialState": {
 				"gds": 'apollo',
-				"area":"A","pcc":"2F3K","recordLocator":"",
-				"cmdType":"moreAirAvailability","hasPnr":false,
+				"area": "A", "pcc": "2F3K", "recordLocator": "",
+				"cmdType": "moreAirAvailability", "hasPnr": false,
 			},
 			"calledCommands": [
 				{
@@ -4221,25 +4238,47 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 						"PERSONAL DATA WHICH IS PROVIDED TO US IN CONNECTION",
 						"WITH YOUR TRAVEL MAY BE PASSED TO GOVERNMENT AUTHORITIES",
 						"FOR BORDER CONTROL AND AVIATION SECURITY PURPOSES",
-						"><"
+						"><",
 					].join("\n"),
 					"state": {"hasPnr": true, "cmdType": "sell"},
 				},
 			],
 		});
 
-		$argumentTuples = [];
-		for ($sessionRecord of $sessionRecords) {
-			$argumentTuples.push([$sessionRecord]);}
-		return $argumentTuples;
+		sessionRecords.push({
+			"title": "For some reason pricingCmd did not get reset after FXR",
+			"initialState": {
+				"gds": 'amadeus',
+				"pricingCmd": "FXA",
+				"area": "A",
+				"pcc": "SFO1S2195",
+				"hasPnr": true,
+				"cmdType": "moveDown",
+				"scrolledCmd": "FQQ1",
+			},
+			"calledCommands": [
+				{
+					"cmd": "FXR",
+					"output": [
+						'**ATTN** SEG 1 2 NOT REBOOKED',
+						'RE-PRICE',
+						'',
+						' ',
+					].join('\n'),
+					"state": {"pricingCmd": null},
+				},
+			],
+		});
+
+		return sessionRecords.map(r => [r]);
 	}
 
 	/**
-     * @test
-     * @dataProvider provideCalledCommands
-     * @param $sessionRecord = SessionStateProcessorTest::provideCalledCommands()[0][0]
-     */
-	testCalledCommands($sessionRecord)  {
+	 * @test
+	 * @dataProvider provideCalledCommands
+	 * @param $sessionRecord = SessionStateProcessorTest::provideCalledCommands()[0][0]
+	 */
+	testCalledCommands($sessionRecord) {
 		const gds = $sessionRecord.initialState.gds;
 		let sessionState = $sessionRecord.initialState;
 		const calledCommands = $sessionRecord.calledCommands;
@@ -4259,7 +4298,7 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 			const expected = cmdRecord.state || null;
 			if (expected) {
 				const allCmds = php.array_column(calledCommands, 'cmd');
-				const msg = i + '-th command - ' + cmdRecord.cmd + ' - ' + php.PHP_EOL+php.implode(', ', allCmds) + php.PHP_EOL;
+				const msg = i + '-th command - ' + cmdRecord.cmd + ' - ' + php.PHP_EOL + php.implode(', ', allCmds) + php.PHP_EOL;
 				this.assertArrayElementsSubset(expected, sessionState, msg);
 			}
 		}
@@ -4271,4 +4310,5 @@ class SessionStateProcessorTest extends require('klesun-node-tools/src/Transpile
 		];
 	}
 }
+
 module.exports = SessionStateProcessorTest;

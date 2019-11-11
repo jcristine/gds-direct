@@ -20,20 +20,18 @@ class SessionStateDs {
 		this.gdsData = null; // for GDS-es without native area support
 	}
 
-	static makeFromArray($row) {
-		let $self;
-
-		$self = new this();
-		Object.assign($self, $row);
-		return $self;
+	static makeFromArray(row) {
+		const self = new this();
+		Object.assign(self, row);
+		return self;
 	}
 
 	toArray() {
 		return Object.assign({}, this);
 	}
 
-	updateFrom($that) {
-		Object.assign(this, $that);
+	updateFrom(that) {
+		Object.assign(this, that);
 	}
 }
 

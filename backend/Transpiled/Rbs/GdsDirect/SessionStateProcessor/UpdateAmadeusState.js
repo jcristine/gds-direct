@@ -1,6 +1,5 @@
 const StateHelper = require('gds-utils/src/state_tracking/StateHelper.js');
 
-
 const StringUtil = require('../../../Lib/Utils/StringUtil.js');
 const CommandParser = require('gds-utils/src/text_format_processing/amadeus/commands/CmdParser.js');
 const PnrSearchParser = require('../../../Gds/Parsers/Amadeus/PnrSearchParser.js');
@@ -12,7 +11,6 @@ const php = require('klesun-node-tools/src/Transpiled/php.js');
 class UpdateAmadeusState
 {
 	constructor(initialState, getAreaData)  {
-
 		this.state = initialState;
 		this.getAreaData = getAreaData;
 	}
@@ -28,13 +26,11 @@ class UpdateAmadeusState
 	}
 
 	static isPnrListOutput(output)  {
-
 		return PnrSearchParser.parse(output).success
             || php.preg_match(/^[^\n]*\s*NO NAME\s*$/, output);
 	}
 
 	static wasSinglePnrOpenedFromSearch(output)  {
-
 		return !this.isPnrListOutput(output)
             && !php.preg_match(/^\s*(\/\$)?CHECK FORMAT\s*$/, output)
             && !php.preg_match(/^\s*(\/\$)?CHECK FLIGHT NUMBER\s*$/, output)
@@ -44,7 +40,6 @@ class UpdateAmadeusState
 	}
 
 	static wasPnrOpenedFromList(output)  {
-
 		return !this.isPnrListOutput(output)
             && !php.preg_match(/^\s*(\/\$)?NO ITEMS\s*$/, output)
             && !php.preg_match(/^\s*(\/\$)?INVALID\s*$/, output)
@@ -151,14 +146,12 @@ class UpdateAmadeusState
 	}
 
 	static execute(cmd, output, sessionData, getAreaData)  {
-		let initialState, self, cmdParsed, flatCmds, cmdRec;
+		const initialState = SessionStateDs.makeFromArray(sessionData);
+		const self = new this(initialState, getAreaData);
 
-		initialState = SessionStateDs.makeFromArray(sessionData);
-		self = new this(initialState, getAreaData);
-
-		cmdParsed = CommandParser.parse(cmd);
-		flatCmds = php.array_merge([cmdParsed], cmdParsed.followingCommands || []);
-		for (cmdRec of Object.values(flatCmds)) {
+		const cmdParsed = CommandParser.parse(cmd);
+		const flatCmds = [cmdParsed, ...(cmdParsed.followingCommands || [])];
+		for (const cmdRec of Object.values(flatCmds)) {
 			self.updateState(cmdRec.cmd, output);
 		}
 		self.state.cmdType = cmdParsed ? cmdParsed.type : null;
