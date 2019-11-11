@@ -1,3 +1,4 @@
+const FakeAreaUtil = require('../GdsHelpers/Amadeus/FakeAreaUtil.js');
 const MaskUtil = require('../Transpiled/Lib/Utils/MaskingUtil.js');
 const Agent = require('../DataFormats/Wrappers/Agent.js');
 const MultiLevelMap = require('../Utils/MultiLevelMap.js');
@@ -37,6 +38,7 @@ exports.getView = (reqBody, emcResult) => {
 					.catch(exc => ({}));
 
 				settings.gds[gds].fullState = state;
+				settings.gds[gds].areaLetters = GdsSessions.getAreaLetters(gds);
 			}
 			let buffer = bufferMap.root;
 			if (!Agent(emcResult.user).canSeeCcNumbers()) {

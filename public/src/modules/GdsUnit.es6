@@ -14,7 +14,7 @@ export class GdsUnit
 
 		this.props		= {
 			name 			: name,
-			list			: name === 'sabre' ? AREA_LIST : AREA_LIST.slice(0, -1),
+			list			: settings.areaLetters,
 			buffer			: buffer[name],
 
 			matrix			: matrix || getStorageMatrix(),

@@ -1,3 +1,4 @@
+const FakeAreaUtil = require('../GdsHelpers/Amadeus/FakeAreaUtil.js');
 
 const {getClient, keys, withNewConnection} = require('./../LibWrappers/Redis.js');
 const FluentLogger = require('./../LibWrappers/FluentLogger.js');
@@ -147,6 +148,15 @@ const makeDefaultState = (session) => ({
 	},
 });
 
+const getAreaLetters = (gds) => {
+	return {
+		apollo: ['A', 'B', 'C', 'D', 'E'],
+		galileo: ['A', 'B', 'C', 'D', 'E'],
+		sabre: ['A', 'B', 'C', 'D', 'E', 'F'],
+		amadeus: FakeAreaUtil.AREA_LETTERS,
+	}[gds];
+};
+
 /** @return Promise<IFullSessionState> */
 exports.getFullState = async (session) => {
 	const client = await getClient();
@@ -160,6 +170,7 @@ exports.shouldClose = shouldClose;
 exports.expired = expired;
 exports.makeDefaultState = makeDefaultState;
 exports.makeDefaultAreaState = makeDefaultAreaState;
+exports.getAreaLetters = getAreaLetters;
 
 exports.getAccessMs = async (session) => {
 	const client = await getClient();
