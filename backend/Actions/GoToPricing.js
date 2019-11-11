@@ -1,43 +1,10 @@
+const EnsurePcc = require('./EnsurePcc.js');
+const IgnorePnr = require('./IgnorePnr.js');
 const CommonDataHelper = require('../Transpiled/Rbs/GdsDirect/CommonDataHelper.js');
 const GdsSession = require('../GdsHelpers/GdsSession.js');
-const FakeAreaUtil = require('../GdsHelpers/Amadeus/FakeAreaUtil.js');
 const StatefulSession = require('../GdsHelpers/StatefulSession.js');
 const GdsSessionManager = require('../GdsHelpers/GdsSessionManager.js');
 const RepriceItinerary = require('./RepriceItinerary/RepriceItinerary.js');
-
-const ignorePnr = async (stateful, force = false) => {
-	if (!stateful.getSessionData().hasPnr && !force) {
-		return;
-	}
-	const ignoreCmds = {
-		apollo: ['I', 'I'],
-		sabre: ['I'],
-		galileo: ['I'],
-		amadeus: ['IG'],
-	}[stateful.gds];
-
-	for (const cmd of ignoreCmds) {
-		await stateful.runCmd(cmd);
-	}
-};
-
-const ensurePcc = async (stateful, pricingPcc) => {
-	if (stateful.getSessionData().pcc === pricingPcc) {
-		return;
-	}
-	const gds = stateful.gds;
-	if (gds === 'amadeus') {
-		await FakeAreaUtil({stateful}).changePcc(pricingPcc);
-	} else {
-		const cmd = {
-			apollo: 'SEM/' + pricingPcc + '/AG',
-			galileo: 'SEM/' + pricingPcc + '/AG',
-			sabre: 'AAA' + pricingPcc,
-		}[gds];
-
-		await stateful.runCmd(cmd);
-	}
-};
 
 const getTargetSession = async ({
 	pricingGds, pricingPcc, oldStateful,
@@ -58,7 +25,7 @@ const getTargetSession = async ({
 		targetStateful = await GdsSessionManager.getSession(params)
 			.then(async ({startedNew, session}) => makeStateful(session)
 				.then(async stateful => {
-					await ignorePnr(stateful, !startedNew);
+					await IgnorePnr({stateful, force: !startedNew});
 					return stateful;
 				})
 				// restart if session expired on GDS side when we called the >I;
@@ -66,7 +33,7 @@ const getTargetSession = async ({
 					exc, {...params, session}, newSession => makeStateful(newSession))
 				));
 	}
-	await ensurePcc(targetStateful, pricingPcc);
+	await EnsurePcc({stateful: targetStateful, pcc: pricingPcc});
 
 	return targetStateful;
 };
@@ -90,7 +57,7 @@ const GoToPricing = ({
 
 	const main = async () => {
 		await CommonDataHelper.checkEmulatePccRights({stateful, pcc: pricingPcc});
-		await ignorePnr(stateful);
+		await IgnorePnr({stateful});
 		const targetSession = await getTargetSession({
 			pricingGds, pricingPcc, controllerData,
 			oldStateful: stateful, travelRequestId,

@@ -9,7 +9,6 @@ const GalCmdParser = require('gds-utils/src/text_format_processing/galileo/comma
 const SabCmdParser = require('gds-utils/src/text_format_processing/sabre/commands/CmdParser.js');
 const AmaCmdParser = require('gds-utils/src/text_format_processing/amadeus/commands/CmdParser.js');
 const DateTime = require('../../Lib/Utils/DateTime.js');
-const BadRequest = require("klesun-node-tools/src/Rej").BadRequest;
 const NotImplemented = require("klesun-node-tools/src/Rej").NotImplemented;
 const Fp = require('../../Lib/Utils/Fp.js');
 const GalPnrParser = require("gds-utils/src/text_format_processing/galileo/pnr/PnrParser");
