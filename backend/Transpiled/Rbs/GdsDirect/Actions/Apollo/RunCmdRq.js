@@ -1,3 +1,4 @@
+const GoToArea = require('../../../../../Actions/GoToArea.js');
 const PnrStatusParser = require('gds-utils/src/text_format_processing/apollo/actions/PnrStatusParser.js');
 const GkUtil = require('../../../../../Actions/BookViaGk/GkUtil.js');
 const BookViaGk_apollo = require('../../../../../Actions/BookViaGk/BookViaGk_apollo.js');
@@ -579,13 +580,7 @@ const RunCmdRq = ({
 		}
 		const recoveryPcc = getSessionData().pcc;
 		const area = emptyAreas[0];
-		const output = (await runCmd('S' + area)).output;
-		if (getSessionData().area !== area) {
-			const error = Errors.getMessage(Errors.FAILED_TO_CHANGE_AREA, {
-				area: area, response: php.trim(output),
-			});
-			return {errors: [error]};
-		}
+		await GoToArea.inApollo({stateful, area});
 		const {cmdRec} = await emulatePcc(pcc, recoveryPcc);
 		if (getSessionData().pcc !== pcc) {
 			const error = cmdRec.output.startsWith('ERR: INVALID - NOT ' + pcc + ' - APOLLO')

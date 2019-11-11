@@ -650,9 +650,8 @@ const RunCmdRq = ({
 		// as it may be not in same order in case of marriages...
 			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
 			const result = await (new RebuildInPccAction({
-				useXml, travelport, baseDate: stateful.getStartDt(),
-			})).setSession(stateful)
-				.fallbackToAk(true).bookItinerary(itinerary);
+				useXml, travelport, stateful,
+			})).fallbackToAk(true).bookItinerary(itinerary);
 			let cmdRecs = stateful.flushCalledCommands();
 			if (php.empty(result.errors)) {
 				cmdRecs = cmdRecs.slice(-1); // keep just the ending *R
@@ -714,9 +713,8 @@ const RunCmdRq = ({
 		}
 		stateful.flushCalledCommands();
 		const result = await (new RebuildInPccAction({
-			useXml, travelport, baseDate: stateful.getStartDt(),
-		})).setSession(stateful)
-			.fallbackToAk(isSellStatus).execute(area, pcc, itinerary);
+			useXml, travelport, stateful,
+		})).fallbackToAk(isSellStatus).execute(area, pcc, itinerary);
 		let calledCommands = stateful.flushCalledCommands();
 		if (php.empty(result.errors)) {
 		// if no error - show only the result

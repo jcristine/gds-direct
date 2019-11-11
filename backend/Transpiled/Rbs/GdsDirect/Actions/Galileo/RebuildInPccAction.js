@@ -1,6 +1,5 @@
-const Rej = require('klesun-node-tools/src/Rej.js');
+const GoToArea = require('../../../../../Actions/GoToArea.js');
 const Fp = require('../../../../Lib/Utils/Fp.js');
-const AbstractGdsAction = require('../../../../Rbs/GdsAction/AbstractGdsAction.js');
 const GalileoBuildItineraryAction = require('../../../../Rbs/GdsAction/GalileoBuildItineraryAction.js');
 const Errors = require('../../../../Rbs/GdsDirect/Errors.js');
 const UpdateGalileoSessionStateAction = require('../../SessionStateProcessor/UpdateGalileoState.js');
@@ -13,17 +12,17 @@ const {findSegmentNumberInPnr} = require('../Common/ItinerarySegments');
  */
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
-class RebuildInPccAction extends AbstractGdsAction {
+class RebuildInPccAction {
 	constructor({
 		travelport,
 		useXml,
-		baseDate,
+		stateful,
 	}) {
-		super();
 		this.$fallbackToAk = false;
 		this.travelport = travelport;
 		this.useXml = useXml;
-		this.baseDate = baseDate;
+		this.baseDate = stateful.getStartDt();
+		this.stateful = stateful;
 	}
 
 	fallbackToAk($flag) {
@@ -60,7 +59,7 @@ class RebuildInPccAction extends AbstractGdsAction {
 
 				const $cmd = '@' + segmentNumbers.join('.') + '/' + cls;
 
-				const $output = (await this.runCmd($cmd)).output;
+				const $output = (await this.stateful.runCmd($cmd)).output;
 				if (!this.constructor.isSuccessRebookOutput($output)) {
 					failedSegNums.push(php.array_column(clsSegs, 'segmentNumber'));
 				}
@@ -138,30 +137,22 @@ class RebuildInPccAction extends AbstractGdsAction {
 			if (!php.empty($failedSegNums = $gkRebook['failedSegmentNumbers'])) {
 				$errors.push(Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, {segNums: php.implode(',', $failedSegNums)}));
 			}
-			await this.runCmd('*R');
+			await this.stateful.runCmd('*R');
 		}
 		return {errors: $errors};
 	}
 
-	/** @param $itinerary = GalileoPnr::getItinerary() */
-	async execute($area, $pcc, $itinerary) {
-		let $output, $error;
-
-		$output = (await fetchAll('S' + $area, this)).output;
-		if (!UpdateGalileoSessionStateAction.isSuccessChangeAreaOutput($output)) {
-			$error = Errors.getMessage(Errors.FAILED_TO_CHANGE_AREA, {
-				area: $area, response: php.trim($output),
+	/** @param itinerary = GalileoPnr::getItinerary() */
+	async execute(area, pcc, itinerary) {
+		await GoToArea.inGalileo({stateful: this.stateful, area});
+		const output = (await fetchAll('SEM/' + pcc + '/AG', this.stateful)).output;
+		if (!UpdateGalileoSessionStateAction.wasPccChangedOk(output)) {
+			const error = Errors.getMessage(Errors.PCC_GDS_ERROR, {
+				pcc: pcc, response: output.trim(),
 			});
-			return {errors: [$error]};
+			return {errors: [error]};
 		}
-		$output = (await fetchAll('SEM/' + $pcc + '/AG', this)).output;
-		if (!UpdateGalileoSessionStateAction.wasPccChangedOk($output)) {
-			$error = Errors.getMessage(Errors.PCC_GDS_ERROR, {
-				pcc: $pcc, response: php.trim($output),
-			});
-			return {errors: [$error]};
-		}
-		return this.bookItinerary($itinerary);
+		return this.bookItinerary(itinerary);
 	}
 }
 

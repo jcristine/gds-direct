@@ -1,3 +1,4 @@
+const GoToArea = require('../../../../../Actions/GoToArea.js');
 const Normalize_priceItinerary = require('gds-utils/src/cmd_translators/Normalize_priceItinerary.js');
 const Parse_priceItinerary = require('gds-utils/src/text_format_processing/sabre/commands/Parse_priceItinerary.js');
 const SortItinerary = require('../../../../../Actions/SortItinerary.js');
@@ -422,60 +423,15 @@ const execute = ({
 	};
 
 	const getEmptyAreasFromDbState =  () => {
-		let isOccupied, occupiedRows, occupiedAreas;
-
-		isOccupied = (row) => row.hasPnr;
-		occupiedRows = Fp.filter(isOccupied, stateful.getAreaRows());
-		occupiedAreas = php.array_column(occupiedRows, 'area');
+		const isOccupied = (row) => row.hasPnr;
+		const occupiedRows = Fp.filter(isOccupied, stateful.getAreaRows());
+		const occupiedAreas = php.array_column(occupiedRows, 'area');
 		occupiedAreas.push(getSessionData().area);
 		return php.array_values(php.array_diff(['A', 'B', 'C', 'D', 'E', 'F'], occupiedAreas));
 	};
 
-	const ensureSignedInAllAreas = async  () => {
-		const fullState = stateful.getFullState();
-		if (Object.values(fullState.areas).length === 1 ||
-		Object.values(fullState.areas).some(a => !a.pcc)
-		) {
-		// Sabre requires "logging" into all areas before
-		// switching between them, or our OIATH trick will fail
-			const siOutput = await runCommand('SI*');
-			const siMatch = siOutput.match(/^([A-Z0-9]{3,4})\.([A-Z0-9]{3,4})\*AWS((?:\.[A-Z])+)/);
-			if (siMatch) {
-				const [_, emulatedPcc, homePcc, areasStr] = siMatch;
-				areasStr.split('.').filter(a => a).forEach(a => {
-					fullState.areas[a] = fullState.areas[a] || {};
-					fullState.areas[a].pcc = emulatedPcc;
-				});
-				stateful.updateFullState(fullState);
-			} else {
-				return UnprocessableEntity('Failed to login into all areas - ' + siOutput.trim());
-			}
-		}
-	};
-
-	const changeAreaInGds = async  (area) => {
-		await ensureSignedInAllAreas();
-
-		// '§OIATH' - needed to extract the new session token,
-		// since current gets discarded on area change
-		const areaCmd = '¤' + area;
-		const cmd = areaCmd + '§OIATH';
-		const cmdRec = await runCmd(cmd);
-		const athMatch = cmdRec.output.match(/^ATH:(.*)!.*/);
-		if (athMatch) {
-			const newToken = athMatch[1];
-			const gdsData = stateful.getGdsData();
-			gdsData.binarySecurityToken = newToken;
-			stateful.updateGdsData(gdsData);
-			const cmdRecs = [{...cmdRec, cmd: areaCmd, output: 'Successfully changed area to ' + area}];
-			return {calledCommands: cmdRecs};
-		} else {
-			return UnprocessableEntity('Could not change area to ' + area + ' - ' + cmdRec.output.trim());
-		}
-	};
-
-	const changeArea = async  (area) => {
-		return changeAreaInGds(area);
+	const changeArea = async (area) => {
+		return GoToArea.inSabre({stateful, area});
 	};
 
 	const emulateInFreeArea = async  (pcc, keepOriginal) => {
