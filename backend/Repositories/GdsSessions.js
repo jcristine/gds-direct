@@ -1,4 +1,3 @@
-const FakeAreaUtil = require('../GdsHelpers/Amadeus/FakeAreaUtil.js');
 
 const {getClient, keys, withNewConnection} = require('./../LibWrappers/Redis.js');
 const FluentLogger = require('./../LibWrappers/FluentLogger.js');
@@ -153,7 +152,7 @@ const getAreaLetters = (gds) => {
 		apollo: ['A', 'B', 'C', 'D', 'E'],
 		galileo: ['A', 'B', 'C', 'D', 'E'],
 		sabre: ['A', 'B', 'C', 'D', 'E', 'F'],
-		amadeus: FakeAreaUtil.AREA_LETTERS,
+		amadeus: ['A', 'B', 'C', 'D'],
 	}[gds];
 };
 

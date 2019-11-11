@@ -12,7 +12,7 @@ const Fp = require('../../Transpiled/Lib/Utils/Fp.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 
 // defines how much areas can agent open in single session
-const AREA_LETTERS = ['A', 'B', 'C', 'D'];
+const AREA_LETTERS = GdsSessions.getAreaLetters('amadeus');
 
 const forgeViewAreasDump = (sessionData, areasFromDb) => {
 	const areas = [];
