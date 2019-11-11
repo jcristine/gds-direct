@@ -114,7 +114,7 @@ class RebuildInPccAction {
 		}, $itinerary);
 
 		$result = await GalileoBuildItineraryAction({
-			session: this.session,
+			session: this.stateful,
 			itinerary: $akItinerary,
 			isParserFormat: true,
 			useXml: this.useXml,
@@ -123,7 +123,7 @@ class RebuildInPccAction {
 		});
 
 		if (this.useXml && $result.segments.length > 0) {
-			this.session.updateAreaState({
+			this.stateful.updateAreaState({
 				type: '!xml:PNRBFManagement',
 				state: {hasPnr: true, canCreatePq: false},
 			});
