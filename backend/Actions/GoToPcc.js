@@ -40,7 +40,7 @@ const GoToPcc = async ({stateful, pcc}) => {
 		area = 'A';
 	}
 	if (area !== fullState.area) {
-		await GoToArea({stateful, area: matchingSetting.area});
+		await GoToArea({stateful, area});
 	}
 	const areaState = fullState.areas[area] || {};
 	if (areaState.pcc !== pcc) {
