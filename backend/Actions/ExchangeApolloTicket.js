@@ -47,6 +47,10 @@ const parseOutput = (output) => {
 			// if agent accidentally entered amount
 			// instead of tax code for example
 			rejection = Rej.BadRequest;
+		} else if (output.trim() === 'DATE ERROR') {
+			// most likely that means that we did
+			// not infer time from *HT correctly
+			rejection = Rej.NotImplemented;
 		}
 		return {status: 'error', rejection};
 	}
