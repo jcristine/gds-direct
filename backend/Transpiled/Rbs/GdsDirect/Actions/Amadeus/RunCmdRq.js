@@ -361,17 +361,17 @@ const execute = ({
 
 		pnrDump = (await AmadeusUtils.fetchAllRt('RTAM', stateful)).output;
 
-		itinerary = MarriageItineraryParser.parse(pnrDump)
-			.filter(s => {
-				return !segmentNumbers.length
-					|| segmentNumbers.includes(s.lineNumber);
-			});
+		itinerary = MarriageItineraryParser.parse(pnrDump);
 
 		if(php.empty(itinerary)) {
 			pnrDump = (await AmadeusUtils.fetchAllRt('RT', stateful)).output;
 
 			itinerary = PnrParser.parse(pnrDump).parsed.itinerary;
 		}
+		itinerary = itinerary.filter(s => {
+			return !segmentNumbers.length
+				|| segmentNumbers.includes(s.lineNumber);
+		});
 
 		if (php.empty(itinerary)) {
 			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
