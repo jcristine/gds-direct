@@ -482,8 +482,10 @@ const execute = ({
 		const seatNumber = aliasData.seatCount || 0;
 		const segmentNumbers = aliasData.segmentNumbers || [];
 
-		const takenSegments = (await getCurrentPnr())
-			.getItinerary().filter(s => {
+		const reservation = (await getCurrentPnr())
+			.getReservation(stateful.getStartDt());
+		const takenSegments = reservation
+			.itinerary.filter(s => {
 				return !segmentNumbers.length
 					|| segmentNumbers.includes(+s.segmentNumber);
 			});
@@ -506,7 +508,17 @@ const execute = ({
 			segmentStatus: newStatus,
 		}));
 		const fallbackToGk = newStatus === 'SS';
-		return bookItinerary(desiredSegments, fallbackToGk);
+		return bookItinerary(desiredSegments, fallbackToGk)
+			.then(async actRs => {
+				if (aliasData.withPassengers && php.empty(actRs.errors)) {
+					const booked = await bookPassengers(reservation.passengers);
+					actRs.calledCommands = [
+						...(actRs.calledCommands || []),
+						...booked.calledCommands,
+					];
+				}
+				return actRs;
+			});
 	};
 
 	const bookPassengers = async  (passengers) => {
