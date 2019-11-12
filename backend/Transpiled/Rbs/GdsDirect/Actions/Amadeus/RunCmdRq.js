@@ -357,7 +357,7 @@ const execute = ({
 		const segmentStatus = aliasData.segmentStatus || 'GK';
 		await CommonDataHelper.checkEmulatePccRights({stateful, pcc});
 
-		const emptyAreas = getEmptyAreasFromDbState();
+		const emptyAreas = await getEmptyAreasFromDbState();
 		if (php.empty(emptyAreas)) {
 			const msg = Errors.getMessage(Errors.NO_FREE_AREAS);
 			return Rej.BadRequest(msg);

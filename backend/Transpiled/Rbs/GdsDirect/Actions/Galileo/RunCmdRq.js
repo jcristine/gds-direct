@@ -28,7 +28,7 @@ const GenericRemarkParser = require('gds-utils/src/text_format_processing/agnost
 const CommandParser = require('gds-utils/src/text_format_processing/galileo/commands/CmdParser.js');
 const PnrParser = require('gds-utils/src/text_format_processing/galileo/pnr/PnrParser.js');
 const GalileoPnr = require('../../../../Rbs/TravelDs/GalileoPnr.js');
-const RebuildInPccAction = require('./RebuildInPccAction.js');
+const RebuildInPcc_galileo = require('../../../../../Actions/RebuildInPcc_galileo.js');
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const GalileoRetrieveTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
@@ -634,7 +634,7 @@ const RunCmdRq = ({
 		const calledCommands = [];
 
 		if (reservation.pcc && pcc !== getSessionData().pcc) {
-		// probably it would make more sense to pass the PCC to the RebuildInPccAction...
+		// probably it would make more sense to pass the PCC to the RebuildInPcc...
 			const cmd = 'SEM/' + pcc + '/AG';
 			const {calledCommands, userMessages} = await processRealCommand(cmd);
 			allUserMessages.push(...userMessages);
@@ -646,12 +646,13 @@ const RunCmdRq = ({
 			calledCommands.push(...(booked.calledCommands || []));
 		}
 		if (itinerary.length > 0) {
-		// would be better to use number returned by GalileoBuildItineraryAction
-		// as it may be not in same order in case of marriages...
+			// would be better to use number returned by GalileoBuildItineraryAction
+			// as it may be not in same order in case of marriages...
 			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
-			const result = await (new RebuildInPccAction({
+			const result = await RebuildInPcc_galileo({
 				useXml, travelport, stateful,
-			})).fallbackToAk(true).bookItinerary(itinerary);
+				fallbackToAk: true, itinerary,
+			});
 			let cmdRecs = stateful.flushCalledCommands();
 			if (php.empty(result.errors)) {
 				cmdRecs = cmdRecs.slice(-1); // keep just the ending *R
@@ -672,11 +673,9 @@ const RunCmdRq = ({
 	};
 
 	const getEmptyAreas =  () => {
-		let isOccupied, occupiedRows, occupiedAreas;
-
-		isOccupied = (row) => row.hasPnr;
-		occupiedRows = Fp.filter(isOccupied, stateful.getAreaRows());
-		occupiedAreas = php.array_column(occupiedRows, 'area');
+		const isOccupied = (row) => row.hasPnr;
+		const occupiedRows = Fp.filter(isOccupied, stateful.getAreaRows());
+		const occupiedAreas = php.array_column(occupiedRows, 'area');
 		occupiedAreas.push(getSessionData().area);
 		return php.array_values(php.array_diff(['A', 'B', 'C', 'D', 'E'], occupiedAreas));
 	};
@@ -718,9 +717,10 @@ const RunCmdRq = ({
 			} || {})[segmentStatus] || segmentStatus;
 		}
 		stateful.flushCalledCommands();
-		const result = await (new RebuildInPccAction({
-			useXml, travelport, stateful,
-		})).fallbackToAk(isSellStatus).execute(area, pcc, itinerary);
+		const result = await RebuildInPcc_galileo({
+			fallbackToAk: isSellStatus, useXml, area,
+			pcc, travelport, stateful, itinerary,
+		});
 		let calledCommands = stateful.flushCalledCommands();
 		if (php.empty(result.errors)) {
 		// if no error - show only the result
@@ -760,7 +760,7 @@ const RunCmdRq = ({
 			});
 		}
 
-		const error = RebuildInPccAction.transformBuildError(result);
+		const error = RebuildInPcc_galileo.transformBuildError(result);
 		if (error) {
 			return {
 				calledCommands: stateful.flushCalledCommands(),
