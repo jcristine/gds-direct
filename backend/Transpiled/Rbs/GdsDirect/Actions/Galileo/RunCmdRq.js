@@ -679,22 +679,11 @@ const RunCmdRq = ({
 		});
 	};
 
-	const getEmptyAreas =  () => {
-		const isOccupied = (row) => row.hasPnr;
-		const occupiedRows = Fp.filter(isOccupied, stateful.getAreaRows());
-		const occupiedAreas = php.array_column(occupiedRows, 'area');
-		occupiedAreas.push(getSessionData().area);
-		return php.array_values(php.array_diff(['A', 'B', 'C', 'D', 'E'], occupiedAreas));
-	};
-
 	const processCloneItinerary = async (aliasData) => {
-		const sameAreaAllowed = aliasData.sameAreaAllowed || false;
-		const pcc = aliasData.pcc || getSessionData().pcc;
 		const segmentStatus = aliasData.segmentStatus || 'AK';
 		const seatNumber = aliasData.seatCount || 0;
 		const segmentNumbers = aliasData.segmentNumbers || [];
 
-		await CommonDataHelper.checkEmulatePccRights({stateful, pcc});
 		const itinerary = (await getCurrentPnr())
 			.getItinerary().filter(s => {
 				return !segmentNumbers.length
@@ -703,14 +692,6 @@ const RunCmdRq = ({
 		if (php.empty(itinerary)) {
 			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
 		}
-		const emptyAreas = getEmptyAreas();
-		if (php.empty(emptyAreas)) {
-			return {errors: [Errors.getMessage(Errors.NO_FREE_AREAS)]};
-		}
-		if (!getSessionData().isPnrStored && !aliasData.keepOriginal && segmentStatus !== 'AK') {
-			await runCommand('I', false); // ignore the itinerary it initial area
-		}
-		const area = emptyAreas[0];
 		const isSellStatus = php.in_array(segmentStatus, ['HS', 'SS']);
 		for (const [key, segment] of Object.entries(itinerary)) {
 			if (seatNumber >= 1 && seatNumber <= 9) {
@@ -725,8 +706,8 @@ const RunCmdRq = ({
 		}
 		stateful.flushCalledCommands();
 		const result = await RebuildInPcc_galileo({
-			fallbackToAk: isSellStatus, useXml, area,
-			pcc, travelport, stateful, itinerary,
+			fallbackToAk: isSellStatus, useXml, aliasData,
+			travelport, stateful, itinerary,
 		});
 		let calledCommands = stateful.flushCalledCommands();
 		if (php.empty(result.errors)) {

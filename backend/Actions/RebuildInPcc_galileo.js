@@ -1,3 +1,4 @@
+const CommonDataHelper = require('../Transpiled/Rbs/GdsDirect/CommonDataHelper.js');
 const GoToArea = require('./GoToArea.js');
 const Fp = require('../Transpiled/Lib/Utils/Fp.js');
 const GalileoBuildItineraryAction = require('../Transpiled/Rbs/GdsAction/GalileoBuildItineraryAction.js');
@@ -44,10 +45,14 @@ const transformBuildError = (result) => {
 	}
 };
 
-/** @param itinerary = (new (require('GalileoPnr.js'))).getItinerary() */
+/**
+ * @param itinerary = (new (require('GalileoPnr.js'))).getItinerary()
+ * @param aliasData = require('AliasParser.js').parseRe()
+ * @param stateful = require('StatefulSession.js')()
+ */
 const RebuildInPcc_galileo = ({
 	travelport, useXml, stateful,
-	fallbackToAk, area, pcc, itinerary,
+	aliasData, fallbackToAk, itinerary,
 }) => {
 	const baseDate = stateful.getStartDt();
 
@@ -131,15 +136,50 @@ const RebuildInPcc_galileo = ({
 		return {errors};
 	};
 
-	const execute = async () => {
+	const getEmptyAreas =  () => {
+		const isOccupied = (row) => row.hasPnr;
+		const occupiedRows = Fp.filter(isOccupied, stateful.getAreaRows());
+		const occupiedAreas = php.array_column(occupiedRows, 'area');
+		occupiedAreas.push(stateful.getSessionData().area);
+		return Object.values(php.array_diff(['A', 'B', 'C', 'D', 'E'], occupiedAreas));
+	};
+
+	const prepareArea = async () => {
+		const segmentStatus = aliasData.segmentStatus || 'AK';
+		const sameAreaAllowed = aliasData.sameAreaAllowed || false;
+		const pcc = aliasData.pcc || stateful.getSessionData().pcc;
+		await CommonDataHelper.checkEmulatePccRights({stateful, pcc});
+
+		const emptyAreas = getEmptyAreas();
+		if (php.empty(emptyAreas)) {
+			const msg = Errors.getMessage(Errors.NO_FREE_AREAS);
+			return Promise.reject(msg);
+		}
+		let useSameArea = sameAreaAllowed && pcc === stateful.getSessionData().pcc;
+		if (!stateful.getSessionData().isPnrStored &&
+			!aliasData.keepOriginal &&
+			(segmentStatus !== 'AK' || useSameArea)
+		) {
+			await stateful.runCmd('I'); // ignore the itinerary it initial area
+		} else {
+			useSameArea = false;
+		}
+		if (useSameArea) {
+			return Promise.resolve();
+		}
+		const area = emptyAreas[0];
 		await GoToArea.inGalileo({stateful, area});
 		const output = (await fetchAll('SEM/' + pcc + '/AG', stateful)).output;
 		if (!UpdateGalileoSessionStateAction.wasPccChangedOk(output)) {
 			const error = Errors.getMessage(Errors.PCC_GDS_ERROR, {
 				pcc, response: output.trim(),
 			});
-			return {errors: [error]};
+			return Promise.reject(error);
 		}
+	};
+
+	const execute = async () => {
+		await prepareArea();
 		return bookItinerary(itinerary);
 	};
 
