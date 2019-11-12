@@ -558,13 +558,47 @@ const RunCmdRq = ({
 		return php.array_values(php.array_diff(['A', 'B', 'C', 'D', 'E'], occupiedAreas));
 	};
 
+	const prepareReArea = async (aliasData) => {
+		const segmentStatus = aliasData.segmentStatus || 'GK';
+		const sameAreaAllowed = aliasData.sameAreaAllowed || false;
+		const pcc = aliasData.pcc || getSessionData().pcc;
+		await CommonDataHelper.checkEmulatePccRights({stateful, pcc});
+
+		const emptyAreas = getEmptyAreas();
+		if (php.empty(emptyAreas)) {
+			return Rej.BadRequest(Errors.getMessage(Errors.NO_FREE_AREAS));
+		}
+		let useSameArea = sameAreaAllowed && getSessionData().pcc === pcc;
+		if (!getSessionData().isPnrStored &&
+			!aliasData.keepOriginal &&
+			(segmentStatus !== 'GK' || useSameArea)
+		) {
+			await ignoreWithoutWarning(); // ignore the itinerary in initial area
+		} else {
+			useSameArea = false;
+		}
+		if (useSameArea) {
+			return Promise.resolve();
+		}
+		const recoveryPcc = getSessionData().pcc;
+		const area = emptyAreas[0];
+		await GoToArea.inApollo({stateful, area});
+		const {cmdRec} = await emulatePcc(pcc, recoveryPcc);
+		if (getSessionData().pcc !== pcc) {
+			const error = cmdRec.output.startsWith('ERR: INVALID - NOT ' + pcc + ' - APOLLO')
+				? Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_GDS, {pcc, gds: 'apollo'})
+				: Errors.getMessage(Errors.PCC_GDS_ERROR, {pcc, response: cmdRec.output});
+			return Rej.BadRequest(error);
+		} else {
+			return Promise.resolve();
+		}
+	};
+
 	/** RE/2CV4/SS2 */
 	const processCloneItinerary = async (aliasData) => {
-		const pcc = aliasData.pcc || getSessionData().pcc;
 		const segmentStatus = aliasData.segmentStatus || 'GK';
 		const seatCount = aliasData.seatCount || 0;
 		const segmentNumbers = aliasData.segmentNumbers || [];
-		await CommonDataHelper.checkEmulatePccRights({stateful, pcc});
 		let itinerary = (await getCurrentPnr())
 			.getReservation(stateful.getStartDt())
 			.itinerary.filter(s => {
@@ -576,23 +610,7 @@ const RunCmdRq = ({
 		if (php.empty(itinerary)) {
 			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
 		}
-		const emptyAreas = getEmptyAreas();
-		if (php.empty(emptyAreas)) {
-			return {errors: [Errors.getMessage(Errors.NO_FREE_AREAS)]};
-		}
-		if (!getSessionData().isPnrStored && !aliasData.keepOriginal && segmentStatus !== 'GK') {
-			await ignoreWithoutWarning(); // ignore the itinerary in initial area
-		}
-		const recoveryPcc = getSessionData().pcc;
-		const area = emptyAreas[0];
-		await GoToArea.inApollo({stateful, area});
-		const {cmdRec} = await emulatePcc(pcc, recoveryPcc);
-		if (getSessionData().pcc !== pcc) {
-			const error = cmdRec.output.startsWith('ERR: INVALID - NOT ' + pcc + ' - APOLLO')
-				? Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_GDS, {pcc: pcc, gds: 'apollo'})
-				: Errors.getMessage(Errors.PCC_GDS_ERROR, {pcc: pcc, response: cmdRec.output});
-			return {errors: [error]};
-		}
+		await prepareReArea(aliasData);
 		itinerary = itinerary.map(seg => ({
 			...seg, segmentStatus,
 			seatCount: seatCount || seg.seatCount,
