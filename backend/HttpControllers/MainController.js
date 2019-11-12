@@ -28,6 +28,7 @@ const toHandleHttp = (httpAction) => (req, res) => {
 			const rqBody = HttpUtil.getRqBody(req);
 			const maskedBody = Object.assign({}, rqBody, {
 				emcSessionId: '******' + (rqBody.emcSessionId || '').slice(-4),
+				globalAuthPassword: '******',
 			});
 			const errorData = Debug.getExcData(exc, {
 				requestPath: req.path,
