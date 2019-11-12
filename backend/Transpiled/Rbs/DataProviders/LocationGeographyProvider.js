@@ -11,6 +11,10 @@ class LocationGeographyProvider
 		this.Airports = Airports;
 	}
 
+	getAirports() {
+		return this.Airports;
+	}
+
 	async getLocationData($locationCode) {
 		// TODO: cache
 		return this.Airports.findByCode($locationCode)

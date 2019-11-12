@@ -12,7 +12,7 @@ const inApollo = async (stateful) => {
 	const cmdToFullOutput = TravelportUtils.collectCmdToFullOutput(cmdRows);
 	for (const [cmd, output] of Object.entries(cmdToFullOutput).reverse()) {
 		const showsFullPnr = cmd === '*R' || cmd === 'IR'
-			|| cmd.match(/^\*[A-Z]{6}$/);
+			|| cmd.match(/^\*[A-Z0-9]{6}$/);
 		if (showsFullPnr) {
 			return ApolloPnr.makeFromDump(output);
 		}
@@ -38,7 +38,7 @@ const inGalileo = async (stateful) => {
 	const cmdToFullOutput = TravelportUtils.collectCmdToFullOutput(cmds);
 	for (const [cmd, output] of Object.entries(cmdToFullOutput).reverse()) {
 		const showsFullPnr = cmd === '*R' || cmd === 'IR'
-			|| cmd.match(/^\*[A-Z]{6}$/);
+			|| cmd.match(/^\*[A-Z0-9]{6}$/);
 		if (showsFullPnr) {
 			return GalileoPnr.makeFromDump(output);
 		}

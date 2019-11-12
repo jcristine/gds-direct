@@ -33,12 +33,12 @@ const isSuccessRebookOutput = (dump) => {
 const transformBuildError = (result) => {
 	let cmsMessageType;
 
-	if (!result['success']) {
+	if (!result.success) {
 		cmsMessageType = ({
 			[GalileoBuildItineraryAction.ERROR_GDS_ERROR]: Errors.REBUILD_GDS_ERROR,
 			[GalileoBuildItineraryAction.ERROR_NO_AVAIL]: Errors.REBUILD_NO_AVAIL,
-		} || {})[result['errorType']] || result['errorType'];
-		return Errors.getMessage(cmsMessageType, result['errorData']);
+		} || {})[result.errorType] || result.errorType;
+		return Errors.getMessage(cmsMessageType, result.errorData);
 	} else {
 		return null;
 	}
@@ -47,16 +47,16 @@ const transformBuildError = (result) => {
 /** @param itinerary = (new (require('GalileoPnr.js'))).getItinerary() */
 const RebuildInPcc_galileo = ({
 	travelport, useXml, stateful,
-	fallbackToAk, area = null, pcc = null, itinerary,
+	fallbackToAk, area, pcc, itinerary,
 }) => {
 	const baseDate = stateful.getStartDt();
 
 	/** replace GK segments with segments */
 	const rebookGkSegments = async (segments, reservation) => {
-		const marriageToSegs = Fp.groupMap(seg => seg['marriage'], segments);
+		const marriageToSegs = Fp.groupMap(seg => seg.marriage, segments);
 		const failedSegNums = [];
 		for (const [, marriedSegs] of marriageToSegs) {
-			const clsToSegs = Fp.groupBy(seg => seg['bookingClass'], marriedSegs);
+			const clsToSegs = Fp.groupBy(seg => seg.bookingClass, marriedSegs);
 			for (const [cls, clsSegs] of Object.entries(clsToSegs)) {
 				const segmentNumbers = clsSegs.map(seg =>
 					findSegmentNumberInPnr(seg, reservation && reservation.itinerary));
@@ -90,14 +90,14 @@ const RebuildInPcc_galileo = ({
 		// so as in Apollo skipping AK fallback for Y segments. They are rare so it's ok.
 		const isAkRebookPossible = (seg) => {
 			return fallbackToAk
-				&& seg['bookingClass'] !== 'Y'
-				&& seg['segmentStatus'] !== 'AK';
+				&& seg.bookingClass !== 'Y'
+				&& seg.segmentStatus !== 'AK';
 		};
 		const akItinerary = Fp.map((seg) => {
 			seg = {...seg};
 			if (isAkRebookPossible(seg)) {
-				seg['bookingClass'] = 'Y';
-				seg['segmentStatus'] = 'AK';
+				seg.bookingClass = 'Y';
+				seg.segmentStatus = 'AK';
 			}
 			return seg;
 		}, itinerary);
@@ -106,9 +106,7 @@ const RebuildInPcc_galileo = ({
 			session: stateful,
 			itinerary: akItinerary,
 			isParserFormat: true,
-			useXml: useXml,
-			travelport: travelport,
-			baseDate: baseDate,
+			useXml, travelport, baseDate,
 		});
 
 		if (useXml && result.segments.length > 0) {
@@ -124,7 +122,7 @@ const RebuildInPcc_galileo = ({
 			errors.push(error);
 		} else {
 			const gkRebook = await rebookGkSegments(itinerary, result.reservation);
-			const failedSegNums = gkRebook['failedSegmentNumbers'];
+			const failedSegNums = gkRebook.failedSegmentNumbers;
 			if (!php.empty(failedSegNums)) {
 				errors.push(Errors.getMessage(Errors.REBUILD_FALLBACK_TO_GK, {segNums: php.implode(',', failedSegNums)}));
 			}
@@ -134,17 +132,13 @@ const RebuildInPcc_galileo = ({
 	};
 
 	const execute = async () => {
-		if (area) {
-			await GoToArea.inGalileo({stateful, area});
-		}
-		if (pcc) {
-			const output = (await fetchAll('SEM/' + pcc + '/AG', stateful)).output;
-			if (!UpdateGalileoSessionStateAction.wasPccChangedOk(output)) {
-				const error = Errors.getMessage(Errors.PCC_GDS_ERROR, {
-					pcc: pcc, response: output.trim(),
-				});
-				return {errors: [error]};
-			}
+		await GoToArea.inGalileo({stateful, area});
+		const output = (await fetchAll('SEM/' + pcc + '/AG', stateful)).output;
+		if (!UpdateGalileoSessionStateAction.wasPccChangedOk(output)) {
+			const error = Errors.getMessage(Errors.PCC_GDS_ERROR, {
+				pcc, response: output.trim(),
+			});
+			return {errors: [error]};
 		}
 		return bookItinerary(itinerary);
 	};

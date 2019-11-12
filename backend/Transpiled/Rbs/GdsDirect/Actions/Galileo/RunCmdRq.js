@@ -1,3 +1,4 @@
+const BookViaAk_galileo = require('../../../../../Actions/BookViaGk/BookViaAk_galileo.js');
 const Normalize_priceItinerary = require('gds-utils/src/cmd_translators/Normalize_priceItinerary.js');
 const Parse_priceItinerary = require('gds-utils/src/text_format_processing/galileo/commands/Parse_priceItinerary.js');
 const TranslatePricingCmd = require('gds-utils/src/cmd_translators/Translate_priceItinerary.js');
@@ -32,14 +33,12 @@ const RebuildInPcc_galileo = require('../../../../../Actions/RebuildInPcc_galile
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const GalileoRetrieveTicketsAction = require('../../../../Rbs/Process/Apollo/ImportPnr/Actions/RetrieveApolloTicketsAction.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
-const {onDemand} = require('klesun-node-tools/src/Lang.js');
+const {onDemand, coverExc} = require('klesun-node-tools/src/Lang.js');
 
 const doesStorePnr = (cmd) => {
-	let parsedCmd, flatCmds, cmdTypes;
-
-	parsedCmd = CommandParser.parse(cmd);
-	flatCmds = php.array_merge([parsedCmd], parsedCmd.followingCommands || []);
-	cmdTypes = php.array_column(flatCmds, 'type');
+	const parsedCmd = CommandParser.parse(cmd);
+	const flatCmds = php.array_merge([parsedCmd], parsedCmd.followingCommands || []);
+	const cmdTypes = php.array_column(flatCmds, 'type');
 	return !php.empty(php.array_intersect(cmdTypes, ['storePnr', 'storeKeepPnr']));
 };
 
@@ -634,7 +633,7 @@ const RunCmdRq = ({
 		const calledCommands = [];
 
 		if (reservation.pcc && pcc !== getSessionData().pcc) {
-		// probably it would make more sense to pass the PCC to the RebuildInPcc...
+			// probably it would make more sense to pass the PCC to the RebuildInPcc...
 			const cmd = 'SEM/' + pcc + '/AG';
 			const {calledCommands, userMessages} = await processRealCommand(cmd);
 			allUserMessages.push(...userMessages);
@@ -649,14 +648,22 @@ const RunCmdRq = ({
 			// would be better to use number returned by GalileoBuildItineraryAction
 			// as it may be not in same order in case of marriages...
 			itinerary = itinerary.map((s, i) => ({...s, segmentNumber: +i + 1}));
-			const result = await RebuildInPcc_galileo({
-				useXml, travelport, stateful,
-				fallbackToAk: true, itinerary,
+			const result = await BookViaAk_galileo({
+				Airports: stateful.getGeoProvider().getAirports(),
+				bookRealSegments: true, itinerary,
+				travelport, session: stateful,
+				baseDate: stateful.getStartDt(),
 			});
-			let cmdRecs = stateful.flushCalledCommands();
-			if (php.empty(result.errors)) {
-				cmdRecs = cmdRecs.slice(-1); // keep just the ending *R
-			}
+			stateful.updateAreaState({
+				type: '!xml:PNRBFManagement',
+				state: {hasPnr: true, canCreatePq: false},
+			});
+			const sortResult = await processSortItinerary()
+				.catch(coverExc(Rej.list, exc => ({errors: ['Did not SORT - ' + exc]})));
+			const cmdRecs = php.empty(sortResult.errors)
+				// output of /0/1|2|3|9|7|6|8|4|5 holds the resulting PNR
+				? stateful.flushCalledCommands().slice(-1)
+				: [{cmd: '*R', output: (await getCurrentPnr()).getDump()}];
 			errors.push(...(result.errors || []));
 			calledCommands.push(...cmdRecs);
 		}

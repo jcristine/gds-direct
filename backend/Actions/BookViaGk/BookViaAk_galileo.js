@@ -55,7 +55,7 @@ const BookViaAk_galileo = (params) => {
 		for (const [, marriedSegs] of marriageToSegs) {
 			const clsToSegs = Fp.groupBy(seg => seg.bookingClass, marriedSegs);
 			for (const [cls, clsSegs] of Object.entries(clsToSegs)) {
-				const segmentNumbers = records.map(seg => seg.segmentNumber);
+				const segmentNumbers = clsSegs.map(seg => seg.segmentNumber);
 				const cmd = '@' + segmentNumbers.join('.') + '/' + cls;
 				const output = (await TravelportUtils.fetchAll(cmd, session)).output;
 				if (!isSuccessRebookOutput(output)) {
@@ -104,7 +104,6 @@ const BookViaAk_galileo = (params) => {
 			const built = await bookPassive(failedSegments);
 			reservation = built.reservation;
 		}
-		// TODO: SORT
 		return {reservation, messages};
 	};
 
