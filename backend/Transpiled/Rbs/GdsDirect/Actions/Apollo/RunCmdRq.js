@@ -558,14 +558,19 @@ const RunCmdRq = ({
 		return php.array_values(php.array_diff(['A', 'B', 'C', 'D', 'E'], occupiedAreas));
 	};
 
+	/** RE/2CV4/SS2 */
 	const processCloneItinerary = async (aliasData) => {
-		const pcc = aliasData.pcc;
+		const pcc = aliasData.pcc || getSessionData().pcc;
 		const segmentStatus = aliasData.segmentStatus || 'GK';
 		const seatCount = aliasData.seatCount || 0;
+		const segmentNumbers = aliasData.segmentNumbers || [];
 		await CommonDataHelper.checkEmulatePccRights({stateful, pcc});
 		let itinerary = (await getCurrentPnr())
 			.getReservation(stateful.getStartDt())
-			.itinerary;
+			.itinerary.filter(s => {
+				return !segmentNumbers.length
+					|| segmentNumbers.includes(s.segmentNumber);
+			});
 		itinerary = await guessGkMarriages(itinerary)
 			.catch(coverExc([Rej.NotFound], exc => itinerary));
 		if (php.empty(itinerary)) {

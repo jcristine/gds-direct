@@ -1,3 +1,4 @@
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 const PtcUtil = require('../Transpiled/Rbs/Process/Common/PtcUtil.js');
 const ParsersController = require('../Transpiled/Rbs/IqControllers/ParsersController.js');
@@ -6,6 +7,75 @@ const Parse_apollo_priceItinerary = require('gds-utils/src/text_format_processin
 const php = require('klesun-node-tools/src/Transpiled/php.js');
 const CmsClient = require("../IqClients/CmsClient");
 const {coverExc} = require('klesun-node-tools/src/Lang.js');
+const {mkReg} = require('klesun-node-tools/src/Utils/Misc.js');
+
+// RE/2CV4/SS
+// RE/2CV4
+// RE/2CV4/SS3
+// RE/2CV4/SS+
+const parseWholeRe = (cmd) => {
+	const regex =
+		'/^RE\/' +
+		'(?<pcc>[A-Z0-9]{3,9})' +
+		'(\/' +
+		'(?<status>[A-Z]{2}|)' +
+		'(?<seatCount>\\d{0,2})' +
+		')?' +
+		'(?<keepOriginalMark>\\+|\\||)' +
+		'$/';
+	let matches;
+	if (php.preg_match(regex, cmd, matches = [])) {
+		let segmentStatus = matches.status || '';
+		if (segmentStatus === 'AG') {
+			// agents mistype it way too often to not correct that,
+			// because of similarity with SEM/2G52/AG format
+			segmentStatus = 'GK';
+		}
+		return {
+			pcc: matches.pcc,
+			segmentStatus: segmentStatus,
+			segmentNumbers: [],
+			seatCount: matches.seatCount || '',
+			keepOriginal: !php.empty(matches.keepOriginalMark),
+		};
+	} else {
+		return null;
+	}
+};
+
+// RE/GK1
+// RE/SS1-3*5/2G52
+// RE/LL1-3*5/3
+// RE/SS1-7/3/+2F3K
+// RE/{status}{segNums}/{seatCount}/{keepSrcMark}{pcc}
+const parsePartialRe = (cmd) => {
+	const regex = mkReg([
+		/^RE\//,
+		/(?<segmentStatus>[A-Z]{2})/,
+		/(?<segNums>\d+([-*0-9]*))/,
+		/(?:\/(?<seatCount>\d+)|)/,
+		/(?:\/(?<keepOriginal>[+|]|)(?<pcc>[A-Z0-9]{3,9}|)|)/,
+		/\s*$/,
+	]);
+	const match = cmd.match(regex);
+	if (match) {
+		const groups = match.groups;
+		const segmentStatus = groups.segmentStatus;
+		if (!['GK', 'SS', 'LL'].includes(segmentStatus)) {
+			const msg = 'Invalid segment status - ' + segmentStatus;
+			throw Rej.BadRequest.makeExc(msg);
+		}
+		return {
+			pcc: groups.pcc || null,
+			segmentStatus: segmentStatus,
+			segmentNumbers: ParserUtil.parseRange(groups.segNums, '*', '-'),
+			seatCount: groups.seatCount || null,
+			keepOriginal: groups.keepOriginal ? true : false,
+		};
+	} else {
+		return null;
+	}
+};
 
 /**
  * provides functions to parse our custom formats
@@ -13,32 +83,8 @@ const {coverExc} = require('klesun-node-tools/src/Lang.js');
  */
 class AliasParser {
 	static parseRe(cmd) {
-		const regex =
-			'/^RE\/' +
-			'(?<pcc>[A-Z0-9]{3,9})' +
-			'(\/' +
-			'(?<status>[A-Z]{2}|)' +
-			'(?<seatCount>\\d{0,2})' +
-			')?' +
-			'(?<keepOriginalMark>\\+|\\||)' +
-			'$/';
-		let matches;
-		if (php.preg_match(regex, cmd, matches = [])) {
-			let segmentStatus = matches.status || '';
-			if (segmentStatus === 'AG') {
-				// agents mistype it way too often to not correct that,
-				// because of similarity with SEM/2G52/AG format
-				segmentStatus = 'GK';
-			}
-			return {
-				pcc: matches.pcc,
-				segmentStatus: segmentStatus,
-				seatCount: matches.seatCount || '',
-				keepOriginal: !php.empty(matches.keepOriginalMark),
-			};
-		} else {
-			return null;
-		}
+		return parseWholeRe(cmd)
+			|| parsePartialRe(cmd);
 	}
 
 	/**
@@ -152,6 +198,8 @@ class AliasParser {
 				mod.parsed.passengerProperties[0].ptc
 			) {
 				inputPtc = mod.parsed.passengerProperties[0].ptc;
+			} else if (mod.raw === 'MIX') {
+				mix = mod.raw;
 			} else {
 				pricingModifiers.push(mod);
 			}
