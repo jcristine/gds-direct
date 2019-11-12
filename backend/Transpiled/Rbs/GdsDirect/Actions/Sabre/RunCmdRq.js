@@ -467,6 +467,7 @@ const execute = ({
 	};
 
 	const processCloneItinerary = async (aliasData) => {
+		const sameAreaAllowed = aliasData.sameAreaAllowed || false;
 		const pcc = aliasData.pcc || getSessionData().pcc;
 		const seatNumber = aliasData.seatCount || 0;
 		const segmentNumbers = aliasData.segmentNumbers || [];

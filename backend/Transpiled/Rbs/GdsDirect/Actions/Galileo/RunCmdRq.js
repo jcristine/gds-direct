@@ -682,6 +682,7 @@ const RunCmdRq = ({
 	};
 
 	const processCloneItinerary = async (aliasData) => {
+		const sameAreaAllowed = aliasData.sameAreaAllowed || false;
 		const pcc = aliasData.pcc || getSessionData().pcc;
 		const segmentStatus = aliasData.segmentStatus || 'AK';
 		const seatNumber = aliasData.seatCount || 0;

@@ -32,6 +32,7 @@ const parseWholeRe = (cmd) => {
 			segmentStatus = 'GK';
 		}
 		return {
+			sameAreaAllowed: false,
 			pcc: matches.pcc,
 			segmentStatus: segmentStatus,
 			segmentNumbers: [],
@@ -71,6 +72,7 @@ const parsePartialRe = (cmd) => {
 			.replace(/\*/g, '-')
 			.replace(/\+/, '|');
 		return {
+			sameAreaAllowed: true,
 			pcc: groups.pcc || null,
 			segmentStatus: segmentStatus,
 			segmentNumbers: !segNumStr ? [] :

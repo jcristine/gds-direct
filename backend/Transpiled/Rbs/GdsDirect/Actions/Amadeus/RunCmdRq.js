@@ -352,18 +352,16 @@ const execute = ({
 	};
 
 	const processCloneItinerary = async (aliasData) => {
-		let pcc, segmentStatus, seatNumber, pnrDump, itinerary, emptyAreas, area, result, key, segment;
-
-		pcc = aliasData.pcc || getSessionData().pcc;
-		segmentStatus = aliasData.segmentStatus || 'GK';
-		seatNumber = aliasData.seatCount || 0;
+		const sameAreaAllowed = aliasData.sameAreaAllowed || false;
+		const pcc = aliasData.pcc || getSessionData().pcc;
+		const segmentStatus = aliasData.segmentStatus || 'GK';
+		const seatNumber = aliasData.seatCount || 0;
 		const segmentNumbers = aliasData.segmentNumbers || [];
 
-		pnrDump = (await AmadeusUtils.fetchAllRt('RTAM', stateful)).output;
+		let pnrDump = (await AmadeusUtils.fetchAllRt('RTAM', stateful)).output;
+		let itinerary = MarriageItineraryParser.parse(pnrDump);
 
-		itinerary = MarriageItineraryParser.parse(pnrDump);
-
-		if(php.empty(itinerary)) {
+		if (php.empty(itinerary)) {
 			pnrDump = (await AmadeusUtils.fetchAllRt('RT', stateful)).output;
 
 			itinerary = PnrParser.parse(pnrDump).parsed.itinerary;
@@ -377,14 +375,15 @@ const execute = ({
 			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
 		}
 
-		if (php.empty(emptyAreas = getEmptyAreasFromDbState())) {
+		const emptyAreas = getEmptyAreasFromDbState();
+		if (php.empty(emptyAreas)) {
 			return {errors: [Errors.getMessage(Errors.NO_FREE_AREAS)]};
 		}
 		if (!getSessionData().isPnrStored && !aliasData.keepOriginal && segmentStatus !== 'GK') {
 			await runCommand('IG'); // ignore the itinerary it initial area
 		}
-		area = emptyAreas[0];
-		result = await fakeAreaUtil.changeArea(area);
+		const area = emptyAreas[0];
+		let result = await fakeAreaUtil.changeArea(area);
 		if (!php.empty(result.errors)) {
 			return result;
 		}
@@ -395,7 +394,7 @@ const execute = ({
 			}
 		}
 
-		for ([key, segment] of Object.entries(itinerary)) {
+		for (const [key, segment] of Object.entries(itinerary)) {
 			if (seatNumber >= 1 && seatNumber <= 9) {
 				itinerary[key].seatCount = seatNumber;
 			}
