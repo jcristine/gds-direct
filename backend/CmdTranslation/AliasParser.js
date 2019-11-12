@@ -52,7 +52,7 @@ const parsePartialRe = (cmd) => {
 	const regex = mkReg([
 		/^RE\//,
 		/(?<segmentStatus>[A-Z]{2})/,
-		/(?<segNums>\d+([-*0-9]*))/,
+		/(?<segNums>\d+([-*+|0-9]*)|)/,
 		/(?:\/(?<seatCount>\d+)|)/,
 		/(?:\/(?<keepOriginal>[+|]|)(?<pcc>[A-Z0-9]{3,9}|)|)/,
 		/\s*$/,
@@ -65,10 +65,14 @@ const parsePartialRe = (cmd) => {
 			const msg = 'Invalid segment status - ' + segmentStatus;
 			throw Rej.BadRequest.makeExc(msg);
 		}
+		const segNumStr = groups.segNums
+			.replace(/\*/g, '-')
+			.replace(/\+/, '|');
 		return {
 			pcc: groups.pcc || null,
 			segmentStatus: segmentStatus,
-			segmentNumbers: ParserUtil.parseRange(groups.segNums, '*', '-'),
+			segmentNumbers: !segNumStr ? [] :
+				ParserUtil.parseRange(segNumStr, '|', '-'),
 			seatCount: groups.seatCount || null,
 			keepOriginal: groups.keepOriginal ? true : false,
 		};
