@@ -485,7 +485,7 @@ const execute = ({
 		const takenSegments = (await getCurrentPnr())
 			.getItinerary().filter(s => {
 				return !segmentNumbers.length
-					|| segmentNumbers.includes(s.segmentNumber);
+					|| segmentNumbers.includes(+s.segmentNumber);
 			});
 		const newStatus = aliasData.segmentStatus ||
 			(takenSegments.some(s => s.airline === 'AA') ? 'SS' : 'GK');

@@ -351,48 +351,65 @@ const execute = ({
 		return bookItinerary(matchedSegments, false);
 	};
 
-	const processCloneItinerary = async (aliasData) => {
+	const prepareReArea = async (aliasData) => {
 		const sameAreaAllowed = aliasData.sameAreaAllowed || false;
 		const pcc = aliasData.pcc || getSessionData().pcc;
+		const segmentStatus = aliasData.segmentStatus || 'GK';
+		await CommonDataHelper.checkEmulatePccRights({stateful, pcc});
+
+		const emptyAreas = getEmptyAreasFromDbState();
+		if (php.empty(emptyAreas)) {
+			const msg = Errors.getMessage(Errors.NO_FREE_AREAS);
+			return Rej.BadRequest(msg);
+		}
+		let useSameArea = sameAreaAllowed && getSessionData().pcc === pcc;
+		if (!getSessionData().isPnrStored &&
+			!aliasData.keepOriginal &&
+			(segmentStatus !== 'GK' || useSameArea)
+		) {
+			await runCommand('IG'); // ignore the itinerary it initial area
+		} else {
+			useSameArea = false;
+		}
+		if (useSameArea) {
+			return Promise.resolve();
+		}
+		const area = emptyAreas[0];
+		let result = await fakeAreaUtil.changeArea(area);
+		if (!php.empty(result.errors)) {
+			return Rej.BadRequest(result.errors.join('; '));
+		}
+		if (getSessionData().pcc !== pcc) {
+			result = await fakeAreaUtil.changePcc(pcc);
+			if (!php.empty(result.errors)) {
+				return Rej.BadRequest(result.errors.join('; '));
+			}
+		} else {
+			return Promise.resolve();
+		}
+	};
+
+	const processCloneItinerary = async (aliasData) => {
 		const segmentStatus = aliasData.segmentStatus || 'GK';
 		const seatNumber = aliasData.seatCount || 0;
 		const segmentNumbers = aliasData.segmentNumbers || [];
 
 		let pnrDump = (await AmadeusUtils.fetchAllRt('RTAM', stateful)).output;
-		let itinerary = MarriageItineraryParser.parse(pnrDump);
+		let srcItinerary = MarriageItineraryParser.parse(pnrDump);
 
-		if (php.empty(itinerary)) {
+		if (php.empty(srcItinerary)) {
 			pnrDump = (await AmadeusUtils.fetchAllRt('RT', stateful)).output;
-
-			itinerary = PnrParser.parse(pnrDump).parsed.itinerary;
+			srcItinerary = PnrParser.parse(pnrDump).parsed.itinerary;
 		}
-		itinerary = itinerary.filter(s => {
+		const itinerary = srcItinerary.filter(s => {
 			return !segmentNumbers.length
-				|| segmentNumbers.includes(s.lineNumber);
+				|| segmentNumbers.includes(+s.lineNumber);
 		});
-
 		if (php.empty(itinerary)) {
-			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
+			const msg = Errors.getMessage(Errors.ITINERARY_IS_EMPTY);
+			return Rej.BadRequest(msg, {segmentNumbers, srcItinerary});
 		}
-
-		const emptyAreas = getEmptyAreasFromDbState();
-		if (php.empty(emptyAreas)) {
-			return {errors: [Errors.getMessage(Errors.NO_FREE_AREAS)]};
-		}
-		if (!getSessionData().isPnrStored && !aliasData.keepOriginal && segmentStatus !== 'GK') {
-			await runCommand('IG'); // ignore the itinerary it initial area
-		}
-		const area = emptyAreas[0];
-		let result = await fakeAreaUtil.changeArea(area);
-		if (!php.empty(result.errors)) {
-			return result;
-		}
-		if (getSessionData().pcc !== pcc) {
-			result = await fakeAreaUtil.changePcc(pcc);
-			if (!php.empty(result.errors)) {
-				return result;
-			}
-		}
+		await prepareReArea(aliasData);
 
 		for (const [key, segment] of Object.entries(itinerary)) {
 			if (seatNumber >= 1 && seatNumber <= 9) {

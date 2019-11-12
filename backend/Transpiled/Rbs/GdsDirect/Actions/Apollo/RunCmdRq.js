@@ -603,7 +603,7 @@ const RunCmdRq = ({
 			.getReservation(stateful.getStartDt())
 			.itinerary.filter(s => {
 				return !segmentNumbers.length
-					|| segmentNumbers.includes(s.segmentNumber);
+					|| segmentNumbers.includes(+s.segmentNumber);
 			});
 		itinerary = await guessGkMarriages(itinerary)
 			.catch(coverExc([Rej.NotFound], exc => itinerary));
