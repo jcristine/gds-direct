@@ -61,8 +61,10 @@ const parsePartialRe = (cmd) => {
 	if (match) {
 		const groups = match.groups;
 		const segmentStatus = groups.segmentStatus;
-		if (!['GK', 'SS', 'LL'].includes(segmentStatus)) {
-			const msg = 'Invalid segment status - ' + segmentStatus;
+		const allowedStatuses = ['SS', 'GK', 'LL', 'AK', 'HS'];
+		if (!allowedStatuses.includes(segmentStatus)) {
+			const msg = 'Invalid segment status - ' + segmentStatus +
+				', must be one of ' + allowedStatuses.join(',');
 			throw Rej.BadRequest.makeExc(msg);
 		}
 		const segNumStr = groups.segNums
