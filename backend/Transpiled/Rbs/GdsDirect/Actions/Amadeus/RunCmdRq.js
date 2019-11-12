@@ -354,13 +354,18 @@ const execute = ({
 	const processCloneItinerary = async (aliasData) => {
 		let pcc, segmentStatus, seatNumber, pnrDump, itinerary, emptyAreas, area, result, key, segment;
 
-		pcc = aliasData.pcc;
+		pcc = aliasData.pcc || getSessionData().pcc;
 		segmentStatus = aliasData.segmentStatus || 'GK';
 		seatNumber = aliasData.seatCount || 0;
+		const segmentNumbers = aliasData.segmentNumbers || [];
 
 		pnrDump = (await AmadeusUtils.fetchAllRt('RTAM', stateful)).output;
 
-		itinerary = MarriageItineraryParser.parse(pnrDump);
+		itinerary = MarriageItineraryParser.parse(pnrDump)
+			.filter(s => {
+				return !segmentNumbers.length
+					|| segmentNumbers.includes(s.lineNumber);
+			});
 
 		if(php.empty(itinerary)) {
 			pnrDump = (await AmadeusUtils.fetchAllRt('RT', stateful)).output;

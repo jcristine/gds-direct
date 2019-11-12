@@ -682,12 +682,17 @@ const RunCmdRq = ({
 	};
 
 	const processCloneItinerary = async (aliasData) => {
-		const pcc = aliasData.pcc;
+		const pcc = aliasData.pcc || getSessionData().pcc;
 		const segmentStatus = aliasData.segmentStatus || 'AK';
 		const seatNumber = aliasData.seatCount || 0;
+		const segmentNumbers = aliasData.segmentNumbers || [];
 
 		await CommonDataHelper.checkEmulatePccRights({stateful, pcc});
-		const itinerary = (await getCurrentPnr()).getItinerary();
+		const itinerary = (await getCurrentPnr())
+			.getItinerary().filter(s => {
+				return !segmentNumbers.length
+					|| segmentNumbers.includes(s.segmentNumber);
+			});
 		if (php.empty(itinerary)) {
 			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
 		}

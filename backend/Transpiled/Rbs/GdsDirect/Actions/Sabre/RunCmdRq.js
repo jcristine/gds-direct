@@ -467,9 +467,15 @@ const execute = ({
 	};
 
 	const processCloneItinerary = async (aliasData) => {
-		const pcc = aliasData.pcc;
+		const pcc = aliasData.pcc || getSessionData().pcc;
 		const seatNumber = aliasData.seatCount || 0;
-		const takenSegments = (await getCurrentPnr()).getItinerary();
+		const segmentNumbers = aliasData.segmentNumbers || [];
+
+		const takenSegments = (await getCurrentPnr())
+			.getItinerary().filter(s => {
+				return !segmentNumbers.length
+					|| segmentNumbers.includes(s.segmentNumber);
+			});
 		const newStatus = aliasData.segmentStatus ||
 			(takenSegments.some(s => s.airline === 'AA') ? 'SS' : 'GK');
 		if (php.empty(takenSegments)) {
