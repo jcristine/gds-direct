@@ -55,15 +55,13 @@ class ParsersController {
 			const data = FormatAdapter.adaptApolloPnrParseForClient(asApollo, baseDate);
 			options.push({type: 'apollo_pnr', data: data});
 		}
-		if (
-			asGalileo.itineraryData.length > 0 ||
+		if (asGalileo.itineraryData.length > 0 ||
 			asGalileo.passengers.passengerList.length > 0
 		) {
 			const data = GalileoPnrCommonFormatAdapter.transform(asGalileo, baseDate);
 			options.push({type: 'galileo_pnr', data: data});
 		}
-		if (
-			asAmadeus.parsed.itinerary.length > 0 &&
+		if (asAmadeus.parsed.itinerary.length > 0 &&
 			asAmadeus.parsed.itinerary.length >= asAmaItin.parsed.itinerary.length ||
 			asAmadeus.parsed.passengers.length > 0 ||
 			asAmadeus.parsed.pnrInfo.recordLocator
@@ -75,8 +73,7 @@ class ParsersController {
 			const data = AmadeusPnrCommonFormatAdapter.transform(asAmaItin, baseDate);
 			options.push({type: 'amadeus_pnr', data: data});
 		}
-		if (
-			asSabre.parsedData.itinerary.length > 0 ||
+		if (asSabre.parsedData.itinerary.length > 0 ||
 			(asSabre.parsedData.pnrInfo || {}).pcc
 		) {
 			const data = FormatAdapter.adaptSabrePnrParseForClient(asSabre, baseDate);
