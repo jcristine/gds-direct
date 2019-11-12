@@ -434,41 +434,51 @@ const execute = ({
 		return GoToArea.inSabre({stateful, area});
 	};
 
-	const emulateInFreeArea = async  (pcc, keepOriginal) => {
-		let emptyAreas, area, areaChange, errors, error, output;
-
+	const prepareReArea = async (aliasData) => {
+		const sameAreaAllowed = aliasData.sameAreaAllowed || false;
+		const pcc = aliasData.pcc || getSessionData().pcc;
 		await CommonDataHelper.checkEmulatePccRights({stateful, pcc});
-		if (php.empty(emptyAreas = getEmptyAreas())) {
+		const emptyAreas = await getEmptyAreas();
+		if (php.empty(emptyAreas)) {
 			return {errors: [Errors.getMessage(Errors.NO_FREE_AREAS)]};
 		}
-		if (!getSessionData().isPnrStored && !keepOriginal) {
+		let useSameArea = sameAreaAllowed && getSessionData().pcc === pcc;
+		if (!getSessionData().isPnrStored &&
+			!aliasData.keepOriginal &&
+			(!aliasData.willGk || useSameArea)
+		) {
 			await runCommand('I'); // ignore the itinerary it initial area
+		} else {
+			useSameArea = false;
 		}
-		area = emptyAreas[0];
-		areaChange = await changeArea(area);
-		if (!php.empty(errors = areaChange.errors || [])) {
-			return {errors: errors};
+		if (useSameArea) {
+			return Promise.resolve({errors: []});
+		}
+		const area = emptyAreas[0];
+		const areaChange = await changeArea(area);
+		const errors = areaChange.errors || [];
+		if (!php.empty(errors)) {
+			return {errors};
 		} else if (getSessionData().area !== area) {
-			error = Errors.getMessage(Errors.FAILED_TO_CHANGE_AREA, {
+			const error = Errors.getMessage(Errors.FAILED_TO_CHANGE_AREA, {
 				area: area,
 				response: php.trim((php.array_pop(areaChange.calledCommands) || {}).output || 'no commands called'),
 			});
 			return {errors: [error]};
 		}
-		output = php.trim(await runCommand('AAA' + pcc));
+		const output = php.trim(await runCommand('AAA' + pcc));
 		if (getSessionData().pcc !== pcc) {
-			error = output === '¥NOT ALLOWED THIS CITY¥'
-				? Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_GDS, {pcc: pcc, gds: 'sabre'})
-				: Errors.getMessage(Errors.PCC_GDS_ERROR, {pcc: pcc, response: php.trim(output)});
+			const error = output === '¥NOT ALLOWED THIS CITY¥'
+				? Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_GDS, {pcc, gds: 'sabre'})
+				: Errors.getMessage(Errors.PCC_GDS_ERROR, {pcc, response: php.trim(output)});
 			return {errors: [error]};
 		} else {
 			return {calledCommands: stateful.flushCalledCommands()};
 		}
 	};
 
+	/** RE/6IIF */
 	const processCloneItinerary = async (aliasData) => {
-		const sameAreaAllowed = aliasData.sameAreaAllowed || false;
-		const pcc = aliasData.pcc || getSessionData().pcc;
 		const seatNumber = aliasData.seatCount || 0;
 		const segmentNumbers = aliasData.segmentNumbers || [];
 
@@ -483,9 +493,9 @@ const execute = ({
 			return {errors: [Errors.getMessage(Errors.ITINERARY_IS_EMPTY)]};
 		}
 		const isAa = (seg) => seg.airline === 'AA';
-		const keepOriginal = aliasData.keepOriginal ||
-		newStatus === 'GK' && !takenSegments.some(isAa);
-		const pccResult = await emulateInFreeArea(pcc, keepOriginal);
+		const pccResult = await prepareReArea({...aliasData,
+			willGk: newStatus === 'GK' && !takenSegments.some(isAa),
+		});
 		const errors = pccResult.errors || [];
 		if (!php.empty(errors)) {
 			return {errors};
