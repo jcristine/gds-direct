@@ -48,7 +48,7 @@ const parseWholeRe = (cmd) => {
 // RE/SS1-3*5/2G52
 // RE/LL1-3*5/3
 // RE/SS1-7/3/+2F3K
-// RE/{status}{segNums}/{seatCount}/{keepSrcMark}{pcc}
+// RE{allMark}/{status}{segNums}/{seatCount}/{keepSrcMark}{pcc}
 const parsePartialRe = (cmd) => {
 	if (cmd === 'RE') {
 		// using just >RE; without params would not make

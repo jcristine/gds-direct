@@ -359,6 +359,7 @@ class RunCmdRqTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 			'output': {
 				'status': 'forbidden',
 				'calledCommands': [
+					{'cmd': 'I'},
 					{'cmd': 'SB'},
 					{'cmd': 'SEM/69KS/AG'},
 					{'cmd': '0DL4370Y08AUGLHRJFKAK1'},
