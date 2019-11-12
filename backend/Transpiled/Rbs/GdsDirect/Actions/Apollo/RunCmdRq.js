@@ -599,8 +599,9 @@ const RunCmdRq = ({
 		const segmentStatus = aliasData.segmentStatus || 'GK';
 		const seatCount = aliasData.seatCount || 0;
 		const segmentNumbers = aliasData.segmentNumbers || [];
-		let itinerary = (await getCurrentPnr())
-			.getReservation(stateful.getStartDt())
+		const reservation = (await getCurrentPnr())
+			.getReservation(stateful.getStartDt());
+		let itinerary = reservation
 			.itinerary.filter(s => {
 				return !segmentNumbers.length
 					|| segmentNumbers.includes(+s.segmentNumber);
@@ -617,6 +618,16 @@ const RunCmdRq = ({
 		}));
 		const fallbackToGk = segmentStatus === 'SS';
 		return bookItinerary({itinerary, fallbackToGk})
+			.then(async actRs => {
+				if (aliasData.withPassengers && php.empty(actRs.errors)) {
+					const booked = await bookPassengers(reservation.passengers);
+					actRs.calledCommands = [
+						...(actRs.calledCommands || []),
+						...booked.calledCommands,
+					];
+				}
+				return actRs;
+			})
 			.catch(coverExc([Rej.UnprocessableEntity], exc => {
 				if (exc.message.includes('CK ACTN CODE') &&
 					!['GK', 'SS', 'NN', 'LL'].includes(segmentStatus)

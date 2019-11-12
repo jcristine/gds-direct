@@ -50,10 +50,15 @@ const parseWholeRe = (cmd) => {
 // RE/SS1-7/3/+2F3K
 // RE/{status}{segNums}/{seatCount}/{keepSrcMark}{pcc}
 const parsePartialRe = (cmd) => {
+	if (cmd === 'RE') {
+		// using just >RE; without params would not make
+		// any sense and would likely happen due to typos
+		return null;
+	}
 	const regex = mkReg([
-		/^RE\//,
-		/(?<segmentStatus>[A-Z]{2})/,
-		/(?<segNums>\d+([-*+|0-9]*)|)/,
+		/^RE/,
+		/(?<withPassengers>ALL|)/,
+		/(?:\/(?<segmentStatus>[A-Z]{2}|)(?<segNums>\d+([-*+|0-9]*)|)|)/,
 		/(?:\/(?<seatCount>\d+)|)/,
 		/(?:\/(?<keepOriginal>[+|]|)(?<pcc>[A-Z0-9]{3,9}|)|)/,
 		/\s*$/,
@@ -61,18 +66,19 @@ const parsePartialRe = (cmd) => {
 	const match = cmd.match(regex);
 	if (match) {
 		const groups = match.groups;
-		const segmentStatus = groups.segmentStatus;
+		const segmentStatus = groups.segmentStatus || null;
 		const allowedStatuses = ['SS', 'GK', 'LL', 'AK', 'HS'];
-		if (!allowedStatuses.includes(segmentStatus)) {
+		if (segmentStatus && !allowedStatuses.includes(segmentStatus)) {
 			const msg = 'Invalid segment status - ' + segmentStatus +
 				', must be one of ' + allowedStatuses.join(',');
 			throw Rej.BadRequest.makeExc(msg);
 		}
-		const segNumStr = groups.segNums
+		const segNumStr = (groups.segNums || '')
 			.replace(/\*/g, '-')
 			.replace(/\+/, '|');
 		return {
 			sameAreaAllowed: true,
+			withPassengers: groups.withPassengers ? true : false,
 			pcc: groups.pcc || null,
 			segmentStatus: segmentStatus,
 			segmentNumbers: !segNumStr ? [] :
