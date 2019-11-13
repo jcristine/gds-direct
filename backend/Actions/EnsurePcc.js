@@ -11,6 +11,8 @@ const makeRejection = (cmdRec, pcc, gds) => {
 		if (cmdRec.output.startsWith('ERR: INVALID - NOT ')) {
 			msg = Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_GDS, {pcc, gds: 'apollo'});
 			rejection = Rej.Forbidden;
+		} else if (cmdRec.output.startsWith('ERR: FIN OR IGN - APOLLO')) {
+			rejection = Rej.BadRequest;
 		}
 	} else if (gds === 'sabre') {
 		if (cmdRec.output === '¥NOT ALLOWED THIS CITY¥') {
