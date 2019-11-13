@@ -1,10 +1,8 @@
-const Debug = require('klesun-node-tools/src/Debug.js');
 const Rej = require('klesun-node-tools/src/Rej.js');
 
 const {getDbConfig} = require('dyn-utils/src/Config.js');
 const {getStaticConfig} = require('../Config.js');
 const NotFound = require("klesun-node-tools/src/Rej").NotFound;
-const Diag = require('../LibWrappers/Diag.js');
 const {SqlUtil} = require('klesun-node-tools');
 const {coverExc, onDemand} = require('klesun-node-tools/src/Lang.js');
 const ClusterWrapper = require('dynatech-mysql-cluster-wrapper').default;
@@ -22,7 +20,14 @@ const getWrapper = onDemand(async () => {
 	}, {
 		mantisId: staticCfg.mantisId,
 	});
-	wrapper.configFetch().setSchedule(true);
+	if (staticCfg.production) {
+		wrapper.configFetch().setSchedule(true);
+	} else {
+		// investigating, it seems to fail sometimes causing all following 'request' lib actions to result in
+		// 'Client network socket disconnected before secure TLS connection was established'
+		// or possibly it just causes restart, and network is still down and Tls.onDemand() caches the error result
+		wrapper.configFetch().setSchedule(false);
+	}
 	wrapper.configFetch().appendDefaultPollConfig({
 		connectionLimit: 20,
 		// return datetime as string, not Date object
