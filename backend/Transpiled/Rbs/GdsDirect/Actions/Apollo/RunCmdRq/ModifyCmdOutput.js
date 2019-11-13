@@ -1,3 +1,4 @@
+const ParserUtil = require('gds-utils/src/text_format_processing/agnostic/ParserUtil.js');
 const UpdateState_apollo = require('gds-utils/src/state_tracking/UpdateState_apollo.js');
 const Fp = require('../../../../../Lib/Utils/Fp.js');
 const FareDisplayInternationalParser = require('../../../../../Gds/Parsers/Apollo/TariffDisplay/FareDisplayInternationalParser.js');
@@ -73,18 +74,16 @@ const ModifyCmdOutput = ({
 }) => {
 	const execute = async () => {
 		calledCommand = {...calledCommand};
-		let scrolledCmd, cmdParsed, type, output, lines, isSafe, clean, pcc,
-			isOk;
-		scrolledCmd = stateful.getSessionData().scrolledCmd || calledCommand.cmd;
-		cmdParsed = CommandParser.parse(scrolledCmd);
-		type = cmdParsed.type || null;
+		const scrolledCmd = stateful.getSessionData().scrolledCmd || calledCommand.cmd;
+		const cmdParsed = CommandParser.parse(scrolledCmd);
+		const type = cmdParsed.type || null;
 		if (php.in_array(type, ['searchPnr', 'displayPnrFromList']) &&
 			!stateful.getAgent().canOpenPrivatePnr()
 		) {
-			output = StringUtil.wrapLinesAt(calledCommand.output, 64);
-			lines = StringUtil.lines(output);
-			isSafe = (line) => !StringUtil.contains(line, 'WEINSTEIN/ALEX');
-			calledCommand.output = php.implode(php.PHP_EOL, Fp.filter(isSafe, lines));
+			const output = ParserUtil.wrapLinesAt(calledCommand.output, 64);
+			const lines = output.split('\n');
+			const isSafe = (line) => !StringUtil.contains(line, 'WEINSTEIN/ALEX');
+			calledCommand.output = lines.filter(isSafe).join('\n');
 		}
 		if ((stateful.getSessionData().scrolledCmd || '').startsWith('$D')) {
 			let alias;
@@ -106,12 +105,12 @@ const ModifyCmdOutput = ({
 			}
 		}
 		if (type === 'airAvailability' && doesAvailJourneyTimeApply(calledCommand.output)) {
-			clean = php.preg_replace(/><$/, '', calledCommand.output);
+			const clean = php.preg_replace(/><$/, '', calledCommand.output);
 			calledCommand.output = php.rtrim(clean) + '  ' + 'JOURNEY TIME >A*J;  ><';
 		}
 		if (type === 'changePcc' && cmdParsed.data) {
-			pcc = cmdParsed.data;
-			isOk = UpdateState_apollo.wasPccChangedOk(calledCommand.output, cmdParsed.data);
+			const pcc = cmdParsed.data;
+			const isOk = UpdateState_apollo.wasPccChangedOk(calledCommand.output, cmdParsed.data);
 			if (isOk) {
 				calledCommand.output = 'YOU HAVE SUCCESSFULLY EMULATED TO ' + pcc;
 			}
