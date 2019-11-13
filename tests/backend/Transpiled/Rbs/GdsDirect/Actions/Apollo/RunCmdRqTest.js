@@ -2371,9 +2371,9 @@ class RunCmdRqTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 			},
 		});
 
-		// Recovery after failed SEM in 2HJ9 service bureau, example: SEM/2F9T/AG
 		list.push({
 			'input': {
+				'title': 'Recovery after failed SEM in 2HJ9 service bureau, example: SEM/2F9T/AG',
 				'cmdRequested': 'SEM/2F9T/AG',
 				'baseDate': '2018-07-16',
 				'ticketDesignators': [],
@@ -2381,7 +2381,7 @@ class RunCmdRqTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 			'output': {
 				'status': 'executed',
 				'calledCommands': [
-					{'cmd': 'SEM/2F9T/AG'},
+					{'cmd': 'SEM/2G55/AG'},
 				],
 			},
 			'sessionInfo': {
@@ -2730,7 +2730,7 @@ class RunCmdRqTest extends require('klesun-node-tools/src/Transpiled/Lib/TestCas
 				],
 			},
 			'sessionInfo': {
-				'initialState': php.array_merge(GdsDirectDefaults.makeDefaultApolloState(), []),
+				'initialState': {...GdsDirectDefaults.makeDefaultApolloState(), pcc: '1O3K'},
 				'initialCommands': [],
 				'performedCommands': [
 					{

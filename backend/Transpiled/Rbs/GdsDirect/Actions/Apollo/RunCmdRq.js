@@ -1,3 +1,4 @@
+const EnsurePcc = require('../../../../../Actions/EnsurePcc.js');
 const GoToArea = require('../../../../../Actions/GoToArea.js');
 const PnrStatusParser = require('gds-utils/src/text_format_processing/apollo/actions/PnrStatusParser.js');
 const GkUtil = require('../../../../../Actions/BookViaGk/GkUtil.js');
@@ -500,18 +501,11 @@ const RunCmdRq = ({
 
 	const emulatePcc = async (pcc, recoveryPcc) => {
 		recoveryPcc = recoveryPcc || getSessionData().pcc;
-		let cmd = 'SEM/' + pcc + '/AG';
-		const result = await processRealCommand(cmd, false);
-		if (!php.empty(recoveryPcc)) {
-			// maybe it would be more idiomatic to put this in
-			// callImplicitCommandsAfter() like we did for *R after ER?
-			const answer = result.cmdRec.output;
-			if (php.trim(extractPager(answer)[0]) === 'ERR: INVALID - NOT 2HJ9 - APOLLO') {
-				cmd = 'SEM/' + recoveryPcc + '/AG';
-				await runCmd(cmd, false);
-			}
-		}
-		return result;
+		let {calledCommands = [], userMessages = []} =
+			await EnsurePcc({stateful, pcc, recoveryPcc});
+		calledCommands = await Promise.all(calledCommands
+			.map(calledCommand => modifyOutput(calledCommand)));
+		return {calledCommands, userMessages};
 	};
 
 	const guessGkMarriages = async (itinerary) => {
@@ -583,15 +577,7 @@ const RunCmdRq = ({
 		const recoveryPcc = getSessionData().pcc;
 		const area = emptyAreas[0];
 		await GoToArea.inApollo({stateful, area});
-		const {cmdRec} = await emulatePcc(pcc, recoveryPcc);
-		if (getSessionData().pcc !== pcc) {
-			const error = cmdRec.output.startsWith('ERR: INVALID - NOT ' + pcc + ' - APOLLO')
-				? Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_GDS, {pcc, gds: 'apollo'})
-				: Errors.getMessage(Errors.PCC_GDS_ERROR, {pcc, response: cmdRec.output});
-			return Rej.BadRequest(error);
-		} else {
-			return Promise.resolve();
-		}
+		await emulatePcc(pcc, recoveryPcc);
 	};
 
 	/** RE/2CV4/SS2 */
@@ -1054,8 +1040,7 @@ const RunCmdRq = ({
 		} else if (alias.type === 'multiDstAvail') {
 			return makeMultipleCityAvailabilitySearch(alias.data);
 		} else if (php.preg_match(/^SEM\/([\w\d]{3,4})\/AG$/, cmd, matches = [])) {
-			const {cmdRec} = await emulatePcc(matches[1]);
-			return {calledCommands: [cmdRec]};
+			return emulatePcc(matches[1]);
 		} else if (!php.empty(reservation = await AliasParser.parseCmdAsPnr(cmd, stateful))) {
 			return bookPnr(reservation);
 		} else if (result = await assertPriceMix(parsed)) {
