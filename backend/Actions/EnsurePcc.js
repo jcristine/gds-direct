@@ -12,6 +12,10 @@ const makeRejection = (cmdRec, pcc, gds) => {
 			msg = Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_GDS, {pcc, gds: 'apollo'});
 			rejection = Rej.Forbidden;
 		}
+	} else if (gds === 'sabre') {
+		if (cmdRec.output === '¥NOT ALLOWED THIS CITY¥') {
+			rejection = Rej.Forbidden;
+		}
 	}
 	return rejection(msg, cmdRec);
 };
