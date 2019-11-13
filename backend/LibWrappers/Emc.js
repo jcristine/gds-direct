@@ -16,7 +16,7 @@ const makeClient = cfg => {
 	if (cfg.production) {
 		client.setLink('http://auth-asaptickets-com.lan.dyninno.net/jsonService.php');
 	} else {
-		client.setLink('http://auth.gitlab-runner.snx702.dyninno.net/jsonService.php');
+		client.setLink('https://emc.sandbox.dyninno.net/jsonService.php');
 	}
 	client.setLogin(cfg.external_service.emc.login);
 	client.setPassword(cfg.external_service.emc.password);
