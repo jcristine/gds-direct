@@ -10,7 +10,7 @@ const makeRejection = (cmdRec, pcc, gds) => {
 	if (gds === 'apollo') {
 		if (cmdRec.output.startsWith('ERR: INVALID - NOT ')) {
 			msg = Errors.getMessage(Errors.PCC_NOT_ALLOWED_BY_GDS, {pcc, gds: 'apollo'});
-			rejection = Rej.BadRequest;
+			rejection = Rej.Forbidden;
 		}
 	}
 	return rejection(msg, cmdRec);
