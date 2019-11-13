@@ -1,3 +1,4 @@
+const GoToPcc = require('../../../../../Actions/GoToPcc.js');
 const EnsurePcc = require('../../../../../Actions/EnsurePcc.js');
 const GoToArea = require('../../../../../Actions/GoToArea.js');
 const PnrStatusParser = require('gds-utils/src/text_format_processing/apollo/actions/PnrStatusParser.js');
@@ -499,7 +500,7 @@ const RunCmdRq = ({
 			}));
 	};
 
-	const emulatePcc = async (pcc, recoveryPcc) => {
+	const emulatePcc = async (pcc, recoveryPcc = null) => {
 		recoveryPcc = recoveryPcc || getSessionData().pcc;
 		let {calledCommands = [], userMessages = []} =
 			await EnsurePcc({stateful, pcc, recoveryPcc});
@@ -558,10 +559,6 @@ const RunCmdRq = ({
 		const pcc = aliasData.pcc || getSessionData().pcc;
 		await CommonDataHelper.checkEmulatePccRights({stateful, pcc});
 
-		const emptyAreas = getEmptyAreas();
-		if (php.empty(emptyAreas)) {
-			return Rej.BadRequest(Errors.getMessage(Errors.NO_FREE_AREAS));
-		}
 		let useSameArea = sameAreaAllowed && getSessionData().pcc === pcc;
 		if (!getSessionData().isPnrStored &&
 			!aliasData.keepOriginal &&
@@ -574,10 +571,11 @@ const RunCmdRq = ({
 		if (useSameArea) {
 			return Promise.resolve();
 		}
-		const recoveryPcc = getSessionData().pcc;
-		const area = emptyAreas[0];
-		await GoToArea.inApollo({stateful, area});
-		await emulatePcc(pcc, recoveryPcc);
+		await GoToPcc({
+			stateful, pcc,
+			recoveryPcc: getSessionData().pcc,
+			sameAreaForbidden: true,
+		});
 	};
 
 	/** RE/2CV4/SS2 */

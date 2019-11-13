@@ -128,6 +128,9 @@ const FakeAreaUtil = ({
 	};
 
 	const changeArea = async (area) => {
+		if (!area) {
+			return Rej.InternalServerError('Amadeus area letter parameter was empty');
+		}
 		if (!php.in_array(area, AREA_LETTERS)) {
 			const errorData = {area, options: php.implode(', ', AREA_LETTERS)};
 			const msg = Errors.getMessage(Errors.INVALID_AREA_LETTER, errorData);

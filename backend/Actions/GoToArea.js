@@ -29,6 +29,9 @@ const inSabre = ({stateful, area}) => {
 
 	const main = async () => {
 		await ensureSignedInAllAreas();
+		if (!area) {
+			return Rej.InternalServerError('Sabre area letter parameter was empty');
+		}
 
 		// '§OIATH' - needed to extract the new session token,
 		// since current gets discarded on area change
@@ -55,46 +58,62 @@ const inSabre = ({stateful, area}) => {
 };
 
 const inApollo = async ({stateful, area}) => {
+	if (!area) {
+		return Rej.InternalServerError('Apollo area letter parameter was empty');
+	}
 	const cmdRec = await stateful.runCmd('S' + area);
 	if (stateful.getFullState().area !== area) {
 		const error = Errors.getMessage(Errors.FAILED_TO_CHANGE_AREA, {
 			area: area, response: cmdRec.output.trim(),
 		});
-		return {errors: [error]};
+		return Rej.UnprocessableEntity(error, cmdRec);
 	}
 	return {calledCommands: [cmdRec]};
 };
 
 const inGalileo = async ({stateful, area}) => {
+	if (!area) {
+		return Rej.InternalServerError('Galileo area letter parameter was empty');
+	}
 	const cmdRec = await TravelportUtils.fetchAll('S' + area, stateful);
 	const output = cmdRec.output;
 	if (!UpdateGalileoState.isSuccessChangeAreaOutput(output)) {
 		const error = Errors.getMessage(Errors.FAILED_TO_CHANGE_AREA, {
 			area: area, response: output.trim(),
 		});
-		return {errors: [error]};
+		return Rej.UnprocessableEntity(error, cmdRec);
 	}
 	return {calledCommands: [cmdRec]};
 };
 
 /** @param stateful = require('StatefulSession.js')() */
-const GoToArea = ({stateful, area}) => {
+const GoToArea = async ({stateful, area}) => {
+	if (!area) {
+		return Rej.InternalServerError('Area letter parameter was empty');
+	}
 	const gds = stateful.gds;
 	if (stateful.getFullState().area === area) {
 		const text = 'Already in area ' + area;
 		return {messages: [{type: 'info', text}]};
 	}
+	let result;
 	if (gds === 'sabre') {
-		return inSabre({stateful, area});
+		result = await inSabre({stateful, area});
 	} else if (gds === 'amadeus') {
-		return FakeAreaUtil({stateful}).changeArea(area);
+		result = await FakeAreaUtil({stateful}).changeArea(area);
 	} else if (gds === 'apollo') {
-		return inApollo({stateful, area});
+		result = await inApollo({stateful, area});
 	} else if (gds === 'galileo') {
-		return inGalileo({stateful, area});
+		result = await inGalileo({stateful, area});
 	} else {
 		const msg = 'Unsupported GoToArea GDS - ' + gds;
-		throw Rej.NotImplemented.makeExc(msg);
+		return Rej.NotImplemented(msg);
+	}
+	if (stateful.getFullState().area !== area) {
+		const msg = 'Failed to switch to requested area ' + area;
+		return Rej.UnprocessableEntity(msg, result);
+	} else {
+		return Promise.resolve(result);
 	}
 };
 

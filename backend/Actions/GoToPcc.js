@@ -11,41 +11,45 @@ const AreaSettings = require('../Repositories/AreaSettings.js');
  *
  * @param stateful = require('StatefulSession.js')()
  */
-const GoToPcc = async ({stateful, pcc}) => {
+const GoToPcc = async ({stateful, pcc, recoveryPcc = null, sameAreaForbidden = false}) => {
 	await CommonDataHelper.checkEmulatePccRights({stateful, pcc});
 
 	const fullState = stateful.getFullState();
 
 	const signs = Object.values(stateful.getAreaRows());
-	const matchingSign = signs.filter(r => r.pcc === pcc)[0] || null;
-	const pnredAreas = signs.filter(s => s.hasPnr).map(s => s.area);
+	const matchingSigns = signs
+		.filter(r => !sameAreaForbidden || r.area !== fullState.area)
+		.filter(r => r.pcc === pcc);
+	const pnredAreas = signs
+		.filter(s => !sameAreaForbidden || s.area !== fullState.area)
+		.filter(s => s.hasPnr).map(s => s.area);
 
 	const agentId = stateful.getAgent().getId();
 	const areaSettings = await AreaSettings.getByAgent(agentId);
-	const matchingSetting = areaSettings.filter(s => s.defaultPcc === pcc)[0] || null;
+	const matchingSettings = areaSettings.filter(s => s.defaultPcc === pcc);
 	const configuredAreas = areaSettings.filter(s => s.defaultPcc).map(s => s.area);
 
-	const freeArea = GdsSessions.getAreaLetters(stateful.gds)
+	const freeAreas = GdsSessions.getAreaLetters(stateful.gds)
+		.filter(area => !sameAreaForbidden || area !== fullState.area)
 		.filter(area => !pnredAreas.includes(area))
-		.filter(area => !configuredAreas.includes(area))[0] || null;
+		.filter(area => !configuredAreas.includes(area));
 
-	let area;
-	if (matchingSign) {
-		area = matchingSign.area;
-	} else if (matchingSetting) {
-		area = matchingSetting.area;
-	} else if (freeArea) {
-		area = freeArea;
-	} else {
-		area = 'A';
-	}
+	const area = [
+		...matchingSigns.map(r => r.area),
+		...matchingSettings.map(s => s.area),
+		...freeAreas,
+	].filter(area => {
+		return !sameAreaForbidden
+			|| area !== fullState.area;
+	})[0] || 'A';
+
 	if (area !== fullState.area) {
 		await GoToArea({stateful, area});
 	}
 	const areaState = fullState.areas[area] || {};
 	if (areaState.pcc !== pcc) {
 		await IgnorePnr({stateful});
-		await EnsurePcc({stateful, pcc});
+		await EnsurePcc({stateful, pcc, recoveryPcc});
 	}
 	const text = 'GDS: ' + stateful.gds + '; PCC: ' + pcc + '; Area: ' + area;
 	return {messages: [{type: 'info', text}]};
